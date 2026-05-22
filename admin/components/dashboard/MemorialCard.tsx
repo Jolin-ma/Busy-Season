@@ -110,9 +110,23 @@ export default function MemorialCard({ memorial, onEdit, onPrivacyChange }: Prop
 
           {/* Action buttons row */}
           <div className="flex items-center justify-between">
-            <span className="text-xs text-stone-400">
-              <span className="font-semibold text-stone-600">{memorial.scansCount}</span> scans
-            </span>
+            <div className="flex items-center gap-2.5">
+              <span className="text-xs text-stone-400">
+                <span className="font-semibold text-stone-600">{memorial.scansCount}</span> scans
+              </span>
+              <span className="text-stone-300">·</span>
+              {memorial.shortId ? (
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  Active
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-stone-300" />
+                  Pending
+                </span>
+              )}
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={() => setShowQR(true)}

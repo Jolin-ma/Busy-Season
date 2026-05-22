@@ -154,6 +154,14 @@ export default function PurchasePage() {
         <p className="text-center text-xs text-stone-400 mt-4">
           Secure checkout &middot; No card required for demo
         </p>
+
+        <button
+          type="button"
+          onClick={() => router.push('/')}
+          className="w-full mt-3 py-3 rounded-2xl text-sm font-medium text-stone-500 hover:text-stone-800 hover:bg-stone-100 transition-colors"
+        >
+          ← Back to Dashboard
+        </button>
       </div>
     </div>
   );

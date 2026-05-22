@@ -15,7 +15,6 @@ interface Props {
 export default function DashboardHome({ memorials, onEdit, onNewMemorial, onPrivacyChange }: Props) {
   const { user } = useAuth();
   const firstName = user?.name?.split(' ')[0] ?? 'there';
-  const totalScans = memorials.reduce((sum, m) => sum + m.scansCount, 0);
 
   // Show the status card for the first memorial that hasn't been delivered yet.
   const activeMemorial = memorials.find(m => m.plaqueStatus !== 'delivered') ?? memorials[0];
@@ -37,20 +36,6 @@ export default function DashboardHome({ memorials, onEdit, onNewMemorial, onPriv
             onSetupProfile={() => onEdit(activeMemorial.id)}
           />
         )}
-
-        {/* Stats Row */}
-        <div className="grid grid-cols-3 gap-4 mb-10">
-          {[
-            { label: 'Memorials',     value: memorials.length },
-            { label: 'Total Scans',   value: totalScans },
-            { label: 'Active Plaques', value: memorials.filter(m => m.plaqueStatus !== 'order_received').length },
-          ].map(stat => (
-            <div key={stat.label} className="bg-white rounded-2xl p-5 border border-stone-100 shadow-sm text-center">
-              <p className="text-2xl font-semibold text-stone-800">{stat.value}</p>
-              <p className="text-xs text-stone-400 mt-1 uppercase tracking-widest">{stat.label}</p>
-            </div>
-          ))}
-        </div>
 
         {/* Plans */}
         <PlansSection />
