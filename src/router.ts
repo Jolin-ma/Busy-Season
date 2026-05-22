@@ -5,10 +5,32 @@ import { createLink, lookupLink, getScanHistory, setPrivacy } from './db';
 import { recordScanAsync } from './analytics';
 import { renderProfile } from './profileTemplate';
 import { renderPinGate } from './pinGateTemplate';
+import { renderAuthPage } from './authTemplate';
 import { MOCK_PROFILE } from './mockProfile';
 
 export function buildServer() {
   const app = Fastify({ logger: true });
+
+  // ── Auth Pages ───────────────────────────────────────────────────────────────
+  app.get('/login', async (_req, reply) =>
+    reply.header('Content-Type', 'text/html; charset=utf-8').send(renderAuthPage())
+  );
+  app.get('/signup', async (_req, reply) =>
+    reply.redirect('/login', 302)
+  );
+
+  // Stub endpoints — replace with real auth logic when a DB/session layer is added
+  app.post<{ Body: { email: string; password: string } }>('/auth/login', async (req, reply) => {
+    const { email, password } = req.body;
+    if (!email || !password) return reply.code(400).send({ error: 'Email and password are required.' });
+    return reply.code(401).send({ error: 'Invalid email or password.' });
+  });
+  app.post<{ Body: { name: string; email: string; password: string } }>('/auth/signup', async (req, reply) => {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) return reply.code(400).send({ error: 'All fields are required.' });
+    if (password.length < 8) return reply.code(400).send({ error: 'Password must be at least 8 characters.' });
+    return reply.code(201).send({ message: 'Account created.' });
+  });
 
   // ── Scan Entry Point ─────────────────────────────────────────────────────────
   // Private profiles show a PIN gate here — the profile URL is never exposed

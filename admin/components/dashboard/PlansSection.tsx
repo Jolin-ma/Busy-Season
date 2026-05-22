@@ -110,7 +110,7 @@ export default function PlansSection() {
             <div className="mb-5">
               {billing === 'annual' ? (
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-stone-800">$29</span>
+                  <span className="text-3xl font-bold text-stone-800">$19</span>
                   <span className="text-sm text-stone-400">/ year</span>
                 </div>
               ) : (
