@@ -36,6 +36,8 @@ export interface Memorial {
   plaqueStatus: PlaqueStatus;
   trackingNumber?: string;
   scansCount: number;
+  isPrivate: boolean;
+  privacyPin: string;
 }
 
 export const EMPTY_DRAFT: ProfileDraft = {

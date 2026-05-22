@@ -29,13 +29,13 @@ console.log(`[config] QR codes will encode: ${process.env.QR_BASE_URL}/<shortId>
 async function main() {
   const app = buildServer();
 
-  // Seed one demo link so the server is immediately testable after `npm run dev`.
-  // Remove this block before production deployment.
-  const demoShortId = generateShortId();
-  createLink(demoShortId, 'demo-profile-001');
-  console.log(`[seed] Demo QR route: http://localhost:${PORT}/p/${demoShortId}`);
-  console.log(`[seed] Demo QR SVG:   http://localhost:${PORT}/admin/qr/${demoShortId}`);
-  console.log(`[seed] Demo stats:    http://localhost:${PORT}/admin/stats/${demoShortId}`);
+  // Fixed demo shortId — matches the mock memorial in the admin dashboard.
+  // Both must stay in sync so the admin "View Profile" and QR links resolve correctly.
+  const DEMO_SHORT_ID = 'a5trneuj';
+  createLink(DEMO_SHORT_ID, 'demo-profile-001');
+  console.log(`[seed] Demo QR route: http://localhost:${PORT}/p/${DEMO_SHORT_ID}`);
+  console.log(`[seed] Demo QR SVG:   http://localhost:${PORT}/admin/qr/${DEMO_SHORT_ID}`);
+  console.log(`[seed] Demo stats:    http://localhost:${PORT}/admin/stats/${DEMO_SHORT_ID}`);
 
   try {
     await app.listen({ port: PORT, host: HOST });
