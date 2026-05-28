@@ -1,28 +1,10 @@
-'use client';
-import { useState } from 'react';
 import { Memorial, PlaqueStatus } from '@/types/profile';
 
-const STEPS: { key: PlaqueStatus; label: string; tooltip: string }[] = [
-  {
-    key: 'order_received',
-    label: 'Order Placed',
-    tooltip: 'We\'ve received your order and are preparing your plaque for manufacturing.',
-  },
-  {
-    key: 'engraving',
-    label: 'Engraving',
-    tooltip: 'Your plaque is being precision laser-engraved. This typically takes 3–5 business days.',
-  },
-  {
-    key: 'shipped',
-    label: 'Shipped',
-    tooltip: 'Your plaque is on its way via USPS. You\'ll receive tracking info by email.',
-  },
-  {
-    key: 'delivered',
-    label: 'Delivered',
-    tooltip: 'Your plaque has arrived! Mount it at the memorial and it\'s ready to scan.',
-  },
+const STEPS: { key: PlaqueStatus; label: string }[] = [
+  { key: 'order_received', label: 'Order Placed' },
+  { key: 'engraving',      label: 'Engraving' },
+  { key: 'shipped',        label: 'Shipped' },
+  { key: 'delivered',      label: 'Delivered' },
 ];
 
 const STEP_INDEX: Record<PlaqueStatus, number> = {
@@ -45,7 +27,6 @@ interface Props {
 }
 
 export default function PlaqueStatusCard({ memorial, onSetupProfile }: Props) {
-  const [hoveredStep, setHoveredStep] = useState<number | null>(null);
   const currentStep = STEP_INDEX[memorial.plaqueStatus];
   const isNew = memorial.plaqueStatus === 'order_received';
 
@@ -59,23 +40,9 @@ export default function PlaqueStatusCard({ memorial, onSetupProfile }: Props) {
         return (
           <div key={step.key} className="flex items-center flex-1 last:flex-none">
             <div className="flex flex-col items-center relative">
-              {/* Tooltip */}
-              {hoveredStep === i && (
-                <div className={`absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-44 text-center text-[11px] leading-snug px-3 py-2 rounded-xl shadow-lg z-10 pointer-events-none
-                  ${light
-                    ? 'bg-stone-800 text-white'
-                    : 'bg-white text-stone-700'}`}
-                >
-                  {step.tooltip}
-                  {/* Arrow */}
-                  <span className={`absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent
-                    ${light ? 'border-t-stone-800' : 'border-t-white'}`} />
-                </div>
-              )}
-
               {/* Step dot */}
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold cursor-default transition-all
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold
                   ${light
                     ? done    ? 'bg-stone-700 text-white'
                       : active ? 'bg-stone-900 text-white ring-4 ring-stone-900/20'
@@ -83,10 +50,7 @@ export default function PlaqueStatusCard({ memorial, onSetupProfile }: Props) {
                     : done    ? 'bg-white/30 text-white'
                       : active ? 'bg-white text-stone-900 ring-4 ring-white/20'
                       :          'bg-stone-700 text-stone-400'
-                  }
-                  ${hoveredStep === i ? 'scale-110' : ''}`}
-                onMouseEnter={() => setHoveredStep(i)}
-                onMouseLeave={() => setHoveredStep(null)}
+                  }`}
               >
                 {done ? (
                   <svg viewBox="0 0 12 12" fill="none" className="w-3 h-3">

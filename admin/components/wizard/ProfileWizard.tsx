@@ -89,9 +89,7 @@ export default function ProfileWizard({ onComplete, onCancel }: Props) {
     <div className="fixed inset-0 bg-stone-50 flex flex-col z-50 overflow-y-auto">
       {/* Top bar */}
       <div className="bg-stone-900 px-6 py-4 flex items-center justify-between">
-        <span className="text-white text-lg tracking-wide" style={{ fontFamily: 'var(--font-playfair)' }}>
-          LegacyLink
-        </span>
+        <img src="/legacy_link_logo.png" alt="LegacyLink" className="h-32 w-auto brightness-0 invert" />
         <div className="flex items-center gap-4">
           {/* Autosave indicator */}
           <span className="text-xs text-stone-500 min-w-[80px] text-right">

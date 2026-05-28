@@ -43,19 +43,11 @@ export default function PurchasePage() {
   const selectedMaterial = MATERIALS.find(m => m.id === selected)!;
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col items-center py-14 px-6">
+    <div className="min-h-screen bg-stone-50 flex flex-col items-center py-4 px-6">
 
       {/* Logo */}
-      <div className="w-full max-w-md flex items-center gap-3 mb-10">
-        <div className="w-8 h-8 bg-stone-900 rounded-xl flex items-center justify-center shrink-0">
-          <span className="text-white text-xs font-bold">LL</span>
-        </div>
-        <span
-          className="text-stone-800 font-semibold"
-          style={{ fontFamily: 'var(--font-playfair)' }}
-        >
-          LegacyLink
-        </span>
+      <div className="w-full max-w-md mb-4">
+        <img src="/legacy_link_logo.png" alt="LegacyLink" className="h-40 w-auto mx-auto" />
       </div>
 
       {/* Header */}

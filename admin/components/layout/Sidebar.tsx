@@ -65,16 +65,11 @@ export default function Sidebar() {
         ${collapsed ? 'w-[64px]' : 'w-[220px]'}`}
     >
       {/* Logo */}
-      <div className={`flex items-center gap-3 px-4 h-16 border-b border-stone-100 shrink-0 overflow-hidden`}>
-        <div className="w-7 h-7 bg-stone-900 rounded-lg flex items-center justify-center shrink-0">
-          <span className="text-white text-xs font-bold">LL</span>
-        </div>
-        {!collapsed && (
-          <span className="text-stone-800 font-semibold text-sm tracking-wide whitespace-nowrap overflow-hidden"
-                style={{ fontFamily: 'var(--font-playfair)' }}>
-            LegacyLink
-          </span>
-        )}
+      <div className="flex items-center justify-center px-4 py-2 border-b border-stone-100 shrink-0 overflow-hidden">
+        {!collapsed
+          ? <img src="/legacy_link_logo.png" alt="LegacyLink" className="h-32 w-auto" />
+          : <img src="/legacy_link_logo.png" alt="LegacyLink" className="h-24 w-auto" />
+        }
       </div>
 
       {/* Nav */}

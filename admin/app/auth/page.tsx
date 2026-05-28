@@ -46,24 +46,16 @@ export default function AuthPage() {
   if (isLoading) return null;
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center px-6 py-16">
+    <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center px-6 py-4">
 
       {/* Logo */}
-      <div className="flex items-center gap-3 mb-12">
-        <div className="w-9 h-9 bg-stone-900 rounded-xl flex items-center justify-center shrink-0">
-          <span className="text-white text-sm font-bold">LL</span>
-        </div>
-        <span
-          className="text-stone-800 text-xl font-semibold tracking-wide"
-          style={{ fontFamily: 'var(--font-playfair)' }}
-        >
-          LegacyLink
-        </span>
+      <div className="mb-4">
+        <img src="/legacy_link_logo.png" alt="LegacyLink" className="h-48 w-auto mx-auto" />
       </div>
 
       <div className="w-full max-w-sm">
         {/* Heading */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-4">
           <h1
             className="text-2xl font-semibold text-stone-800"
             style={{ fontFamily: 'var(--font-playfair)' }}
