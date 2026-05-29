@@ -1,0 +1,228 @@
+// =============================================================================
+// LegacyLink — Prisma Schema
+// PostgreSQL · UUIDv4 keys · soft-delete on Profile · guestbook moderation gate
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// =============================================================================
+// ENUMS
+// =============================================================================
+
+// Hosting tier. Stored as a native PostgreSQL enum so invalid values are
+// rejected at the database level, not just in application code.
+enum Plan {
+  BASIC    // Included with every plaque purchase
+  PREMIUM  // Annual ($19/yr) or Lifetime ($199)
+}
+
+// Discriminates uploaded files so the client can render the correct player
+// without inspecting the URL or MIME type at runtime.
+enum MediaType {
+  PHOTO
+  VIDEO
+  AUDIO
+}
+
+// =============================================================================
+// USER
+// =============================================================================
+
+model User {
+  // UUIDv4 — prevents sequential ID enumeration / scraping of account counts.
+  id            String    @id @default(uuid()) @db.Uuid
+
+  email         String    @unique
+  name          String
+
+  // bcrypt hash (cost ≥ 12). Raw passwords must never be stored.
+  password_hash String
+
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  profiles      Profile[]
+
+  @@map("users")
+}
+
+// =============================================================================
+// PROFILE
+// =============================================================================
+
+model Profile {
+  id            String    @id @default(uuid()) @db.Uuid
+
+  // ── Routing token ─────────────────────────────────────────────────────────
+  // Immutable 6-8 char alphanumeric slug hardcoded into the physical QR plaque.
+  // Generated in application code (nanoid with custom alphabet) before insert —
+  // NOT auto-incremented — so the value is URL-safe and unpredictable.
+  // Once engraved on a tombstone, this value must NEVER be changed.
+  short_id      String    @unique @db.VarChar(8)
+
+  // ── Owner ─────────────────────────────────────────────────────────────────
+  user_id       String    @db.Uuid
+  user          User      @relation(fields: [user_id], references: [id])
+
+  // ── Subject information ───────────────────────────────────────────────────
+  full_name     String
+  date_of_birth DateTime? @db.Date  // Date only — no timezone ambiguity
+  date_of_death DateTime? @db.Date
+  epitaph       String?   @db.Text  // Short inscription shown on the profile header
+  biography     String?   @db.Text  // Long-form life story; no length cap at DB level
+  portrait_url  String?             // CDN URL; validation enforced at app layer
+
+  // ── Access control ────────────────────────────────────────────────────────
+  is_private    Boolean   @default(false)
+  // 4-digit PIN stored as a bcrypt hash. Null when profile is public.
+  privacy_pin   String?
+
+  // ── Plaque fulfilment ─────────────────────────────────────────────────────
+  // Tracks physical order state so the dashboard status card stays in sync.
+  plaque_status PlaqueStatus @default(ORDER_RECEIVED)
+
+  // ── Scan analytics ────────────────────────────────────────────────────────
+  // Denormalised counter — incremented on every QR scan via updateMany.
+  // Full per-scan events stay in the analytics module (queue in production).
+  scans_count   Int       @default(0)
+
+  // ── Hosting plan ──────────────────────────────────────────────────────────
+  plan          Plan      @default(BASIC)
+
+  // ── Soft delete ───────────────────────────────────────────────────────────
+  // NULL  → profile is live.
+  // Timestamp → profile is tombstoned; excluded from all standard reads via
+  // the Prisma client extension defined in lib/db.ts (see below).
+  // Hard deletion is a separate, manual, admin-only operation after a
+  // configurable retention window (e.g. 90 days).
+  deleted_at    DateTime?
+
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  // ── Child relations ───────────────────────────────────────────────────────
+  timeline      TimelineMilestone[]
+  media         MediaAsset[]
+  guestbook     GuestbookEntry[]
+
+  // short_id is already unique; the explicit index keeps the planner from
+  // falling back to a seq scan when joining from the QR routing layer.
+  @@index([short_id])
+  // Speeds up "all profiles for this user" queries on the dashboard.
+  @@index([user_id])
+  // Partial-index equivalent: most reads filter deleted_at IS NULL.
+  @@index([deleted_at])
+
+  @@map("profiles")
+}
+
+enum PlaqueStatus {
+  ORDER_RECEIVED
+  ENGRAVING
+  SHIPPED
+  DELIVERED
+}
+
+// =============================================================================
+// TIMELINE MILESTONE
+// =============================================================================
+
+model TimelineMilestone {
+  id          String    @id @default(uuid()) @db.Uuid
+
+  profile_id  String    @db.Uuid
+  // Cascade: deleting a profile removes all its timeline events.
+  // This is intentional — milestones have no meaning without the parent profile.
+  profile     Profile   @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  title       String
+  description String?   @db.Text
+
+  // @db.Date stores only the calendar date (no time, no timezone).
+  // Historical events are date-precise, not datetime-precise.
+  occurred_at DateTime  @db.Date
+
+  // Display order is determined by occurred_at ASC at query time;
+  // no manual sort_order column needed here.
+
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  @@index([profile_id])
+  @@map("timeline_milestones")
+}
+
+// =============================================================================
+// MEDIA ASSET
+// =============================================================================
+
+model MediaAsset {
+  id          String    @id @default(uuid()) @db.Uuid
+
+  profile_id  String    @db.Uuid
+  profile     Profile   @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  // Discriminator lets the frontend choose <img>, <video>, or <audio> without
+  // parsing the URL or making an extra HEAD request.
+  type        MediaType
+
+  // Canonical CDN URL. The actual blob lives in object storage (S3/R2);
+  // this column is just the reference.
+  url         String
+
+  caption     String?
+
+  // Explicit ordering for the gallery carousel. Lower = shown first.
+  sort_order  Int       @default(0)
+
+  // Stored for plan-limit enforcement (BASIC: ≤ 20 photos, no video/audio).
+  size_bytes  BigInt?
+
+  created_at  DateTime  @default(now())
+
+  @@index([profile_id])
+  // Covers queries like "how much storage is this profile using?"
+  @@index([profile_id, type])
+  @@map("media_assets")
+}
+
+// =============================================================================
+// GUESTBOOK ENTRY
+// =============================================================================
+
+model GuestbookEntry {
+  id           String    @id @default(uuid()) @db.Uuid
+
+  profile_id   String    @db.Uuid
+  profile      Profile   @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  author_name  String
+  // Optional — collected only if the visitor volunteers it.
+  // Never exposed publicly; used only for moderation contact.
+  author_email String?
+
+  message      String    @db.Text
+
+  // ── Anti-vandalism gate ───────────────────────────────────────────────────
+  // All submissions land here unapproved. The profile owner must explicitly
+  // approve before the message appears on the public memorial page.
+  // Queries for the public view must always include `WHERE is_approved = true`.
+  is_approved  Boolean   @default(false)
+
+  // Soft-flag for spam/abuse without destroying the audit trail.
+  is_flagged   Boolean   @default(false)
+
+  created_at   DateTime  @default(now())
+
+  // Covers the public read path: profile_id + approved status filtered together.
+  @@index([profile_id, is_approved])
+  // Covers the admin moderation queue: all unapproved entries across profiles.
+  @@index([is_approved])
+  @@map("guestbook_entries")
+}

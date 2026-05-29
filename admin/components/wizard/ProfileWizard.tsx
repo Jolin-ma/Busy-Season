@@ -88,11 +88,13 @@ export default function ProfileWizard({ onComplete, onCancel }: Props) {
   return (
     <div className="fixed inset-0 bg-stone-50 flex flex-col z-50 overflow-y-auto">
       {/* Top bar */}
-      <div className="bg-stone-900 px-6 py-4 flex items-center justify-between">
-        <img src="/legacy_link_logo.png" alt="LegacyLink" className="h-32 w-auto brightness-0 invert" />
-        <div className="flex items-center gap-4">
+      <div className="bg-white border-b border-stone-100 px-6 py-2 flex items-center">
+        {/* Left spacer — mirrors right controls width so logo stays centered */}
+        <div className="flex-1" />
+        <img src="/legacy_link_logo.png" alt="LegacyLink" className="h-32 w-auto" />
+        <div className="flex-1 flex items-center justify-end gap-4">
           {/* Autosave indicator */}
-          <span className="text-xs text-stone-500 min-w-[80px] text-right">
+          <span className="text-xs text-stone-400">
             {saveStatus === 'saving' && 'Saving…'}
             {saveStatus === 'saved'  && '✓ Draft saved'}
           </span>
@@ -101,13 +103,13 @@ export default function ProfileWizard({ onComplete, onCancel }: Props) {
             onClick={() => setShowPreview(v => !v)}
             className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
               showPreview
-                ? 'border-stone-400 text-white bg-stone-700'
-                : 'border-stone-600 text-stone-400 hover:text-white'
+                ? 'border-stone-400 text-stone-800 bg-stone-100'
+                : 'border-stone-200 text-stone-500 hover:text-stone-800 hover:border-stone-300'
             }`}
           >
             {showPreview ? 'Hide Preview' : 'Preview'}
           </button>
-          <button onClick={onCancel} className="text-stone-400 text-sm hover:text-white transition-colors">
+          <button onClick={onCancel} className="text-stone-400 text-sm hover:text-stone-800 transition-colors">
             ✕ Cancel
           </button>
         </div>
@@ -186,6 +188,25 @@ export default function ProfileWizard({ onComplete, onCancel }: Props) {
                   className="bg-stone-900 text-white text-sm font-semibold px-6 py-3 rounded-xl hover:bg-stone-700 transition-colors"
                 >
                   Save & Finish ✓
+                </button>
+              )}
+            </div>
+
+            {/* Demo bypass */}
+            <div className="mt-4 text-center">
+              {step < STEPS.length ? (
+                <button
+                  onClick={() => setStep(s => s + 1)}
+                  className="text-xs text-stone-300 hover:text-stone-500 transition-colors"
+                >
+                  Skip this step →
+                </button>
+              ) : (
+                <button
+                  onClick={onComplete}
+                  className="text-xs text-stone-300 hover:text-stone-500 transition-colors"
+                >
+                  Skip & return to dashboard →
                 </button>
               )}
             </div>

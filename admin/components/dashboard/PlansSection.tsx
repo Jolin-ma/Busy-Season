@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const BASIC_FEATURES = [
   'Core text biography',
@@ -23,6 +24,7 @@ const PREMIUM_FEATURES = [
 
 export default function PlansSection() {
   const [billing, setBilling] = useState<'annual' | 'lifetime'>('annual');
+  const router = useRouter();
 
   return (
     <div className="mb-10">
@@ -102,7 +104,7 @@ export default function PlansSection() {
                       ? 'bg-white text-stone-800 shadow-sm'
                       : 'text-stone-500 hover:text-stone-700'}`}
                 >
-                  {b === 'annual' ? 'Annual' : 'Lifetime'}
+                  {b === 'annual' ? 'Monthly' : 'Lifetime'}
                 </button>
               ))}
             </div>
@@ -111,7 +113,7 @@ export default function PlansSection() {
               {billing === 'annual' ? (
                 <div className="flex items-baseline gap-1">
                   <span className="text-3xl font-bold text-stone-800">$19</span>
-                  <span className="text-sm text-stone-400">/ year</span>
+                  <span className="text-sm text-stone-400">/ month</span>
                 </div>
               ) : (
                 <div className="flex items-baseline gap-1">
@@ -121,6 +123,7 @@ export default function PlansSection() {
               )}
               {billing === 'annual' && (
                 <p className="text-xs text-stone-400 mt-0.5">or $199 once for lifetime access</p>
+                <p className="text-xs text-stone-400">billed monthly — cancel any time</p>
               )}
             </div>
 
@@ -136,7 +139,10 @@ export default function PlansSection() {
               ))}
             </ul>
 
-            <button className="w-full bg-stone-800 text-white text-sm font-semibold py-3 rounded-xl hover:bg-stone-700 transition-colors">
+            <button
+              onClick={() => router.push('/upgrade')}
+              className="w-full bg-stone-800 text-white text-sm font-semibold py-3 rounded-xl hover:bg-stone-700 transition-colors"
+            >
               Upgrade to Premium
             </button>
           </div>

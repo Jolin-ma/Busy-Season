@@ -1,19 +1,23 @@
 import { incrementScanCount, appendScanEvent } from './db';
 
 export interface ScanEvent {
-  shortId: string;
+  shortId:   string;
   timestamp: string;
   userAgent?: string;
-  ip?: string;
+  ip?:       string;
 }
 
-// Fire-and-forget: intentionally not awaited by the router so the 301 redirect
-// dispatches before any I/O occurs. In production, publish to a queue
-// (SQS, Kafka, Pub/Sub) for async enrichment — geolocation, device type, weather.
+// Fire-and-forget: not awaited by the router so the redirect dispatches
+// before any I/O. In production, publish to a queue (SQS/Kafka/Pub/Sub)
+// for async enrichment — geolocation, device type, weather.
 export function recordScanAsync(event: ScanEvent): void {
-  setImmediate(() => {
-    incrementScanCount(event.shortId);
-    appendScanEvent(event);
-    console.log('[scan]', JSON.stringify(event));
+  setImmediate(async () => {
+    try {
+      await incrementScanCount(event.shortId);
+      appendScanEvent(event);
+      console.log('[scan]', JSON.stringify(event));
+    } catch (err) {
+      console.error('[scan] failed to record:', err);
+    }
   });
 }
