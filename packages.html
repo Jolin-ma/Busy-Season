@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Packages — Legacy Link</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #e8ded0;
+            color: #232323;
+            font-family: 'Space Mono', monospace;
+            font-size: 1em;
+            line-height: 1.4;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .nav-link {
+            font-size: 1.16rem;
+            letter-spacing: 0.1em;
+            color: #232323;
+            transition: opacity 0.2s;
+        }
+
+        .nav-link:hover {
+            opacity: 0.45;
+        }
+
+        .cta-link {
+            font-size: 1.05rem;
+            letter-spacing: 0.14em;
+            border-bottom: 1px solid currentColor;
+            padding-bottom: 2px;
+            transition: opacity 0.2s;
+        }
+
+        .cta-link:hover {
+            opacity: 0.5;
+        }
+
+        .eyebrow {
+            font-size: 1.16rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        .package-card {
+            border: 1px solid rgba(35,35,35,0.18);
+            padding: 40px 44px;
+            position: relative;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .package-card:hover {
+            border-color: rgba(35,35,35,0.55);
+        }
+
+        .package-card.featured {
+            border-color: #232323;
+        }
+
+        .badge {
+            position: absolute;
+            top: -12px;
+            left: 44px;
+            background: #232323;
+            color: #e8ded0;
+            font-size: 0.72rem;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            padding: 4px 14px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            font-size: 0.85rem;
+            letter-spacing: 0.06em;
+            line-height: 1.9;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(35,35,35,0.1);
+        }
+
+        .check-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-btn {
+            display: inline-block;
+            background: #232323;
+            color: #e8ded0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            padding: 18px 52px;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            text-decoration: none;
+        }
+
+        .order-btn:hover {
+            opacity: 0.75;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════════════════════════════════════
+     NAVIGATION
+════════════════════════════════════════════ -->
+    <header style="
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 100px 44px 180px;
+  position: relative;
+  z-index: 20;
+">
+        <!-- Left links -->
+        <nav style="display:flex; gap:28px; align-items:center; flex:1; justify-content:flex-start;">
+            <a href="our-stories.html" class="nav-link">OUR STORIES</a>
+            <a href="packages.html" class="nav-link" style="font-weight:700; border-bottom:1px solid #232323; padding-bottom:2px;">PACKAGE</a>
+        </nav>
+
+        <!-- Centre: EN/FR toggle + wordmark logo below -->
+        <div style="
+    position: absolute; left: 50%; transform: translateX(-50%);
+    text-align: center; line-height: 1;
+  ">
+            <a href="index.html">
+                <img src="image/legacy_link_logo.png" alt="Legacy Link" style="height:260px; width:auto; display:block; margin:0 auto;" />
+            </a>
+        </div>
+
+        <!-- Right links -->
+        <nav style="display:flex; gap:26px; align-items:center; flex:1; justify-content:flex-end;">
+            <a href="mailto:info@legacylink.ca" class="nav-link">CONTACT US</a>
+            <a href="http://localhost:3001/auth" target="_blank" style="
+                font-family:'Cormorant Garamond',serif;
+                font-size:0.9rem; letter-spacing:0.18em;
+                color:#232323; text-decoration:none;
+                border:1px solid #232323;
+                padding:10px 24px;
+                transition:background 0.2s, color 0.2s;
+            " onmouseover="this.style.background='#232323';this.style.color='#fff';"
+               onmouseout="this.style.background='transparent';this.style.color='#232323';">CREATE ACCOUNT</a>
+        </nav>
+    </header>
+
+    <!-- ═══════════════════════════════════════════
+     PAGE HERO
+════════════════════════════════════════════ -->
+    <section style="padding:0 8% 80px; text-align:center;">
+        <p class="eyebrow" style="margin-bottom:20px; opacity:0.55;">OUR PACKAGES</p>
+        <h1 class="serif" style="
+            font-size:clamp(2.4rem,5.5vw,4.2rem);
+            font-weight:300;
+            font-style:italic;
+            line-height:1.08;
+            margin-bottom:24px;
+            letter-spacing:0.01em;
+        ">Choose your memorial plaque</h1>
+        <p style="font-size:0.85rem; letter-spacing:0.06em; line-height:1.9; max-width:560px; margin:0 auto; opacity:0.72;">
+            A laser-engraved QR plaque links the physical memorial to a permanent digital profile.
+            3&Prime;&nbsp;&times;&nbsp;2&Prime;, fully weatherproof, with free standard shipping.
+        </p>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+     PACKAGE CARDS
+════════════════════════════════════════════ -->
+    <section style="padding:0 8% 96px;">
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; max-width:960px; margin:0 auto;">
+
+            <!-- Stainless Steel -->
+            <div class="package-card featured">
+                <div class="badge">Most Popular</div>
+
+                <p class="eyebrow" style="font-size:0.75rem; opacity:0.55; margin-bottom:14px;">Stainless Steel</p>
+                <div class="serif" style="font-size:clamp(1.7rem,2.8vw,2.4rem); font-weight:300; line-height:1.2; margin-bottom:10px;">
+                    Marine-Grade<br>Stainless Steel
+                </div>
+                <p style="font-size:0.85rem; letter-spacing:0.08em; opacity:0.65; margin-bottom:32px; line-height:1.8;">
+                    Ultra-durable, brushed satin finish,<br>weather-resistant
+                </p>
+
+                <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:40px;">
+                    <span class="serif" style="font-size:clamp(2.6rem,4vw,3.5rem); font-weight:300; line-height:1;">$169</span>
+                    <span style="font-size:0.72rem; letter-spacing:0.1em; opacity:0.55;">CAD</span>
+                </div>
+
+                <a href="http://localhost:3001/auth" target="_blank" class="order-btn">ORDER NOW</a>
+            </div>
+
+            <!-- Brushed Bronze -->
+            <div class="package-card">
+                <p class="eyebrow" style="font-size:0.75rem; opacity:0.55; margin-bottom:14px;">Bronzes</p>
+                <div class="serif" style="font-size:clamp(1.7rem,2.8vw,2.4rem); font-weight:300; line-height:1.2; margin-bottom:10px;">
+                    Marine<br>Brushed Bronze
+                </div>
+                <p style="font-size:0.85rem; letter-spacing:0.08em; opacity:0.65; margin-bottom:32px; line-height:1.8;">
+                    Warm heritage tone,<br>museum quality
+                </p>
+
+                <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:40px;">
+                    <span class="serif" style="font-size:clamp(2.6rem,4vw,3.5rem); font-weight:300; line-height:1;">$189</span>
+                    <span style="font-size:0.72rem; letter-spacing:0.1em; opacity:0.55;">CAD</span>
+                </div>
+
+                <a href="http://localhost:3001/auth" target="_blank" class="order-btn">ORDER NOW</a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+     WHAT'S INCLUDED
+════════════════════════════════════════════ -->
+    <section style="padding:0 8% 100px;">
+
+        <div style="max-width:960px; margin:0 auto;">
+
+            <!-- Divider heading -->
+            <div style="display:flex; align-items:center; gap:28px; margin-bottom:52px;">
+                <div style="flex:1; height:1px; background:#232323; opacity:0.15;"></div>
+                <p class="eyebrow" style="font-size:0.75rem; opacity:0.55; white-space:nowrap;">WHAT'S INCLUDED</p>
+                <div style="flex:1; height:1px; background:#232323; opacity:0.15;"></div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 80px;">
+
+                <div>
+                    <div class="check-item">
+                        <span style="opacity:0.4; flex-shrink:0;">—</span>
+                        <span>Laser-engraved QR code + personalized name</span>
+                    </div>
+                    <div class="check-item">
+                        <span style="opacity:0.4; flex-shrink:0;">—</span>
+                        <span>Permanent digital memorial profile</span>
+                    </div>
+                    <div class="check-item">
+                        <span style="opacity:0.4; flex-shrink:0;">—</span>
+                        <span>Scan analytics dashboard for family</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="check-item">
+                        <span style="opacity:0.4; flex-shrink:0;">—</span>
+                        <span>Privacy controls — PIN-protect at any time</span>
+                    </div>
+                    <div class="check-item">
+                        <span style="opacity:0.4; flex-shrink:0;">—</span>
+                        <span>Free profile updates forever</span>
+                    </div>
+                    <div class="check-item">
+                        <span style="opacity:0.4; flex-shrink:0;">—</span>
+                        <span>Free standard shipping</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+     HOSTING PLAN
+════════════════════════════════════════════ -->
+    <section style="padding:0 8% 100px;">
+        <div style="max-width:960px; margin:0 auto;">
+
+            <!-- Divider heading -->
+            <div style="display:flex; align-items:center; gap:28px; margin-bottom:28px;">
+                <div style="flex:1; height:1px; background:#232323; opacity:0.15;"></div>
+                <p class="eyebrow" style="font-size:0.75rem; opacity:0.55; white-space:nowrap;">HOSTING PLAN</p>
+                <div style="flex:1; height:1px; background:#232323; opacity:0.15;"></div>
+            </div>
+
+            <p style="text-align:center; font-size:0.82rem; line-height:1.95; max-width:520px; margin:0 auto 52px; opacity:0.62; letter-spacing:0.04em;">
+                Every plaque comes with our Core Memorial plan at no extra cost. Upgrade any time to unlock richer media and family collaboration.
+            </p>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+
+                <!-- Basic -->
+                <div class="package-card">
+                    <p class="eyebrow" style="font-size:0.72rem; opacity:0.45; margin-bottom:12px;">Basic</p>
+                    <div class="serif" style="font-size:clamp(1.5rem,2.4vw,2.1rem); font-weight:300; line-height:1.2; margin-bottom:10px;">Core Memorial</div>
+                    <p style="font-size:0.82rem; letter-spacing:0.05em; opacity:0.58; margin-bottom:28px; line-height:1.85;">
+                        Included with every plaque purchase.<br>Everything you need to preserve a life story.
+                    </p>
+
+                    <div style="margin-bottom:28px;">
+                        <div class="check-item"><span style="opacity:0.4; flex-shrink:0;">—</span><span>Core text biography</span></div>
+                        <div class="check-item"><span style="opacity:0.4; flex-shrink:0;">—</span><span>Up to 20 photos</span></div>
+                        <div class="check-item"><span style="opacity:0.4; flex-shrink:0;">—</span><span>Permanently hosted</span></div>
+                        <div class="check-item"><span style="opacity:0.4; flex-shrink:0;">—</span><span>QR scan analytics</span></div>
+                        <div class="check-item"><span style="opacity:0.4; flex-shrink:0;">—</span><span>Privacy PIN protection</span></div>
+                        <div class="check-item"><span style="opacity:0.4; flex-shrink:0;">—</span><span>Virtual flowers, candles &amp; memory sharing</span></div>
+                    </div>
+
+                    <div style="border-top:1px solid rgba(35,35,35,0.1); padding-top:20px; margin-top:auto;">
+                        <p style="font-size:0.72rem; letter-spacing:0.1em; opacity:0.48; font-style:italic;">Included — no additional cost</p>
+                    </div>
+                </div>
+
+                <!-- Premium -->
+                <div class="package-card featured">
+                    <div class="badge">Upgrade</div>
+                    <p class="eyebrow" style="font-size:0.72rem; opacity:0.45; margin-bottom:12px;">Premium</p>
+                    <div class="serif" style="font-size:clamp(1.5rem,2.4vw,2.1rem); font-weight:300; line-height:1.2; margin-bottom:10px;">Living Legacy</div>
+                    <p style="font-size:0.82rem; letter-spacing:0.05em; opacity:0.58; margin-bottom:22px; line-height:1.85;">
+                        Richer media, more memories, and a space<br>where family can contribute together.
+                    </p>
+
+                    <!-- Pricing -->
+                    <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:6px;">
+                        <span class="serif" style="font-size:clamp(2.2rem,3.5vw,3rem); font-weight:300; line-height:1;">$19</span>
+                        <span style="font-size:0.72rem; letter-spacing:0.1em; opacity:0.55;">/ month</span>
+                    </div>
+                    <p style="font-size:0.72rem; opacity:0.45; font-style:italic; margin-bottom:28px;">or $199 one-time for lifetime access</p>
+
+                    <div style="margin-bottom:32px;">
+                        <div class="check-item"><span style="opacity:0.4; flex-shrink:0;">—</span><span>Everything in Basic</span></div>
+                        <div class="check-item"><span style="opacity:0.4; flex-shrink:0;">—</span><span>Video hosting</span></div>
+                        <div class="check-item"><span style="opacity:0.4; flex-shrink:0;">—</span><span>Audio clips &amp; voice memories</span></div>
+                        <div class="check-item"><span style="opacity:0.4; flex-shrink:0;">—</span><span>Expanded storage</span></div>
+                        <div class="check-item">
+                            <span style="opacity:0.4; flex-shrink:0;">—</span>
+                            <span><strong>Collaborative Guestbook</strong> — Visitors scan the QR code to leave messages, share memories, or upload photos. Family can reply to stories, heart memories, and moderate contributions via an admin dashboard.</span>
+                        </div>
+                        <div class="check-item">
+                            <span style="opacity:0.4; flex-shrink:0;">—</span>
+                            <span><strong>Geotagging &amp; Cemetery Navigation</strong> — GPS coordinates pinned at setup. Guides relatives directly to the plot via Google or Apple Maps, with micro-navigation walking paths from the cemetery gates.</span>
+                        </div>
+                        <div class="check-item">
+                            <span style="opacity:0.4; flex-shrink:0;">—</span>
+                            <span><strong>Family Tree Integration</strong> — Interactive visual family tree linking parents, siblings, children, and ancestors. Compatible with GEDCOM, Ancestry.com &amp; MyHeritage.</span>
+                        </div>
+                        <div class="check-item">
+                            <span style="opacity:0.4; flex-shrink:0;">—</span>
+                            <span><strong>Priority Support</strong> — Guaranteed response under 2 hours. Includes digital onboarding where our team helps upload the biography, photos &amp; timeline.</span>
+                        </div>
+                    </div>
+
+                    <a href="http://localhost:3001/auth" target="_blank" class="order-btn">UPGRADE TO PREMIUM</a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Download CTA -->
+    <div style="text-align:center; margin:50px 0;">
+        <a href="brochure.html" target="_blank" style="
+            font-family:'Cormorant Garamond',serif;
+            font-size:0.9rem; letter-spacing:0.18em;
+            color:#232323; text-decoration:none;
+            border:1px solid #232323;
+            padding:10px 24px;
+            transition:background 0.2s, color 0.2s;
+        " onmouseover="this.style.background='#232323';this.style.color='#fff';"
+           onmouseout="this.style.background='transparent';this.style.color='#232323';">DOWNLOAD OUR BROCHURE</a>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════ -->
+    <footer style="position:relative; margin-top:80px;">
+
+        <!-- Double-arch SVG wave -->
+        <div style="position:relative; line-height:0;">
+            <svg viewBox="0 0 1440 110" preserveAspectRatio="none"
+                style="width:100%; height:110px; display:block;"
+                xmlns="http://www.w3.org/2000/svg">
+                <path d="
+                    M 0,110 L 0,80
+                    C 120,80 240,0 360,0
+                    C 480,0 600,80 720,80
+                    C 840,80 960,0 1080,0
+                    C 1200,0 1320,80 1440,80
+                    L 1440,110 Z
+                " fill="#232323"/>
+            </svg>
+        </div>
+
+        <!-- Dark footer body -->
+        <div style="background:#232323; color:#e8ded0; padding:0 5% 40px;">
+
+            <!-- BACK TO TOP -->
+            <div style="text-align:center; padding:28px 0 52px;">
+                <a href="#" style="
+                    color:#e8ded0; text-decoration:none;
+                    font-size:0.62rem; letter-spacing:0.3em;
+                    line-height:1.8; display:inline-block;
+                    opacity:0.7; transition:opacity 0.2s;
+                " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+                    BACK<br>TO THE<br>TOP
+                </a>
+            </div>
+
+            <!-- Address / Contact / Contact Info row -->
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:48px; border-bottom:1px solid rgba(232,222,208,0.18);">
+
+                <!-- Left: address -->
+                <div style="font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7;">
+                    LegacyLink Inc.<br>
+                    1900 Legacy Drive<br>
+                    Oshawa, Ontario<br>
+                    CANADA
+                </div>
+
+                <!-- Center: contact us -->
+                <div style="text-align:center;">
+                    <a href="mailto:info@legacylink.ca" style="
+                        color:#e8ded0; text-decoration:none;
+                        font-size:0.65rem; letter-spacing:0.28em;
+                        border-bottom:1px solid rgba(232,222,208,0.5);
+                        padding-bottom:3px;
+                        opacity:0.8;
+                    ">CONTACT US</a>
+                </div>
+
+                <!-- Right: email + phone -->
+                <div style="font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7; text-align:right;">
+                    info@legacylink.ca<br>
+                    +1 (905) 000-0000
+                </div>
+            </div>
+
+            <!-- Social links row -->
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:36px 0; border-bottom:1px solid rgba(232,222,208,0.18);">
+                <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">INSTAGRAM</a>
+                <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">FACEBOOK</a>
+                <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">TWITTER</a>
+                <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">YOUTUBE</a>
+            </div>
+
+            <!-- Bottom bar -->
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:28px;">
+
+                <p style="flex:1; font-size:0.52rem; letter-spacing:0.12em; opacity:0.45;">
+                    &copy; 2026 LegacyLink, all rights reserved.
+                </p>
+
+                <div class="serif" style="font-size:1.4rem; font-weight:700; letter-spacing:0.3em; opacity:0.85;">
+                    LEGACY LINK
+                </div>
+
+                <div style="flex:1; display:flex; justify-content:flex-end; gap:20px;">
+                    <a href="brochure.html" target="_blank" style="color:#e8ded0; text-decoration:none; font-size:0.52rem; letter-spacing:0.15em; opacity:0.45;">DOWNLOAD OUR BROCHURE</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

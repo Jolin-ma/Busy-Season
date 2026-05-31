@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LegacyLink — Product Brochure 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        @page { size: A4; margin: 0; }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: #b8b0a4;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .serif { font-family: 'Cormorant Garamond', serif; }
+
+        /* Print bar — hidden on print */
+        .print-bar {
+            background: #1a1a1a;
+            color: #e8ded0;
+            padding: 13px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.58rem;
+            letter-spacing: 0.22em;
+        }
+        .print-btn {
+            background: #e8ded0;
+            color: #232323;
+            border: none;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.58rem;
+            letter-spacing: 0.22em;
+            padding: 9px 24px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: opacity 0.2s;
+        }
+        .print-btn:hover { opacity: 0.75; }
+
+        @media print {
+            .print-bar { display: none; }
+            body { background: white; }
+        }
+
+        /* A4 page container */
+        .page {
+            width: 210mm;
+            height: 297mm;
+            margin: 20px auto;
+            overflow: hidden;
+            position: relative;
+            page-break-after: always;
+        }
+        @media print {
+            .page { margin: 0; }
+        }
+
+        /* ═══ PAGE 1: COVER ═══ */
+        .cover {
+            background: #232323;
+            color: #e8ded0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ═══ PAGE 2: CONTENT ═══ */
+        .content-page {
+            background: #e8ded0;
+            color: #232323;
+            padding: 12mm 15mm 10mm;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+
+
+
+<!-- ══════════════════════════════════════
+     PAGE 1  |  COVER
+════════════════════════════════════════ -->
+<div class="page cover">
+
+    <!-- Top: logo + nav strip -->
+    <div style="
+        padding: 11mm 14mm 9mm;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(232,222,208,0.12);
+    ">
+        <img src="image/legacy_link_logo.png" alt="Legacy Link"
+             style="height: 260px; width: auto; display: block; filter: brightness(0) invert(1);" />
+        <div style="text-align: right; font-size: 0.44rem; letter-spacing: 0.28em; opacity: 0.45; line-height: 2.1; text-transform: uppercase;">
+            legacylink.ca<br>
+            info@legacylink.ca
+        </div>
+    </div>
+
+    <!-- Main headline block -->
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 0 14mm 6mm;">
+
+        <p style="font-size: 0.44rem; letter-spacing: 0.4em; opacity: 0.38; text-transform: uppercase; margin-bottom: 18px;">
+            Digital Memorial Technology
+        </p>
+
+        <h1 class="serif" style="
+            font-size: 3.75rem;
+            font-weight: 300;
+            font-style: italic;
+            line-height: 1.08;
+            letter-spacing: 0.01em;
+            margin-bottom: 32px;
+        ">Preserving<br>Life Stories<br>Through<br>Digital Memorials.</h1>
+
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">
+            <div style="width: 36px; height: 1px; background: rgba(232,222,208,0.4);"></div>
+            <p style="font-size: 0.44rem; letter-spacing: 0.3em; opacity: 0.38; text-transform: uppercase;">Product Brochure 2026</p>
+        </div>
+
+        <p style="
+            font-size: 0.6rem;
+            line-height: 2;
+            opacity: 0.62;
+            max-width: 240px;
+            letter-spacing: 0.04em;
+        ">
+            A durable QR plaque on the headstone.<br>
+            A full life story in every scan.
+        </p>
+
+    </div>
+
+    <!-- Decorative arch SVG -->
+    <div style="line-height: 0; margin-bottom: -1px;">
+        <svg viewBox="0 0 595 72" preserveAspectRatio="none"
+             style="width: 100%; height: 72px; display: block;">
+            <path d="M 0,72 L 0,46 C 100,46 200,8 297,8 C 394,8 495,46 595,46 L 595,72 Z"
+                  fill="rgba(232,222,208,0.055)"/>
+            <path d="M 0,72 L 0,56 C 120,56 230,22 297,22 C 364,22 475,56 595,56 L 595,72 Z"
+                  fill="rgba(232,222,208,0.04)"/>
+        </svg>
+    </div>
+
+    <!-- Bottom contact strip -->
+    <div style="
+        padding: 8mm 14mm;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(232,222,208,0.1);
+    ">
+        <p style="font-size: 0.45rem; letter-spacing: 0.16em; opacity: 0.42; line-height: 1.9;">
+            LegacyLink Inc. &nbsp;·&nbsp; 1900 Legacy Drive &nbsp;·&nbsp; Oshawa, Ontario &nbsp;·&nbsp; Canada
+        </p>
+        <p style="font-size: 0.45rem; letter-spacing: 0.16em; opacity: 0.42;">
+            +1 (905) 000-0000
+        </p>
+    </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 2  |  CONTENT
+════════════════════════════════════════ -->
+<div class="page content-page">
+
+    <!-- Page header -->
+    <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 7mm;
+        border-bottom: 1px solid rgba(35,35,35,0.14);
+        margin-bottom: 8mm;
+        flex-shrink: 0;
+    ">
+        <p style="font-size: 0.52rem; letter-spacing: 0.32em; opacity: 0.4; text-transform: uppercase;">
+            Legacy Link &mdash; Product Overview 2026
+        </p>
+        <div class="serif" style="font-size: 0.82rem; letter-spacing: 0.3em; opacity: 0.55;">LEGACY LINK</div>
+    </div>
+
+    <!-- Two-column grid -->
+    <div style="flex: 1; display: grid; grid-template-columns: 1fr 1.55fr; gap: 9mm; align-content: start;">
+
+        <!-- ── LEFT COLUMN ── -->
+        <div style="display: flex; flex-direction: column; gap: 0;">
+
+            <!-- About -->
+            <p style="font-size: 0.5rem; letter-spacing: 0.32em; opacity: 0.4; text-transform: uppercase; margin-bottom: 7px;">About</p>
+            <h2 class="serif" style="font-size: 1.45rem; font-weight: 300; font-style: italic; line-height: 1.22; margin-bottom: 10px;">Where a scan<br>becomes a memory.</h2>
+            <p style="font-size: 0.65rem; line-height: 1.9; opacity: 0.72; margin-bottom: 0; letter-spacing: 0.02em;">
+                LegacyLink bridges the physical and digital worlds by embedding durable, weather-resistant QR codes on tombstones, monuments, and urns. A single smartphone scan opens a rich multimedia biography — photos, video, voice recordings, and written stories — accessible by families, genealogists, and future generations forever.
+            </p>
+
+            <div style="height: 1px; background: rgba(35,35,35,0.12); margin: 9px 0;"></div>
+
+            <!-- What's Included -->
+            <p style="font-size: 0.5rem; letter-spacing: 0.32em; opacity: 0.4; text-transform: uppercase; margin-bottom: 8px;">What's Included</p>
+
+            <div style="display: flex; flex-direction: column; gap: 0;">
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.32; flex-shrink: 0;">—</span>
+                    <span>Laser-engraved QR code + personalized name</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.32; flex-shrink: 0;">—</span>
+                    <span>Permanent digital memorial profile</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.32; flex-shrink: 0;">—</span>
+                    <span>Scan analytics dashboard for family</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.32; flex-shrink: 0;">—</span>
+                    <span>Privacy controls — PIN-protect at any time</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.32; flex-shrink: 0;">—</span>
+                    <span>Free profile updates forever</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.32; flex-shrink: 0;">—</span>
+                    <span>Free standard shipping</span>
+                </div>
+            </div>
+
+            <div style="height: 1px; background: rgba(35,35,35,0.12); margin: 9px 0;"></div>
+
+            <!-- Who It's For -->
+            <p style="font-size: 0.5rem; letter-spacing: 0.32em; opacity: 0.4; text-transform: uppercase; margin-bottom: 8px;">Who It's For</p>
+            <div style="display: flex; flex-direction: column; gap: 0;">
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.32; flex-shrink: 0;">—</span>
+                    <span>Pre-Planners &amp; End-of-Life Planning</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.32; flex-shrink: 0;">—</span>
+                    <span>Grieving Families</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.32; flex-shrink: 0;">—</span>
+                    <span>Genealogists &amp; Historians</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ── RIGHT COLUMN ── -->
+        <div style="display: flex; flex-direction: column; gap: 0;">
+
+            <!-- Products -->
+            <p style="font-size: 0.5rem; letter-spacing: 0.32em; opacity: 0.4; text-transform: uppercase; margin-bottom: 9px;">Our Products</p>
+
+            <!-- Product 1: Stainless Steel -->
+            <div style="border: 1px solid rgba(35,35,35,0.22); padding: 13px 14px 11px; margin-bottom: 8px; position: relative;">
+                <div style="
+                    position: absolute; top: -8px; left: 12px;
+                    background: #232323; color: #e8ded0;
+                    font-size: 0.48rem; letter-spacing: 0.26em;
+                    padding: 3px 10px; text-transform: uppercase;
+                ">Most Popular</div>
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                    <div>
+                        <p style="font-size: 0.5rem; letter-spacing: 0.22em; opacity: 0.45; margin-bottom: 4px; text-transform: uppercase;">Stainless Steel</p>
+                        <h3 class="serif" style="font-size: 1.25rem; font-weight: 300; line-height: 1.2;">Marine-Grade<br>Stainless Steel</h3>
+                    </div>
+                    <div style="text-align: right; flex-shrink: 0; padding-left: 10px;">
+                        <span class="serif" style="font-size: 2rem; font-weight: 300; line-height: 1; display: block;">$169</span>
+                        <span style="font-size: 0.5rem; letter-spacing: 0.12em; opacity: 0.45;">CAD</span>
+                    </div>
+                </div>
+                <p style="font-size: 0.65rem; opacity: 0.58; letter-spacing: 0.03em; line-height: 1.7;">
+                    3&#8243; &times; 2&#8243; &nbsp;·&nbsp; Brushed satin finish &nbsp;·&nbsp; Ultra-durable &nbsp;·&nbsp; Fully weatherproof
+                </p>
+                <p style="font-size: 0.58rem; opacity: 0.45; margin-top: 5px; font-style: italic;">Available now</p>
+            </div>
+
+            <!-- Product 2: Brushed Bronze -->
+            <div style="border: 1px solid rgba(35,35,35,0.1); padding: 13px 14px 11px; margin-bottom: 9px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                    <div>
+                        <p style="font-size: 0.5rem; letter-spacing: 0.22em; opacity: 0.45; margin-bottom: 4px; text-transform: uppercase;">Bronzes</p>
+                        <h3 class="serif" style="font-size: 1.25rem; font-weight: 300; line-height: 1.2;">Marine<br>Brushed Bronze</h3>
+                    </div>
+                    <div style="text-align: right; flex-shrink: 0; padding-left: 10px;">
+                        <span class="serif" style="font-size: 2rem; font-weight: 300; line-height: 1; display: block;">$189</span>
+                        <span style="font-size: 0.5rem; letter-spacing: 0.12em; opacity: 0.45;">CAD</span>
+                    </div>
+                </div>
+                <p style="font-size: 0.65rem; opacity: 0.58; letter-spacing: 0.03em; line-height: 1.7;">
+                    3&#8243; &times; 2&#8243; &nbsp;·&nbsp; Warm heritage tone &nbsp;·&nbsp; Museum quality
+                </p>
+            </div>
+
+            <div style="height: 1px; background: rgba(35,35,35,0.12); margin: 2px 0 9px;"></div>
+
+            <!-- How It Works -->
+            <p style="font-size: 0.5rem; letter-spacing: 0.32em; opacity: 0.4; text-transform: uppercase; margin-bottom: 8px;">How It Works</p>
+
+            <div style="display: flex; flex-direction: column; margin-bottom: 9px;">
+                <div style="display: flex; gap: 11px; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.08);">
+                    <span style="font-size: 0.5rem; letter-spacing: 0.22em; opacity: 0.3; flex-shrink: 0; min-width: 18px;">01</span>
+                    <p class="serif" style="font-size: 0.85rem; font-style: italic; font-weight: 300; line-height: 1.35;">Choose your plaque material</p>
+                </div>
+                <div style="display: flex; gap: 11px; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.08);">
+                    <span style="font-size: 0.5rem; letter-spacing: 0.22em; opacity: 0.3; flex-shrink: 0; min-width: 18px;">02</span>
+                    <p class="serif" style="font-size: 0.85rem; font-style: italic; font-weight: 300; line-height: 1.35;">Build the digital memorial</p>
+                </div>
+                <div style="display: flex; gap: 11px; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.08);">
+                    <span style="font-size: 0.5rem; letter-spacing: 0.22em; opacity: 0.3; flex-shrink: 0; min-width: 18px;">03</span>
+                    <p class="serif" style="font-size: 0.85rem; font-style: italic; font-weight: 300; line-height: 1.35;">We engrave &amp; embed the QR code</p>
+                </div>
+                <div style="display: flex; gap: 11px; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.08);">
+                    <span style="font-size: 0.5rem; letter-spacing: 0.22em; opacity: 0.3; flex-shrink: 0; min-width: 18px;">04</span>
+                    <p class="serif" style="font-size: 0.85rem; font-style: italic; font-weight: 300; line-height: 1.35;">Install at the memorial site</p>
+                </div>
+                <div style="display: flex; gap: 11px; align-items: center; padding: 6px 0;">
+                    <span style="font-size: 0.5rem; letter-spacing: 0.22em; opacity: 0.3; flex-shrink: 0; min-width: 18px;">05</span>
+                    <p class="serif" style="font-size: 0.85rem; font-style: italic; font-weight: 300; line-height: 1.35;">Scan &amp; revisit forever</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Page footer -->
+    <div style="
+        margin-top: auto;
+        padding-top: 6mm;
+        border-top: 1px solid rgba(35,35,35,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    ">
+        <p style="font-size: 0.48rem; letter-spacing: 0.15em; opacity: 0.35;">&copy; 2026 LegacyLink Inc. All rights reserved.</p>
+        <p class="serif" style="font-size: 0.72rem; letter-spacing: 0.32em; opacity: 0.45;">LEGACY LINK</p>
+        <p style="font-size: 0.48rem; letter-spacing: 0.15em; opacity: 0.35;">legacylink.ca</p>
+    </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 3  |  HOSTING PLAN
+════════════════════════════════════════ -->
+<div class="page content-page">
+
+    <!-- Page header -->
+    <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 7mm;
+        border-bottom: 1px solid rgba(35,35,35,0.14);
+        margin-bottom: 8mm;
+        flex-shrink: 0;
+    ">
+        <p style="font-size: 0.52rem; letter-spacing: 0.32em; opacity: 0.4; text-transform: uppercase;">
+            Legacy Link &mdash; Hosting Plan
+        </p>
+        <div class="serif" style="font-size: 0.82rem; letter-spacing: 0.3em; opacity: 0.55;">LEGACY LINK</div>
+    </div>
+
+    <!-- Plan cards -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 7mm; flex: 1;">
+
+        <!-- Basic -->
+        <div style="
+            border: 1px solid rgba(35,35,35,0.14);
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+        ">
+            <p style="font-size: 0.5rem; letter-spacing: 0.3em; opacity: 0.4; text-transform: uppercase; margin-bottom: 8px;">Basic</p>
+            <h3 class="serif" style="font-size: 1.45rem; font-weight: 300; line-height: 1.2; margin-bottom: 10px;">Core Memorial</h3>
+            <p style="font-size: 0.65rem; line-height: 1.85; opacity: 0.62; margin-bottom: 14px; letter-spacing: 0.02em;">
+                Included with every plaque purchase. Everything you need to preserve a life story.
+            </p>
+
+            <div style="display: flex; flex-direction: column; flex: 1; margin-bottom: 12px;">
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span><span>Core text biography</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span><span>Up to 20 photos</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span><span>Permanently hosted</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span><span>QR scan analytics</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span><span>Privacy PIN protection</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span><span>Virtual flowers, candles &amp; memory sharing</span>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid rgba(35,35,35,0.1); padding-top: 10px; margin-top: auto;">
+                <p style="font-size: 0.58rem; opacity: 0.45; font-style: italic; letter-spacing: 0.04em;">Included — no additional cost</p>
+            </div>
+        </div>
+
+        <!-- Premium -->
+        <div style="
+            border: 1px solid rgba(35,35,35,0.28);
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            background: #f0ebe3;
+            position: relative;
+        ">
+            <div style="
+                position: absolute; top: -8px; left: 14px;
+                background: #232323; color: #e8ded0;
+                font-size: 0.48rem; letter-spacing: 0.26em;
+                padding: 3px 10px; text-transform: uppercase;
+            ">Upgrade</div>
+
+            <p style="font-size: 0.5rem; letter-spacing: 0.3em; opacity: 0.45; text-transform: uppercase; margin-bottom: 8px;">Premium</p>
+            <h3 class="serif" style="font-size: 1.45rem; font-weight: 300; line-height: 1.2; margin-bottom: 10px;">Living Legacy</h3>
+            <p style="font-size: 0.65rem; line-height: 1.85; opacity: 0.65; margin-bottom: 12px; letter-spacing: 0.02em;">
+                Richer media, more memories, and a space where family can contribute together.
+            </p>
+
+            <!-- Pricing -->
+            <div style="margin-bottom: 12px;">
+                <div style="display: flex; align-items: baseline; gap: 5px; margin-bottom: 4px;">
+                    <span class="serif" style="font-size: 2rem; font-weight: 300; line-height: 1;">$19</span>
+                    <span style="font-size: 0.58rem; opacity: 0.5; letter-spacing: 0.08em;">/ month</span>
+                </div>
+                <p style="font-size: 0.58rem; opacity: 0.45; font-style: italic; letter-spacing: 0.03em;">or $199 one-time for lifetime access</p>
+            </div>
+
+            <div style="display: flex; flex-direction: column; flex: 1; margin-bottom: 12px;">
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span><span>Everything in Basic</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span><span>Video hosting</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span><span>Audio clips &amp; voice memories</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span><span>Expanded storage</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span>
+                    <span><strong>Collaborative Guestbook</strong> — Visitors scan to leave messages, share memories, or upload photos. Family can reply, heart memories, and moderate contributions via an admin dashboard.</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span>
+                    <span><strong>Geotagging &amp; Cemetery Navigation</strong> — GPS coordinates pinned at setup. Guides relatives to the plot via Google or Apple Maps with micro-navigation from the cemetery gates.</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span>
+                    <span><strong>Family Tree Integration</strong> — Interactive visual family tree linking generations. Compatible with GEDCOM, Ancestry.com &amp; MyHeritage.</span>
+                </div>
+                <div style="display: flex; gap: 9px; padding: 6px 0; font-size: 0.65rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span>
+                    <span><strong>Priority Support</strong> — Guaranteed response under 2 hours, plus digital onboarding to help upload biography, photos &amp; timeline.</span>
+                </div>
+            </div>
+
+            <div style="
+                background: #232323;
+                color: #e8ded0;
+                text-align: center;
+                padding: 11px 14px;
+                font-size: 0.58rem;
+                letter-spacing: 0.28em;
+                text-transform: uppercase;
+                margin-top: auto;
+            ">Upgrade to Premium</div>
+        </div>
+
+    </div>
+
+    <!-- Page footer -->
+    <div style="
+        margin-top: auto;
+        padding-top: 6mm;
+        border-top: 1px solid rgba(35,35,35,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    ">
+        <p style="font-size: 0.48rem; letter-spacing: 0.15em; opacity: 0.35;">&copy; 2026 LegacyLink Inc. All rights reserved.</p>
+        <p class="serif" style="font-size: 0.72rem; letter-spacing: 0.32em; opacity: 0.45;">LEGACY LINK</p>
+        <p style="font-size: 0.48rem; letter-spacing: 0.15em; opacity: 0.35;">legacylink.ca</p>
+    </div>
+
+</div>
+
+
+<!-- ══════════════════════════════════════
+     PAGE 4  |  PREMIUM FEATURES
+════════════════════════════════════════ -->
+<div class="page content-page">
+
+    <!-- Page header -->
+    <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 7mm;
+        border-bottom: 1px solid rgba(35,35,35,0.14);
+        margin-bottom: 8mm;
+        flex-shrink: 0;
+    ">
+        <p style="font-size: 0.52rem; letter-spacing: 0.32em; opacity: 0.4; text-transform: uppercase;">
+            Legacy Link &mdash; Premium Features
+        </p>
+        <div class="serif" style="font-size: 0.82rem; letter-spacing: 0.3em; opacity: 0.55;">LEGACY LINK</div>
+    </div>
+
+    <!-- Intro -->
+    <div style="margin-bottom: 9mm;">
+        <p style="font-size: 0.5rem; letter-spacing: 0.32em; opacity: 0.4; text-transform: uppercase; margin-bottom: 7px;">Living Legacy — Premium Plan</p>
+        <h2 class="serif" style="font-size: 1.45rem; font-weight: 300; font-style: italic; line-height: 1.22; margin-bottom: 8px;">Richer memories.<br>Deeper connections.</h2>
+        <p style="font-size: 0.65rem; line-height: 1.9; opacity: 0.68; letter-spacing: 0.02em;">
+            The Living Legacy upgrade unlocks four powerful features designed to bring families closer and preserve history for generations to come.
+        </p>
+    </div>
+
+    <div style="height: 1px; background: rgba(35,35,35,0.12); margin-bottom: 8mm;"></div>
+
+    <!-- Feature grid: 2x2 -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 7mm; flex: 1;">
+
+        <!-- Feature 1: Collaborative Guestbook -->
+        <div style="border: 1px solid rgba(35,35,35,0.12); padding: 14px 16px;">
+            <p style="font-size: 0.5rem; letter-spacing: 0.28em; opacity: 0.38; text-transform: uppercase; margin-bottom: 6px;">01</p>
+            <h3 class="serif" style="font-size: 1.1rem; font-weight: 400; line-height: 1.25; margin-bottom: 8px;">Collaborative Guestbook</h3>
+            <p style="font-size: 0.62rem; line-height: 1.85; opacity: 0.68; letter-spacing: 0.02em; margin-bottom: 8px;">
+                A living digital memorial visitors can contribute to instantly. Scan the QR code to leave a message, share a memory, or upload a photo directly from your phone.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 0;">
+                <div style="display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.6rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span>
+                    <span>Family &amp; friends can reply to stories and "heart" memories</span>
+                </div>
+                <div style="display: flex; gap: 8px; padding: 5px 0; font-size: 0.6rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span>
+                    <span>Admin dashboard to approve or invite trusted contributors</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 2: Geotagging & Cemetery Navigation -->
+        <div style="border: 1px solid rgba(35,35,35,0.12); padding: 14px 16px;">
+            <p style="font-size: 0.5rem; letter-spacing: 0.28em; opacity: 0.38; text-transform: uppercase; margin-bottom: 6px;">02</p>
+            <h3 class="serif" style="font-size: 1.1rem; font-weight: 400; line-height: 1.25; margin-bottom: 8px;">Geotagging &amp; Cemetery Navigation</h3>
+            <p style="font-size: 0.62rem; line-height: 1.85; opacity: 0.68; letter-spacing: 0.02em; margin-bottom: 8px;">
+                The exact GPS coordinates of the gravesite are pinned at setup. Relatives can open Legacy Link and be guided directly to the plot via Google or Apple Maps.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 0;">
+                <div style="display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.6rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span>
+                    <span>Syncs with Google Maps &amp; Apple Maps</span>
+                </div>
+                <div style="display: flex; gap: 8px; padding: 5px 0; font-size: 0.6rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span>
+                    <span>Micro-navigation walking path from cemetery gates to the headstone</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 3: Family Tree Integration -->
+        <div style="border: 1px solid rgba(35,35,35,0.12); padding: 14px 16px;">
+            <p style="font-size: 0.5rem; letter-spacing: 0.28em; opacity: 0.38; text-transform: uppercase; margin-bottom: 6px;">03</p>
+            <h3 class="serif" style="font-size: 1.1rem; font-weight: 400; line-height: 1.25; margin-bottom: 8px;">Family Tree Integration</h3>
+            <p style="font-size: 0.62rem; line-height: 1.85; opacity: 0.68; letter-spacing: 0.02em; margin-bottom: 8px;">
+                Connect the deceased to an interactive visual family tree — parents, siblings, children, and ancestors. Multiple Legacy Link profiles in the same cemetery can be interlinked, letting visitors walk through generations.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 0;">
+                <div style="display: flex; gap: 8px; padding: 5px 0; font-size: 0.6rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span>
+                    <span>Compatible with GEDCOM, Ancestry.com &amp; MyHeritage</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature 4: Priority Support -->
+        <div style="border: 1px solid rgba(35,35,35,0.12); padding: 14px 16px;">
+            <p style="font-size: 0.5rem; letter-spacing: 0.28em; opacity: 0.38; text-transform: uppercase; margin-bottom: 6px;">04</p>
+            <h3 class="serif" style="font-size: 1.1rem; font-weight: 400; line-height: 1.25; margin-bottom: 8px;">Priority Support</h3>
+            <p style="font-size: 0.62rem; line-height: 1.85; opacity: 0.68; letter-spacing: 0.02em; margin-bottom: 8px;">
+                High-touch, rapid-response customer service for families managing the memorial page — especially important during a time of grief.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 0;">
+                <div style="display: flex; gap: 8px; padding: 5px 0; border-bottom: 1px solid rgba(35,35,35,0.07); font-size: 0.6rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span>
+                    <span>Guaranteed response under 2 hours</span>
+                </div>
+                <div style="display: flex; gap: 8px; padding: 5px 0; font-size: 0.6rem; line-height: 1.5;">
+                    <span style="opacity: 0.3; flex-shrink: 0;">—</span>
+                    <span>Digital onboarding — our team helps upload the biography, photos &amp; timeline</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Page footer -->
+    <div style="
+        margin-top: auto;
+        padding-top: 6mm;
+        border-top: 1px solid rgba(35,35,35,0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    ">
+        <p style="font-size: 0.48rem; letter-spacing: 0.15em; opacity: 0.35;">&copy; 2026 LegacyLink Inc. All rights reserved.</p>
+        <p class="serif" style="font-size: 0.72rem; letter-spacing: 0.32em; opacity: 0.45;">LEGACY LINK</p>
+        <p style="font-size: 0.48rem; letter-spacing: 0.15em; opacity: 0.35;">legacylink.ca</p>
+    </div>
+
+</div>
+
+<!-- ── Bottom action bar ── -->
+<div class="print-bar" style="margin-top:0;">
+    <span>LEGACYLINK — PRODUCT BROCHURE 2026</span>
+    <div style="display:flex; gap:12px; align-items:center;">
+        <a href="index.html" style="color:#e8ded0; font-family:'Space Mono',monospace; font-size:0.58rem; letter-spacing:0.22em; text-decoration:none; opacity:0.7; transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">← BACK TO WEBSITE</a>
+        <button class="print-btn" onclick="window.print()">SAVE AS PDF / PRINT</button>
+    </div>
+</div>
+
+</body>
+</html>
