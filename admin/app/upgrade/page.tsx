@@ -7,8 +7,8 @@ const PLANS = [
   {
     id: 'annual',
     name: 'Monthly',
-    price: 19,
-    priceLabel: '$19 / month',
+    price: 15,
+    priceLabel: '$15 / month',
     description: 'Billed monthly — cancel any time',
     popular: true,
   },
@@ -46,6 +46,7 @@ export default function UpgradePage() {
 
   const handleUpgrade = () => {
     setUpgrading(true);
+    try { localStorage.setItem('ll_plan', 'premium'); } catch { /* ignore */ }
     setTimeout(() => router.push('/'), 900);
   };
 

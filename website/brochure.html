@@ -443,7 +443,7 @@
             <!-- Pricing -->
             <div style="margin-bottom: 12px;">
                 <div style="display: flex; align-items: baseline; gap: 5px; margin-bottom: 4px;">
-                    <span class="serif" style="font-size: 2rem; font-weight: 300; line-height: 1;">$19</span>
+                    <span class="serif" style="font-size: 2rem; font-weight: 300; line-height: 1;">$15</span>
                     <span style="font-size: 0.58rem; opacity: 0.5; letter-spacing: 0.08em;">/ month</span>
                 </div>
                 <p style="font-size: 0.58rem; opacity: 0.45; font-style: italic; letter-spacing: 0.03em;">or $199 one-time for lifetime access</p>
@@ -643,9 +643,14 @@
     <span>LEGACYLINK — PRODUCT BROCHURE 2026</span>
     <div style="display:flex; gap:12px; align-items:center;">
         <a href="index.html" style="color:#e8ded0; font-family:'Space Mono',monospace; font-size:0.58rem; letter-spacing:0.22em; text-decoration:none; opacity:0.7; transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">← BACK TO WEBSITE</a>
-        <button class="print-btn" onclick="window.print()">SAVE AS PDF / PRINT</button>
+        <button class="print-btn" id="printBtn" type="button">SAVE AS PDF / PRINT</button>
     </div>
 </div>
 
+<script>
+    document.getElementById('printBtn').addEventListener('click', function () {
+        window.print();
+    });
+</script>
 </body>
 </html>

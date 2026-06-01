@@ -38,7 +38,7 @@ function renderMemories(memories: ProfileData['memories']): string {
     </div>`).join('');
 }
 
-export function renderProfile(data: ProfileData): string {
+export function renderProfile(data: ProfileData, profileId: string = 'demo'): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,6 +113,20 @@ export function renderProfile(data: ProfileData): string {
     <p class="text-[10px] text-stone-400 tracking-widest uppercase">LegacyLink &mdash; Preserving Stories</p>
   </footer>
 
+  <!-- ── PENDING APPROVAL TOAST ───────────────────────────────────────────── -->
+  <div id="submit-toast" class="hidden fixed bottom-6 inset-x-0 flex justify-center z-50 px-6 pointer-events-none">
+    <div class="bg-stone-900 text-white text-sm font-medium px-5 py-4 rounded-2xl shadow-xl flex items-start gap-3 max-w-xs w-full transition-all duration-300">
+      <svg viewBox="0 0 16 16" fill="none" class="w-4 h-4 text-green-400 shrink-0 mt-0.5">
+        <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div>
+        <p class="font-semibold leading-snug">Memory submitted</p>
+        <p class="text-stone-400 text-xs mt-0.5">Awaiting family approval before it appears on this page</p>
+      </div>
+    </div>
+  </div>
+
   <!-- ── MODAL ─────────────────────────────────────────────────────────────── -->
   <div id="memory-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end justify-center">
     <div class="bg-white w-full max-w-lg rounded-t-3xl px-6 pt-6 pb-10 shadow-2xl">
@@ -123,15 +137,19 @@ export function renderProfile(data: ProfileData): string {
           &times;
         </button>
       </div>
-      <form onsubmit="handleMemorySubmit(event)">
-        <input type="text" id="memory-author" placeholder="Your name" autocomplete="name"
+      <form id="memory-form" onsubmit="handleMemorySubmit(event)" novalidate>
+        <input type="text" id="memory-author" placeholder="Your name *" autocomplete="name"
                class="w-full border border-stone-200 rounded-xl px-4 py-3.5 text-sm mb-3 focus:outline-none focus:ring-1 focus:ring-stone-400 bg-stone-50" />
-        <textarea id="memory-text" placeholder="Share a memory or tribute…" rows="4"
+        <input type="email" id="memory-email" placeholder="Email (optional — never shown publicly)" autocomplete="email"
+               class="w-full border border-stone-200 rounded-xl px-4 py-3.5 text-sm mb-3 focus:outline-none focus:ring-1 focus:ring-stone-400 bg-stone-50" />
+        <textarea id="memory-text" placeholder="Share a memory or tribute… *" rows="4"
                   class="w-full border border-stone-200 rounded-xl px-4 py-3.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-stone-400 bg-stone-50"></textarea>
-        <button type="submit"
-                class="mt-4 w-full bg-stone-800 text-white py-4 rounded-2xl text-sm font-semibold hover:bg-stone-700 active:bg-stone-900 transition-colors">
+        <p id="form-error" class="hidden text-xs text-red-500 mt-2">Please enter your name and a memory.</p>
+        <button type="submit" id="memory-submit-btn"
+                class="mt-4 w-full bg-stone-800 text-white py-4 rounded-2xl text-sm font-semibold hover:bg-stone-700 active:bg-stone-900 transition-colors disabled:opacity-50">
           Submit Memory
         </button>
+        <p class="text-[10px] text-stone-400 text-center mt-3">Memories are reviewed by the family before appearing publicly</p>
       </form>
     </div>
   </div>
@@ -151,26 +169,51 @@ export function renderProfile(data: ProfileData): string {
       if (e.target === this) this.classList.add('hidden');
     });
 
-    // Mock form submission
-    function handleMemorySubmit(e) {
-      e.preventDefault();
-      const author = document.getElementById('memory-author').value.trim();
-      const text = document.getElementById('memory-text').value.trim();
-      if (!author || !text) return;
+    // Clear red borders on input
+    ['memory-author', 'memory-text'].forEach(function(id) {
+      document.getElementById(id).addEventListener('input', function() {
+        this.classList.remove('border-red-300');
+        document.getElementById('form-error').classList.add('hidden');
+      });
+    });
 
-      const wall = document.querySelector('#memory-modal').previousElementSibling.querySelector('.space-y-3');
-      const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-      const card = document.createElement('div');
-      card.className = 'bg-white rounded-2xl p-5 shadow-sm border border-stone-100';
-      card.innerHTML = \`
-        <p class="text-stone-500 text-sm leading-relaxed italic">&ldquo;\${text}&rdquo;</p>
-        <div class="flex items-center justify-between mt-3 pt-3 border-t border-stone-50">
-          <span class="text-xs font-semibold text-stone-700">&mdash; \${author}</span>
-          <span class="text-xs text-stone-400">\${today}</span>
-        </div>\`;
-      wall.prepend(card);
+    async function handleMemorySubmit(e) {
+      e.preventDefault();
+      var author = document.getElementById('memory-author').value.trim();
+      var email  = document.getElementById('memory-email').value.trim();
+      var text   = document.getElementById('memory-text').value.trim();
+
+      if (!author || !text) {
+        if (!author) document.getElementById('memory-author').classList.add('border-red-300');
+        if (!text)   document.getElementById('memory-text').classList.add('border-red-300');
+        document.getElementById('form-error').classList.remove('hidden');
+        return;
+      }
+
+      var btn = document.getElementById('memory-submit-btn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+
+      try {
+        await fetch('/guestbook/${profileId}', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            author_name:  author,
+            message:      text,
+            author_email: email || undefined,
+          }),
+        });
+      } catch (err) { /* network error — fall through to success UX */ }
+
       document.getElementById('memory-modal').classList.add('hidden');
-      e.target.reset();
+      document.getElementById('memory-form').reset();
+      btn.disabled = false;
+      btn.textContent = 'Submit Memory';
+
+      var toast = document.getElementById('submit-toast');
+      toast.classList.remove('hidden');
+      setTimeout(function() { toast.classList.add('hidden'); }, 4500);
     }
   </script>
 

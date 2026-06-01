@@ -17,7 +17,7 @@ import QRCode from 'qrcode';
 export async function generateLegacyQR(shortId: string): Promise<string> {
   // Read lazily so the env var set in index.ts is always picked up at call time,
   // not frozen at module-load time (which happens before index.ts sets it).
-  const baseUrl = process.env.QR_BASE_URL ?? 'http://localhost:3000/p';
+  const baseUrl = process.env.QR_BASE_URL ?? 'http://localhost:3000/r';
   const targetUrl = `${baseUrl}/${shortId}`;
 
   const svg = await QRCode.toString(targetUrl, {

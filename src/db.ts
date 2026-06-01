@@ -11,6 +11,12 @@ export interface LinkRecord {
   privacyPin: string;
 }
 
+export interface RoutingRecord extends LinkRecord {
+  plan:           'BASIC' | 'PREMIUM';
+  hasCoordinates: boolean;
+  fullName:       string;
+}
+
 export interface ScanEvent {
   shortId:   string;
   timestamp: string;
@@ -44,6 +50,22 @@ export async function lookupLink(shortId: string): Promise<LinkRecord | null> {
   // `db` applies the soft-delete filter automatically.
   const profile = await db.profile.findFirst({ where: { short_id: shortId } });
   return profile ? toRecord(profile) : null;
+}
+
+// Extended lookup for the smart QR routing layer — includes plan and whether
+// coordinates have been saved so the traffic cop can decide which page to render.
+export async function lookupLinkForRouting(shortId: string): Promise<RoutingRecord | null> {
+  const profile = await rawPrisma.profile.findFirst({
+    where:   { short_id: shortId, deleted_at: null },
+    include: { coordinates: { select: { id: true } } },
+  });
+  if (!profile) return null;
+  return {
+    ...toRecord(profile),
+    plan:           profile.plan as 'BASIC' | 'PREMIUM',
+    hasCoordinates: !!profile.coordinates,
+    fullName:       profile.full_name,
+  };
 }
 
 export async function setPrivacy(

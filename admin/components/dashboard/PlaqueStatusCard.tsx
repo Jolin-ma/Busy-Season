@@ -83,25 +83,25 @@ export default function PlaqueStatusCard({ memorial, onSetupProfile }: Props) {
 
   if (isNew) {
     return (
-      <div className="bg-[#FDF6EE] border border-amber-200/60 rounded-3xl p-7 mb-8 relative overflow-hidden">
-        {/* Warm decorative watermark */}
-        <div className="absolute -bottom-6 -right-6 w-40 h-40 rounded-full bg-amber-100/50 pointer-events-none" />
-        <div className="absolute -bottom-2 -right-2 w-24 h-24 rounded-full bg-amber-100/40 pointer-events-none" />
+      <div className="bg-stone-900 border border-stone-700/60 rounded-3xl p-7 mb-8 relative overflow-hidden">
+        {/* Decorative watermark */}
+        <div className="absolute -bottom-6 -right-6 w-40 h-40 rounded-full bg-white/5 pointer-events-none" />
+        <div className="absolute -bottom-2 -right-2 w-24 h-24 rounded-full bg-white/3 pointer-events-none" />
 
         <div className="relative">
-          <div className="w-11 h-11 bg-amber-100 rounded-2xl flex items-center justify-center mb-5">
-            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-amber-700" stroke="currentColor" strokeWidth={1.5}>
+          <div className="w-11 h-11 bg-stone-700 rounded-2xl flex items-center justify-center mb-5">
+            <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5 text-stone-300" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
             </svg>
           </div>
 
           <h2
-            className="text-xl font-semibold text-stone-800 mb-2 leading-snug"
+            className="text-xl font-semibold text-white mb-2 leading-snug"
             style={{ fontFamily: 'var(--font-playfair)' }}
           >
             Your plaque is being crafted
           </h2>
-          <p className="text-stone-500 text-sm leading-relaxed mb-6 max-w-sm">
+          <p className="text-stone-400 text-sm leading-relaxed mb-6 max-w-sm">
             {STATUS_MESSAGES.order_received}
           </p>
 
@@ -112,14 +112,14 @@ export default function PlaqueStatusCard({ memorial, onSetupProfile }: Props) {
             Set Up Profile →
           </button>
 
-          {tracker(true)}
+          {tracker(false)}
         </div>
       </div>
     );
   }
 
   const cardColor =
-    memorial.plaqueStatus === 'engraving'  ? 'bg-amber-50 border-amber-100' :
+    memorial.plaqueStatus === 'engraving'  ? 'bg-stone-900 border-stone-700' :
     memorial.plaqueStatus === 'shipped'    ? 'bg-blue-50 border-blue-100'   :
                                              'bg-green-50 border-green-100';
 

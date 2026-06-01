@@ -13,12 +13,10 @@ export default function AuthPage() {
   const [error, setError]     = useState('');
   const [busy, setBusy]       = useState(false);
 
-  const { user, isLoading, signup, login } = useAuth();
+  const { signup, login, logout } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!isLoading && user) router.replace('/');
-  }, [user, isLoading, router]);
+  useEffect(() => { logout(); }, []);
 
   const switchMode = (m: Mode) => { setMode(m); setError(''); };
 
@@ -42,8 +40,6 @@ export default function AuthPage() {
       setBusy(false);
     }
   };
-
-  if (isLoading) return null;
 
   return (
     <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center px-6 py-4">

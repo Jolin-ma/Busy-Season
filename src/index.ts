@@ -18,7 +18,9 @@ function getLanIp(): string {
 
 if (!process.env.QR_BASE_URL) {
   const lanIp = getLanIp();
-  process.env.QR_BASE_URL     = `http://${lanIp}:${PORT}/p`;
+  // /r/ is the smart routing endpoint — handles both activation and visitor flows.
+  // Legacy /p/ plaques continue to work; new QR codes always use /r/.
+  process.env.QR_BASE_URL      = `http://${lanIp}:${PORT}/r`;
   process.env.PROFILE_BASE_URL = `http://${lanIp}:${PORT}/profile`;
 }
 console.log(`[config] QR codes will encode: ${process.env.QR_BASE_URL}/<shortId>`);

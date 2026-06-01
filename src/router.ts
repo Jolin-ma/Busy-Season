@@ -1,15 +1,21 @@
 import Fastify from 'fastify';
 import { generateLegacyQR } from './qrGenerator';
 import { generateShortId }  from './shortId';
-import { createLink, lookupLink, getScanHistory, setPrivacy } from './db';
+import { createLink, lookupLink, lookupLinkForRouting, getScanHistory, setPrivacy } from './db';
+import { rawPrisma } from './lib/db';
+import { storeEntry, getPending } from './guestbookStore';
 import { recordScanAsync }  from './analytics';
 import { renderProfile }    from './profileTemplate';
 import { renderPinGate }    from './pinGateTemplate';
-import { renderAuthPage }   from './authTemplate';
+import { renderAuthPage }       from './authTemplate';
+import { renderActivationPage } from './activationTemplate';
 import { MOCK_PROFILE }     from './mockProfile';
+import { premiumRoutes }    from './routes/premium';
 
 export function buildServer() {
   const app = Fastify({ logger: true });
+
+  app.register(premiumRoutes);
 
   // ── Auth Pages ──────────────────────────────────────────────────────────────
   app.get('/login', async (_req, reply) =>
@@ -35,7 +41,71 @@ export function buildServer() {
     return reply.code(201).send({ message: 'Account created.' });
   });
 
-  // ── Scan Entry Point ────────────────────────────────────────────────────────
+  // ── Smart QR Router ─────────────────────────────────────────────────────────
+  // This is the canonical URL burned into every new physical plaque.
+  // A single static URL must serve two completely different lifecycles:
+  //   State A (no coordinates) → activation page   — admin first scan
+  //   State B (coordinates set) → public profile   — all future visitor scans
+  app.get<{ Params: { shortId: string } }>('/r/:shortId', async (req, reply) => {
+    const { shortId } = req.params;
+
+    let link = null;
+    let dbError = false;
+    try {
+      link = await lookupLinkForRouting(shortId);
+    } catch {
+      dbError = true;
+    }
+
+    // DB unavailable — serve the profile page directly (renders mock profile in dev).
+    if (dbError) {
+      const profileBaseUrl = process.env.PROFILE_BASE_URL ?? 'http://localhost:3000/profile';
+      return reply.redirect(`${profileBaseUrl}/${shortId}`, 302);
+    }
+
+    if (!link) return reply.code(404).send({ error: 'QR destination not found.' });
+
+    recordScanAsync({
+      shortId,
+      timestamp: new Date().toISOString(),
+      userAgent: req.headers['user-agent'],
+      ip:        req.ip,
+    });
+
+    // Premium profile that has never been pinned → activation flow
+    if (link.plan === 'PREMIUM' && !link.hasCoordinates) {
+      return reply.redirect(`/activate/${shortId}`, 302);
+    }
+
+    // Private profile → PIN gate (applies to both plans)
+    if (link.isPrivate) {
+      return reply
+        .header('Content-Type', 'text/html; charset=utf-8')
+        .send(renderPinGate(shortId, false));
+    }
+
+    const profileBaseUrl = process.env.PROFILE_BASE_URL ?? 'http://localhost:3000/profile';
+    return reply.redirect(`${profileBaseUrl}/${link.profileId}`, 302);
+  });
+
+  // ── Activation Page ──────────────────────────────────────────────────────────
+  // Served when a premium profile's QR is scanned for the first time (no coordinates).
+  // Renders the GPS capture UI; the page JS POSTs to /api/v1/premium/navigation/activate.
+  app.get<{ Params: { shortId: string } }>('/activate/:shortId', async (req, reply) => {
+    const { shortId } = req.params;
+    const link = await lookupLinkForRouting(shortId);
+
+    if (!link)
+      return reply.code(404).send({ error: 'Profile not found.' });
+    if (link.plan !== 'PREMIUM')
+      return reply.code(403).send({ error: 'GPS activation requires a Premium plan.' });
+
+    return reply
+      .header('Content-Type', 'text/html; charset=utf-8')
+      .send(renderActivationPage(shortId, link.fullName));
+  });
+
+  // ── Scan Entry Point (legacy /p/ path — kept for already-printed plaques) ────
   app.get<{ Params: { shortId: string } }>('/p/:shortId', async (req, reply) => {
     const { shortId } = req.params;
     const link = await lookupLink(shortId);
@@ -132,9 +202,49 @@ export function buildServer() {
   });
 
   // ── Memorial Profile Page ───────────────────────────────────────────────────
-  app.get<{ Params: { profileId: string } }>('/profile/:profileId', async (_req, reply) =>
-    reply.header('Content-Type', 'text/html; charset=utf-8').send(renderProfile(MOCK_PROFILE))
+  app.get<{ Params: { profileId: string } }>('/profile/:profileId', async (req, reply) =>
+    reply.header('Content-Type', 'text/html; charset=utf-8').send(renderProfile(MOCK_PROFILE, req.params.profileId))
   );
+
+  // ── Public Guestbook Submission ──────────────────────────────────────────────
+  // Called by the "Share a Memory" form on the public profile page.
+  // Entries land with is_approved: false — visible only in the admin moderation queue.
+  app.post<{
+    Params: { profileId: string };
+    Body:   { author_name: string; message: string; author_email?: string };
+  }>('/guestbook/:profileId', async (req, reply) => {
+    const { profileId } = req.params;
+    const { author_name, message, author_email } = req.body;
+
+    if (!author_name?.trim() || !message?.trim())
+      return reply.code(400).send({ error: 'author_name and message are required.' });
+
+    try {
+      // Accept short_id (≤8 chars from QR fallback) or UUID
+      const where = profileId.length <= 8
+        ? { short_id: profileId, deleted_at: null }
+        : { id: profileId,       deleted_at: null };
+
+      const profile = await rawPrisma.profile.findFirst({ where });
+      if (!profile) return reply.code(404).send({ error: 'Profile not found.' });
+
+      await rawPrisma.guestbookEntry.create({
+        data: {
+          profile_id:   profile.id,
+          author_name:  author_name.trim(),
+          message:      message.trim(),
+          author_email: author_email?.trim() || null,
+          is_approved:  false,
+        },
+      });
+
+      return reply.code(201).send({ status: 'pending_approval' });
+    } catch {
+      // DB unavailable — store in memory so the admin panel can still see it.
+      storeEntry(profileId, author_name.trim(), message.trim(), author_email?.trim() || null);
+      return reply.code(201).send({ status: 'pending_approval' });
+    }
+  });
 
   // ── Admin: Scan Stats ───────────────────────────────────────────────────────
   app.get<{ Params: { shortId: string } }>('/admin/stats/:shortId', async (req, reply) => {

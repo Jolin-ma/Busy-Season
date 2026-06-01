@@ -19,7 +19,7 @@ datasource db {
 // rejected at the database level, not just in application code.
 enum Plan {
   BASIC    // Included with every plaque purchase
-  PREMIUM  // Annual ($19/yr) or Lifetime ($199)
+  PREMIUM  // Monthly ($15/mo) or Lifetime ($199)
 }
 
 // Discriminates uploaded files so the client can render the correct player
@@ -107,9 +107,15 @@ model Profile {
   updated_at    DateTime  @updatedAt
 
   // ── Child relations ───────────────────────────────────────────────────────
-  timeline      TimelineMilestone[]
-  media         MediaAsset[]
-  guestbook     GuestbookEntry[]
+  timeline             TimelineMilestone[]
+  media                MediaAsset[]
+  guestbook            GuestbookEntry[]
+  guestbook_settings   GuestbookSettings?
+  trusted_contributors TrustedContributor[]
+  coordinates          GraveCoordinates?
+  nav_waypoints        NavigationWaypoint[]
+  family_tree          FamilyTreeNode[]
+  support_tickets      SupportTicket[]
 
   // short_id is already unique; the explicit index keeps the planner from
   // falling back to a seq scan when joining from the QR routing layer.
@@ -193,6 +199,33 @@ model MediaAsset {
 }
 
 // =============================================================================
+// PREMIUM — ENUMS
+// =============================================================================
+
+enum FamilyRelation {
+  SELF
+  PARENT
+  SIBLING
+  CHILD
+  GRANDPARENT
+  GRANDCHILD
+  SPOUSE
+  OTHER
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  STANDARD
+  PRIORITY
+}
+
+// =============================================================================
 // GUESTBOOK ENTRY
 // =============================================================================
 
@@ -225,4 +258,189 @@ model GuestbookEntry {
   // Covers the admin moderation queue: all unapproved entries across profiles.
   @@index([is_approved])
   @@map("guestbook_entries")
+}
+
+// =============================================================================
+// GUESTBOOK SETTINGS  (1-to-1 with Profile)
+// =============================================================================
+
+model GuestbookSettings {
+  id             String   @id @default(uuid()) @db.Uuid
+
+  profile_id     String   @unique @db.Uuid
+  profile        Profile  @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  // When true every new submission waits in the moderation queue before
+  // appearing publicly. When false trusted contributors bypass the queue.
+  pre_approval   Boolean  @default(true)
+
+  enabled        Boolean  @default(true)
+
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  @@map("guestbook_settings")
+}
+
+// =============================================================================
+// TRUSTED CONTRIBUTOR
+// =============================================================================
+
+model TrustedContributor {
+  id         String   @id @default(uuid()) @db.Uuid
+
+  profile_id String   @db.Uuid
+  profile    Profile  @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  email      String
+  name       String
+
+  added_at   DateTime @default(now())
+
+  // One email address can only be trusted once per profile.
+  @@unique([profile_id, email])
+  @@index([profile_id])
+  @@map("trusted_contributors")
+}
+
+// =============================================================================
+// GRAVE COORDINATES  (1-to-1 with Profile)
+// =============================================================================
+
+model GraveCoordinates {
+  id                String   @id @default(uuid()) @db.Uuid
+
+  profile_id        String   @unique @db.Uuid
+  profile           Profile  @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  latitude          Float
+  longitude         Float
+
+  // Metres radius reported by the device GPS at the moment of scan-to-pin.
+  // Stored so administrators can judge whether a re-pin is warranted
+  // (e.g. accuracy_radius > 20 m suggests poor signal quality).
+  accuracy_radius   Float?
+
+  cemetery_name     String?
+
+  // Micro-navigation: walking path from the main cemetery gate to the plot.
+  micro_nav_enabled Boolean  @default(false)
+  gate_latitude     Float?
+  gate_longitude    Float?
+
+  // Timestamp of the initial scan-to-pin activation, distinct from created_at
+  // so we can display "last pinned on <date>" separately from record creation.
+  pinned_at         DateTime?
+
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  @@map("grave_coordinates")
+}
+
+// =============================================================================
+// NAVIGATION WAYPOINT
+// Ordered list of walking instructions for the micro-navigation path.
+// Each waypoint is a human-readable instruction with an optional GPS anchor
+// for precise positioning among dense headstone rows where map routing loses accuracy.
+// =============================================================================
+
+model NavigationWaypoint {
+  id          String   @id @default(uuid()) @db.Uuid
+
+  profile_id  String   @db.Uuid
+  profile     Profile  @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  // Ascending display order for the walking instruction list.
+  sort_order  Int      @default(0)
+
+  // Human-readable instruction, e.g. "From the main office, walk 30 m north past the oak tree."
+  instruction String   @db.Text
+
+  // Optional GPS anchor for this waypoint. Null = text-only step.
+  // Stored so the frontend can show a map pin for each step, not just the final plot.
+  latitude    Float?
+  longitude   Float?
+
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@index([profile_id, sort_order])
+  @@map("navigation_waypoints")
+}
+
+// =============================================================================
+// FAMILY TREE NODE
+// =============================================================================
+
+model FamilyTreeNode {
+  id                String         @id @default(uuid()) @db.Uuid
+
+  profile_id        String         @db.Uuid
+  profile           Profile        @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  full_name         String
+  birth_year        Int?
+  death_year        Int?
+  relation          FamilyRelation
+
+  // Optional hard-link to another LegacyLink Profile (interlink feature).
+  linked_profile_id String?        @db.Uuid
+
+  // Original hierarchical parent link (general tree traversal).
+  parent_node_id    String?        @db.Uuid
+  parent            FamilyTreeNode?  @relation("TreeChildren", fields: [parent_node_id], references: [id])
+  children          FamilyTreeNode[] @relation("TreeChildren")
+
+  // Explicit biological parents — used by the graph render engine to draw ancestry lines.
+  father_id    String?        @db.Uuid
+  father       FamilyTreeNode?  @relation("FatherOf", fields: [father_id], references: [id])
+  fatherOf     FamilyTreeNode[] @relation("FatherOf")
+
+  mother_id    String?        @db.Uuid
+  mother       FamilyTreeNode?  @relation("MotherOf", fields: [mother_id], references: [id])
+  motherOf     FamilyTreeNode[] @relation("MotherOf")
+
+  // Spousal link — drawn as a rose-coloured marriage line in the UI.
+  // One partner stores the reference; the other queries spouseOf.
+  spouse_id    String?        @db.Uuid
+  spouse       FamilyTreeNode?  @relation("Spouses", fields: [spouse_id], references: [id])
+  spouseOf     FamilyTreeNode[] @relation("Spouses")
+
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @updatedAt
+
+  @@index([profile_id])
+  @@map("family_tree_nodes")
+}
+
+// =============================================================================
+// SUPPORT TICKET
+// =============================================================================
+
+model SupportTicket {
+  id                String          @id @default(uuid()) @db.Uuid
+
+  profile_id        String          @db.Uuid
+  profile           Profile         @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  // Denormalised for fast lookups without joining through Profile.
+  user_id           String          @db.Uuid
+
+  subject           String
+  message           String          @db.Text
+  status            TicketStatus    @default(OPEN)
+  priority          TicketPriority  @default(PRIORITY)
+
+  // SLA clock: set to now() + 2h when ticket is created.
+  response_due_at   DateTime?
+  first_response_at DateTime?
+  resolved_at       DateTime?
+
+  created_at        DateTime        @default(now())
+  updated_at        DateTime        @updatedAt
+
+  @@index([profile_id])
+  @@index([status])
+  @@map("support_tickets")
 }
