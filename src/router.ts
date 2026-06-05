@@ -206,6 +206,23 @@ export function buildServer() {
       .send(svg);
   });
 
+  // ── PIN Gate Preview (dev only) ──────────────────────────────────────────────
+  app.get('/dev/pin-gate', async (_req, reply) =>
+    reply.header('Content-Type', 'text/html; charset=utf-8').send(renderPinGate('dev-preview', false))
+  );
+  app.get('/dev/pin-gate-error', async (_req, reply) =>
+    reply.header('Content-Type', 'text/html; charset=utf-8').send(renderPinGate('dev-preview', true))
+  );
+  app.post<{ Params: { shortId: string }; Body: { pin: string } }>(
+    '/p/dev-preview/unlock',
+    async (req, reply) => {
+      if (req.body.pin === '1234') {
+        return reply.send({ redirectUrl: '/profile/demo' });
+      }
+      return reply.code(401).send({ error: 'Incorrect PIN.' });
+    }
+  );
+
   // ── Memorial Profile Page ───────────────────────────────────────────────────
   app.get<{ Params: { profileId: string } }>('/profile/:profileId', async (req, reply) =>
     reply.header('Content-Type', 'text/html; charset=utf-8').send(renderProfile(MOCK_PROFILE, req.params.profileId))

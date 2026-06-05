@@ -25,7 +25,7 @@ export default function ScanSparkline({ data, height = 48 }: Props) {
             x={x} y={y}
             width={barW} height={barH}
             rx={2}
-            className="fill-stone-300"
+            fill="#a8a29e"
           >
             <title>{val} scan{val !== 1 ? 's' : ''}</title>
           </rect>
