@@ -127,8 +127,10 @@ export default function TopScanLocationSection() {
   const [search,       setSearch]       = useState('');
   const [filterStatus, setFilterStatus] = useState<MarkerStatus | 'ALL'>('ALL');
   const [highlighted,  setHighlighted]  = useState<string | null>(null); // location id
+  const [focusId,      setFocusId]      = useState<string | null>(null); // fly-to + blink
   const [liveScans,    setLiveScans]    = useState<LiveScan[]>([]);
-  const wsRef = useRef<WebSocket | null>(null);
+  const wsRef       = useRef<WebSocket | null>(null);
+  const mapSectionRef = useRef<HTMLDivElement>(null);
 
   // WebSocket — Fastify /ops/ws
   useEffect(() => {
@@ -205,11 +207,15 @@ export default function TopScanLocationSection() {
       </div>
 
       {/* ── Map ── */}
-      <div className="px-5 pb-2">
+      <div ref={mapSectionRef} className="px-5 pb-2">
         <OntarioMap
           markers={allMarkers}
           highlightId={highlighted}
-          onMarkerClick={(m) => setHighlighted(m.id === highlighted ? null : m.id)}
+          focusId={focusId}
+          onMarkerClick={(m) => {
+            setHighlighted(m.id === highlighted ? null : m.id);
+            setFocusId(null);
+          }}
         />
         {/* Legend */}
         <div className="flex items-center gap-5 mt-2.5">
@@ -306,7 +312,16 @@ export default function TopScanLocationSection() {
               return (
                 <tr
                   key={row.id}
-                  onClick={() => setHighlighted(isActive ? null : row.id)}
+                  onClick={() => {
+                    const deselecting = isActive;
+                    setHighlighted(deselecting ? null : row.id);
+                    if (!deselecting && (row.status === 'DORMANT' || row.status === 'BROKEN')) {
+                      setFocusId(row.id);
+                      mapSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                      setFocusId(null);
+                    }
+                  }}
                   className={`cursor-pointer transition-colors group ${
                     isActive ? 'bg-stone-50' : 'hover:bg-stone-50/70'
                   }`}

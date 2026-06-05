@@ -18,6 +18,7 @@ export interface MapMarker {
 interface Props {
   markers:        MapMarker[];
   highlightId?:   string | null;
+  focusId?:       string | null;
   onMarkerClick?: (marker: MapMarker) => void;
 }
 
@@ -38,9 +39,9 @@ const DEFAULT_ZOOM = 7;
 // Layout: dot (geographic anchor) + label card below-right.
 // The whole wrapper has pointer-events:auto and cursor:pointer so every pixel
 // of the label is clickable, not just the tiny dot.
-function buildPinHtml(m: MapMarker, highlighted: boolean): string {
+function buildPinHtml(m: MapMarker, highlighted: boolean, focused: boolean): string {
   const { fill, ring } = COLOR[m.status];
-  const dot = highlighted ? 13 : 10;
+  const dot = highlighted || focused ? 13 : 10;
   // Truncate long cemetery names so the card stays compact
   const shortName = m.name.length > 28 ? m.name.slice(0, 26) + '…' : m.name;
 
@@ -49,10 +50,11 @@ function buildPinHtml(m: MapMarker, highlighted: boolean): string {
       display:inline-flex;flex-direction:column;align-items:flex-start;gap:3px;
       pointer-events:auto;cursor:pointer;
     ">
-      <div style="
+      <div class="${focused ? 'll-blink' : ''}" style="
         width:${dot}px;height:${dot}px;border-radius:50%;flex-shrink:0;
         background:${fill};border:2px solid ${ring};
-        box-shadow:${highlighted
+        --blink-color:${fill}90;
+        box-shadow:${highlighted && !focused
           ? `0 0 0 5px ${fill}35, 0 2px 10px rgba(0,0,0,0.28)`
           : '0 1px 4px rgba(0,0,0,0.22)'};
         transition:box-shadow .15s;
@@ -135,7 +137,7 @@ function buildPopupHtml(m: MapMarker): string {
     </div>`;
 }
 
-export default function OntarioMap({ markers, highlightId, onMarkerClick }: Props) {
+export default function OntarioMap({ markers, highlightId, focusId, onMarkerClick }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef       = useRef<import('leaflet').Map | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -209,6 +211,20 @@ export default function OntarioMap({ markers, highlightId, onMarkerClick }: Prop
     };
   }, []);
 
+  // ── Fly to focused marker ────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!focusId || !mapRef.current || !mapReady) return;
+    const target = markers.find(m => m.id === focusId);
+    if (!target) return;
+    mapRef.current.flyTo([target.latitude, target.longitude], 14, {
+      animate:      true,
+      duration:     1.2,
+      easeLinearity: 0.25,
+    });
+  // markers intentionally excluded — only fly when focusId itself changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusId, mapReady]);
+
   // ── Rebuild markers ──────────────────────────────────────────────────────────
   useEffect(() => {
     const L       = leafletRef.current;
@@ -220,7 +236,8 @@ export default function OntarioMap({ markers, highlightId, onMarkerClick }: Prop
 
     markers.forEach((m) => {
       const highlighted = !!highlightId && m.id === highlightId;
-      const dotPx = highlighted ? 13 : 10;
+      const focused     = !!focusId     && m.id === focusId;
+      const dotPx = highlighted || focused ? 13 : 10;
 
       // iconAnchor = center of the dot so the coordinate maps exactly to the dot
       // popupAnchor = opens the popup above the dot
@@ -229,7 +246,7 @@ export default function OntarioMap({ markers, highlightId, onMarkerClick }: Prop
         iconSize:    [200, 50],
         iconAnchor:  [Math.round(dotPx / 2), Math.round(dotPx / 2)],
         popupAnchor: [75, -8],
-        html: buildPinHtml(m, highlighted),
+        html: buildPinHtml(m, highlighted, focused),
       });
 
       const marker = L.marker([m.latitude, m.longitude], {
@@ -261,7 +278,7 @@ export default function OntarioMap({ markers, highlightId, onMarkerClick }: Prop
 
       cluster.addLayer(marker);
     });
-  }, [markers, highlightId, mapReady, onMarkerClick]);
+  }, [markers, highlightId, focusId, mapReady, onMarkerClick]);
 
   return (
     <div
