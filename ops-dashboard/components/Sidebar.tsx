@@ -1,6 +1,6 @@
 'use client';
 import { usePathname } from 'next/navigation';
-import { SUPPORT_TICKETS } from '@/lib/mock-data';
+import { SUPPORT_TICKETS, BILLING_ACCOUNTS } from '@/lib/mock-data';
 
 const NAV_MAIN = [
   {
@@ -26,6 +26,8 @@ export default function Sidebar() {
   const newCount  = SUPPORT_TICKETS.filter(t => t.status === 'NEW').length;
 
   const isSupport = pathname === '/support';
+  const isBilling = pathname === '/billing';
+  const dupCount  = BILLING_ACCOUNTS.filter(a => a.transactions.some(t => t.isPotentialDup)).length;
 
   return (
     <aside className="hidden md:flex flex-col bg-white border-r border-stone-100 shrink-0 h-screen sticky top-0 w-[220px]">
@@ -86,6 +88,29 @@ export default function Sidebar() {
           {newCount > 0 && (
             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isSupport ? 'bg-white text-stone-900' : 'bg-red-500 text-white'}`}>
               {newCount}
+            </span>
+          )}
+        </a>
+
+        <a
+          href="/billing"
+          className={[
+            'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
+            isBilling
+              ? 'bg-stone-900 text-white'
+              : 'text-stone-500 hover:bg-stone-50 hover:text-stone-800',
+          ].join(' ')}
+        >
+          <span className="shrink-0">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+              <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+              <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+            </svg>
+          </span>
+          <span className="flex-1">Billing</span>
+          {dupCount > 0 && (
+            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isBilling ? 'bg-amber-400 text-stone-900' : 'bg-amber-500 text-white'}`}>
+              {dupCount}
             </span>
           )}
         </a>

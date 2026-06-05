@@ -103,6 +103,56 @@ export function getScanHistory(shortId: string): ScanEvent[] {
 }
 
 // ---------------------------------------------------------------------------
+// Scan log (persisted, GeoIP-enriched)
+// ---------------------------------------------------------------------------
+
+export interface ScanLogInput {
+  profileId:  string;
+  ip?:        string;
+  userAgent?: string;
+  city?:      string;
+  region?:    string;
+  country?:   string;
+  latitude?:  number;
+  longitude?: number;
+}
+
+export async function writeScanLog(input: ScanLogInput): Promise<void> {
+  await rawPrisma.scanLog.create({
+    data: {
+      profile_id: input.profileId,
+      ip:         input.ip,
+      user_agent: input.userAgent,
+      city:       input.city,
+      region:     input.region,
+      country:    input.country,
+      latitude:   input.latitude,
+      longitude:  input.longitude,
+    },
+  });
+}
+
+// Returns the top N cities by scan count within the last `days` days.
+export async function getTopScanLocations(days = 30, limit = 20) {
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  const rows = await rawPrisma.scanLog.groupBy({
+    by:      ['city', 'region', 'country', 'latitude', 'longitude'],
+    where:   { scanned_at: { gte: since }, city: { not: null } },
+    _count:  { id: true },
+    orderBy: { _count: { id: 'desc' } },
+    take:    limit,
+  });
+  return rows.map(r => ({
+    city:      r.city!,
+    region:    r.region ?? '',
+    country:   r.country ?? '',
+    latitude:  r.latitude ?? 0,
+    longitude: r.longitude ?? 0,
+    scans:     r._count.id,
+  }));
+}
+
+// ---------------------------------------------------------------------------
 // Internal helper
 // ---------------------------------------------------------------------------
 

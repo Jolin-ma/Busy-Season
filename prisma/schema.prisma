@@ -44,10 +44,14 @@ model User {
   // bcrypt hash (cost ≥ 12). Raw passwords must never be stored.
   password_hash String
 
+  // Stripe customer context — null until first payment is captured.
+  stripe_customer_id String? @unique
+
   created_at    DateTime  @default(now())
   updated_at    DateTime  @updatedAt
 
   profiles      Profile[]
+  transactions  Transaction[]
 
   @@map("users")
 }
@@ -116,6 +120,8 @@ model Profile {
   nav_waypoints        NavigationWaypoint[]
   family_tree          FamilyTreeNode[]
   support_tickets      SupportTicket[]
+  scan_logs            ScanLog[]
+  qr_marker            QRMarker?
 
   // short_id is already unique; the explicit index keeps the planner from
   // falling back to a seq scan when joining from the QR routing layer.
@@ -133,6 +139,12 @@ enum PlaqueStatus {
   ENGRAVING
   SHIPPED
   DELIVERED
+}
+
+enum MarkerStatus {
+  ACTIVE   // Scanned within the last 30 days, profile returns 200
+  DORMANT  // No scans in the last 30 days
+  BROKEN   // Profile URL returned a non-200 HTTP status
 }
 
 // =============================================================================
@@ -443,4 +455,118 @@ model SupportTicket {
   @@index([profile_id])
   @@index([status])
   @@map("support_tickets")
+}
+
+// =============================================================================
+// SCAN LOG
+// Persisted per-scan record written asynchronously after every QR code scan.
+// City/region populated via geoip-lite lookup on request.ip.
+// Lat/long are approximate city-level centroids from the GeoIP database —
+// not device GPS.  For precise grave coordinates see GraveCoordinates.
+// =============================================================================
+
+model ScanLog {
+  id         String   @id @default(uuid()) @db.Uuid
+
+  profile_id String   @db.Uuid
+  profile    Profile  @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  scanned_at DateTime @default(now())
+
+  ip         String?  @db.VarChar(45)  // IPv4 or IPv6
+  city       String?
+  region     String?  // Province / State abbreviation
+  country    String?  @db.VarChar(2)   // ISO 3166-1 alpha-2
+  latitude   Float?
+  longitude  Float?
+
+  user_agent String?  @db.Text
+
+  @@index([profile_id])
+  @@index([scanned_at])
+  @@index([city])
+  @@map("scan_logs")
+}
+
+// =============================================================================
+// QR MARKER
+// One-to-one with Profile.  Tracks the map-visible pin and its health status.
+// status is recomputed nightly by a background job (or on-demand via the ops
+// dashboard) using the rules in CLAUDE.md §Status Logic.
+// =============================================================================
+
+model QRMarker {
+  id              String       @id @default(uuid()) @db.Uuid
+
+  profile_id      String       @unique @db.Uuid
+  profile         Profile      @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  latitude        Float
+  longitude       Float
+
+  // Recomputed by background health check — never set by user input.
+  status          MarkerStatus @default(ACTIVE)
+
+  // Timestamp of the last automated health check (HTTP probe + scan-window check).
+  last_checked_at DateTime?
+
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  @@index([status])
+  @@map("qr_markers")
+}
+
+// =============================================================================
+// BILLING — ENUMS
+// =============================================================================
+
+enum TransactionStatus {
+  PAID
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+// =============================================================================
+// TRANSACTION
+// Local ledger mirror of Stripe charges — avoids hammering the Stripe API for
+// every admin search or filter operation.  The id IS the Stripe charge/payment-
+// intent ID (ch_xxx / pi_xxx) so it doubles as the reconciliation key.
+//
+// Amounts stored in the smallest currency unit (cents): $59.00 CAD = 5900.
+//
+// isPotential_dup is set by the Stripe webhook handler whenever a charge.succeeded
+// event arrives for the same (user_id, amount) within a 5-minute window.
+// =============================================================================
+
+model Transaction {
+  // Stripe charge ID is the PK — prevents duplicate webhook replays.
+  id                String            @id           // e.g. ch_3MnsK2...
+
+  user_id           String            @db.Uuid
+  user              User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  amount            Int                              // cents
+  currency          String            @default("cad")
+  status            TransactionStatus
+
+  // Duplicate detection: true when another charge for the same user + amount
+  // landed within 5 minutes before this one.
+  is_potential_dup  Boolean           @default(false)
+
+  stripe_invoice_id String?           // populated for subscription invoices
+
+  refunded          Boolean           @default(false)
+  refunded_amount   Int               @default(0)   // cents; 0 = not yet refunded
+
+  // Stripe refund reason stored for audit trail
+  refund_reason     String?
+
+  created_at        DateTime          @default(now())
+
+  @@index([user_id])
+  @@index([user_id, amount, created_at])  // speeds up duplicate window query
+  @@index([status])
+  @@map("transactions")
 }

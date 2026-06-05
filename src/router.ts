@@ -1,7 +1,8 @@
 import Fastify from 'fastify';
+import fastifyWebsocket from '@fastify/websocket';
 import { generateLegacyQR } from './qrGenerator';
 import { generateShortId }  from './shortId';
-import { createLink, lookupLink, lookupLinkForRouting, getScanHistory, setPrivacy } from './db';
+import { createLink, lookupLink, lookupLinkForRouting, getScanHistory, setPrivacy, getTopScanLocations } from './db';
 import { rawPrisma } from './lib/db';
 import { storeEntry, getPending } from './guestbookStore';
 import { recordScanAsync }  from './analytics';
@@ -11,11 +12,15 @@ import { renderAuthPage }       from './authTemplate';
 import { renderActivationPage } from './activationTemplate';
 import { MOCK_PROFILE }     from './mockProfile';
 import { premiumRoutes }    from './routes/premium';
+import { billingRoutes }    from './routes/billing';
+import { registerClient }   from './wsHub';
 
 export function buildServer() {
   const app = Fastify({ logger: true });
 
+  app.register(fastifyWebsocket);
   app.register(premiumRoutes);
+  app.register(billingRoutes);
 
   // ── Auth Pages ──────────────────────────────────────────────────────────────
   app.get('/login', async (_req, reply) =>
@@ -264,6 +269,45 @@ export function buildServer() {
     const link = await lookupLink(req.params.shortId);
     if (!link) return reply.code(404).send({ error: 'Not found.' });
     return reply.send({ shortId: req.params.shortId, events: getScanHistory(req.params.shortId) });
+  });
+
+  // ── Ops: Top Scan Locations ─────────────────────────────────────────────────
+  // Returns top scan cities with lat/lng for map rendering.
+  // Uses Prisma _count to avoid loading raw scan rows.
+  app.get<{ Querystring: { days?: string; limit?: string } }>('/ops/scan-locations', async (req, reply) => {
+    reply.header('Access-Control-Allow-Origin', '*');
+    const days  = Math.min(parseInt(req.query.days  ?? '30',  10) || 30,  365);
+    const limit = Math.min(parseInt(req.query.limit ?? '20',  10) || 20,  100);
+    const rows  = await getTopScanLocations(days, limit);
+    return reply.send({ rows });
+  });
+
+  // ── Ops: QR Marker Map Data ─────────────────────────────────────────────────
+  // Returns all QRMarker rows for the ops map.  Optimised with _count on
+  // scan_logs so the client receives precomputed scan volumes in one query.
+  app.get('/ops/markers', async (_req, reply) => {
+    reply.header('Access-Control-Allow-Origin', '*');
+    const markers = await rawPrisma.qRMarker.findMany({
+      include: {
+        profile: {
+          select: {
+            short_id:    true,
+            full_name:   true,
+            scans_count: true,
+            _count:      { select: { scan_logs: true } },
+          },
+        },
+      },
+      orderBy: { updated_at: 'desc' },
+    });
+    return reply.send({ markers });
+  });
+
+  // ── Ops: Live Scan WebSocket ────────────────────────────────────────────────
+  // The ops dashboard connects here to receive real-time scan events.
+  // Each message is { type: 'scan', data: EnrichedScanEvent }.
+  app.get('/ops/ws', { websocket: true }, (socket) => {
+    registerClient(socket);
   });
 
   return app;

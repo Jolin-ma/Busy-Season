@@ -177,3 +177,190 @@ export const DEVICE_DATA: DeviceEntry[] = [
   { name: 'iOS',     value: 62, color: '#6366f1' },
   { name: 'Android', value: 38, color: '#10b981' },
 ];
+
+// =============================================================================
+// BILLING MOCK DATA
+// =============================================================================
+
+export type TxStatus = 'PAID' | 'FAILED' | 'REFUNDED' | 'PARTIALLY_REFUNDED';
+
+export interface MockTransaction {
+  id:             string;   // Stripe charge ID
+  amount:         number;   // cents
+  currency:       string;
+  status:         TxStatus;
+  isPotentialDup: boolean;
+  stripeInvoiceId?: string;
+  refunded:       boolean;
+  refundedAmount: number;   // cents
+  refundReason?:  string;
+  createdAt:      string;   // ISO
+}
+
+export interface MockBillingAccount {
+  id:               string;
+  name:             string;
+  email:            string;
+  stripeCustomerId: string;
+  plan:             'BASIC' | 'PREMIUM';
+  profileCount:     number;
+  status:           'ACTIVE' | 'SUSPENDED';
+  createdAt:        string;
+  transactions:     MockTransaction[];
+}
+
+export const BILLING_ACCOUNTS: MockBillingAccount[] = [
+  {
+    id:               'usr-0001',
+    name:             'Jane Doe',
+    email:            'jane.doe@gmail.com',
+    stripeCustomerId: 'cus_PxKq8mR3t7vA2',
+    plan:             'PREMIUM',
+    profileCount:     3,
+    status:           'ACTIVE',
+    createdAt:        '2025-11-14T09:00:00Z',
+    transactions: [
+      {
+        id:             'ch_3MnsK2LkdIwHu7ix0bWqRGm9',
+        amount:         1500,
+        currency:       'cad',
+        status:         'PAID',
+        isPotentialDup: false,
+        stripeInvoiceId: 'in_1Nqr8bLkdIwHu7ixaRHoKkle',
+        refunded:       false,
+        refundedAmount: 0,
+        createdAt:      '2026-06-01T10:14:22Z',
+      },
+      {
+        // Fired 1 minute after the first — duplicate charge
+        id:             'ch_3MnsA1LkdIwHu7ix0bWqTFm4',
+        amount:         1500,
+        currency:       'cad',
+        status:         'PAID',
+        isPotentialDup: true,
+        refunded:       false,
+        refundedAmount: 0,
+        createdAt:      '2026-06-01T10:13:05Z',
+      },
+      {
+        id:             'ch_3Mm2P9LkdIwHu7ix1cXrQNk2',
+        amount:         1500,
+        currency:       'cad',
+        status:         'REFUNDED',
+        isPotentialDup: false,
+        refunded:       true,
+        refundedAmount: 1500,
+        refundReason:   'requested_by_customer',
+        createdAt:      '2026-05-01T08:31:00Z',
+      },
+      {
+        id:             'ch_3Ml9K3LkdIwHu7ix0aWpQLk1',
+        amount:         1500,
+        currency:       'cad',
+        status:         'PAID',
+        isPotentialDup: false,
+        refunded:       false,
+        refundedAmount: 0,
+        createdAt:      '2026-04-01T11:05:44Z',
+      },
+    ],
+  },
+  {
+    id:               'usr-0002',
+    name:             'Thomas Whitfield',
+    email:            'twhitfield@outlook.com',
+    stripeCustomerId: 'cus_QyLr9nS4u8wB3',
+    plan:             'PREMIUM',
+    profileCount:     1,
+    status:           'ACTIVE',
+    createdAt:        '2026-01-20T14:00:00Z',
+    transactions: [
+      {
+        id:             'ch_3MpqR7LkdIwHu7ix2dYsRMm8',
+        amount:         1500,
+        currency:       'cad',
+        status:         'PAID',
+        isPotentialDup: false,
+        refunded:       false,
+        refundedAmount: 0,
+        createdAt:      '2026-06-01T07:22:11Z',
+      },
+      {
+        id:             'ch_3MopL6LkdIwHu7ix2cXqPLl7',
+        amount:         1500,
+        currency:       'cad',
+        status:         'PARTIALLY_REFUNDED',
+        isPotentialDup: false,
+        refunded:       false,
+        refundedAmount: 750,
+        refundReason:   'requested_by_customer',
+        createdAt:      '2026-05-01T09:14:00Z',
+      },
+    ],
+  },
+  {
+    id:               'usr-0003',
+    name:             'Grace Patterson',
+    email:            'grace.p@gmail.com',
+    stripeCustomerId: 'cus_RzMs0oT5v9xC4',
+    plan:             'PREMIUM',
+    profileCount:     1,
+    status:           'ACTIVE',
+    createdAt:        '2026-02-08T10:30:00Z',
+    transactions: [
+      {
+        id:             'ch_3MrsT9LkdIwHu7ix3eZtSNn9',
+        amount:         1500,
+        currency:       'cad',
+        status:         'PAID',
+        isPotentialDup: false,
+        refunded:       false,
+        refundedAmount: 0,
+        createdAt:      '2026-06-01T06:01:55Z',
+      },
+      {
+        // Duplicate within 3 minutes of the above
+        id:             'ch_3MrsS8LkdIwHu7ix3eZtRMm8',
+        amount:         1500,
+        currency:       'cad',
+        status:         'PAID',
+        isPotentialDup: true,
+        refunded:       false,
+        refundedAmount: 0,
+        createdAt:      '2026-06-01T05:58:30Z',
+      },
+      {
+        id:             'ch_3Mqr4LkdIwHu7ix1bWoQJk0',
+        amount:         1500,
+        currency:       'cad',
+        status:         'FAILED',
+        isPotentialDup: false,
+        refunded:       false,
+        refundedAmount: 0,
+        createdAt:      '2026-05-01T15:44:22Z',
+      },
+    ],
+  },
+  {
+    id:               'usr-0004',
+    name:             'Michael Chen',
+    email:            'm.chen@icloud.com',
+    stripeCustomerId: 'cus_SaNt1pU6w0yD5',
+    plan:             'BASIC',
+    profileCount:     1,
+    status:           'ACTIVE',
+    createdAt:        '2026-03-15T08:00:00Z',
+    transactions: [
+      {
+        id:             'ch_3MtuV1LkdIwHu7ix4fAsUOo0',
+        amount:         16900,
+        currency:       'cad',
+        status:         'PAID',
+        isPotentialDup: false,
+        refunded:       false,
+        refundedAmount: 0,
+        createdAt:      '2026-05-15T10:00:00Z',
+      },
+    ],
+  },
+];

@@ -1,9 +1,9 @@
-import Sidebar         from '@/components/Sidebar';
-import SummaryCards    from '@/components/SummaryCards';
-import ScanTrendsChart from '@/components/ScanTrendsChart';
-import DeviceChart     from '@/components/DeviceChart';
-import GeographicList  from '@/components/GeographicList';
-import FulfillmentQueue from '@/components/FulfillmentQueue';
+import Sidebar                  from '@/components/Sidebar';
+import SummaryCards             from '@/components/SummaryCards';
+import ScanTrendsChart          from '@/components/ScanTrendsChart';
+import DeviceChart              from '@/components/DeviceChart';
+import TopScanLocationSection   from '@/components/TopScanLocationSection';
+import FulfillmentQueue         from '@/components/FulfillmentQueue';
 
 export default function DashboardPage() {
   const now = new Date('2026-05-31').toLocaleDateString('en-GB', {
@@ -40,7 +40,7 @@ export default function DashboardPage() {
             <DeviceChart />
           </div>
 
-          <GeographicList />
+          <TopScanLocationSection />
           <FulfillmentQueue />
 
           <p className="text-center text-[10px] text-stone-300 pb-2">

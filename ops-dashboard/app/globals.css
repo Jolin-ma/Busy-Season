@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Leaflet core styles — required for map tiles and controls */
+@import 'leaflet/dist/leaflet.css';
+@import 'leaflet.markercluster/dist/MarkerCluster.css';
+@import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+
+/* Popup card override */
+.ll-popup .leaflet-popup-content-wrapper {
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+  border: 1px solid rgba(0,0,0,0.08);
+  padding: 0;
+}
+.ll-popup .leaflet-popup-content {
+  margin: 10px 12px;
+}
+
 :root {
   --background: #f7f6f3;
   --foreground: #1c1c1e;
