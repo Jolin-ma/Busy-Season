@@ -13,6 +13,7 @@ export interface MapMarker {
   scans:         number;         // selected time-frame total
   scansThisWeek: number;
   status:        MarkerStatus;
+  shortId?:      string;         // LegacyLink profile short ID → /p/:shortId
 }
 
 interface Props {
@@ -122,17 +123,10 @@ function buildPopupHtml(m: MapMarker): string {
         <span style="font-size:11px;color:#6b7280">
           <strong style="color:#374151">${m.scans.toLocaleString()}</strong> total scans
         </span>
-        <a
-          href="#"
-          onclick="event.preventDefault()"
-          style="
-            font-size:10px;font-weight:700;color:#6366f1;text-decoration:none;
-            display:inline-flex;align-items:center;gap:3px;
-            padding:4px 9px;border-radius:7px;
-            background:#eef2ff;border:1px solid #c7d2fe;
-            cursor:pointer;
-          "
-        >View Analytics ↗</a>
+        ${m.shortId
+          ? `<a href="/accounts?shortId=${m.shortId}" style="font-size:10px;font-weight:700;color:#6366f1;text-decoration:none;display:inline-flex;align-items:center;gap:3px;padding:4px 9px;border-radius:7px;background:#eef2ff;border:1px solid #c7d2fe;cursor:pointer;">View Account ↗</a>`
+          : `<span style="font-size:10px;color:#d1d5db">No account linked</span>`
+        }
       </div>
     </div>`;
 }
@@ -257,7 +251,7 @@ export default function OntarioMap({ markers, highlightId, focusId, onMarkerClic
 
       // Popup — opens on click AND hover
       const popup = L.popup({
-        maxWidth:       240,
+        maxWidth:       260,
         className:      'll-popup',
         autoPan:        true,
         autoPanPadding: [40, 40],

@@ -207,6 +207,7 @@ export interface MockBillingAccount {
   status:           'ACTIVE' | 'SUSPENDED';
   createdAt:        string;
   transactions:     MockTransaction[];
+  shortIds:         string[];   // profile short IDs owned by this account
 }
 
 export const BILLING_ACCOUNTS: MockBillingAccount[] = [
@@ -219,6 +220,7 @@ export const BILLING_ACCOUNTS: MockBillingAccount[] = [
     profileCount:     3,
     status:           'ACTIVE',
     createdAt:        '2025-11-14T09:00:00Z',
+    shortIds:         ['a5trneuj', 'b2kmpqvx', 'c7nrswyz'],
     transactions: [
       {
         id:             'ch_3MnsK2LkdIwHu7ix0bWqRGm9',
@@ -274,6 +276,7 @@ export const BILLING_ACCOUNTS: MockBillingAccount[] = [
     profileCount:     1,
     status:           'ACTIVE',
     createdAt:        '2026-01-20T14:00:00Z',
+    shortIds:         ['d4fhijkl'],
     transactions: [
       {
         id:             'ch_3MpqR7LkdIwHu7ix2dYsRMm8',
@@ -307,6 +310,7 @@ export const BILLING_ACCOUNTS: MockBillingAccount[] = [
     profileCount:     1,
     status:           'ACTIVE',
     createdAt:        '2026-02-08T10:30:00Z',
+    shortIds:         ['e9lmnopq', 'f3rstuvw'],
     transactions: [
       {
         id:             'ch_3MrsT9LkdIwHu7ix3eZtSNn9',
@@ -350,6 +354,7 @@ export const BILLING_ACCOUNTS: MockBillingAccount[] = [
     profileCount:     1,
     status:           'ACTIVE',
     createdAt:        '2026-03-15T08:00:00Z',
+    shortIds:         ['g6abcdef', 'h8ghijkl'],
     transactions: [
       {
         id:             'ch_3MtuV1LkdIwHu7ix4fAsUOo0',
@@ -363,4 +368,134 @@ export const BILLING_ACCOUNTS: MockBillingAccount[] = [
       },
     ],
   },
+];
+
+// =============================================================================
+// SHIPPING ORDERS
+// =============================================================================
+
+export type ShipStatus = 'PENDING_QR' | 'PENDING_SHIP' | 'SHIPPED' | 'DELIVERED';
+export type PlaqueStyle = 'Bronze Classic' | 'Slate Matte' | 'Steel Premium';
+
+export interface ShippingOrder {
+  id:            string;
+  profileId:     string;
+  profileName:   string;
+  customerName:  string;
+  customerEmail: string;
+  address:       string;
+  city:          string;
+  plaqueStyle:   PlaqueStyle;
+  status:        ShipStatus;
+  trackingNumber?: string;
+  orderedAt:     string;
+  shippedAt?:    string;
+}
+
+export const SHIPPING_ORDERS: ShippingOrder[] = [
+  { id: 'ORD-2043', profileId: 'k5efghij', profileName: 'Charles Henry Adams',       customerName: 'Susan Adams',       customerEmail: 'susanadams@icloud.com',  address: '55 Queen St W, Toronto, ON M5H 2M5',        city: 'Toronto',   plaqueStyle: 'Steel Premium',  status: 'PENDING_QR',   orderedAt: '2026-05-30T14:22:00Z' },
+  { id: 'ORD-2042', profileId: 'j8yzabcd', profileName: 'Evelyn Grace Moore',         customerName: 'David Moore',       customerEmail: 'd.moore@outlook.com',    address: '88 Rideau St, Ottawa, ON K1N 5X7',          city: 'Ottawa',    plaqueStyle: 'Slate Matte',    status: 'PENDING_QR',   orderedAt: '2026-05-29T08:30:00Z' },
+  { id: 'ORD-2041', profileId: 'h3stuvwx', profileName: 'James Arthur Wilson',        customerName: 'Patricia Wilson',   customerEmail: 'pwilson@gmail.com',      address: '142 Maple Ave, Barrie, ON L4N 2P7',         city: 'Barrie',    plaqueStyle: 'Bronze Classic', status: 'PENDING_QR',   orderedAt: '2026-05-28T11:00:00Z' },
+  { id: 'ORD-2040', profileId: 'd9lmopqr', profileName: 'William Thomas Burke',       customerName: 'Mary Burke',        customerEmail: 'maryburke@gmail.com',    address: '34 Wellington St, Hamilton, ON L8P 1H5',    city: 'Hamilton',  plaqueStyle: 'Bronze Classic', status: 'PENDING_SHIP', orderedAt: '2026-05-18T10:15:00Z' },
+  { id: 'ORD-2039', profileId: 'b7kwmnpq', profileName: 'Harold James Foster',        customerName: 'Grace Patterson',   customerEmail: 'grace.p@gmail.com',      address: '1200 Pine Ridge Rd, Kingston, ON K7M 3B3',  city: 'Kingston',  plaqueStyle: 'Slate Matte',    status: 'PENDING_SHIP', orderedAt: '2026-05-12T13:45:00Z' },
+  { id: 'ORD-2038', profileId: 'a5trneuj', profileName: 'Margaret Eleanor Whitfield', customerName: 'Jennifer Whitfield', customerEmail: 'j.whitfield@email.com', address: '270 Laurier Ave W, Ottawa, ON K1P 6V4',     city: 'Ottawa',    plaqueStyle: 'Bronze Classic', status: 'PENDING_SHIP', orderedAt: '2026-05-10T09:00:00Z' },
+  { id: 'ORD-2036', profileId: 'g6mnopqr', profileName: 'Helen Mary Davis',           customerName: 'Robert Davis',      customerEmail: 'rdavis@gmail.com',       address: '420 9 Ave SW, Calgary, AB T2P 3C5',         city: 'Calgary',   plaqueStyle: 'Bronze Classic', status: 'SHIPPED',      trackingNumber: 'CP987654321CA', orderedAt: '2026-05-25T12:00:00Z', shippedAt: '2026-05-29T09:00:00Z' },
+  { id: 'ORD-2035', profileId: 'c2xvrtyu', profileName: 'Dorothy Mae Chen',           customerName: 'Michael Chen',      customerEmail: 'm.chen@icloud.com',      address: '1500 Robson St, Vancouver, BC V6G 1C3',     city: 'Vancouver', plaqueStyle: 'Steel Premium',  status: 'SHIPPED',      trackingNumber: 'CP123456789CA', orderedAt: '2026-05-15T09:00:00Z', shippedAt: '2026-05-22T14:00:00Z' },
+  { id: 'ORD-2031', profileId: 'f1ghijkl', profileName: 'Robert Lee Thompson',        customerName: 'Sandra Liu',        customerEmail: 'sandra.liu@gmail.com',   address: '200 Wellington St, Ottawa, ON K1A 0A6',     city: 'Ottawa',    plaqueStyle: 'Slate Matte',    status: 'DELIVERED',    trackingNumber: 'CP444555666CA', orderedAt: '2026-05-05T09:00:00Z', shippedAt: '2026-05-10T14:00:00Z' },
+  { id: 'ORD-2030', profileId: 'e4stuijk', profileName: 'Florence Anna Park',         customerName: 'Thomas Park',       customerEmail: 'tpark@icloud.com',       address: '789 Yonge St, Toronto, ON M4W 2G8',         city: 'Toronto',   plaqueStyle: 'Steel Premium',  status: 'DELIVERED',    trackingNumber: 'CP111222333CA', orderedAt: '2026-05-01T10:00:00Z', shippedAt: '2026-05-07T11:00:00Z' },
+];
+
+// =============================================================================
+// CONTENT MODERATION
+// =============================================================================
+
+export type FlagType   = 'IMAGE' | 'TEXT' | 'GUESTBOOK';
+export type FlagStatus = 'PENDING' | 'APPROVED' | 'REMOVED';
+
+export interface FlaggedItem {
+  id:          string;
+  type:        FlagType;
+  profileId:   string;
+  profileName: string;
+  content:     string;
+  reason:      string;
+  reportCount: number;
+  reportedAt:  string;
+  status:      FlagStatus;
+  autoFlag:    boolean;
+}
+
+export const FLAGGED_ITEMS: FlaggedItem[] = [
+  { id: 'FLAG-001', type: 'GUESTBOOK', profileId: 'a5trneuj', profileName: 'Margaret Eleanor Whitfield', content: 'This page is FAKE. This woman was a criminal and deserves no memorial!',           reason: 'Harassment / false statements',       reportCount: 4, reportedAt: '2026-05-30T16:22:00Z', status: 'PENDING',  autoFlag: false },
+  { id: 'FLAG-002', type: 'IMAGE',     profileId: 'e4stuijk', profileName: 'Florence Anna Park',          content: '[Profile photo] — nudity/explicit content detected by AI scanner',                reason: 'Inappropriate content (auto-flagged)', reportCount: 1, reportedAt: '2026-05-31T09:05:00Z', status: 'PENDING',  autoFlag: true  },
+  { id: 'FLAG-003', type: 'TEXT',      profileId: 'c2xvrtyu', profileName: 'Dorothy Mae Chen',            content: 'Buy cheap medications at ph4rm4cy.ru — great deals every day! 💊',               reason: 'Spam / advertisement (auto-flagged)', reportCount: 2, reportedAt: '2026-05-29T11:40:00Z', status: 'PENDING',  autoFlag: true  },
+  { id: 'FLAG-004', type: 'GUESTBOOK', profileId: 'b7kwmnpq', profileName: 'Harold James Foster',         content: 'My uncle would have hated this cheesy tribute. Absolutely shameful.',              reason: 'Reported as hurtful',                 reportCount: 1, reportedAt: '2026-05-28T14:15:00Z', status: 'APPROVED', autoFlag: false },
+  { id: 'FLAG-005', type: 'IMAGE',     profileId: 'd9lmopqr', profileName: 'William Thomas Burke',        content: '[Photo upload] — duplicate/stock photo image detected, likely not the deceased',  reason: 'Suspicious media (auto-flagged)',     reportCount: 1, reportedAt: '2026-05-27T08:33:00Z', status: 'REMOVED',  autoFlag: true  },
+];
+
+export interface BannedEntity {
+  id:       string;
+  type:     'USER' | 'IP';
+  value:    string;
+  reason:   string;
+  bannedAt: string;
+}
+
+export const BANNED_ENTITIES: BannedEntity[] = [
+  { id: 'BAN-01', type: 'IP',   value: '103.21.244.0',         reason: 'Scraping bot — mass QR endpoint hits',   bannedAt: '2026-05-15T00:00:00Z' },
+  { id: 'BAN-02', type: 'USER', value: 'spammer99@tempmail.io', reason: 'Repeated spam guestbook submissions',    bannedAt: '2026-05-22T10:30:00Z' },
+  { id: 'BAN-03', type: 'IP',   value: '185.220.101.47',       reason: 'Tor exit node — abusive mass reports',   bannedAt: '2026-05-28T16:45:00Z' },
+  { id: 'BAN-04', type: 'USER', value: 'troll_user@gmail.com', reason: 'Harassment across multiple profiles',    bannedAt: '2026-05-30T09:00:00Z' },
+];
+
+// =============================================================================
+// MEDIA ASSETS
+// =============================================================================
+
+export type AssetStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+export type AssetType   = 'IMAGE' | 'VIDEO' | 'PDF';
+
+export interface MockAsset {
+  id:              string;
+  filename:        string;
+  fileType:        AssetType;
+  fileSizeBytes:   number;
+  profileId:       string;
+  profileName:     string;
+  accountId:       string;
+  accountName:     string;
+  accountEmail:    string;
+  uploadedAt:      string;
+  status:          AssetStatus;
+  hasActivatedQR:  boolean;
+  aiFlag:          'NSFW' | 'VIOLENCE' | 'SPAM' | null;
+}
+
+export const MOCK_ASSETS: MockAsset[] = [
+  // ── PENDING ────────────────────────────────────────────────────────────────
+  { id: 'ast-001', filename: 'margaret_portrait.jpg',     fileType: 'IMAGE', fileSizeBytes:  4_200_000, profileId: 'a5trneuj', profileName: 'Margaret Eleanor Whitfield', accountId: 'usr-0001', accountName: 'Jane Doe',          accountEmail: 'jane.doe@gmail.com',   uploadedAt: '2026-06-04T14:32:00Z', status: 'PENDING',  hasActivatedQR: true,  aiFlag: null       },
+  { id: 'ast-002', filename: 'family_reunion_2019.jpg',   fileType: 'IMAGE', fileSizeBytes:  8_700_000, profileId: 'a5trneuj', profileName: 'Margaret Eleanor Whitfield', accountId: 'usr-0001', accountName: 'Jane Doe',          accountEmail: 'jane.doe@gmail.com',   uploadedAt: '2026-06-04T14:35:00Z', status: 'PENDING',  hasActivatedQR: true,  aiFlag: null       },
+  { id: 'ast-003', filename: 'tribute_video_hd.mp4',      fileType: 'VIDEO', fileSizeBytes: 187_000_000, profileId: 'a5trneuj', profileName: 'Margaret Eleanor Whitfield', accountId: 'usr-0001', accountName: 'Jane Doe',          accountEmail: 'jane.doe@gmail.com',   uploadedAt: '2026-06-04T14:40:00Z', status: 'PENDING',  hasActivatedQR: true,  aiFlag: null       },
+  { id: 'ast-004', filename: 'harold_obit_scan.pdf',      fileType: 'PDF',   fileSizeBytes:  1_800_000, profileId: 'b7kwmnpq', profileName: 'Harold James Foster',         accountId: 'usr-0003', accountName: 'Grace Patterson',   accountEmail: 'grace.p@gmail.com',    uploadedAt: '2026-06-03T09:11:00Z', status: 'PENDING',  hasActivatedQR: false, aiFlag: null       },
+  { id: 'ast-005', filename: 'ceremony_clip.mp4',         fileType: 'VIDEO', fileSizeBytes:  62_000_000, profileId: 'b7kwmnpq', profileName: 'Harold James Foster',         accountId: 'usr-0003', accountName: 'Grace Patterson',   accountEmail: 'grace.p@gmail.com',    uploadedAt: '2026-06-03T09:14:00Z', status: 'PENDING',  hasActivatedQR: false, aiFlag: null       },
+  { id: 'ast-006', filename: 'dorothy_photo_1962.jpg',    fileType: 'IMAGE', fileSizeBytes:  3_100_000, profileId: 'c2xvrtyu', profileName: 'Dorothy Mae Chen',            accountId: 'usr-0004', accountName: 'Michael Chen',      accountEmail: 'm.chen@icloud.com',    uploadedAt: '2026-06-02T16:50:00Z', status: 'PENDING',  hasActivatedQR: true,  aiFlag: null       },
+  { id: 'ast-007', filename: 'upload_20260601.jpg',       fileType: 'IMAGE', fileSizeBytes:  2_400_000, profileId: 'e9lmnopq', profileName: 'Unlinked Memorial',           accountId: 'usr-0003', accountName: 'Grace Patterson',   accountEmail: 'grace.p@gmail.com',    uploadedAt: '2026-06-01T22:05:00Z', status: 'PENDING',  hasActivatedQR: false, aiFlag: 'NSFW'     },
+  { id: 'ast-008', filename: 'william_young_photo.jpg',   fileType: 'IMAGE', fileSizeBytes:  5_900_000, profileId: 'd9lmopqr', profileName: 'William Thomas Burke',        accountId: 'usr-0002', accountName: 'Thomas Whitfield',  accountEmail: 'twhitfield@outlook.com', uploadedAt: '2026-06-01T11:20:00Z', status: 'PENDING',  hasActivatedQR: true,  aiFlag: null       },
+  // ── APPROVED ───────────────────────────────────────────────────────────────
+  { id: 'ast-009', filename: 'florence_headshot.jpg',     fileType: 'IMAGE', fileSizeBytes:  3_700_000, profileId: 'e4stuijk', profileName: 'Florence Anna Park',          accountId: 'usr-0001', accountName: 'Jane Doe',          accountEmail: 'jane.doe@gmail.com',   uploadedAt: '2026-05-30T10:00:00Z', status: 'APPROVED', hasActivatedQR: true,  aiFlag: null       },
+  { id: 'ast-010', filename: 'memorial_program.pdf',      fileType: 'PDF',   fileSizeBytes:    980_000, profileId: 'e4stuijk', profileName: 'Florence Anna Park',          accountId: 'usr-0001', accountName: 'Jane Doe',          accountEmail: 'jane.doe@gmail.com',   uploadedAt: '2026-05-30T10:04:00Z', status: 'APPROVED', hasActivatedQR: true,  aiFlag: null       },
+  { id: 'ast-011', filename: 'robert_1985.jpg',           fileType: 'IMAGE', fileSizeBytes:  4_500_000, profileId: 'f1ghijkl', profileName: 'Robert Lee Thompson',         accountId: 'usr-0001', accountName: 'Jane Doe',          accountEmail: 'jane.doe@gmail.com',   uploadedAt: '2026-05-28T08:30:00Z', status: 'APPROVED', hasActivatedQR: true,  aiFlag: null       },
+  // ── REJECTED ───────────────────────────────────────────────────────────────
+  { id: 'ast-012', filename: 'suspicious_upload.jpg',     fileType: 'IMAGE', fileSizeBytes:  6_200_000, profileId: 'g6mnopqr', profileName: 'Helen Mary Davis',            accountId: 'usr-0002', accountName: 'Thomas Whitfield',  accountEmail: 'twhitfield@outlook.com', uploadedAt: '2026-05-27T15:10:00Z', status: 'REJECTED', hasActivatedQR: false, aiFlag: 'VIOLENCE' },
+  { id: 'ast-013', filename: 'spam_link_image.jpg',       fileType: 'IMAGE', fileSizeBytes:  1_100_000, profileId: 'h3stuvwx', profileName: 'James Arthur Wilson',         accountId: 'usr-0002', accountName: 'Thomas Whitfield',  accountEmail: 'twhitfield@outlook.com', uploadedAt: '2026-05-25T12:00:00Z', status: 'REJECTED', hasActivatedQR: false, aiFlag: 'SPAM'     },
+];
+
+export const STORAGE_TOTAL_GB = 34;
+export const STORAGE_USED_GB  = 22.8;
+
+export const ACCOUNT_STORAGE: { accountId: string; name: string; email: string; usedBytes: number }[] = [
+  { accountId: 'usr-0001', name: 'Jane Doe',         email: 'jane.doe@gmail.com',        usedBytes: 10_580_000_000 },
+  { accountId: 'usr-0003', name: 'Grace Patterson',  email: 'grace.p@gmail.com',         usedBytes:  7_240_000_000 },
+  { accountId: 'usr-0004', name: 'Michael Chen',     email: 'm.chen@icloud.com',         usedBytes:  3_100_000_000 },
+  { accountId: 'usr-0002', name: 'Thomas Whitfield', email: 'twhitfield@outlook.com',    usedBytes:  1_880_000_000 },
 ];

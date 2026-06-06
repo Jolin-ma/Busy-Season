@@ -35,34 +35,35 @@ interface LocationSeed {
   lng:       number;
   scans:     number;
   status:    MarkerStatus;
+  shortId?:  string;
 }
 
 const BASE_MARKERS: LocationSeed[] = [
   // ── Toronto area ────────────────────────────────────────────────────────────
-  { id: 'tor-01', name: 'Mount Pleasant Cemetery',      city: 'Toronto', lat: 43.6969, lng: -79.3892, scans: 214, status: 'ACTIVE'  },
-  { id: 'tor-02', name: 'Toronto Necropolis',           city: 'Toronto', lat: 43.6673, lng: -79.3598, scans: 187, status: 'ACTIVE'  },
-  { id: 'tor-03', name: 'Prospect Cemetery',            city: 'Toronto', lat: 43.6611, lng: -79.4661, scans: 143, status: 'ACTIVE'  },
-  { id: 'tor-04', name: 'Pine Hills Cemetery',          city: 'Toronto', lat: 43.7504, lng: -79.2418, scans:  98, status: 'ACTIVE'  },
+  { id: 'tor-01', name: 'Mount Pleasant Cemetery',      city: 'Toronto', lat: 43.6969, lng: -79.3892, scans: 214, status: 'ACTIVE',  shortId: 'a5trneuj' },
+  { id: 'tor-02', name: 'Toronto Necropolis',           city: 'Toronto', lat: 43.6673, lng: -79.3598, scans: 187, status: 'ACTIVE',  shortId: 'b2kmpqvx' },
+  { id: 'tor-03', name: 'Prospect Cemetery',            city: 'Toronto', lat: 43.6611, lng: -79.4661, scans: 143, status: 'ACTIVE',  shortId: 'c7nrswyz' },
+  { id: 'tor-04', name: 'Pine Hills Cemetery',          city: 'Toronto', lat: 43.7504, lng: -79.2418, scans:  98, status: 'ACTIVE',  shortId: 'd4fhijkl' },
   { id: 'tor-05', name: 'Humber Bay Shores Trail',      city: 'Toronto', lat: 43.6276, lng: -79.4783, scans:  76, status: 'DORMANT' },
-  { id: 'tor-06', name: 'York Cemetery',                city: 'Toronto', lat: 43.7334, lng: -79.4649, scans:  45, status: 'ACTIVE'  },
+  { id: 'tor-06', name: 'York Cemetery',                city: 'Toronto', lat: 43.7334, lng: -79.4649, scans:  45, status: 'ACTIVE',  shortId: 'e9lmnopq' },
 
   // ── Ottawa ───────────────────────────────────────────────────────────────────
-  { id: 'ott-01', name: 'Beechwood National Cemetery',  city: 'Ottawa',  lat: 45.4415, lng: -75.6606, scans: 134, status: 'ACTIVE'  },
-  { id: 'ott-02', name: 'Notre-Dame Cemetery',          city: 'Ottawa',  lat: 45.4381, lng: -75.6907, scans:  64, status: 'ACTIVE'  },
+  { id: 'ott-01', name: 'Beechwood National Cemetery',  city: 'Ottawa',  lat: 45.4415, lng: -75.6606, scans: 134, status: 'ACTIVE',  shortId: 'f3rstuvw' },
+  { id: 'ott-02', name: 'Notre-Dame Cemetery',          city: 'Ottawa',  lat: 45.4381, lng: -75.6907, scans:  64, status: 'ACTIVE',  shortId: 'g6abcdef' },
 
   // ── Hamilton ─────────────────────────────────────────────────────────────────
-  { id: 'ham-01', name: 'Hamilton Cemetery',            city: 'Hamilton', lat: 43.2557, lng: -79.8625, scans:  89, status: 'ACTIVE'  },
+  { id: 'ham-01', name: 'Hamilton Cemetery',            city: 'Hamilton', lat: 43.2557, lng: -79.8625, scans:  89, status: 'ACTIVE',  shortId: 'h8ghijkl' },
   { id: 'ham-02', name: 'Woodland Cemetery Hamilton',   city: 'Hamilton', lat: 43.2267, lng: -79.8967, scans:  54, status: 'DORMANT' },
 
   // ── London, ON ───────────────────────────────────────────────────────────────
-  { id: 'lon-01', name: 'London Cemetery',              city: 'London',   lat: 42.9849, lng: -81.2453, scans:  71, status: 'ACTIVE'  },
+  { id: 'lon-01', name: 'London Cemetery',              city: 'London',   lat: 42.9849, lng: -81.2453, scans:  71, status: 'ACTIVE',  shortId: 'j1mnopqr' },
   { id: 'lon-02', name: 'Woodland Cemetery London',     city: 'London',   lat: 43.0094, lng: -81.2956, scans:  38, status: 'DORMANT' },
 
   // ── Kingston ─────────────────────────────────────────────────────────────────
-  { id: 'kin-01', name: 'Cataraqui Cemetery',           city: 'Kingston', lat: 44.2415, lng: -76.5429, scans:  52, status: 'ACTIVE'  },
+  { id: 'kin-01', name: 'Cataraqui Cemetery',           city: 'Kingston', lat: 44.2415, lng: -76.5429, scans:  52, status: 'ACTIVE',  shortId: 'k5stuvwx' },
 
   // ── Barrie ───────────────────────────────────────────────────────────────────
-  { id: 'bar-01', name: 'Barrie Union Cemetery',        city: 'Barrie',   lat: 44.3894, lng: -79.7031, scans:  31, status: 'ACTIVE'  },
+  { id: 'bar-01', name: 'Barrie Union Cemetery',        city: 'Barrie',   lat: 44.3894, lng: -79.7031, scans:  31, status: 'ACTIVE',  shortId: 'm2yzabcd' },
 
   // ── Peterborough ─────────────────────────────────────────────────────────────
   { id: 'pet-01', name: 'Little Lake Cemetery',         city: 'Peterborough', lat: 44.2955, lng: -78.3192, scans: 28, status: 'DORMANT' },
@@ -74,28 +75,28 @@ const BASE_MARKERS: LocationSeed[] = [
   { id: 'win-01', name: 'Victoria Memorial Cemetery',   city: 'Windsor',  lat: 42.3073, lng: -83.0389, scans:  24, status: 'BROKEN'  },
 
   // ── Vancouver ────────────────────────────────────────────────────────────────
-  { id: 'van-01', name: 'Mountain View Cemetery',       city: 'Vancouver', lat: 49.2334, lng: -123.0956, scans: 198, status: 'ACTIVE'  },
-  { id: 'van-02', name: 'Forest Lawn Memorial Park',    city: 'Vancouver', lat: 49.2333, lng: -122.9977, scans: 163, status: 'ACTIVE'  },
-  { id: 'van-03', name: 'Lynn Valley Greenway Trail',   city: 'Vancouver', lat: 49.3581, lng: -123.0239, scans:  87, status: 'ACTIVE'  },
+  { id: 'van-01', name: 'Mountain View Cemetery',       city: 'Vancouver', lat: 49.2334, lng: -123.0956, scans: 198, status: 'ACTIVE',  shortId: 'n7efghij' },
+  { id: 'van-02', name: 'Forest Lawn Memorial Park',    city: 'Vancouver', lat: 49.2333, lng: -122.9977, scans: 163, status: 'ACTIVE',  shortId: 'p4klmnop' },
+  { id: 'van-03', name: 'Lynn Valley Greenway Trail',   city: 'Vancouver', lat: 49.3581, lng: -123.0239, scans:  87, status: 'ACTIVE',  shortId: 'q9qrstuv' },
   { id: 'van-04', name: 'Ocean View Burial Park',       city: 'Vancouver', lat: 49.1981, lng: -122.8544, scans:  93, status: 'DORMANT' },
 
   // ── Calgary ──────────────────────────────────────────────────────────────────
-  { id: 'cal-01', name: "Queen's Park Cemetery",        city: 'Calgary',  lat: 51.0607, lng: -114.0630, scans: 156, status: 'ACTIVE'  },
-  { id: 'cal-02', name: 'Burnsland Cemetery',           city: 'Calgary',  lat: 51.0332, lng: -114.0582, scans: 112, status: 'ACTIVE'  },
-  { id: 'cal-03', name: 'Bow River Pathway Memorial',   city: 'Calgary',  lat: 51.0447, lng: -114.0719, scans:  79, status: 'ACTIVE'  },
+  { id: 'cal-01', name: "Queen's Park Cemetery",        city: 'Calgary',  lat: 51.0607, lng: -114.0630, scans: 156, status: 'ACTIVE',  shortId: 'r3wxyzab' },
+  { id: 'cal-02', name: 'Burnsland Cemetery',           city: 'Calgary',  lat: 51.0332, lng: -114.0582, scans: 112, status: 'ACTIVE',  shortId: 's6cdefgh' },
+  { id: 'cal-03', name: 'Bow River Pathway Memorial',   city: 'Calgary',  lat: 51.0447, lng: -114.0719, scans:  79, status: 'ACTIVE',  shortId: 't1ijklmn' },
   { id: 'cal-04', name: 'Union Cemetery Calgary',       city: 'Calgary',  lat: 51.0512, lng: -114.0399, scans:  40, status: 'DORMANT' },
 
   // ── Montreal ─────────────────────────────────────────────────────────────────
-  { id: 'mtl-01', name: 'Notre-Dame-des-Neiges Cemetery', city: 'Montreal', lat: 45.4967, lng: -73.6265, scans: 142, status: 'ACTIVE'  },
-  { id: 'mtl-02', name: 'Mount Royal Cemetery',           city: 'Montreal', lat: 45.5085, lng: -73.6048, scans: 107, status: 'ACTIVE'  },
+  { id: 'mtl-01', name: 'Notre-Dame-des-Neiges Cemetery', city: 'Montreal', lat: 45.4967, lng: -73.6265, scans: 142, status: 'ACTIVE',  shortId: 'u8opqrst' },
+  { id: 'mtl-02', name: 'Mount Royal Cemetery',           city: 'Montreal', lat: 45.5085, lng: -73.6048, scans: 107, status: 'ACTIVE',  shortId: 'v5uvwxyz' },
   { id: 'mtl-03', name: 'Côte-des-Neiges Cemetery',       city: 'Montreal', lat: 45.4934, lng: -73.6174, scans:  63, status: 'DORMANT' },
 
   // ── Edmonton ─────────────────────────────────────────────────────────────────
-  { id: 'edm-01', name: 'Edmonton Cemetery',            city: 'Edmonton', lat: 53.5571, lng: -113.5063, scans:  88, status: 'ACTIVE'  },
+  { id: 'edm-01', name: 'Edmonton Cemetery',            city: 'Edmonton', lat: 53.5571, lng: -113.5063, scans:  88, status: 'ACTIVE',  shortId: 'w2abcefg' },
   { id: 'edm-02', name: 'River Valley Trail Memorial',  city: 'Edmonton', lat: 53.5202, lng: -113.5398, scans:  55, status: 'DORMANT' },
 
   // ── Winnipeg ─────────────────────────────────────────────────────────────────
-  { id: 'wpg-01', name: 'Elmwood Cemetery',             city: 'Winnipeg', lat: 49.9050, lng: -97.0960, scans:  52, status: 'ACTIVE'  },
+  { id: 'wpg-01', name: 'Elmwood Cemetery',             city: 'Winnipeg', lat: 49.9050, lng: -97.0960, scans:  52, status: 'ACTIVE',  shortId: 'x7ghijkm' },
   { id: 'wpg-02', name: 'St. Vital Cemetery',           city: 'Winnipeg', lat: 49.8402, lng: -97.1053, scans:  35, status: 'DORMANT' },
 
   // ── Halifax ──────────────────────────────────────────────────────────────────
@@ -165,6 +166,7 @@ export default function TopScanLocationSection() {
       scans:         scansForTF(m.scans),
       scansThisWeek: Math.max(1, Math.round(m.scans * TF_MULTIPLIER['This Week'])),
       status:        m.status,
+      shortId:       m.shortId,
     })),
   // eslint-disable-next-line react-hooks/exhaustive-deps
   [timeFrame]);
@@ -315,7 +317,7 @@ export default function TopScanLocationSection() {
                   onClick={() => {
                     const deselecting = isActive;
                     setHighlighted(deselecting ? null : row.id);
-                    if (!deselecting && (row.status === 'DORMANT' || row.status === 'BROKEN')) {
+                    if (!deselecting) {
                       setFocusId(row.id);
                       mapSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     } else {

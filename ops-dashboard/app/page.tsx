@@ -1,12 +1,32 @@
-import Sidebar                  from '@/components/Sidebar';
-import SummaryCards             from '@/components/SummaryCards';
-import ScanTrendsChart          from '@/components/ScanTrendsChart';
-import DeviceChart              from '@/components/DeviceChart';
-import TopScanLocationSection   from '@/components/TopScanLocationSection';
-import FulfillmentQueue         from '@/components/FulfillmentQueue';
+'use client';
+import { useState } from 'react';
+import Sidebar       from '@/components/Sidebar';
+import AtAGlance     from '@/components/tabs/AtAGlance';
+import DirectoryTab  from '@/components/tabs/DirectoryTab';
+import ModerationTab from '@/components/tabs/ModerationTab';
+import AnalyticsTab  from '@/components/tabs/AnalyticsTab';
+import { FLAGGED_ITEMS } from '@/lib/mock-data';
+
+const TABS = [
+  { id: 'glance',     label: 'At a Glance'              },
+  { id: 'directory',  label: 'User & Profile Directory'  },
+  { id: 'moderation', label: 'Content Moderation'        },
+  { id: 'analytics',  label: 'Analytics & Performance'   },
+] as const;
+
+type TabId = typeof TABS[number]['id'];
+
+const pendingFlags = FLAGGED_ITEMS.filter(i => i.status === 'PENDING').length;
+
+function tabBadge(id: TabId): number | null {
+  if (id === 'moderation') return pendingFlags > 0 ? pendingFlags : null;
+  return null;
+}
 
 export default function DashboardPage() {
-  const now = new Date('2026-05-31').toLocaleDateString('en-GB', {
+  const [activeTab, setActiveTab] = useState<TabId>('glance');
+
+  const now = new Date('2026-06-05').toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
 
@@ -15,7 +35,7 @@ export default function DashboardPage() {
       <Sidebar />
 
       <main className="flex-1 overflow-y-auto">
-        <div className="max-w-7xl mx-auto px-6 py-7 space-y-6">
+        <div className="max-w-7xl mx-auto px-6 py-7 space-y-5">
 
           {/* Page header */}
           <div className="flex items-start justify-between">
@@ -31,17 +51,39 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <SummaryCards />
-
-          <div id="analytics" className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <div className="lg:col-span-2">
-              <ScanTrendsChart />
-            </div>
-            <DeviceChart />
+          {/* Tab bar */}
+          <div className="flex gap-1 bg-white border border-stone-100 rounded-2xl p-1.5 shadow-sm overflow-x-auto">
+            {TABS.map(tab => {
+              const badge = tabBadge(tab.id);
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={[
+                    'flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors shrink-0',
+                    activeTab === tab.id
+                      ? 'bg-stone-900 text-white'
+                      : 'text-stone-500 hover:bg-stone-50 hover:text-stone-800',
+                  ].join(' ')}
+                >
+                  {tab.label}
+                  {badge !== null && (
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                      activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-700'
+                    }`}>
+                      {badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
-          <TopScanLocationSection />
-          <FulfillmentQueue />
+          {/* Tab content */}
+          {activeTab === 'glance'     && <AtAGlance />}
+          {activeTab === 'directory'  && <DirectoryTab />}
+          {activeTab === 'moderation' && <ModerationTab />}
+          {activeTab === 'analytics'  && <AnalyticsTab />}
 
           <p className="text-center text-[10px] text-stone-300 pb-2">
             LegacyLink Internal · Ops Dashboard · All times UTC
