@@ -253,6 +253,41 @@
                 justify-content: center !important;
                 gap: 16px !important;
             }
+
+            /* Range photos */
+            .range-photo img { height: 280px !important; }
+
+            /* Service cards */
+            #services-grid { gap: 16px !important; }
+            .service-img-wrap img { height: 220px !important; }
+            .service-card h3 {
+                font-size: 1.1rem !important;
+                min-height: auto !important;
+            }
+            .service-card p { font-size: 0.72rem !important; }
+
+            /* Grieving families rotated image wrapper */
+            #grieving-wrap { height: 220px !important; }
+            #grieving-wrap img { width: 220px !important; height: 460px !important; }
+
+            /* Marquee */
+            .marquee-step { flex: 0 0 150px !important; padding: 0 8px !important; }
+
+            /* Story section */
+            #latest-stories { padding: 36px 5% 40px !important; }
+            .story-img { height: 260px !important; }
+
+            /* Brochure buttons */
+            .brochure-btn { padding: 10px 16px !important; font-size: 0.72rem !important; }
+
+            /* Hero header padding */
+            #site-header { padding: 20px 16px 40px !important; }
+
+            /* Eyebrow */
+            .eyebrow { font-size: 0.8rem !important; }
+
+            /* CTA link */
+            .cta-link { font-size: 0.8rem !important; }
         }
         .social-link { position: relative; display: inline-block; }
         .social-link::after {
@@ -582,7 +617,7 @@
 
             <!-- grieving families -->
             <div class="service-card">
-                <div style="overflow:hidden; height:360px; position:relative; margin-bottom:20px;">
+                <div id="grieving-wrap" style="overflow:hidden; height:360px; position:relative; margin-bottom:20px;">
                     <img src="image/grieving.jpeg" alt="Grieving Families"
                         style="position:absolute; top:50%; left:50%; width:360px; height:700px; max-width:none; object-fit:cover; transform:translate(-50%,-50%) rotate(90deg);" />
                 </div>
@@ -630,7 +665,7 @@
     <!-- ═══════════════════════════════════════════
      LATEST STORIES
 ════════════════════════════════════════════ -->
-    <section style="padding:72px 8% 80px;">
+    <section id="latest-stories" style="padding:72px 8% 80px;">
 
         <p class="eyebrow" style="text-align:center; margin-bottom:56px; opacity:0.55;">LATEST STORIES</p>
 
@@ -639,7 +674,7 @@
             <div style="flex:0 0 42%;">
                 <img src="image/Launching.png"
                     alt="Launching Legacy Link"
-                    style="width:100%; height:520px; display:block; object-fit:cover;" />
+                    class="story-img" style="width:100%; height:520px; display:block; object-fit:cover;" />
             </div>
             <div style="flex:1; padding-top:10px;">
                 <p style="font-size:0.72rem; letter-spacing:0.22em; opacity:0.5; margin-bottom:14px;">JANUARY 12, 2026</p>
@@ -661,7 +696,7 @@
             <div style="flex:0 0 42%;">
                 <img src="image/QR code craft.png"
                     alt="The quiet craft behind each plaque"
-                    style="width:100%; height:520px; display:block; object-fit:cover;" />
+                    class="story-img" style="width:100%; height:520px; display:block; object-fit:cover;" />
             </div>
             <div style="flex:1; padding-top:10px;">
                 <p style="font-size:0.72rem; letter-spacing:0.22em; opacity:0.5; margin-bottom:14px;">MARCH 3, 2026</p>
