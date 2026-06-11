@@ -849,7 +849,7 @@
         });
 
         setInterval(function () {
-            if (Date.now() - lastInteract > 3000) autoPlay = true;
+            if (Date.now() - lastInteract > 1500) autoPlay = true;
         }, 1000);
 
         function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
