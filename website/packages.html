@@ -187,6 +187,50 @@
             transition: opacity 0.18s;
         }
         .social-link:hover::after { opacity: 1; }
+
+        @media (max-width: 768px) {
+            #pk-site-header {
+                flex-direction: column !important;
+                align-items: center !important;
+                padding: 24px 16px 48px !important;
+                gap: 12px !important;
+            }
+            #pk-logo-wrap {
+                position: relative !important;
+                left: auto !important;
+                transform: none !important;
+                order: -1;
+            }
+            #pk-logo-wrap img { height: 130px !important; }
+            #pk-nav-left, #pk-nav-right {
+                flex: none !important;
+                width: 100%;
+                justify-content: center !important;
+                flex-wrap: wrap;
+                gap: 10px 16px !important;
+            }
+            .nav-link { font-size: 0.78rem !important; }
+
+            #pk-plaques-grid { grid-template-columns: 1fr !important; }
+            #pk-included-grid {
+                grid-template-columns: 1fr !important;
+                gap: 0 !important;
+            }
+            #pk-plans-grid { grid-template-columns: 1fr !important; }
+            #pk-premium-grid { grid-template-columns: 1fr !important; }
+
+            #pk-footer-info-row, #pk-footer-bottom-bar {
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+                gap: 20px !important;
+            }
+            #pk-footer-social-row {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                gap: 16px !important;
+            }
+        }
     </style>
 </head>
 
@@ -195,22 +239,22 @@
     <!-- ═══════════════════════════════════════════
      NAVIGATION
 ════════════════════════════════════════════ -->
-    <header style="
+    <header id="pk-site-header" style="
         display:flex; align-items:center; justify-content:space-between;
         padding:100px 44px 180px; position:relative; z-index:20;
     ">
-        <nav style="display:flex; gap:52px; align-items:center; flex:1; justify-content:flex-start;">
+        <nav id="pk-nav-left" style="display:flex; gap:52px; align-items:center; flex:1; justify-content:flex-start;">
             <a href="packages.html" class="nav-link" style="font-weight:700; border-bottom:1px solid #232323; padding-bottom:2px;">OUR PACKAGES</a>
             <a href="monuments.html" class="nav-link">MONUMENTS</a>
         </nav>
 
-        <div style="position:absolute; left:50%; transform:translateX(-50%); text-align:center; line-height:1;">
+        <div id="pk-logo-wrap" style="position:absolute; left:50%; transform:translateX(-50%); text-align:center; line-height:1;">
             <a href="index.html">
                 <img src="image/legacy_link_logo.png" alt="Legacy Link" style="height:260px; width:auto; display:block; margin:0 auto;" />
             </a>
         </div>
 
-        <nav style="display:flex; gap:26px; align-items:center; flex:1; justify-content:flex-end;">
+        <nav id="pk-nav-right" style="display:flex; gap:26px; align-items:center; flex:1; justify-content:flex-end;">
             <a href="pet-memorials.html" class="nav-link">PET MEMORIALS</a>
             <a href="coming-soon.html" style="
                 font-family:'Cormorant Garamond',serif;
@@ -251,7 +295,7 @@
             <div class="line"></div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:56px;">
+        <div id="pk-plaques-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:56px;">
 
             <!-- Stainless Steel -->
             <div class="plaque-prod-card" style="border:1px solid #232323; padding:36px 38px; position:relative;">
@@ -324,7 +368,7 @@
         <!-- Included with every plaque -->
         <div style="background:#f0ebe3; padding:40px 48px;">
             <p style="font-size:0.68rem; letter-spacing:0.3em; text-transform:uppercase; opacity:0.5; margin-bottom:28px; text-align:center;">Included with every plaque</p>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 80px; max-width:760px; margin:0 auto;">
+            <div id="pk-included-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:0 80px; max-width:760px; margin:0 auto;">
                 <div>
                     <div class="feat-row"><span class="feat-dash">—</span><span>Laser-engraved QR code + personalized name</span></div>
                     <div class="feat-row"><span class="feat-dash">—</span><span>Permanent digital memorial profile</span></div>
@@ -356,7 +400,7 @@
             Every plaque comes with our Core Memorial plan at no extra cost. Upgrade any time to unlock richer media and family collaboration.
         </p>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+        <div id="pk-plans-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
 
             <!-- Basic -->
             <div class="plan-card">
@@ -436,7 +480,7 @@
             </p>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <div id="pk-premium-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
 
             <!-- 01 Collaborative Guestbook -->
             <div class="prem-feature">
@@ -636,7 +680,7 @@
                 </a>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:48px; border-bottom:1px solid rgba(232,222,208,0.18);">
+            <div id="pk-footer-info-row" style="display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:48px; border-bottom:1px solid rgba(232,222,208,0.18);">
                 <div style="font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7;">
                     LegacyLink Inc.<br>Oshawa, Ontario, Canada
                 </div>
@@ -653,14 +697,14 @@
                 </div>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:36px 0; border-bottom:1px solid rgba(232,222,208,0.18);">
+            <div id="pk-footer-social-row" style="display:flex; justify-content:space-between; align-items:center; padding:36px 0; border-bottom:1px solid rgba(232,222,208,0.18);">
                 <a href="#" class="social-link" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">INSTAGRAM</a>
                 <a href="#" class="social-link" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">FACEBOOK</a>
                 <a href="#" class="social-link" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">TWITTER</a>
                 <a href="#" class="social-link" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">YOUTUBE</a>
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:28px;">
+            <div id="pk-footer-bottom-bar" style="display:flex; justify-content:space-between; align-items:center; padding-top:28px;">
                 <p style="flex:1; font-size:0.52rem; letter-spacing:0.12em; opacity:0.45;">
                     &copy; 2026 LegacyLink, all rights reserved.
                 </p>
