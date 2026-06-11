@@ -224,20 +224,12 @@
             #products-row {
                 flex-direction: column !important;
                 padding: 0 5% !important;
-                gap: 24px !important;
+                gap: 40px !important;
             }
-            #products-row > div { width: 100% !important; justify-content: flex-start !important; }
-            #products-row > div > div { width: 100% !important; }
-            #products-row > div > img { width: 100% !important; }
+            #products-row > div { width: 100% !important; align-items: flex-start !important; }
+            #products-row > div .range-photo { width: 100% !important; }
+            #products-row > div .range-info { width: 100% !important; padding-top: 20px; }
             #products-divider { display: none !important; }
-
-            #products-info {
-                flex-direction: column !important;
-                padding: 24px 5% 0 !important;
-                gap: 32px;
-            }
-            #products-info > div { width: 100% !important; justify-content: flex-start !important; }
-            #products-info > div > div { width: 100% !important; text-align: center; }
 
             #services-grid { grid-template-columns: 1fr !important; }
 
@@ -259,8 +251,8 @@
                 gap: 16px !important;
             }
 
-            /* Range photos */
-            .range-photo img { height: 280px !important; }
+            /* Range photos — show full image, no cropping on mobile */
+            .range-photo img { height: auto !important; }
 
             /* Service cards */
             #services-grid { gap: 16px !important; }
@@ -531,13 +523,22 @@
 ════════════════════════════════════════════ -->
     <section style="padding:30px 0 64px;">
 
-        <!-- Two images with vertical divider -->
+        <!-- Two product cards with vertical divider -->
         <div id="products-row" style="display:flex; align-items:stretch; padding:0 4%; position:relative;">
 
-            <!-- Left photo — pushed left -->
-            <div style="flex:1; display:flex; align-items:flex-start;">
+            <!-- Left: Stainless Steel — photo + info together -->
+            <div style="flex:1; display:flex; flex-direction:column; align-items:flex-start;">
                 <div class="range-photo" style="width:86%;">
                     <img src="image/stainless steel.png" alt="Marine-Grade Stainless Steel" />
+                </div>
+                <div class="range-info" style="width:86%; text-align:center; padding-top:32px;">
+                    <p class="eyebrow" style="font-size:0.72rem; margin-bottom:10px; opacity:0.6;">Stainless Steel</p>
+                    <div class="serif"
+                        style="font-size:clamp(1.7rem,3.5vw,2.65rem); font-weight:300; line-height:1.18; margin-bottom:9px; min-height:6.5rem; display:flex; align-items:center; justify-content:center;">
+                        Marine-Grade Stainless Steel
+                    </div>
+                    <p style="font-size:0.72rem; letter-spacing:0.06em; opacity:0.65; margin-bottom:20px;">Ultra-durable · Brushed satin finish · $169 CAD</p>
+                    <a href="packages.html" class="cta-link">VIEW PACKAGE</a>
                 </div>
             </div>
 
@@ -556,45 +557,22 @@
                 </div>
             </div>
 
-            <!-- Right photo  — pushed right -->
-            <div style="flex:1; display:flex; align-items:flex-start; justify-content:flex-end;">
+            <!-- Right: Marine Bronzes — photo + info together -->
+            <div style="flex:1; display:flex; flex-direction:column; align-items:flex-end;">
                 <div class="range-photo" style="width:86%;">
                     <img src="image/marine brozes.png" alt="Marine Brushed Bronze" />
                 </div>
-            </div>
-        </div>
-
-        <!-- Product info below photos -->
-        <div id="products-info" style="display:flex; padding:32px 4% 0; align-items:flex-start;">
-
-            <!-- aluminum -->
-            <div style="flex:1; display:flex;">
-                <div style="width:86%; text-align:center;">
-                    <p class="eyebrow" style="font-size:0.72rem; margin-bottom:10px; opacity:0.6;">Stainless Steel</p>
-                    <div class="serif"
-                        style="font-size:clamp(1.7rem,3.5vw,2.65rem); font-weight:300; line-height:1.18; margin-bottom:9px; min-height:6.5rem; display:flex; align-items:center; justify-content:center;">
-                        Marine-Grade Stainless Steel
-                    </div>
-                    <p style="font-size:0.72rem; letter-spacing:0.06em; opacity:0.65; margin-bottom:20px;">Ultra-durable · Brushed satin finish · $169 CAD</p>
-                    <a href="packages.html" class="cta-link">VIEW PACKAGE</a>
-                </div>
-            </div>
-
-            <!-- Spacer to align with divider -->
-            <div style="width:1px; flex-shrink:0;"></div>
-
-            <!-- MITIK -->
-            <div style="flex:1; display:flex; justify-content:flex-end;">
-                <div style="width:86%; text-align:center;">
+                <div class="range-info" style="width:86%; text-align:center; padding-top:32px;">
                     <p class="eyebrow" style="font-size:0.72rem; margin-bottom:10px; opacity:0.6;">Bronzes</p>
                     <div class="serif"
                         style="font-size:clamp(1.7rem,3.5vw,2.65rem); font-weight:300; line-height:1.18; margin-bottom:9px; min-height:6.5rem; display:flex; align-items:center; justify-content:center;">
-                        Marine bronzes
+                        Marine Bronzes
                     </div>
                     <p style="font-size:0.72rem; letter-spacing:0.06em; opacity:0.65; margin-bottom:20px;">Warm heritage tone · Museum quality · $189 CAD</p>
                     <a href="packages.html" class="cta-link">VIEW PACKAGE</a>
                 </div>
             </div>
+
         </div>
 
     </section>
