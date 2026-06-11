@@ -1,0 +1,948 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet Memorials — Legacy Link</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&display=swap"
+        rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: #e8ded0;
+            color: #232323;
+            font-family: 'Space Mono', monospace;
+            font-size: 1em;
+            line-height: 1.4;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        .serif { font-family: 'Cormorant Garamond', serif; }
+
+        .nav-link {
+            font-size: 1.16rem;
+            letter-spacing: 0.1em;
+            color: #232323;
+            transition: opacity 0.2s;
+        }
+        .nav-link:hover { opacity: 0.45; }
+
+        .cta-link {
+            font-size: 1.05rem;
+            letter-spacing: 0.14em;
+            border-bottom: 1px solid currentColor;
+            padding-bottom: 2px;
+            transition: opacity 0.2s;
+        }
+        .cta-link:hover { opacity: 0.5; }
+
+        .eyebrow {
+            font-size: 1.16rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        .feat-row {
+            display: flex;
+            gap: 9px;
+            padding: 7px 0;
+            border-bottom: 1px solid rgba(35,35,35,0.09);
+            font-size: 0.78rem;
+            line-height: 1.7;
+            letter-spacing: 0.02em;
+        }
+        .feat-dash { opacity: 0.3; flex-shrink: 0; }
+
+        .plaque-card {
+            border: 1px solid rgba(35,35,35,0.18);
+            padding: 36px 32px;
+            transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        box-shadow 0.38s ease,
+                        border-color 0.38s ease;
+        }
+        .plaque-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 48px rgba(35,35,35,0.13);
+            border-color: rgba(35,35,35,0.55);
+        }
+        .plaque-card.featured { border-color: #232323; }
+        .plaque-card.featured:hover {
+            box-shadow: 0 20px 48px rgba(35,35,35,0.2);
+        }
+        .plaque-img-wrap {
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .plaque-img-wrap img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .plaque-card:hover .plaque-img-wrap img {
+            transform: scale(1.05);
+        }
+
+        /* Timeline marquee */
+        @keyframes dot-blink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            40%       { opacity: 0.15; transform: scale(0.6); }
+            70%       { opacity: 0.85; transform: scale(1.1); }
+        }
+
+        .timeline-dot {
+            border-radius: 50%;
+            cursor: default;
+            transition: box-shadow 0.2s;
+        }
+        .timeline-dot:hover {
+            animation: dot-blink 0.9s ease-in-out 2;
+            box-shadow: 0 0 0 5px rgba(35,35,35,0.18);
+        }
+
+        @keyframes pm-marquee-scroll {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        #pm-marquee-outer {
+            overflow: hidden;
+            width: 100%;
+            position: relative;
+        }
+
+        #pm-marquee-outer::before,
+        #pm-marquee-outer::after {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 120px;
+            z-index: 3;
+            pointer-events: none;
+        }
+        #pm-marquee-outer::before {
+            left: 0;
+            background: linear-gradient(to right, #e8ded0, transparent);
+        }
+        #pm-marquee-outer::after {
+            right: 0;
+            background: linear-gradient(to left, #e8ded0, transparent);
+        }
+
+        #pm-marquee-track {
+            display: flex;
+            width: max-content;
+            animation: pm-marquee-scroll 36s linear infinite;
+            position: relative;
+        }
+        #pm-marquee-outer:hover #pm-marquee-track {
+            animation-play-state: paused;
+        }
+
+        .pm-step {
+            flex: 0 0 220px;
+            text-align: center;
+            padding: 0 16px;
+            position: relative;
+            z-index: 1;
+        }
+        .pm-step-dot-row {
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Scroll reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(22px);
+            transition: opacity 0.75s ease, transform 0.75s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* Subscription plan cards */
+        .plan-card {
+            transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        box-shadow 0.38s ease;
+        }
+        .plan-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 48px rgba(35,35,35,0.13);
+        }
+        .plan-card.plan-dark:hover {
+            box-shadow: 0 20px 52px rgba(35,35,35,0.38);
+        }
+
+        /* Premium feature cards */
+        .prem-feature {
+            border: 1px solid rgba(35,35,35,0.12);
+            padding: 28px 30px;
+            transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        box-shadow 0.38s ease,
+                        border-color 0.38s ease;
+        }
+        .prem-feature:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 38px rgba(35,35,35,0.1);
+            border-color: rgba(35,35,35,0.38);
+        }
+        .prem-feature .prem-num {
+            transition: opacity 0.38s ease, letter-spacing 0.38s ease;
+        }
+        .prem-feature:hover .prem-num {
+            opacity: 0.7;
+            letter-spacing: 0.42em;
+        }
+
+        /* Where They Can Rest hover cards */
+        .rest-card {
+            transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        box-shadow 0.38s ease,
+                        background-color 0.38s ease;
+        }
+        .rest-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 18px 42px rgba(35,35,35,0.11);
+            background-color: #e8e0d4 !important;
+        }
+        .rest-icon {
+            opacity: 0.5;
+            transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        opacity 0.38s ease;
+        }
+        .rest-card:hover .rest-icon {
+            opacity: 0.9;
+            transform: translateY(-4px) scale(1.1);
+        }
+        .rest-card .rest-label {
+            transition: letter-spacing 0.38s ease;
+        }
+        .rest-card:hover .rest-label {
+            letter-spacing: 0.04em;
+        }
+
+        @media (max-width: 768px) {
+            #pm-site-header {
+                flex-direction: column !important;
+                padding: 24px 16px 60px !important;
+            }
+            #pm-logo-wrap {
+                position: relative !important;
+                left: auto !important;
+                transform: none !important;
+                margin: 16px 0 !important;
+            }
+            #pm-logo-wrap img { height: 130px !important; }
+            #pm-nav-left, #pm-nav-right {
+                flex: none !important;
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+                gap: 16px !important;
+            }
+            #plaques-grid {
+                grid-template-columns: 1fr !important;
+            }
+            #where-they-rest-grid {
+                grid-template-columns: 1fr 1fr !important;
+            }
+            #subscription-grid {
+                grid-template-columns: 1fr !important;
+            }
+            #premium-features-grid {
+                grid-template-columns: 1fr !important;
+            }
+            #pm-footer-info-row, #pm-footer-bottom-bar {
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+                gap: 20px !important;
+            }
+            #pm-footer-social-row {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                gap: 16px !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ─── SVG CLIP PATH ─── -->
+    <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+        <defs>
+            <clipPath id="archClip" clipPathUnits="objectBoundingBox">
+                <path d="
+                  M 0,0.16
+                  C 0.07,0.16 0.16,0   0.27,0
+                  C 0.37,0   0.45,0.09 0.5,0.09
+                  C 0.55,0.09 0.63,0  0.73,0
+                  C 0.84,0   0.93,0.16 1,0.16
+                  L 1,1 L 0,1 Z
+                " />
+            </clipPath>
+        </defs>
+    </svg>
+
+    <!-- ═══════════════════════════════════════════
+         NAVIGATION
+    ════════════════════════════════════════════ -->
+    <header id="pm-site-header" style="
+        display:flex; align-items:center; justify-content:space-between;
+        padding:100px 44px 180px; position:relative; z-index:20;
+    ">
+        <nav id="pm-nav-left" style="display:flex; gap:52px; align-items:center; flex:1; justify-content:flex-start;">
+            <a href="packages.html" class="nav-link">OUR PACKAGES</a>
+            <a href="monuments.html" class="nav-link">MONUMENTS</a>
+        </nav>
+
+        <div id="pm-logo-wrap" style="position:absolute; left:50%; transform:translateX(-50%); text-align:center; line-height:1;">
+            <a href="index.html">
+                <img src="image/legacy_link_logo.png" alt="Legacy Link" style="height:260px; width:auto; display:block; margin:0 auto;" />
+            </a>
+        </div>
+
+        <nav id="pm-nav-right" style="display:flex; gap:26px; align-items:center; flex:1; justify-content:flex-end;">
+            <a href="pet-memorials.html" class="nav-link active" style="border-bottom:1.5px solid #232323; padding-bottom:1px;">PET MEMORIALS</a>
+            <a href="coming-soon.html" style="
+                font-family:'Cormorant Garamond',serif;
+                font-size:0.9rem; letter-spacing:0.18em;
+                color:#232323; text-decoration:none;
+                border:1px solid #232323; padding:10px 24px;
+                transition:background 0.2s, color 0.2s;
+            " onmouseover="this.style.background='#232323';this.style.color='#fff';"
+               onmouseout="this.style.background='transparent';this.style.color='#232323';">CREATE ACCOUNT</a>
+        </nav>
+    </header>
+
+    <!-- ═══════════════════════════════════════════
+         HERO
+    ════════════════════════════════════════════ -->
+    <section style="position:relative; margin-top:-120px;">
+        <div id="pet-three-container" style="clip-path:url(#archClip); position:relative; overflow:hidden; height:82vh; min-height:520px; background:#111;">
+            <canvas id="pet-three-canvas" style="position:absolute; top:0; left:0; display:block;"></canvas>
+            <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.22) 50%, transparent 80%); pointer-events:none;"></div>
+        </div>
+
+        <div style="position:absolute; left:5.5%; bottom:12%; color:#fff; z-index:5;">
+            <p class="eyebrow" style="font-size:0.62rem; margin-bottom:14px; opacity:0.85; color:#fff; letter-spacing:0.3em;">LEGACY LINK</p>
+            <h1 class="serif" style="
+                font-size:clamp(2rem,4.8vw,3.8rem);
+                font-weight:300; font-style:italic;
+                line-height:1.06; margin-bottom:24px;
+                letter-spacing:0.01em;
+                text-shadow:0 1px 4px rgba(0,0,0,0.18);
+            ">For the companions<br>who gave us everything.</h1>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         INTRO
+    ════════════════════════════════════════════ -->
+    <section style="padding:96px 0 72px; text-align:center;" class="reveal">
+        <div style="max-width:720px; margin:0 auto; padding:0 24px;">
+            <p class="eyebrow" style="font-size:0.75rem; opacity:0.5; margin-bottom:24px;">PET MEMORIALS</p>
+            <h2 class="serif" style="
+                font-size:clamp(1.7rem,3.5vw,2.8rem);
+                font-weight:300; font-style:italic;
+                line-height:1.18; margin-bottom:32px;
+            ">Because every life —<br>no matter how small — deserves to be remembered.</h2>
+            <p style="font-size:0.85rem; line-height:1.9; opacity:0.76; margin-bottom:22px;">
+                The bond between a person and their pet is as real and lasting as any other. LegacyLink memorial
+                plaques are crafted for companion animals too — the same marine-grade quality, the same care for
+                lasting memory, placed wherever they rest.
+            </p>
+            <p style="font-size:0.85rem; line-height:1.9; opacity:0.76;">
+                Garden stones, urns, pet cemeteries, or a quiet corner of the yard — wherever your companion is remembered, a Legacy Link plaque becomes a doorway back to them.
+            </p>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         HOW IT WORKS TIMELINE
+    ════════════════════════════════════════════ -->
+    <section style="padding:0 0 80px;">
+        <p style="font-size:0.68rem; letter-spacing:0.32em; text-transform:uppercase; opacity:0.45; text-align:center; margin-bottom:48px;">How It Works</p>
+
+        <div id="pm-marquee-outer">
+            <div id="pm-marquee-track">
+                <!-- Continuous connecting line -->
+                <div style="position:absolute; top:14px; left:0; right:0; height:1px; background:rgba(35,35,35,0.14); z-index:0;"></div>
+
+                <!-- ── Set A ── -->
+                <div class="pm-step">
+                    <div class="pm-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">01</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Choose your<br>plaque material</p>
+                </div>
+
+                <div class="pm-step">
+                    <div class="pm-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">02</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Build the<br>digital tribute</p>
+                </div>
+
+                <div class="pm-step">
+                    <div class="pm-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">03</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Upload photos<br>&amp; memories</p>
+                </div>
+
+                <div class="pm-step">
+                    <div class="pm-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">04</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">We engrave<br>&amp; embed the QR</p>
+                </div>
+
+                <div class="pm-step">
+                    <div class="pm-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">05</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Place wherever<br>they rest</p>
+                </div>
+
+                <div class="pm-step">
+                    <div class="pm-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">06</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Scan &amp; share<br>forever</p>
+                </div>
+
+                <!-- ── Set B (seamless loop duplicate) ── -->
+                <div class="pm-step" aria-hidden="true">
+                    <div class="pm-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">01</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Choose your<br>plaque material</p>
+                </div>
+
+                <div class="pm-step" aria-hidden="true">
+                    <div class="pm-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">02</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Build the<br>digital tribute</p>
+                </div>
+
+                <div class="pm-step" aria-hidden="true">
+                    <div class="pm-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">03</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Upload photos<br>&amp; memories</p>
+                </div>
+
+                <div class="pm-step" aria-hidden="true">
+                    <div class="pm-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">04</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">We engrave<br>&amp; embed the QR</p>
+                </div>
+
+                <div class="pm-step" aria-hidden="true">
+                    <div class="pm-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">05</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Place wherever<br>they rest</p>
+                </div>
+
+                <div class="pm-step" aria-hidden="true">
+                    <div class="pm-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">06</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Scan &amp; share<br>forever</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── Divider ─── -->
+    <div style="padding:0 5%;">
+        <hr style="border:none; border-top:1px solid rgba(35,35,35,0.13); max-width:1100px; margin:0 auto;">
+    </div>
+
+    <!-- ═════════════════════════════════════════════
+         PRICING
+    ═════════════════════════════════════════════ -->
+    <section style="padding:80px 8%;" class="reveal">
+        <p style="font-size:0.68rem; letter-spacing:0.32em; text-transform:uppercase; opacity:0.45; text-align:center; margin-bottom:48px;">Our Plaques</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:2px; max-width:900px; margin:0 auto 2px;">
+            <div style="background:#f0ebe3; padding:32px 36px;">
+                <p style="font-size:0.62rem; letter-spacing:0.28em; text-transform:uppercase; opacity:0.5; margin-bottom:10px;">Stainless Steel</p>
+                <p class="serif" style="font-size:clamp(1.3rem,2.2vw,1.7rem); font-weight:300; line-height:1.2; margin-bottom:10px;">Marine-Grade<br>Stainless Steel</p>
+                <p style="font-size:0.75rem; opacity:0.6; line-height:1.8; margin-bottom:16px;">Ultra-durable brushed satin finish. Fully weatherproof and UV-resistant.</p>
+                <div style="display:flex; align-items:baseline; gap:5px;">
+                    <span class="serif" style="font-size:1.9rem; font-weight:300; line-height:1;">$169</span>
+                    <span style="font-size:0.65rem; opacity:0.5; letter-spacing:0.08em;">CAD</span>
+                </div>
+            </div>
+            <div style="background:#ece6dc; padding:32px 36px;">
+                <p style="font-size:0.62rem; letter-spacing:0.28em; text-transform:uppercase; opacity:0.5; margin-bottom:10px;">Bronzes</p>
+                <p class="serif" style="font-size:clamp(1.3rem,2.2vw,1.7rem); font-weight:300; line-height:1.2; margin-bottom:10px;">Marine<br>Brushed Bronze</p>
+                <p style="font-size:0.75rem; opacity:0.6; line-height:1.8; margin-bottom:16px;">Warm heritage finish. Museum quality — ideal for traditional settings.</p>
+                <div style="display:flex; align-items:baseline; gap:5px;">
+                    <span class="serif" style="font-size:1.9rem; font-weight:300; line-height:1;">$189</span>
+                    <span style="font-size:0.65rem; opacity:0.5; letter-spacing:0.08em;">CAD</span>
+                </div>
+            </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:2px; max-width:900px; margin:0 auto;">
+            <div style="background:#f5f1ea; padding:28px 36px;">
+                <p style="font-size:0.62rem; letter-spacing:0.28em; text-transform:uppercase; opacity:0.4; margin-bottom:8px;">Basic — Included</p>
+                <p class="serif" style="font-size:1.25rem; font-weight:300; line-height:1.2; margin-bottom:10px;">Core Memorial</p>
+                <p style="font-size:0.72rem; opacity:0.6; line-height:1.8;">Biography, photos, QR analytics, privacy PIN &amp; virtual tributes. Included free with every plaque.</p>
+            </div>
+            <div style="background:#232323; color:#e8ded0; padding:28px 36px;">
+                <p style="font-size:0.62rem; letter-spacing:0.28em; text-transform:uppercase; opacity:0.4; margin-bottom:8px;">Premium — Upgrade</p>
+                <p class="serif" style="font-size:1.25rem; font-weight:300; line-height:1.2; margin-bottom:10px; color:#e8ded0;">Living Legacy</p>
+                <p style="font-size:0.72rem; opacity:0.6; line-height:1.8; color:#e8ded0;">Video, audio, guestbook, geotagging, family story integration &amp; priority support.</p>
+                <p style="font-size:0.68rem; opacity:0.42; margin-top:10px; font-style:italic; color:#e8ded0;">$15/mo for 24 months &middot; or $199 one-time</p>
+            </div>
+        </div>
+        <p style="font-size:0.72rem; letter-spacing:0.03em; line-height:1.8; opacity:0.5; max-width:900px; margin:18px auto 0; font-style:italic;">
+            Family Story Integration is included exclusively with the Premium plan.
+        </p>
+        <div style="text-align:center; margin-top:44px;">
+            <a href="packages.html" style="
+                font-family:'Cormorant Garamond',serif;
+                font-size:0.9rem; letter-spacing:0.18em;
+                color:#232323; background:transparent;
+                border:1px solid #232323; padding:12px 32px;
+                display:inline-block;
+                transition:background 0.2s, color 0.2s;
+            " onmouseover="this.style.background='#232323';this.style.color='#e8ded0';" onmouseout="this.style.background='transparent';this.style.color='#232323';">SEE FULL PACKAGE DETAILS</a>
+        </div>
+    </section>
+
+    <!-- ─── Divider ─── -->
+    <div style="padding:0 5%;">
+        <hr style="border:none; border-top:1px solid rgba(35,35,35,0.13); max-width:1100px; margin:0 auto;">
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         PULL QUOTE
+    ════════════════════════════════════════════ -->
+    <section style="
+        padding:88px 8% 92px; text-align:center;
+        border-top:1px solid rgba(35,35,35,0.1);
+        border-bottom:1px solid rgba(35,35,35,0.1);
+    " class="reveal">
+        <blockquote class="serif" style="
+            font-size:clamp(1.4rem,3.2vw,2.6rem);
+            font-weight:300; font-style:italic;
+            line-height:1.24; max-width:780px;
+            margin:0 auto 28px;
+        ">"They can't tell you how much they love you.<br>But you always knew. This is how you tell them back."</blockquote>
+        <p style="font-size:0.72rem; letter-spacing:0.3em; opacity:0.4; text-transform:uppercase;">— A Legacy Link Family</p>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         CTA
+    ════════════════════════════════════════════ -->
+    <section style="padding:88px 8%; text-align:center;" class="reveal">
+        <p class="eyebrow" style="font-size:0.68rem; opacity:0.45; margin-bottom:20px;">Ready to begin?</p>
+        <h2 class="serif" style="font-size:clamp(1.7rem,3.5vw,2.65rem); font-weight:300; font-style:italic; line-height:1.18; margin-bottom:36px;">
+            Honour their memory.<br>Forever.
+        </h2>
+        <div style="display:flex; justify-content:center; align-items:center; gap:20px; flex-wrap:wrap;">
+            <a href="coming-soon.html" style="
+                font-family:'Cormorant Garamond',serif;
+                font-size:0.9rem; letter-spacing:0.18em;
+                color:#e8ded0; background:#232323;
+                border:1px solid #232323; padding:12px 32px;
+                transition:background 0.2s, color 0.2s;
+            " onmouseover="this.style.background='transparent';this.style.color='#232323';"
+               onmouseout="this.style.background='#232323';this.style.color='#e8ded0';">ORDER A PLAQUE</a>
+            <a href="packages.html" style="
+                font-family:'Cormorant Garamond',serif;
+                font-size:0.9rem; letter-spacing:0.18em;
+                color:#232323; background:transparent;
+                border:1px solid #232323; padding:12px 32px;
+                transition:background 0.2s, color 0.2s;
+            " onmouseover="this.style.background='#232323';this.style.color='#e8ded0';"
+               onmouseout="this.style.background='transparent';this.style.color='#232323';">VIEW ALL PACKAGES</a>
+            <a href="pet-brochure.html" target="_blank" style="
+                font-family:'Cormorant Garamond',serif;
+                font-size:0.9rem; letter-spacing:0.18em;
+                color:#232323; background:transparent;
+                border:1px solid #232323; padding:12px 32px;
+                transition:background 0.2s, color 0.2s;
+            " onmouseover="this.style.background='#232323';this.style.color='#e8ded0';"
+               onmouseout="this.style.background='transparent';this.style.color='#232323';">DOWNLOAD BROCHURE</a>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         FOOTER
+    ════════════════════════════════════════════ -->
+    <footer style="position:relative; margin-top:0;">
+        <div style="position:relative; line-height:0;">
+            <svg viewBox="0 0 1440 110" preserveAspectRatio="none"
+                 style="width:100%; height:110px; display:block;"
+                 xmlns="http://www.w3.org/2000/svg">
+                <path d="
+                    M 0,110 L 0,80
+                    C 120,80 240,0 360,0
+                    C 480,0 600,80 720,80
+                    C 840,80 960,0 1080,0
+                    C 1200,0 1320,80 1440,80
+                    L 1440,110 Z
+                " fill="#232323"/>
+            </svg>
+        </div>
+
+        <div style="background:#232323; color:#e8ded0; padding:0 5% 40px;">
+
+            <div style="text-align:center; padding:80px 0 64px; border-bottom:1px solid rgba(232,222,208,0.18);">
+                <p style="font-size:0.5rem; letter-spacing:0.42em; color:#e8ded0; opacity:0.45; margin-bottom:26px; text-transform:uppercase;">Our Mission</p>
+                <h2 class="serif" style="
+                    font-size:clamp(1.8rem,4vw,3.2rem);
+                    font-weight:300; font-style:italic;
+                    line-height:1.18; margin-bottom:38px; color:#e8ded0;
+                ">To ensure that no one's story<br>is ever forgotten.</h2>
+                <a href="packages.html" class="cta-link" style="
+                    color:#e8ded0; border-color:rgba(232,222,208,0.5);
+                    font-size:0.6rem; letter-spacing:0.22em;
+                ">EXPLORE OUR PACKAGES</a>
+            </div>
+
+            <div style="text-align:center; padding:28px 0 52px;">
+                <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'}); return false;" style="
+                    color:#e8ded0; text-decoration:none;
+                    font-size:0.62rem; letter-spacing:0.3em;
+                    line-height:1.8; display:inline-block;
+                    opacity:0.7; transition:opacity 0.2s;
+                " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+                    BACK<br>TO THE<br>TOP
+                </a>
+            </div>
+
+            <div id="pm-footer-info-row" style="display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:48px; border-bottom:1px solid rgba(232,222,208,0.18);">
+                <div style="font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7;">
+                    LegacyLink Inc.<br>1900 Legacy Drive<br>Oshawa, Ontario<br>CANADA
+                </div>
+                <div style="text-align:center;">
+                    <a href="mailto:info@legacylink.ca" style="
+                        color:#e8ded0; text-decoration:none;
+                        font-size:0.65rem; letter-spacing:0.28em;
+                        border-bottom:1px solid rgba(232,222,208,0.5);
+                        padding-bottom:3px; opacity:0.8;
+                    ">CONTACT US</a>
+                </div>
+                <div style="font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7; text-align:right;">
+                    info@legacylink.ca<br>+1 (905) 000-0000
+                </div>
+            </div>
+
+            <div id="pm-footer-social-row" style="display:flex; justify-content:space-between; align-items:center; padding:36px 0; border-bottom:1px solid rgba(232,222,208,0.18);">
+                <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">INSTAGRAM</a>
+                <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">FACEBOOK</a>
+                <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">TWITTER</a>
+                <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">YOUTUBE</a>
+            </div>
+
+            <div id="pm-footer-bottom-bar" style="display:flex; justify-content:space-between; align-items:center; padding-top:28px;">
+                <p style="flex:1; font-size:0.52rem; letter-spacing:0.12em; opacity:0.45;">
+                    &copy; 2026 LegacyLink, all rights reserved.
+                </p>
+                <div class="serif" style="font-size:1.4rem; font-weight:700; letter-spacing:0.3em; opacity:0.85;">LEGACY LINK</div>
+                <div style="flex:1; display:flex; justify-content:flex-end; gap:20px;">
+                    <a href="brochure.html" target="_blank" style="color:#e8ded0; text-decoration:none; font-size:0.52rem; letter-spacing:0.15em; opacity:0.45;">DOWNLOAD OUR BROCHURE</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    (function () {
+        'use strict';
+
+        var IMAGES = [
+            'image/dog1%20(1).jpeg',  'image/dog1%20(2).jpeg',
+            'image/dog1%20(3).jpeg',  'image/dog1%20(4).jpeg',
+            'image/dog1%20(5).jpeg',  'image/dog1%20(6).jpeg',
+            'image/dog1%20(7).jpeg',  'image/dog1%20(8).jpeg',
+            'image/dog1%20(9).jpeg',  'image/dog1%20(10).jpeg',
+            'image/dog1%20(11).jpeg'
+        ];
+        var VISIBLE_COUNT  = 10;
+        var DEPTH_RANGE    = 50;
+        var AUTO_SPEED     = 0.28;
+        var MAX_H_OFFSET   = 8;
+        var MAX_V_OFFSET   = 6;
+        var FADE_IN_START  = 0.05; var FADE_IN_END  = 0.25;
+        var FADE_OUT_START = 0.40; var FADE_OUT_END = 0.43;
+        var BLUR_IN_START  = 0.00; var BLUR_IN_END  = 0.10;
+        var BLUR_OUT_START = 0.40; var BLUR_OUT_END = 0.43;
+        var MAX_BLUR       = 8.0;
+
+        var container = document.getElementById('pet-three-container');
+        var canvas    = document.getElementById('pet-three-canvas');
+        if (!canvas || !container || typeof THREE === 'undefined') return;
+
+        try {
+            var testCtx = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!testCtx) return;
+        } catch (e) { return; }
+
+        var scene    = new THREE.Scene();
+        var camera   = new THREE.PerspectiveCamera(55, 1, 0.01, 200);
+        camera.position.set(0, 0, 0);
+
+        var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+        function resize() {
+            var w = container.clientWidth;
+            var h = container.clientHeight;
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(w, h);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        var vertexShader = [
+            'uniform float scrollForce;',
+            'uniform float time;',
+            'varying vec2 vUv;',
+            'void main() {',
+            '  vUv = uv;',
+            '  vec3 pos = position;',
+            '  float curveIntensity = scrollForce * 0.3;',
+            '  float dist = length(pos.xy);',
+            '  float curve = dist * dist * curveIntensity;',
+            '  float ripple1 = sin(pos.x * 2.0 + scrollForce * 3.0) * 0.02;',
+            '  float ripple2 = sin(pos.y * 2.5 + scrollForce * 2.0) * 0.015;',
+            '  float cloth = (ripple1 + ripple2) * abs(curveIntensity) * 2.0;',
+            '  pos.z -= (curve + cloth);',
+            '  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);',
+            '}'
+        ].join('\n');
+
+        var fragmentShader = [
+            'uniform sampler2D map;',
+            'uniform float opacity;',
+            'uniform float blurAmount;',
+            'uniform float scrollForce;',
+            'varying vec2 vUv;',
+            'void main() {',
+            '  vec4 color;',
+            '  if (blurAmount > 0.0) {',
+            '    vec4 blurred = vec4(0.0);',
+            '    float total = 0.0;',
+            '    vec2 px = vec2(0.0015) * blurAmount;',
+            '    for (float x = -2.0; x <= 2.0; x += 1.0) {',
+            '      for (float y = -2.0; y <= 2.0; y += 1.0) {',
+            '        float w = 1.0 / (1.0 + length(vec2(x, y)));',
+            '        blurred += texture2D(map, vUv + vec2(x,y)*px) * w;',
+            '        total += w;',
+            '      }',
+            '    }',
+            '    color = blurred / total;',
+            '  } else {',
+            '    color = texture2D(map, vUv);',
+            '  }',
+            '  color.rgb += vec3(abs(scrollForce) * 0.005);',
+            '  gl_FragColor = vec4(color.rgb, color.a * opacity);',
+            '}'
+        ].join('\n');
+
+        function makeMaterial() {
+            return new THREE.ShaderMaterial({
+                transparent: true,
+                uniforms: {
+                    map:         { value: null },
+                    opacity:     { value: 1.0 },
+                    blurAmount:  { value: 0.0 },
+                    scrollForce: { value: 0.0 },
+                    time:        { value: 0.0 },
+                },
+                vertexShader:   vertexShader,
+                fragmentShader: fragmentShader,
+            });
+        }
+        var materials = [];
+        for (var mi = 0; mi < VISIBLE_COUNT; mi++) materials.push(makeMaterial());
+
+        var spatialPos = [];
+        for (var si = 0; si < VISIBLE_COUNT; si++) {
+            var hA = (si * 2.618) % (Math.PI * 2);
+            var vA = (si * 1.618 + Math.PI / 3) % (Math.PI * 2);
+            var hR = (si % 3) * 1.2;
+            var vR = ((si + 1) % 4) * 0.8;
+            spatialPos.push({
+                x: (Math.sin(hA) * hR * MAX_H_OFFSET) / 3,
+                y: (Math.cos(vA) * vR * MAX_V_OFFSET) / 4
+            });
+        }
+
+        var geo = new THREE.PlaneGeometry(1, 1, 32, 32);
+        var meshes = [];
+        var planesData = [];
+        for (var pi = 0; pi < VISIBLE_COUNT; pi++) {
+            var mesh = new THREE.Mesh(geo, materials[pi]);
+            scene.add(mesh);
+            meshes.push(mesh);
+            planesData.push({
+                z:          ((DEPTH_RANGE / VISIBLE_COUNT) * pi) % DEPTH_RANGE,
+                imageIndex: pi % IMAGES.length,
+                x:          spatialPos[pi].x,
+                y:          spatialPos[pi].y
+            });
+        }
+
+        var textures = new Array(IMAGES.length).fill(null);
+        var loader   = new THREE.TextureLoader();
+        IMAGES.forEach(function (src, i) {
+            loader.load(src, function (tex) {
+                tex.colorSpace = THREE.SRGBColorSpace;
+                textures[i] = tex;
+            });
+        });
+
+        var scrollVelocity = 0;
+        var autoPlay       = true;
+        var lastInteract   = Date.now();
+
+        canvas.addEventListener('wheel', function (e) {
+            scrollVelocity += e.deltaY * 0.01;
+            autoPlay = false;
+            lastInteract = Date.now();
+        }, { passive: true });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                scrollVelocity -= 2; autoPlay = false; lastInteract = Date.now();
+            } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                scrollVelocity += 2; autoPlay = false; lastInteract = Date.now();
+            }
+        });
+
+        setInterval(function () {
+            if (Date.now() - lastInteract > 3000) autoPlay = true;
+        }, 1000);
+
+        function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+        function calcOpacity(norm) {
+            if (norm < FADE_IN_START)  return 0;
+            if (norm <= FADE_IN_END)   return (norm - FADE_IN_START) / (FADE_IN_END - FADE_IN_START);
+            if (norm < FADE_OUT_START) return 1;
+            if (norm <= FADE_OUT_END)  return 1 - (norm - FADE_OUT_START) / (FADE_OUT_END - FADE_OUT_START);
+            return 0;
+        }
+
+        function calcBlur(norm) {
+            if (norm < BLUR_IN_START)  return MAX_BLUR;
+            if (norm <= BLUR_IN_END)   return MAX_BLUR * (1 - (norm - BLUR_IN_START) / (BLUR_IN_END - BLUR_IN_START));
+            if (norm < BLUR_OUT_START) return 0;
+            if (norm <= BLUR_OUT_END)  return MAX_BLUR * (norm - BLUR_OUT_START) / (BLUR_OUT_END - BLUR_OUT_START);
+            return MAX_BLUR;
+        }
+
+        var halfRange    = DEPTH_RANGE / 2;
+        var imageAdvance = VISIBLE_COUNT % IMAGES.length || IMAGES.length;
+        var clock        = new THREE.Clock();
+        var lastTime     = performance.now();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            var now   = performance.now();
+            var delta = Math.min((now - lastTime) / 1000, 0.05);
+            lastTime  = now;
+            var time  = clock.getElapsedTime();
+
+            if (autoPlay) scrollVelocity += AUTO_SPEED * delta;
+            scrollVelocity *= 0.95;
+
+            for (var i = 0; i < VISIBLE_COUNT; i++) {
+                var plane = planesData[i];
+                var newZ  = plane.z + scrollVelocity * delta * 10;
+                var wrapsF = 0, wrapsB = 0;
+
+                if (newZ >= DEPTH_RANGE) {
+                    wrapsF = Math.floor(newZ / DEPTH_RANGE);
+                    newZ  -= DEPTH_RANGE * wrapsF;
+                } else if (newZ < 0) {
+                    wrapsB = Math.ceil(-newZ / DEPTH_RANGE);
+                    newZ  += DEPTH_RANGE * wrapsB;
+                }
+
+                if (wrapsF > 0) plane.imageIndex = (plane.imageIndex + wrapsF * imageAdvance) % IMAGES.length;
+                if (wrapsB > 0) {
+                    var step = plane.imageIndex - wrapsB * imageAdvance;
+                    plane.imageIndex = ((step % IMAGES.length) + IMAGES.length) % IMAGES.length;
+                }
+
+                plane.z = ((newZ % DEPTH_RANGE) + DEPTH_RANGE) % DEPTH_RANGE;
+
+                var norm   = plane.z / DEPTH_RANGE;
+                var worldZ = plane.z - halfRange;
+                var tex    = textures[plane.imageIndex];
+                var mat    = materials[i];
+                var m      = meshes[i];
+
+                if (tex && mat.uniforms.map.value !== tex) {
+                    mat.uniforms.map.value = tex;
+                    var aspect = (tex.image && tex.image.width && tex.image.height)
+                        ? tex.image.width / tex.image.height : 1;
+                    m.scale.set(aspect > 1 ? 2 * aspect : 2, aspect > 1 ? 2 : 2 / aspect, 1);
+                }
+
+                mat.uniforms.opacity.value     = clamp(calcOpacity(norm), 0, 1);
+                mat.uniforms.blurAmount.value  = clamp(calcBlur(norm), 0, MAX_BLUR);
+                mat.uniforms.scrollForce.value = scrollVelocity;
+                mat.uniforms.time.value        = time;
+
+                m.position.set(plane.x, plane.y, worldZ);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    })();
+    </script>
+
+    <script>
+        const revealEls = document.querySelectorAll('.reveal');
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    e.target.classList.add('visible');
+                    io.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        revealEls.forEach(el => io.observe(el));
+    </script>
+
+</body>
+</html>

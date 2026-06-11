@@ -62,9 +62,20 @@
 
         /* ── Pillar card hover lift ── */
         .pillar-card {
-            transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        box-shadow 0.38s ease;
         }
-        .pillar-card:hover { transform: translateY(-6px); }
+        .pillar-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 18px 42px rgba(35,35,35,0.1);
+        }
+        .pillar-card:hover svg {
+            opacity: 0.85 !important;
+            transform: translateY(-3px) scale(1.08);
+        }
+        .pillar-card svg {
+            transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.38s ease;
+        }
 
         /* ── Founder image: desaturate → full colour ── */
         .founder-img {
@@ -82,6 +93,107 @@
         .reveal.visible {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* ── Journey marquee ── */
+        @keyframes marquee-scroll {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        #journey-marquee-outer {
+            overflow: hidden;
+            width: 100%;
+            position: relative;
+            margin-bottom: 54px;
+        }
+
+        #journey-marquee-outer::before,
+        #journey-marquee-outer::after {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 100px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        #journey-marquee-outer::before {
+            left: 0;
+            background: linear-gradient(to right, #e8ded0, transparent);
+        }
+
+        #journey-marquee-outer::after {
+            right: 0;
+            background: linear-gradient(to left, #e8ded0, transparent);
+        }
+
+        #journey-marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marquee-scroll 30s linear infinite;
+            position: relative;
+        }
+
+        #journey-marquee-outer:hover #journey-marquee-track {
+            animation-play-state: paused;
+        }
+
+        .journey-step {
+            flex: 0 0 220px;
+            text-align: center;
+            padding: 0 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .journey-step-dot-row {
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            #os-site-header {
+                flex-direction: column !important;
+                padding: 24px 16px 60px !important;
+            }
+            #os-logo-wrap {
+                position: relative !important;
+                left: auto !important;
+                transform: none !important;
+                margin: 16px 0 !important;
+            }
+            #os-logo-wrap img { height: 130px !important; }
+            #os-nav-left, #os-nav-right {
+                flex: none !important;
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+                gap: 16px !important;
+            }
+            #pillars-grid {
+                grid-template-columns: 1fr !important;
+                gap: 48px !important;
+            }
+            #pillars-grid > div[style*="position:absolute"] { display: none !important; }
+            #founding-story-row, #pet-story-row {
+                flex-direction: column !important;
+                gap: 32px !important;
+            }
+            #founding-story-row > div,
+            #pet-story-row > div { flex: none !important; width: 100% !important; }
+            #os-footer-info-row, #os-footer-bottom-bar {
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+                gap: 20px !important;
+            }
+            #os-footer-social-row {
+                flex-wrap: wrap !important;
+                justify-content: center !important;
+                gap: 16px !important;
+            }
         }
     </style>
 </head>
@@ -107,7 +219,7 @@
     <!-- ═══════════════════════════════════════════
          NAVIGATION
     ════════════════════════════════════════════ -->
-    <header style="
+    <header id="os-site-header" style="
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -115,12 +227,12 @@
       position: relative;
       z-index: 20;
     ">
-        <nav style="display:flex; gap:28px; align-items:center; flex:1; justify-content:flex-start;">
-            <a href="our-stories.html" class="nav-link active">OUR STORIES</a>
-            <a href="packages.html" class="nav-link">PACKAGE</a>
+        <nav id="os-nav-left" style="display:flex; gap:52px; align-items:center; flex:1; justify-content:flex-start;">
+            <a href="packages.html" class="nav-link">OUR PACKAGES</a>
+            <a href="monuments.html" class="nav-link">MONUMENTS</a>
         </nav>
 
-        <div style="
+        <div id="os-logo-wrap" style="
           position: absolute; left: 50%; transform: translateX(-50%);
           text-align: center; line-height: 1;
         ">
@@ -129,9 +241,9 @@
             </a>
         </div>
 
-        <nav style="display:flex; gap:26px; align-items:center; flex:1; justify-content:flex-end;">
-            <a href="mailto:info@legacylink.ca" class="nav-link">CONTACT US</a>
-            <a href="http://localhost:3001/auth" target="_blank" style="
+        <nav id="os-nav-right" style="display:flex; gap:26px; align-items:center; flex:1; justify-content:flex-end;">
+            <a href="pet-memorials.html" class="nav-link">PET MEMORIALS</a>
+            <a href="coming-soon.html" target="_blank" style="
                 font-family:'Cormorant Garamond',serif;
                 font-size:0.9rem; letter-spacing:0.18em;
                 color:#232323; text-decoration:none;
@@ -225,7 +337,7 @@
     <section style="padding:84px 5% 92px;" class="reveal">
         <p class="eyebrow" style="text-align:center; font-size:0.75rem; opacity:0.5; margin-bottom:58px;">WHAT WE STAND FOR</p>
 
-        <div style="
+        <div id="pillars-grid" style="
           display:grid; grid-template-columns:repeat(3,1fr);
           max-width:1100px; margin:0 auto;
           position:relative;
@@ -282,57 +394,100 @@
     <!-- ═══════════════════════════════════════════
          TIMELINE
     ════════════════════════════════════════════ -->
-    <section style="padding:20px 5% 100px; overflow-x:auto;" class="reveal">
+    <section style="padding:20px 0 100px;" class="reveal">
         <p class="eyebrow" style="text-align:center; font-size:0.75rem; opacity:0.5; margin-bottom:54px;">OUR JOURNEY</p>
 
-        <div style="
-          display:flex; align-items:flex-start;
-          min-width:680px; max-width:1060px;
-          margin:0 auto; position:relative;
-          padding-top:24px;
-        ">
-            <!-- Solid line: start → current (60% of width) -->
-            <div style="position:absolute; top:8px; left:0; width:52%; height:1px; background:rgba(35,35,35,0.22);"></div>
-            <!-- Dashed line: current → end (future) -->
-            <div style="position:absolute; top:8px; left:52%; right:0; height:1px; background:none; border-top:1px dashed rgba(35,35,35,0.22);"></div>
+        <div id="journey-marquee-outer">
+            <div id="journey-marquee-track">
+                <!-- Continuous connecting line -->
+                <div style="position:absolute; top:14px; left:0; right:0; height:1px; background:rgba(35,35,35,0.14); z-index:0;"></div>
 
-            <!-- 2025 — The Spark -->
-            <div style="flex:1; text-align:center; padding-top:24px;">
-                <div style="width:8px; height:8px; border-radius:50%; background:#9a9480; margin:0 auto 20px; position:relative; top:-28px;"></div>
-                <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.4; margin-bottom:8px;">2025</p>
-                <p class="serif" style="font-size:0.9rem; font-weight:300; font-style:italic; line-height:1.35; opacity:0.75;">The idea<br>takes shape</p>
+                <!-- ── Set A ── -->
+                <div class="journey-step">
+                    <div class="journey-step-dot-row">
+                        <div style="width:8px; height:8px; background:#9a9480; border-radius:50%;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">2025</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">The idea<br>takes shape</p>
+                </div>
+
+                <div class="journey-step">
+                    <div class="journey-step-dot-row">
+                        <div style="width:8px; height:8px; background:#9a9480; border-radius:50%;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">EARLY 2026</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">First plaques<br>crafted by hand</p>
+                </div>
+
+                <div class="journey-step">
+                    <div class="journey-step-dot-row">
+                        <div style="width:8px; height:8px; background:#9a9480; border-radius:50%;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 4px;">2026</p>
+                    <p style="font-size:0.4rem; letter-spacing:0.18em; opacity:0.45; margin-bottom:6px; text-transform:uppercase; font-style:italic;">We are here</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Official<br>launch</p>
+                </div>
+
+                <div class="journey-step">
+                    <div class="journey-step-dot-row">
+                        <div style="width:8px; height:8px; background:#9a9480; border-radius:50%;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">LATE 2026</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Bronze series<br>release</p>
+                </div>
+
+                <div class="journey-step">
+                    <div class="journey-step-dot-row">
+                        <div style="width:8px; height:8px; background:#9a9480; border-radius:50%;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 4px;">2027</p>
+                    <p style="font-size:0.4rem; letter-spacing:0.18em; opacity:0.45; margin-bottom:6px; text-transform:uppercase; font-style:italic;">On the horizon</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">National<br>expansion</p>
+                </div>
+
+                <!-- ── Set B (duplicate for seamless loop) ── -->
+                <div class="journey-step" aria-hidden="true">
+                    <div class="journey-step-dot-row">
+                        <div style="width:8px; height:8px; background:#9a9480; border-radius:50%;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">2025</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">The idea<br>takes shape</p>
+                </div>
+
+                <div class="journey-step" aria-hidden="true">
+                    <div class="journey-step-dot-row">
+                        <div style="width:8px; height:8px; background:#9a9480; border-radius:50%;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">EARLY 2026</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">First plaques<br>crafted by hand</p>
+                </div>
+
+                <div class="journey-step" aria-hidden="true">
+                    <div class="journey-step-dot-row">
+                        <div style="width:8px; height:8px; background:#9a9480; border-radius:50%;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 4px;">2026</p>
+                    <p style="font-size:0.4rem; letter-spacing:0.18em; opacity:0.45; margin-bottom:6px; text-transform:uppercase; font-style:italic;">We are here</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Official<br>launch</p>
+                </div>
+
+                <div class="journey-step" aria-hidden="true">
+                    <div class="journey-step-dot-row">
+                        <div style="width:8px; height:8px; background:#9a9480; border-radius:50%;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">LATE 2026</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Bronze series<br>release</p>
+                </div>
+
+                <div class="journey-step" aria-hidden="true">
+                    <div class="journey-step-dot-row">
+                        <div style="width:8px; height:8px; background:#9a9480; border-radius:50%;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 4px;">2027</p>
+                    <p style="font-size:0.4rem; letter-spacing:0.18em; opacity:0.45; margin-bottom:6px; text-transform:uppercase; font-style:italic;">On the horizon</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">National<br>expansion</p>
+                </div>
             </div>
-
-            <!-- Early 2026 — First Plaques -->
-            <div style="flex:1; text-align:center; padding-top:24px;">
-                <div style="width:8px; height:8px; border-radius:50%; background:#5a5248; margin:0 auto 20px; position:relative; top:-28px;"></div>
-                <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.4; margin-bottom:8px;">EARLY 2026</p>
-                <p class="serif" style="font-size:0.9rem; font-weight:300; font-style:italic; line-height:1.35; opacity:0.75;">First plaques<br>crafted by hand</p>
-            </div>
-
-            <!-- 2026 — Launch (CURRENT) -->
-            <div style="flex:1; text-align:center; padding-top:24px;">
-                <div style="width:11px; height:11px; border-radius:50%; background:#232323; margin:0 auto 17px; position:relative; top:-29px; box-shadow:0 0 0 4px rgba(35,35,35,0.13);"></div>
-                <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.65; margin-bottom:4px;">2026</p>
-                <p style="font-size:0.4rem; letter-spacing:0.18em; opacity:0.4; margin-bottom:8px; text-transform:uppercase;">We are here</p>
-                <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Official<br>launch</p>
-            </div>
-
-            <!-- Late 2026 — Bronze Series (UPCOMING) -->
-            <div style="flex:1; text-align:center; padding-top:24px;">
-                <div style="width:8px; height:8px; border-radius:50%; background:transparent; border:1px solid rgba(35,35,35,0.3); margin:0 auto 20px; position:relative; top:-28px;"></div>
-                <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.32; margin-bottom:4px;">LATE 2026</p>
-                <p class="serif" style="font-size:0.9rem; font-weight:300; font-style:italic; line-height:1.35; opacity:0.4;">Bronze series<br>release</p>
-            </div>
-
-            <!-- 2027 — Vision (FUTURE) -->
-            <div style="flex:1; text-align:center; padding-top:24px;">
-                <div style="width:8px; height:8px; border-radius:50%; background:transparent; border:1px dashed rgba(35,35,35,0.25); margin:0 auto 20px; position:relative; top:-28px;"></div>
-                <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.28; margin-bottom:4px;">2027</p>
-                <p style="font-size:0.4rem; letter-spacing:0.18em; opacity:0.25; margin-bottom:8px; text-transform:uppercase; font-style:italic;">On the horizon</p>
-                <p class="serif" style="font-size:0.9rem; font-weight:300; font-style:italic; line-height:1.35; opacity:0.32;">National<br>expansion</p>
-            </div>
-
         </div>
     </section>
 
@@ -360,7 +515,7 @@
          FOUNDING STORY
     ════════════════════════════════════════════ -->
     <section style="padding:96px 5% 100px;" class="reveal">
-        <div style="
+        <div id="founding-story-row" style="
           display:flex; gap:8%; align-items:center;
           max-width:1100px; margin:0 auto;
         ">
@@ -394,17 +549,60 @@
         </div>
     </section>
 
+    <!-- ─── Divider ─── -->
+    <div style="padding:0 5%;">
+        <hr style="border:none; border-top:1px solid rgba(35,35,35,0.13); max-width:1100px; margin:0 auto;">
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         PET STORY
+    ════════════════════════════════════════════ -->
+    <section style="padding:96px 5% 100px;" class="reveal">
+        <div id="pet-story-row" style="
+          display:flex; gap:8%; align-items:center;
+          max-width:1100px; margin:0 auto;
+        ">
+            <!-- Text (left) -->
+            <div style="flex:1;">
+                <p class="eyebrow" style="font-size:0.72rem; opacity:0.45; margin-bottom:22px;">A PET STORY</p>
+                <h2 class="serif" style="
+                  font-size:clamp(1.6rem,3.2vw,2.55rem);
+                  font-weight:300;
+                  font-style:italic;
+                  line-height:1.18;
+                  margin-bottom:30px;
+                ">For Maple — fourteen years<br>of unconditional love.</h2>
+                <p style="font-size:0.85rem; line-height:1.9; opacity:0.76; margin-bottom:22px;">
+                    When Christine's golden retriever Maple passed after fourteen years together, she searched for a way to honour her that felt as sincere as the bond they shared. A gravestone felt too cold. A framed photo felt too small.
+                </p>
+                <p style="font-size:0.85rem; line-height:1.9; opacity:0.76; margin-bottom:34px;">
+                    A Legacy Link plaque now rests in her garden, beside the patch of sun Maple claimed every morning. Scan it and you'll find four hundred photos, a dozen video clips, and a guestbook where friends still leave notes — because the people who loved her haven't stopped.
+                </p>
+                <a href="#" class="cta-link" style="font-size:0.6rem; letter-spacing:0.2em;">READ THE FULL STORY</a>
+            </div>
+
+            <!-- Image (right) -->
+            <div style="flex:0 0 42%;">
+                <img src="image/golden.png"
+                     alt="Maple — a pet memorial story"
+                     class="founder-img"
+                     style="width:100%; height:500px; object-fit:cover; object-position:center; display:block;" />
+            </div>
+        </div>
+    </section>
+
     <!-- Download CTA -->
-    <div style="text-align:center; margin:50px 0;">
+    <div style="display:flex; justify-content:center; margin:50px 0;">
         <a href="brochure.html" target="_blank" style="
             font-family:'Cormorant Garamond',serif;
             font-size:0.9rem; letter-spacing:0.18em;
-            color:#232323; text-decoration:none;
+            color:#e8ded0; background:#232323;
+            text-decoration:none;
             border:1px solid #232323;
-            padding:10px 24px;
+            padding:12px 32px;
             transition:background 0.2s, color 0.2s;
-        " onmouseover="this.style.background='#232323';this.style.color='#fff';"
-           onmouseout="this.style.background='transparent';this.style.color='#232323';">DOWNLOAD OUR BROCHURE</a>
+        " onmouseover="this.style.background='transparent';this.style.color='#232323';"
+           onmouseout="this.style.background='#232323';this.style.color='#e8ded0';">DOWNLOAD OUR BROCHURE</a>
     </div>
 
     <!-- ═══════════════════════════════════════════
@@ -463,7 +661,7 @@
             </div>
 
             <!-- Address / Contact / Contact Info -->
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:48px; border-bottom:1px solid rgba(232,222,208,0.18);">
+            <div id="os-footer-info-row" style="display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:48px; border-bottom:1px solid rgba(232,222,208,0.18);">
                 <div style="font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7;">
                     LegacyLink Inc.<br>
                     1900 Legacy Drive<br>
@@ -485,7 +683,7 @@
             </div>
 
             <!-- Social links -->
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:36px 0; border-bottom:1px solid rgba(232,222,208,0.18);">
+            <div id="os-footer-social-row" style="display:flex; justify-content:space-between; align-items:center; padding:36px 0; border-bottom:1px solid rgba(232,222,208,0.18);">
                 <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">INSTAGRAM</a>
                 <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">FACEBOOK</a>
                 <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">TWITTER</a>
@@ -493,7 +691,7 @@
             </div>
 
             <!-- Bottom bar -->
-            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:28px;">
+            <div id="os-footer-bottom-bar" style="display:flex; justify-content:space-between; align-items:center; padding-top:28px;">
                 <p style="flex:1; font-size:0.52rem; letter-spacing:0.12em; opacity:0.45;">
                     &copy; 2026 LegacyLink, all rights reserved.
                 </p>

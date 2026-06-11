@@ -75,8 +75,19 @@
             padding: 32px 36px;
             display: flex;
             flex-direction: column;
+            transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        box-shadow 0.38s ease,
+                        border-color 0.38s ease;
+        }
+        .plan-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 48px rgba(35,35,35,0.11);
+            border-color: rgba(35,35,35,0.45);
         }
         .plan-card.featured { border-color: #232323; background: #f5f0e8; position: relative; }
+        .plan-card.featured:hover {
+            box-shadow: 0 20px 48px rgba(35,35,35,0.18);
+        }
 
         .plan-badge {
             position: absolute;
@@ -90,6 +101,45 @@
         .prem-feature {
             border: 1px solid rgba(35,35,35,0.12);
             padding: 28px 30px;
+            transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        box-shadow 0.38s ease,
+                        border-color 0.38s ease;
+        }
+        .prem-feature:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 38px rgba(35,35,35,0.1);
+            border-color: rgba(35,35,35,0.38);
+        }
+        .prem-feature .prem-num {
+            transition: opacity 0.38s ease, letter-spacing 0.38s ease;
+        }
+        .prem-feature:hover .prem-num {
+            opacity: 0.7;
+            letter-spacing: 0.42em;
+        }
+
+        /* Plaque product cards */
+        .plaque-prod-card {
+            transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        box-shadow 0.38s ease;
+        }
+        .plaque-prod-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 48px rgba(35,35,35,0.13);
+        }
+        .plaque-prod-img-wrap {
+            overflow: hidden;
+            margin-bottom: 28px;
+        }
+        .plaque-prod-img-wrap img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .plaque-prod-card:hover .plaque-prod-img-wrap img {
+            transform: scale(1.05);
         }
 
         /* Order button */
@@ -131,9 +181,9 @@
         display:flex; align-items:center; justify-content:space-between;
         padding:100px 44px 180px; position:relative; z-index:20;
     ">
-        <nav style="display:flex; gap:28px; align-items:center; flex:1; justify-content:flex-start;">
-            <a href="our-stories.html" class="nav-link">OUR STORIES</a>
-            <a href="packages.html" class="nav-link" style="font-weight:700; border-bottom:1px solid #232323; padding-bottom:2px;">PACKAGE</a>
+        <nav style="display:flex; gap:52px; align-items:center; flex:1; justify-content:flex-start;">
+            <a href="packages.html" class="nav-link" style="font-weight:700; border-bottom:1px solid #232323; padding-bottom:2px;">OUR PACKAGES</a>
+            <a href="monuments.html" class="nav-link">MONUMENTS</a>
         </nav>
 
         <div style="position:absolute; left:50%; transform:translateX(-50%); text-align:center; line-height:1;">
@@ -143,8 +193,8 @@
         </div>
 
         <nav style="display:flex; gap:26px; align-items:center; flex:1; justify-content:flex-end;">
-            <a href="mailto:info@legacylink.ca" class="nav-link">CONTACT US</a>
-            <a href="http://localhost:3001/auth" style="
+            <a href="pet-memorials.html" class="nav-link">PET MEMORIALS</a>
+            <a href="coming-soon.html" style="
                 font-family:'Cormorant Garamond',serif;
                 font-size:0.9rem; letter-spacing:0.18em;
                 color:#232323; text-decoration:none;
@@ -167,7 +217,7 @@
             line-height:1.08; margin-bottom:24px; letter-spacing:0.01em;
         ">A plaque that lasts forever.<br>A story told for generations.</h1>
         <p style="font-size:0.82rem; letter-spacing:0.06em; line-height:2; max-width:560px; margin:0 auto; opacity:0.68;">
-            Laser-engraved, fully weatherproof QR plaques — paired with a permanent digital memorial profile. Choose your material, then select the hosting plan that fits your family.
+            Laser-engraved, fully weatherproof QR plaques — paired with a permanent digital memorial profile. Choose your material, then select the subscription tier that fits your family.
         </p>
     </section>
 
@@ -186,7 +236,7 @@
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:56px;">
 
             <!-- Stainless Steel -->
-            <div style="border:1px solid #232323; padding:36px 38px; position:relative;">
+            <div class="plaque-prod-card" style="border:1px solid #232323; padding:36px 38px; position:relative;">
                 <div style="
                     position:absolute; top:-11px; left:32px;
                     background:#232323; color:#e8ded0;
@@ -194,8 +244,9 @@
                     text-transform:uppercase; padding:3px 12px;
                 ">Most Popular</div>
 
-                <img src="image/Marine-Grade Stainless Steel.png" alt="Marine-Grade Stainless Steel"
-                    style="width:100%; height:220px; object-fit:cover; display:block; margin-bottom:28px;" />
+                <div class="plaque-prod-img-wrap">
+                    <img src="image/Marine-Grade Stainless Steel.png" alt="Marine-Grade Stainless Steel" />
+                </div>
 
                 <p class="eyebrow" style="font-size:0.62rem; opacity:0.5; margin-bottom:10px;">Stainless Steel</p>
                 <h2 class="serif" style="font-size:clamp(1.5rem,2.8vw,2.2rem); font-weight:300; line-height:1.18; margin-bottom:10px;">
@@ -211,7 +262,7 @@
                 </div>
 
                 <div style="margin-bottom:28px;">
-                    <div class="feat-row"><span class="feat-dash">—</span><span>3″ × 2″ laser-engraved plaque</span></div>
+                    <div class="feat-row"><span class="feat-dash">—</span><span>3″ × 3″ laser-engraved plaque</span></div>
                     <div class="feat-row"><span class="feat-dash">—</span><span>Marine-grade 316L stainless steel</span></div>
                     <div class="feat-row"><span class="feat-dash">—</span><span>Brushed satin finish</span></div>
                     <div class="feat-row"><span class="feat-dash">—</span><span>Fully weatherproof · UV-resistant</span></div>
@@ -221,10 +272,11 @@
             </div>
 
             <!-- Brushed Bronze -->
-            <div style="border:1px solid rgba(35,35,35,0.2); padding:36px 38px;">
+            <div class="plaque-prod-card" style="border:1px solid rgba(35,35,35,0.2); padding:36px 38px;">
 
-                <img src="image/Marine bronzes.png" alt="Marine Brushed Bronze"
-                    style="width:100%; height:220px; object-fit:cover; display:block; margin-bottom:28px;" />
+                <div class="plaque-prod-img-wrap">
+                    <img src="image/Marine bronzes.png" alt="Marine Brushed Bronze" />
+                </div>
 
                 <p class="eyebrow" style="font-size:0.62rem; opacity:0.5; margin-bottom:10px;">Bronzes</p>
                 <h2 class="serif" style="font-size:clamp(1.5rem,2.8vw,2.2rem); font-weight:300; line-height:1.18; margin-bottom:10px;">
@@ -240,7 +292,7 @@
                 </div>
 
                 <div style="margin-bottom:28px;">
-                    <div class="feat-row"><span class="feat-dash">—</span><span>3″ × 2″ laser-engraved plaque</span></div>
+                    <div class="feat-row"><span class="feat-dash">—</span><span>3″ × 3″ laser-engraved plaque</span></div>
                     <div class="feat-row"><span class="feat-dash">—</span><span>Marine-grade silicon bronze alloy</span></div>
                     <div class="feat-row"><span class="feat-dash">—</span><span>Warm brushed heritage finish</span></div>
                     <div class="feat-row"><span class="feat-dash">—</span><span>Fully weatherproof · Museum quality</span></div>
@@ -278,7 +330,7 @@
 
         <div class="section-rule">
             <div class="line"></div>
-            <span class="label">Hosting Plan</span>
+            <span class="label">Subscription Tier</span>
             <div class="line"></div>
         </div>
 
@@ -324,9 +376,9 @@
                 <div style="margin-bottom:28px;">
                     <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:5px;">
                         <span class="serif" style="font-size:clamp(2rem,3.5vw,2.8rem); font-weight:300; line-height:1;">$15</span>
-                        <span style="font-size:0.68rem; letter-spacing:0.1em; opacity:0.5;">/ month</span>
+                        <span style="font-size:0.68rem; letter-spacing:0.1em; opacity:0.5;">/ month for 24 months</span>
                     </div>
-                    <p style="font-size:0.7rem; opacity:0.45; font-style:italic; letter-spacing:0.03em;">or $199 one-time for lifetime access</p>
+                    <p style="font-size:0.7rem; opacity:0.45; font-style:italic; letter-spacing:0.03em;">or $199 one-time payment</p>
                 </div>
 
                 <div style="margin-bottom:28px; flex:1;">
@@ -335,8 +387,8 @@
                     <div class="feat-row"><span class="feat-dash">—</span><span>Audio clips &amp; voice memories</span></div>
                     <div class="feat-row"><span class="feat-dash">—</span><span>Expanded storage</span></div>
                     <div class="feat-row"><span class="feat-dash">—</span><span><strong>Collaborative Guestbook</strong> — visitors can leave messages, share memories, or upload photos directly from their phone</span></div>
-                    <div class="feat-row"><span class="feat-dash">—</span><span><strong>Geotagging &amp; Cemetery Navigation</strong> — GPS-guided walking path to the plot via Google or Apple Maps</span></div>
-                    <div class="feat-row"><span class="feat-dash">—</span><span><strong>Family Tree Integration</strong> — interactive tree compatible with GEDCOM, Ancestry.com &amp; MyHeritage</span></div>
+                    <div class="feat-row"><span class="feat-dash">—</span><span><strong>Location Pinning &amp; Sharing</strong> — pin the exact site; family share a one-tap link that opens in Google or Apple Maps</span></div>
+                    <div class="feat-row"><span class="feat-dash">—</span><span><strong>Family Legacy Suite</strong> — direct lineage tree, family origin story, heirloom gallery, and document archive</span></div>
                     <div class="feat-row"><span class="feat-dash">—</span><span><strong>Priority Support</strong> — guaranteed response under 2 hours, plus digital onboarding</span></div>
                 </div>
 
@@ -370,7 +422,7 @@
 
             <!-- 01 Collaborative Guestbook -->
             <div class="prem-feature">
-                <p style="font-size:0.52rem; letter-spacing:0.3em; opacity:0.35; margin-bottom:8px;">01</p>
+                <p class="prem-num" style="font-size:0.52rem; letter-spacing:0.3em; opacity:0.35; margin-bottom:8px;">01</p>
                 <h3 class="serif" style="font-size:1.35rem; font-weight:400; line-height:1.25; margin-bottom:14px;">Collaborative Guestbook</h3>
                 <p style="font-size:0.8rem; line-height:1.9; opacity:0.68; margin-bottom:16px; letter-spacing:0.02em;">
                     A living digital memorial that visitors can contribute to instantly. Scan the QR code to leave a message, share a memory, or upload a photo directly from your phone — no account required.
@@ -381,34 +433,38 @@
                 </div>
             </div>
 
-            <!-- 02 Geotagging -->
+            <!-- 02 Location & Sharing -->
             <div class="prem-feature">
-                <p style="font-size:0.52rem; letter-spacing:0.3em; opacity:0.35; margin-bottom:8px;">02</p>
-                <h3 class="serif" style="font-size:1.35rem; font-weight:400; line-height:1.25; margin-bottom:14px;">Geotagging &amp; Cemetery Navigation</h3>
+                <p class="prem-num" style="font-size:0.52rem; letter-spacing:0.3em; opacity:0.35; margin-bottom:8px;">02</p>
+                <h3 class="serif" style="font-size:1.35rem; font-weight:400; line-height:1.25; margin-bottom:14px;">Location Pinning &amp; Sharing</h3>
                 <p style="font-size:0.8rem; line-height:1.9; opacity:0.68; margin-bottom:16px; letter-spacing:0.02em;">
-                    The exact GPS coordinates of the gravesite are pinned at setup. Relatives can open Legacy Link and be guided directly to the plot via Google or Apple Maps.
+                    Stand at the memorial site once to capture the exact GPS coordinates. Family members who have never been there get a one-tap link that opens the precise spot in their maps app — no searching, no guessing.
                 </p>
                 <div>
-                    <div class="feat-row"><span class="feat-dash">—</span><span>Syncs with Google Maps &amp; Apple Maps</span></div>
-                    <div class="feat-row"><span class="feat-dash">—</span><span>Micro-navigation walking path from cemetery gates to the headstone</span></div>
+                    <div class="feat-row"><span class="feat-dash">—</span><span>Opens in Google Maps or Apple Maps</span></div>
+                    <div class="feat-row"><span class="feat-dash">—</span><span>Copy a share link — paste into a text, email, or the guestbook</span></div>
+                    <div class="feat-row"><span class="feat-dash">—</span><span>Optional visitor note for directions GPS can't give ("past the oak tree, north entrance")</span></div>
                 </div>
             </div>
 
-            <!-- 03 Family Tree -->
+            <!-- 03 Family Legacy Suite -->
             <div class="prem-feature">
-                <p style="font-size:0.52rem; letter-spacing:0.3em; opacity:0.35; margin-bottom:8px;">03</p>
-                <h3 class="serif" style="font-size:1.35rem; font-weight:400; line-height:1.25; margin-bottom:14px;">Family Tree Integration</h3>
+                <p class="prem-num" style="font-size:0.52rem; letter-spacing:0.3em; opacity:0.35; margin-bottom:8px;">03</p>
+                <h3 class="serif" style="font-size:1.35rem; font-weight:400; line-height:1.25; margin-bottom:14px;">Family Legacy Suite</h3>
                 <p style="font-size:0.8rem; line-height:1.9; opacity:0.68; margin-bottom:16px; letter-spacing:0.02em;">
-                    Connect the deceased to an interactive visual family tree — parents, siblings, children, and ancestors. Multiple Legacy Link profiles in the same cemetery can be interlinked, letting visitors walk through generations.
+                    Four connected tools that together build a complete family record — not just a chart, but the full story behind it.
                 </p>
                 <div>
-                    <div class="feat-row"><span class="feat-dash">—</span><span>Compatible with GEDCOM, Ancestry.com &amp; MyHeritage</span></div>
+                    <div class="feat-row"><span class="feat-dash">—</span><span>Direct lineage tree — collapsible generations, portrait photos, "life in a sentence" bios</span></div>
+                    <div class="feat-row"><span class="feat-dash">—</span><span>Family story editor — origin narrative, traditions, and defining milestone timeline</span></div>
+                    <div class="feat-row"><span class="feat-dash">—</span><span>Heirloom gallery — document each object with sepia photo, era, and provenance</span></div>
+                    <div class="feat-row"><span class="feat-dash">—</span><span>Document archive — letters, certificates &amp; photographs organized by decade</span></div>
                 </div>
             </div>
 
             <!-- 04 Priority Support -->
             <div class="prem-feature">
-                <p style="font-size:0.52rem; letter-spacing:0.3em; opacity:0.35; margin-bottom:8px;">04</p>
+                <p class="prem-num" style="font-size:0.52rem; letter-spacing:0.3em; opacity:0.35; margin-bottom:8px;">04</p>
                 <h3 class="serif" style="font-size:1.35rem; font-weight:400; line-height:1.25; margin-bottom:14px;">Priority Support</h3>
                 <p style="font-size:0.8rem; line-height:1.9; opacity:0.68; margin-bottom:16px; letter-spacing:0.02em;">
                     High-touch, rapid-response customer service for families managing the memorial page — especially important during a time of grief.
@@ -424,6 +480,90 @@
 
 
     <!-- ═══════════════════════════════════════════
+     PET MEMORIALS
+════════════════════════════════════════════ -->
+    <section style="padding:0 8% 80px;">
+
+        <div class="section-rule">
+            <div class="line"></div>
+            <span class="label">Pet Memorials</span>
+            <div class="line"></div>
+        </div>
+
+        <div style="text-align:center; margin-bottom:52px;">
+            <h2 class="serif" style="font-size:clamp(1.7rem,3.5vw,2.65rem); font-weight:300; font-style:italic; line-height:1.18; margin-bottom:14px;">
+                For the companions<br>who gave us everything.
+            </h2>
+            <p style="font-size:0.8rem; letter-spacing:0.04em; line-height:2; max-width:500px; margin:0 auto; opacity:0.65;">
+                The same marine-grade plaques and digital memorial platform — adapted for beloved animals. Every plan name and feature is tailored to honour a pet's place in your family.
+            </p>
+        </div>
+
+        <div class="plan-card" style="margin-bottom:32px;">
+            <p class="eyebrow" style="font-size:0.62rem; opacity:0.4; margin-bottom:14px;">Pet Memorial Package</p>
+            <p style="font-size:0.8rem; letter-spacing:0.03em; line-height:1.9; opacity:0.7; margin-bottom:24px; max-width:620px;">
+                These features are included exclusively with the Premium plan for pet memorial orders.
+            </p>
+            <div style="border-top:1px solid rgba(35,35,35,0.1); padding-top:20px;">
+                <div class="feat-row"><span class="feat-dash">—</span><span>Pet-specific tribute language and plan naming (Core Memorial &amp; Living Legacy)</span></div>
+                <div class="feat-row"><span class="feat-dash">—</span><span><strong>Pet Family Story</strong> — a dedicated story editor built around your companion's unique life: origin story &amp; name legend, daily rituals &amp; signature quirks, family bonds &amp; greatest adventures</span></div>
+            </div>
+            <p style="font-size:0.78rem; line-height:1.9; opacity:0.55; margin-top:18px; padding-top:18px; border-top:1px solid rgba(35,35,35,0.07); letter-spacing:0.02em;">
+                Your companion deserves their own story — not a footnote on a human family tree. The Pet Family Story panel gives them a full narrative: where they came from, what made them irreplaceably themselves, the daily rituals you already miss, and the bonds they formed with every member of the family.
+            </p>
+        </div>
+
+        <div style="text-align:center; margin-top:40px;">
+            <a href="pet-memorials.html" class="outline-btn">EXPLORE PET MEMORIALS</a>
+        </div>
+
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
+     MONUMENTS & PUBLIC MEMORIALS
+════════════════════════════════════════════ -->
+    <section style="padding:0 8% 80px;">
+
+        <div class="section-rule">
+            <div class="line"></div>
+            <span class="label">Monuments &amp; Public Memorials</span>
+            <div class="line"></div>
+        </div>
+
+        <div style="text-align:center; margin-bottom:52px;">
+            <h2 class="serif" style="font-size:clamp(1.7rem,3.5vw,2.65rem); font-weight:300; font-style:italic; line-height:1.18; margin-bottom:14px;">
+                History carved in stone.<br>Stories brought to life.
+            </h2>
+            <p style="font-size:0.8rem; letter-spacing:0.04em; line-height:2; max-width:500px; margin:0 auto; opacity:0.65;">
+                For buildings, statues, memorial benches, and civic monuments. The same weatherproof plaque, with an archive and subscription tier built for institutions and public history.
+            </p>
+        </div>
+
+        <div class="plan-card" style="margin-bottom:32px;">
+            <p class="eyebrow" style="font-size:0.62rem; opacity:0.4; margin-bottom:14px;">Monument Package</p>
+            <p style="font-size:0.8rem; letter-spacing:0.03em; line-height:1.9; opacity:0.7; margin-bottom:24px; max-width:620px;">
+                These features are included exclusively with the Premium plan for monument orders.
+            </p>
+            <div style="border-top:1px solid rgba(35,35,35,0.1); padding-top:20px;">
+                <div class="feat-row"><span class="feat-dash">—</span><span>Institutionally-named plans (Core Archive &amp; Living History)</span></div>
+                <div class="feat-row"><span class="feat-dash">—</span><span><strong>Institutional Timeline</strong> — rich text, photos &amp; documents at each milestone, with links to related profiles and connected memorials</span></div>
+                <div class="feat-row"><span class="feat-dash">—</span><span>Supports multiple contributors and curators</span></div>
+                <div class="feat-row"><span class="feat-dash">—</span><span>Bulk upload tools for municipalities &amp; institutions</span></div>
+            </div>
+            <p style="font-size:0.78rem; line-height:1.9; opacity:0.55; margin-top:18px; padding-top:18px; border-top:1px solid rgba(35,35,35,0.07); letter-spacing:0.02em;">
+                Place the monument in its full historical context. A visual timeline marks key dates — construction, dedications, renovations, and the events it commemorates — so every visitor leaves with the complete picture.
+            </p>
+        </div>
+
+        <div style="text-align:center; margin-top:40px;">
+            <a href="monuments.html" class="outline-btn">EXPLORE MONUMENTS</a>
+        </div>
+
+    </section>
+
+
+    <!-- ═══════════════════════════════════════════
      CTA STRIP
 ════════════════════════════════════════════ -->
     <section style="padding:0 8% 96px; text-align:center;">
@@ -433,11 +573,17 @@
             Honour their memory.<br>Forever.
         </h2>
         <div style="display:flex; justify-content:center; align-items:center; gap:20px; flex-wrap:wrap;">
-            <a href="http://localhost:3001/auth" class="order-btn">ORDER A PLAQUE</a>
-            <a href="brochure.html" target="_blank" class="outline-btn">DOWNLOAD BROCHURE</a>
+            <a href="coming-soon.html" class="order-btn">ORDER A PLAQUE</a>
         </div>
     </section>
 
+
+    <!-- ─── Brochure buttons ─── -->
+    <div style="display:flex; justify-content:center; align-items:center; gap:16px; flex-wrap:wrap; margin-top:12px; margin-bottom:72px;">
+        <a href="brochure.html" target="_blank" style="font-family:'Cormorant Garamond',serif; font-size:0.9rem; letter-spacing:0.18em; color:#e8ded0; background:#232323; text-decoration:none; border:1px solid #232323; padding:12px 32px; transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='transparent';this.style.color='#232323';" onmouseout="this.style.background='#232323';this.style.color='#e8ded0';">MEMORIAL BROCHURE</a>
+        <a href="pet-brochure.html" target="_blank" style="font-family:'Cormorant Garamond',serif; font-size:0.9rem; letter-spacing:0.18em; color:#232323; background:transparent; text-decoration:none; border:1px solid #232323; padding:12px 32px; transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='#232323';this.style.color='#e8ded0';" onmouseout="this.style.background='transparent';this.style.color='#232323';">PET MEMORIAL BROCHURE</a>
+        <a href="monument-brochure.html" target="_blank" style="font-family:'Cormorant Garamond',serif; font-size:0.9rem; letter-spacing:0.18em; color:#232323; background:transparent; text-decoration:none; border:1px solid #232323; padding:12px 32px; transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='#232323';this.style.color='#e8ded0';" onmouseout="this.style.background='transparent';this.style.color='#232323';">MONUMENT BROCHURE</a>
+    </div>
 
     <!-- ═══════════════════════════════════════════
      FOOTER
