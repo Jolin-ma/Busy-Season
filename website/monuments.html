@@ -273,6 +273,24 @@
                 gap: 16px !important;
             }
         }
+        .social-link { position: relative; display: inline-block; }
+        .social-link::after {
+            content: 'Coming soon';
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e8ded0;
+            color: #232323;
+            font-size: 0.46rem;
+            letter-spacing: 0.18em;
+            padding: 4px 10px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s;
+        }
+        .social-link:hover::after { opacity: 1; }
     </style>
 </head>
 
@@ -631,7 +649,7 @@
 
             <div id="mn-footer-info-row" style="display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:48px; border-bottom:1px solid rgba(232,222,208,0.18);">
                 <div style="font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7;">
-                    LegacyLink Inc.<br>1900 Legacy Drive<br>Oshawa, Ontario<br>CANADA
+                    LegacyLink Inc.<br>Oshawa, Ontario, Canada
                 </div>
                 <div style="text-align:center;">
                     <a href="mailto:info@legacylink.ca" style="
@@ -642,15 +660,15 @@
                     ">CONTACT US</a>
                 </div>
                 <div style="font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7; text-align:right;">
-                    info@legacylink.ca<br>+1 (905) 000-0000
+                    info@legacylink.ca
                 </div>
             </div>
 
             <div id="mn-footer-social-row" style="display:flex; justify-content:space-between; align-items:center; padding:36px 0; border-bottom:1px solid rgba(232,222,208,0.18);">
-                <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">INSTAGRAM</a>
-                <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">FACEBOOK</a>
-                <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">TWITTER</a>
-                <a href="#" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">YOUTUBE</a>
+                <a href="#" class="social-link" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">INSTAGRAM</a>
+                <a href="#" class="social-link" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">FACEBOOK</a>
+                <a href="#" class="social-link" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">TWITTER</a>
+                <a href="#" class="social-link" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">YOUTUBE</a>
             </div>
 
             <div id="mn-footer-bottom-bar" style="display:flex; justify-content:space-between; align-items:center; padding-top:28px;">
