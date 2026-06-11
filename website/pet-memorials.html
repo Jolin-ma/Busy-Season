@@ -232,6 +232,8 @@
         }
 
         @media (max-width: 768px) {
+            #pet-hero-section { margin-top: 0 !important; }
+
             #pm-site-header {
                 flex-direction: column !important;
                 padding: 24px 16px 60px !important;
@@ -346,7 +348,7 @@
     <!-- ═══════════════════════════════════════════
          HERO
     ════════════════════════════════════════════ -->
-    <section style="position:relative; margin-top:-120px;">
+    <section id="pet-hero-section" style="position:relative; margin-top:-120px;">
         <div id="pet-three-container" style="clip-path:url(#archClip); position:relative; overflow:hidden; height:82vh; min-height:520px; background:#111;">
             <canvas id="pet-three-canvas" style="position:absolute; top:0; left:0; display:block;"></canvas>
             <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.22) 50%, transparent 80%); pointer-events:none;"></div>
