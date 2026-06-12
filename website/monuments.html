@@ -576,7 +576,7 @@
         <h2 class="serif" style="font-size:clamp(1.7rem,3.5vw,2.65rem); font-weight:300; font-style:italic; line-height:1.18; margin-bottom:36px;">
             Bring the history to life.<br>Forever.
         </h2>
-        <div id="mn-cta-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:680px; margin:0 auto;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:16px;">
             <a href="coming-soon.html" style="
                 font-family:'Cormorant Garamond',serif;
                 font-size:0.9rem; letter-spacing:0.18em; text-align:center;
@@ -585,30 +585,32 @@
                 transition:background 0.2s, color 0.2s;
             " onmouseover="this.style.background='transparent';this.style.color='#232323';"
                onmouseout="this.style.background='#232323';this.style.color='#e8ded0';">ORDER A PLAQUE</a>
-            <a href="packages.html" style="
-                font-family:'Cormorant Garamond',serif;
-                font-size:0.9rem; letter-spacing:0.18em; text-align:center;
-                color:#232323; background:transparent;
-                border:1px solid #232323; padding:12px 32px;
-                transition:background 0.2s, color 0.2s;
-            " onmouseover="this.style.background='#232323';this.style.color='#e8ded0';"
-               onmouseout="this.style.background='transparent';this.style.color='#232323';">VIEW ALL PACKAGES</a>
-            <a href="mailto:info@legacylink.ca" style="
-                font-family:'Cormorant Garamond',serif;
-                font-size:0.9rem; letter-spacing:0.18em; text-align:center;
-                color:#232323; background:transparent;
-                border:1px solid #232323; padding:12px 32px;
-                transition:background 0.2s, color 0.2s;
-            " onmouseover="this.style.background='#232323';this.style.color='#e8ded0';"
-               onmouseout="this.style.background='transparent';this.style.color='#232323';">ENQUIRE ABOUT YOUR PROJECT</a>
-            <a href="monument-brochure.html" target="_blank" style="
-                font-family:'Cormorant Garamond',serif;
-                font-size:0.9rem; letter-spacing:0.18em; text-align:center;
-                color:#232323; background:transparent;
-                border:1px solid #232323; padding:12px 32px;
-                transition:background 0.2s, color 0.2s;
-            " onmouseover="this.style.background='#232323';this.style.color='#e8ded0';"
-               onmouseout="this.style.background='transparent';this.style.color='#232323';">DOWNLOAD BROCHURE</a>
+            <div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+                <a href="packages.html" style="
+                    font-family:'Cormorant Garamond',serif;
+                    font-size:0.9rem; letter-spacing:0.18em; text-align:center;
+                    color:#232323; background:transparent;
+                    border:1px solid #232323; padding:12px 32px;
+                    transition:background 0.2s, color 0.2s;
+                " onmouseover="this.style.background='#232323';this.style.color='#e8ded0';"
+                   onmouseout="this.style.background='transparent';this.style.color='#232323';">VIEW ALL PACKAGES</a>
+                <a href="mailto:info@legacylink.ca" style="
+                    font-family:'Cormorant Garamond',serif;
+                    font-size:0.9rem; letter-spacing:0.18em; text-align:center;
+                    color:#232323; background:transparent;
+                    border:1px solid #232323; padding:12px 32px;
+                    transition:background 0.2s, color 0.2s;
+                " onmouseover="this.style.background='#232323';this.style.color='#e8ded0';"
+                   onmouseout="this.style.background='transparent';this.style.color='#232323';">ENQUIRE ABOUT YOUR PROJECT</a>
+                <a href="monument-brochure.html" target="_blank" style="
+                    font-family:'Cormorant Garamond',serif;
+                    font-size:0.9rem; letter-spacing:0.18em; text-align:center;
+                    color:#232323; background:transparent;
+                    border:1px solid #232323; padding:12px 32px;
+                    transition:background 0.2s, color 0.2s;
+                " onmouseover="this.style.background='#232323';this.style.color='#e8ded0';"
+                   onmouseout="this.style.background='transparent';this.style.color='#232323';">DOWNLOAD BROCHURE</a>
+            </div>
         </div>
     </section>
 
@@ -658,10 +660,10 @@
             </div>
 
             <div id="mn-footer-info-row" style="display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:48px; border-bottom:1px solid rgba(232,222,208,0.18);">
-                <div style="font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7;">
+                <div style="flex:1; font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7;">
                     LegacyLink Inc.<br>Oshawa, Ontario, Canada
                 </div>
-                <div style="text-align:center;">
+                <div style="flex:1; text-align:center;">
                     <a href="mailto:info@legacylink.ca" style="
                         color:#e8ded0; text-decoration:none;
                         font-size:0.65rem; letter-spacing:0.28em;
@@ -669,7 +671,7 @@
                         padding-bottom:3px; opacity:0.8;
                     ">CONTACT US</a>
                 </div>
-                <div style="font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7; text-align:right;">
+                <div style="flex:1; font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7; text-align:right;">
                     info@legacylink.ca
                 </div>
             </div>
