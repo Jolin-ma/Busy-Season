@@ -168,10 +168,13 @@
             #os-logo-wrap img { height: 130px !important; }
             #os-nav-left, #os-nav-right {
                 flex: none !important;
+                width: 100%;
                 justify-content: center !important;
                 flex-wrap: wrap !important;
-                gap: 16px !important;
+                gap: 10px 16px !important;
             }
+            .nav-link { font-size: 0.78rem !important; }
+            .cta-nav-btn { flex-basis: 100% !important; text-align: center; margin-top: 4px; }
             #pillars-grid {
                 grid-template-columns: 1fr !important;
                 gap: 48px !important;
@@ -261,7 +264,7 @@
 
         <nav id="os-nav-right" style="display:flex; gap:26px; align-items:center; flex:1; justify-content:flex-end;">
             <a href="pet-memorials.html" class="nav-link">PET MEMORIALS</a>
-            <a href="coming-soon.html" target="_blank" style="
+            <a href="coming-soon.html" target="_blank" class="cta-nav-btn" style="
                 font-family:'Cormorant Garamond',serif;
                 font-size:0.9rem; letter-spacing:0.18em;
                 color:#232323; text-decoration:none;
