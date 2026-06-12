@@ -155,15 +155,18 @@
         }
 
         @media (max-width: 768px) {
+            /* Nav */
             #os-site-header {
                 flex-direction: column !important;
-                padding: 24px 16px 60px !important;
+                align-items: center !important;
+                padding: 24px 16px 48px !important;
+                gap: 12px !important;
             }
             #os-logo-wrap {
                 position: relative !important;
                 left: auto !important;
                 transform: none !important;
-                margin: 16px 0 !important;
+                order: -1;
             }
             #os-logo-wrap img { height: 130px !important; }
             #os-nav-left, #os-nav-right {
@@ -175,17 +178,36 @@
             }
             .nav-link { font-size: 0.78rem !important; }
             .cta-nav-btn { flex-basis: 100% !important; text-align: center; margin-top: 4px; }
+
+            /* Hero */
+            #os-hero-section { margin-top: 0 !important; }
+
+            /* Sections — reduce tall padding */
+            #our-story { padding: 52px 0 36px !important; }
+
+            /* Pillars */
             #pillars-grid {
                 grid-template-columns: 1fr !important;
-                gap: 48px !important;
+                gap: 40px !important;
             }
             #pillars-grid > div[style*="position:absolute"] { display: none !important; }
+
+            /* Pull quote */
+            #os-pull-quote { padding: 52px 6% !important; }
+
+            /* Story rows — stack vertically */
             #founding-story-row, #pet-story-row {
                 flex-direction: column !important;
-                gap: 32px !important;
+                gap: 28px !important;
             }
             #founding-story-row > div,
             #pet-story-row > div { flex: none !important; width: 100% !important; }
+
+            /* Story images — show full, no crop */
+            #founding-story-row img,
+            #pet-story-row img { height: auto !important; }
+
+            /* Footer */
             #os-footer-info-row, #os-footer-bottom-bar {
                 flex-direction: column !important;
                 align-items: center !important;
@@ -279,7 +301,7 @@
     <!-- ═══════════════════════════════════════════
          HERO
     ════════════════════════════════════════════ -->
-    <section style="position:relative; margin-top:-120px;">
+    <section id="os-hero-section" style="position:relative; margin-top:-120px;">
 
         <div style="clip-path:url(#archClip); position:relative; overflow:hidden;">
             <img src="image/our story.png"
@@ -515,7 +537,7 @@
     <!-- ═══════════════════════════════════════════
          PULL QUOTE
     ════════════════════════════════════════════ -->
-    <section style="
+    <section id="os-pull-quote" style="
       padding:88px 8% 92px;
       text-align:center;
       border-top:1px solid rgba(35,35,35,0.1);
@@ -648,10 +670,10 @@
         </div>
 
         <!-- Dark footer body -->
-        <div style="background:#232323; color:#e8ded0; padding:0 5% 40px;">
+        <div style="background:#232323; color:#e8ded0; padding:0 5% 40px; margin-top:-1px;">
 
             <!-- OUR MISSION -->
-            <div style="text-align:center; padding:80px 0 64px; border-bottom:1px solid rgba(232,222,208,0.18);">
+            <div style="text-align:center; padding:80px 0 64px;">
                 <p style="font-size:0.5rem; letter-spacing:0.42em; color:#e8ded0; opacity:0.45; margin-bottom:26px; text-transform:uppercase;">Our Mission</p>
                 <h2 class="serif" style="
                   font-size:clamp(1.8rem,4vw,3.2rem);
