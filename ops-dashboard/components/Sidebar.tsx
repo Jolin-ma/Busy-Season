@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { SUPPORT_TICKETS, BILLING_ACCOUNTS } from '@/lib/mock-data';
+import { SUPPORT_TICKETS } from '@/lib/mock-data';
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
@@ -34,18 +34,24 @@ const NAV_MAIN = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const newCount      = SUPPORT_TICKETS.filter(t => t.status === 'NEW').length;
-  const dupCount      = BILLING_ACCOUNTS.filter(a => a.transactions.some(t => t.isPotentialDup)).length;
+  const newCount = SUPPORT_TICKETS.filter(t => t.status === 'NEW').length;
   const [pendingOrders, setPendingOrders] = useState(0);
+  const [dupCount,      setDupCount]      = useState(0);
 
   useEffect(() => {
     fetch(`${API}/admin/fulfillment`)
       .then(r => r.json())
       .then((d: { orders?: { plaqueStatus: string }[] }) => {
-        const pending = (d.orders ?? []).filter(
-          o => o.plaqueStatus === 'ORDER_RECEIVED' || o.plaqueStatus === 'ENGRAVING',
-        ).length;
-        setPendingOrders(pending);
+        setPendingOrders(
+          (d.orders ?? []).filter(o => o.plaqueStatus === 'ORDER_RECEIVED' || o.plaqueStatus === 'ENGRAVING').length,
+        );
+      })
+      .catch(() => {});
+
+    fetch(`${API}/ops/billing/accounts`)
+      .then(r => r.json())
+      .then((d: { accounts?: { hasDuplicate: boolean }[] }) => {
+        setDupCount((d.accounts ?? []).filter(a => a.hasDuplicate).length);
       })
       .catch(() => {});
   }, []);

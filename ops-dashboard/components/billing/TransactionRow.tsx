@@ -2,18 +2,22 @@
 
 import { useState } from 'react';
 import RefundModal from './RefundModal';
-import type { MockTransaction, TxStatus } from '@/lib/mock-data';
+import type { BillingTransaction } from '@/app/billing/page';
+
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 interface Props {
-  tx:        MockTransaction;
+  tx:        BillingTransaction;
   onRefresh: () => void;
 }
 
+type TxStatus = BillingTransaction['status'];
+
 const STATUS_STYLE: Record<TxStatus, { dot: string; text: string; label: string }> = {
-  PAID:                { dot: 'bg-emerald-500', text: 'text-emerald-700', label: 'Paid'               },
-  FAILED:              { dot: 'bg-red-500',     text: 'text-red-600',     label: 'Failed'             },
-  REFUNDED:            { dot: 'bg-slate-400',   text: 'text-slate-500',   label: 'Refunded'           },
-  PARTIALLY_REFUNDED:  { dot: 'bg-amber-500',   text: 'text-amber-600',   label: 'Partial Refund'     },
+  PAID:                { dot: 'bg-emerald-500', text: 'text-emerald-700', label: 'Paid'           },
+  FAILED:              { dot: 'bg-red-500',     text: 'text-red-600',     label: 'Failed'         },
+  REFUNDED:            { dot: 'bg-slate-400',   text: 'text-slate-500',   label: 'Refunded'       },
+  PARTIALLY_REFUNDED:  { dot: 'bg-amber-500',   text: 'text-amber-600',   label: 'Partial Refund' },
 };
 
 function fmt(cents: number) {
@@ -26,7 +30,7 @@ export default function TransactionRow({ tx, onRefresh }: Props) {
   const { dot, text, label } = STATUS_STYLE[tx.status];
 
   async function handleConfirm(reason: string) {
-    const res = await fetch('http://localhost:3000/admin/billing/refund', {
+    const res = await fetch(`${API}/admin/billing/refund`, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ transactionId: tx.id, reason }),
@@ -40,7 +44,6 @@ export default function TransactionRow({ tx, onRefresh }: Props) {
 
   return (
     <>
-      {/* Amber border + background when duplicate */}
       <tr className={`transition-colors ${
         tx.isPotentialDup
           ? 'bg-amber-50/60 border-l-2 border-amber-400'
@@ -54,12 +57,12 @@ export default function TransactionRow({ tx, onRefresh }: Props) {
           </p>
           <p className="text-[10px] text-stone-400">
             {new Date(tx.createdAt).toLocaleString('en-CA', {
-              timeZone:    'America/Toronto',
-              year:        'numeric',
-              month:       '2-digit',
-              day:         '2-digit',
-              hour:        '2-digit',
-              minute:      '2-digit',
+              timeZone: 'America/Toronto',
+              year:     'numeric',
+              month:    '2-digit',
+              day:      '2-digit',
+              hour:     '2-digit',
+              minute:   '2-digit',
             })}
           </p>
         </td>

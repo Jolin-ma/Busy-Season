@@ -12,7 +12,6 @@ export async function billingRoutes(fastify: FastifyInstance) {
   // ── GET /ops/billing/accounts ─────────────────────────────────────────────
   // Returns all users with their transaction summary for the billing panel list.
   fastify.get('/ops/billing/accounts', async (_req, reply) => {
-    reply.header('Access-Control-Allow-Origin', '*');
     const users = await rawPrisma.user.findMany({
       select: {
         id:                 true,
@@ -22,31 +21,40 @@ export async function billingRoutes(fastify: FastifyInstance) {
         created_at:         true,
         profiles:           { select: { id: true, plan: true }, where: { deleted_at: null } },
         transactions:       {
-          select: { amount: true, status: true, is_potential_dup: true },
+          select: {
+            amount:          true,
+            status:          true,
+            is_potential_dup: true,
+            refunded:        true,
+            refunded_amount: true,
+            created_at:      true,
+          },
+          orderBy: { created_at: 'desc' },
         },
       },
       orderBy: { created_at: 'desc' },
     });
 
     return reply.send({ accounts: users.map(u => ({
-      id:               u.id,
-      name:             u.name,
-      email:            u.email,
-      stripeCustomerId: u.stripe_customer_id,
-      profileCount:     u.profiles.length,
-      plan:             u.profiles.find(p => p.plan === 'PREMIUM') ? 'PREMIUM' : 'BASIC',
-      totalPaidCents:   u.transactions
+      id:                 u.id,
+      name:               u.name,
+      email:              u.email,
+      stripeCustomerId:   u.stripe_customer_id,
+      profileCount:       u.profiles.length,
+      plan:               u.profiles.some(p => p.plan === 'PREMIUM') ? 'PREMIUM' : 'BASIC',
+      hasDuplicate:       u.transactions.some(t => t.is_potential_dup),
+      totalPaidCents:     u.transactions
         .filter(t => t.status === 'PAID' || t.status === 'PARTIALLY_REFUNDED')
-        .reduce((s, t) => s + t.amount, 0),
-      hasDuplicate:     u.transactions.some(t => t.is_potential_dup),
-      createdAt:        u.created_at,
+        .reduce((s, t) => s + t.amount - t.refunded_amount, 0),
+      totalRefundedCents: u.transactions.reduce((s, t) => s + t.refunded_amount, 0),
+      createdAt:          u.created_at,
+      lastTxAt:           u.transactions[0]?.created_at ?? null,
     })) });
   });
 
   // ── GET /ops/billing/account/:userId ──────────────────────────────────────
   // Full transaction ledger for a single account.
   fastify.get<{ Params: { userId: string } }>('/ops/billing/account/:userId', async (req, reply) => {
-    reply.header('Access-Control-Allow-Origin', '*');
     const user = await rawPrisma.user.findUnique({
       where:  { id: req.params.userId },
       select: {
@@ -56,8 +64,8 @@ export async function billingRoutes(fastify: FastifyInstance) {
         stripe_customer_id: true,
         created_at:         true,
         profiles:           {
-          where:  { deleted_at: null },
-          select: { id: true, plan: true, full_name: true, plaque_status: true },
+          where:   { deleted_at: null },
+          select:  { id: true, plan: true },
         },
         transactions: {
           orderBy: { created_at: 'desc' },
@@ -65,7 +73,30 @@ export async function billingRoutes(fastify: FastifyInstance) {
       },
     });
     if (!user) return reply.code(404).send({ error: 'Account not found.' });
-    return reply.send({ account: user });
+
+    return reply.send({
+      account: {
+        id:               user.id,
+        name:             user.name,
+        email:            user.email,
+        stripeCustomerId: user.stripe_customer_id,
+        plan:             user.profiles.some(p => p.plan === 'PREMIUM') ? 'PREMIUM' : 'BASIC',
+        profileCount:     user.profiles.length,
+        createdAt:        user.created_at,
+        transactions:     user.transactions.map(t => ({
+          id:             t.id,
+          amount:         t.amount,
+          currency:       t.currency,
+          status:         t.status,
+          isPotentialDup: t.is_potential_dup,
+          stripeInvoiceId: t.stripe_invoice_id,
+          refunded:       t.refunded,
+          refundedAmount: t.refunded_amount,
+          refundReason:   t.refund_reason,
+          createdAt:      t.created_at,
+        })),
+      },
+    });
   });
 
   // ── POST /admin/billing/refund ────────────────────────────────────────────

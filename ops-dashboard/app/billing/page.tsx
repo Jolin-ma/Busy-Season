@@ -1,48 +1,114 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Sidebar from '@/components/Sidebar';
 import AccountBillingPanel from '@/components/billing/AccountBillingPanel';
-import { BILLING_ACCOUNTS, type MockBillingAccount } from '@/lib/mock-data';
 
-function totalPaidCents(a: MockBillingAccount) {
-  return a.transactions
-    .filter(t => t.status === 'PAID' || t.status === 'PARTIALLY_REFUNDED')
-    .reduce((s, t) => s + t.amount - t.refundedAmount, 0);
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+
+export interface BillingAccountSummary {
+  id:                 string;
+  name:               string;
+  email:              string;
+  stripeCustomerId:   string | null;
+  plan:               'PREMIUM' | 'BASIC';
+  profileCount:       number;
+  hasDuplicate:       boolean;
+  totalPaidCents:     number;
+  totalRefundedCents: number;
+  createdAt:          string;
+  lastTxAt:           string | null;
+}
+
+export interface BillingTransaction {
+  id:              string;
+  amount:          number;
+  currency:        string;
+  status:          'PAID' | 'FAILED' | 'REFUNDED' | 'PARTIALLY_REFUNDED';
+  isPotentialDup:  boolean;
+  stripeInvoiceId: string | null;
+  refunded:        boolean;
+  refundedAmount:  number;
+  refundReason:    string | null;
+  createdAt:       string;
+}
+
+export interface BillingAccountDetail extends BillingAccountSummary {
+  transactions: BillingTransaction[];
 }
 
 function fmtCAD(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-function timeAgo(iso: string) {
+function timeAgo(iso: string | null) {
+  if (!iso) return null;
   const h = Math.floor((Date.now() - new Date(iso).getTime()) / 3_600_000);
-  if (h < 1)   return 'Just now';
-  if (h < 24)  return `${h}h ago`;
+  if (h < 1)  return 'Just now';
+  if (h < 24) return `${h}h ago`;
   return `${Math.floor(h / 24)}d ago`;
 }
 
 export default function BillingPage() {
-  const [selected, setSelected] = useState<MockBillingAccount>(BILLING_ACCOUNTS[0]);
-  const [search,   setSearch]   = useState('');
+  const [accounts, setAccounts] = useState<BillingAccountSummary[]>([]);
+  const [selected, setSelected] = useState<BillingAccountDetail | null>(null);
+  const [listLoading,   setListLoading]   = useState(true);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [search, setSearch] = useState('');
 
-  const now = new Date('2026-06-05').toLocaleDateString('en-GB', {
+  const now = new Date().toLocaleDateString('en-GB', {
     weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   });
 
+  useEffect(() => {
+    fetch(`${API}/ops/billing/accounts`)
+      .then(r => r.json())
+      .then(d => {
+        const accs: BillingAccountSummary[] = d.accounts ?? [];
+        setAccounts(accs);
+        if (accs.length > 0) fetchDetail(accs[0].id);
+      })
+      .catch(() => {})
+      .finally(() => setListLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const fetchDetail = useCallback(async (userId: string) => {
+    setDetailLoading(true);
+    try {
+      const res  = await fetch(`${API}/ops/billing/account/${userId}`);
+      const data = await res.json();
+      if (data.account) {
+        const acct = data.account as BillingAccountDetail;
+        // merge summary fields (hasDuplicate, totalPaidCents, etc.) from local list
+        const summary = accounts.find(a => a.id === userId);
+        setSelected({ ...acct, ...(summary ?? {}) });
+      }
+    } finally {
+      setDetailLoading(false);
+    }
+  }, [accounts]);
+
+  const handleSelectAccount = (summary: BillingAccountSummary) => {
+    fetchDetail(summary.id);
+  };
+
+  const handleRefresh = () => {
+    if (selected) fetchDetail(selected.id);
+  };
+
   const filtered = useMemo(() =>
-    BILLING_ACCOUNTS.filter(a =>
+    accounts.filter(a =>
       !search ||
       a.name.toLowerCase().includes(search.toLowerCase()) ||
       a.email.toLowerCase().includes(search.toLowerCase()) ||
-      a.stripeCustomerId.toLowerCase().includes(search.toLowerCase())
+      (a.stripeCustomerId ?? '').toLowerCase().includes(search.toLowerCase()),
     ),
-  [search]);
+  [accounts, search]);
 
-  const totalRevenue   = BILLING_ACCOUNTS.reduce((s, a) => s + totalPaidCents(a), 0);
-  const dupAccounts    = BILLING_ACCOUNTS.filter(a => a.transactions.some(t => t.isPotentialDup)).length;
-  const refundedToday  = BILLING_ACCOUNTS.flatMap(a => a.transactions)
-    .filter(t => t.refunded).reduce((s, t) => s + t.refundedAmount, 0);
+  const totalRevenue  = accounts.reduce((s, a) => s + a.totalPaidCents, 0);
+  const dupAccounts   = accounts.filter(a => a.hasDuplicate).length;
+  const totalRefunded = accounts.reduce((s, a) => s + a.totalRefundedCents, 0);
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: '#f7f6f3' }}>
@@ -79,7 +145,7 @@ export default function BillingPage() {
           </div>
           <div className="bg-white rounded-2xl border border-stone-100 shadow-sm px-5 py-4">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 mb-1">Total Refunded</p>
-            <p className="text-2xl font-extrabold text-rose-600 tabular-nums">{fmtCAD(refundedToday)}</p>
+            <p className="text-2xl font-extrabold text-rose-600 tabular-nums">{fmtCAD(totalRefunded)}</p>
             <p className="text-[10px] text-stone-400 mt-0.5">CAD · all time</p>
           </div>
         </div>
@@ -87,7 +153,7 @@ export default function BillingPage() {
         {/* Split view: account list + billing panel */}
         <div className="flex flex-1 overflow-hidden px-6 pb-6 gap-4">
 
-          {/* ── Account list (left) ── */}
+          {/* Account list (left) */}
           <div className="w-72 shrink-0 bg-white rounded-2xl border border-stone-100 shadow-sm flex flex-col overflow-hidden">
             <div className="px-4 pt-4 pb-3 border-b border-stone-100 shrink-0">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 mb-2">Accounts</p>
@@ -106,15 +172,16 @@ export default function BillingPage() {
             </div>
 
             <ul className="flex-1 overflow-y-auto divide-y divide-stone-50">
-              {filtered.map(a => {
-                const isSelected  = a.id === selected.id;
-                const hasDupe     = a.transactions.some(t => t.isPotentialDup);
-                const lastTx      = a.transactions[0];
-
+              {listLoading && (
+                <li className="px-4 py-8 text-center text-xs text-stone-400">Loading…</li>
+              )}
+              {!listLoading && filtered.map(a => {
+                const isSelected = selected?.id === a.id;
+                const ago = timeAgo(a.lastTxAt);
                 return (
                   <li key={a.id}>
                     <button
-                      onClick={() => setSelected(a)}
+                      onClick={() => handleSelectAccount(a)}
                       className={`w-full text-left px-4 py-3.5 transition-colors ${
                         isSelected ? 'bg-stone-900 text-white' : 'hover:bg-stone-50'
                       }`}
@@ -123,7 +190,7 @@ export default function BillingPage() {
                         <p className={`text-xs font-semibold truncate flex-1 ${isSelected ? 'text-white' : 'text-stone-800'}`}>
                           {a.name}
                         </p>
-                        {hasDupe && <span className="shrink-0 ml-1 text-amber-500 text-[11px]">⚠️</span>}
+                        {a.hasDuplicate && <span className="shrink-0 ml-1 text-amber-500 text-[11px]">⚠️</span>}
                       </div>
                       <p className={`text-[10px] truncate ${isSelected ? 'text-stone-400' : 'text-stone-400'}`}>
                         {a.email}
@@ -136,9 +203,9 @@ export default function BillingPage() {
                         }`}>
                           {a.plan === 'PREMIUM' ? '★ Premium' : 'Basic'}
                         </span>
-                        {lastTx && (
+                        {ago && (
                           <span className={`text-[9px] ${isSelected ? 'text-stone-400' : 'text-stone-300'}`}>
-                            {timeAgo(lastTx.createdAt)}
+                            {ago}
                           </span>
                         )}
                       </div>
@@ -146,15 +213,21 @@ export default function BillingPage() {
                   </li>
                 );
               })}
-              {filtered.length === 0 && (
+              {!listLoading && filtered.length === 0 && (
                 <li className="px-4 py-8 text-center text-xs text-stone-400">No accounts match.</li>
               )}
             </ul>
           </div>
 
-          {/* ── Billing detail panel (right) ── */}
+          {/* Billing detail panel (right) */}
           <div className="flex-1 bg-white rounded-2xl border border-stone-100 shadow-sm overflow-hidden">
-            <AccountBillingPanel key={selected.id} account={selected} />
+            {detailLoading ? (
+              <div className="flex items-center justify-center h-full text-stone-400 text-sm">Loading…</div>
+            ) : selected ? (
+              <AccountBillingPanel key={selected.id} account={selected} onRefresh={handleRefresh} />
+            ) : (
+              <div className="flex items-center justify-center h-full text-stone-400 text-sm">Select an account</div>
+            )}
           </div>
         </div>
       </main>

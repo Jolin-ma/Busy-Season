@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { MockTransaction } from '@/lib/mock-data';
+import type { BillingTransaction } from '@/app/billing/page';
 
 interface Props {
-  tx:       MockTransaction;
+  tx:       BillingTransaction;
   onClose:  () => void;
   onConfirm: (reason: string) => Promise<void>;
 }

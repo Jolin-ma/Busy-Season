@@ -1,44 +1,28 @@
 'use client';
 
-import { useState } from 'react';
 import TransactionRow from './TransactionRow';
-import type { MockBillingAccount } from '@/lib/mock-data';
+import type { BillingAccountDetail } from '@/app/billing/page';
 
 interface Props {
-  account: MockBillingAccount;
+  account:   BillingAccountDetail;
+  onRefresh: () => void;
 }
 
 function fmt(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-function totalPaid(account: MockBillingAccount): number {
-  return account.transactions
+export default function AccountBillingPanel({ account, onRefresh }: Props) {
+  const paid      = account.totalPaidCents ?? account.transactions
     .filter(t => t.status === 'PAID' || t.status === 'PARTIALLY_REFUNDED')
     .reduce((s, t) => s + t.amount - t.refundedAmount, 0);
-}
-
-function dupeCount(account: MockBillingAccount): number {
-  return account.transactions.filter(t => t.isPotentialDup).length;
-}
-
-export default function AccountBillingPanel({ account }: Props) {
-  const [txList, setTxList] = useState(account.transactions);
-
-  function refresh() {
-    // In production: re-fetch from /ops/billing/account/:id
-    // For mock: re-sort to surface any status changes
-    setTxList(prev => [...prev]);
-  }
-
-  const paid     = totalPaid(account);
-  const dupes    = dupeCount(account);
+  const dupes     = account.transactions.filter(t => t.isPotentialDup).length;
   const isPremium = account.plan === 'PREMIUM';
 
   return (
     <div className="flex flex-col h-full">
 
-      {/* ── Account Details Header ── */}
+      {/* Account Details Header */}
       <div className="px-6 py-5 border-b border-stone-100">
         <div className="flex items-start justify-between mb-4">
           <div>
@@ -58,7 +42,7 @@ export default function AccountBillingPanel({ account }: Props) {
             <p className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 mb-0.5">Status</p>
             <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              {account.status.charAt(0) + account.status.slice(1).toLowerCase()}
+              Active
             </span>
           </div>
           <div className="bg-stone-50 rounded-xl px-4 py-3 text-center">
@@ -74,7 +58,7 @@ export default function AccountBillingPanel({ account }: Props) {
         </div>
       </div>
 
-      {/* ── Financial Sub-Ledger ── */}
+      {/* Financial Sub-Ledger */}
       <div className="flex-1 overflow-y-auto">
 
         {/* Ledger summary bar */}
@@ -97,10 +81,12 @@ export default function AccountBillingPanel({ account }: Props) {
               </div>
             </div>
           </div>
-          <div className="text-right">
-            <p className="text-[10px] text-stone-400">Stripe ID</p>
-            <p className="font-mono text-[10px] text-stone-500">{account.stripeCustomerId}</p>
-          </div>
+          {account.stripeCustomerId && (
+            <div className="text-right">
+              <p className="text-[10px] text-stone-400">Stripe ID</p>
+              <p className="font-mono text-[10px] text-stone-500">{account.stripeCustomerId}</p>
+            </div>
+          )}
         </div>
 
         {/* Transaction table */}
@@ -115,15 +101,15 @@ export default function AccountBillingPanel({ account }: Props) {
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-50">
-              {txList.length === 0 && (
+              {account.transactions.length === 0 && (
                 <tr>
                   <td colSpan={4} className="px-4 py-10 text-center text-xs text-stone-400">
                     No transactions on record.
                   </td>
                 </tr>
               )}
-              {txList.map(tx => (
-                <TransactionRow key={tx.id} tx={tx} onRefresh={refresh} />
+              {account.transactions.map(tx => (
+                <TransactionRow key={tx.id} tx={tx} onRefresh={onRefresh} />
               ))}
             </tbody>
           </table>
