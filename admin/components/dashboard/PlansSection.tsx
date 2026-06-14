@@ -1,11 +1,12 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 function BasicBanner({ onUpgrade }: { onUpgrade: () => void }) {
   return (
     <div className="mb-10">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-5">Hosting Plan</h2>
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-5">Subscription Tier</h2>
       <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6 flex items-start gap-5">
         <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0 mt-0.5">
           <svg viewBox="0 0 20 20" fill="none" className="w-5 h-5 text-amber-500">
@@ -28,7 +29,7 @@ function BasicBanner({ onUpgrade }: { onUpgrade: () => void }) {
           >
             Upgrade to Premium
           </button>
-          <p className="text-xs text-stone-400 mt-2">$15 / month &middot; or $199 once for lifetime access</p>
+          <p className="text-xs text-stone-400 mt-2">$15 / month for 24 months &middot; or $199 one-time payment</p>
         </div>
       </div>
     </div>
@@ -38,7 +39,7 @@ function BasicBanner({ onUpgrade }: { onUpgrade: () => void }) {
 function PremiumManagement({ onBuyPlaque }: { onBuyPlaque: () => void }) {
   return (
     <div className="mb-10">
-      <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-5">Hosting Plan</h2>
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-5">Subscription Tier</h2>
       <div className="bg-stone-900 rounded-2xl border border-stone-700/60 shadow-sm p-6 relative overflow-hidden">
         <div className="absolute -bottom-6 -right-6 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
         <div className="relative">
@@ -60,18 +61,12 @@ function PremiumManagement({ onBuyPlaque }: { onBuyPlaque: () => void }) {
           <p className="text-xs text-stone-400 mb-5">Monthly · Next renewal Jun 30, 2026</p>
 
           <div className="flex flex-wrap gap-2 mb-5">
-            <button
-              type="button"
+            <Link
+              href="/billing"
               className="text-xs font-semibold text-white border border-stone-600 px-4 py-2 rounded-xl hover:bg-stone-700 transition-colors"
             >
-              Manage Subscription
-            </button>
-            <button
-              type="button"
-              className="text-xs font-semibold text-stone-300 border border-stone-700 px-4 py-2 rounded-xl hover:bg-stone-800 transition-colors"
-            >
-              Update Billing Info
-            </button>
+              Manage Billing
+            </Link>
           </div>
 
           <button

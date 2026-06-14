@@ -43,6 +43,29 @@ const NAV = [
     ),
   },
   {
+    href: '/pets',
+    label: 'Pet Memorial',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+        <ellipse cx="5"  cy="8.5" rx="2"   ry="2.8" stroke="currentColor" strokeWidth="1.5"/>
+        <ellipse cx="10" cy="6"   rx="1.8" ry="2.5" stroke="currentColor" strokeWidth="1.5"/>
+        <ellipse cx="15" cy="6"   rx="1.8" ry="2.5" stroke="currentColor" strokeWidth="1.5"/>
+        <ellipse cx="20" cy="8.5" rx="2"   ry="2.8" stroke="currentColor" strokeWidth="1.5"/>
+        <path d="M12 11c-4 0-7 2.5-7 5.5 0 2 1.5 3.5 3.5 3.5.8 0 1.6-.3 2.2-.8l1.3-1 1.3 1c.6.5 1.4.8 2.2.8 2 0 3.5-1.5 3.5-3.5C19 13.5 16 11 12 11z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
+    href: '/monuments',
+    label: 'Monuments',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+        <path d="M3 21h18M6 21V10M18 21V10M12 21V5M9 5h6M12 2v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M6 10H3l3-4M18 10h3l-3-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ),
+  },
+  {
     href: '/settings',
     label: 'Settings',
     icon: (
@@ -82,7 +105,7 @@ export default function Sidebar() {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-2 py-4 space-y-1 overflow-hidden">
+      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
         {NAV.map(item => {
           const active = item.href === '/'
             ? pathname === '/'

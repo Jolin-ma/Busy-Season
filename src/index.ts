@@ -16,12 +16,10 @@ function getLanIp(): string {
   return 'localhost';
 }
 
-if (!process.env.QR_BASE_URL) {
+if (!process.env.QR_BASE_URL || !process.env.PROFILE_BASE_URL) {
   const lanIp = getLanIp();
-  // /r/ is the smart routing endpoint — handles both activation and visitor flows.
-  // Legacy /p/ plaques continue to work; new QR codes always use /r/.
-  process.env.QR_BASE_URL      = `http://${lanIp}:${PORT}/r`;
-  process.env.PROFILE_BASE_URL = `http://${lanIp}:${PORT}/profile`;
+  if (!process.env.QR_BASE_URL)      process.env.QR_BASE_URL      = `http://${lanIp}:${PORT}/r`;
+  if (!process.env.PROFILE_BASE_URL) process.env.PROFILE_BASE_URL = `http://${lanIp}:${PORT}/profile`;
 }
 console.log(`[config] QR codes will encode: ${process.env.QR_BASE_URL}/<shortId>`);
 
@@ -30,7 +28,8 @@ console.log(`[config] QR codes will encode: ${process.env.QR_BASE_URL}/<shortId>
 // Creates a system user + Margaret's profile on first run. Safe to re-run —
 // upsert is a no-op if the records already exist.
 // ---------------------------------------------------------------------------
-const DEMO_SHORT_ID = 'a5trneuj';
+const DEMO_SHORT_ID     = 'a5trneuj';
+const PET_DEMO_SHORT_ID = 'biscuit8';
 
 async function seedDemo(): Promise<string> {
   const seedUser = await rawPrisma.user.upsert({
@@ -60,9 +59,27 @@ async function seedDemo(): Promise<string> {
     },
   });
 
+  await rawPrisma.profile.upsert({
+    where:  { short_id: PET_DEMO_SHORT_ID },
+    update: {},
+    create: {
+      short_id:      PET_DEMO_SHORT_ID,
+      user_id:       seedUser.id,
+      full_name:     'Biscuit',
+      date_of_birth: new Date('2010-03-12'),
+      date_of_death: new Date('2026-01-04'),
+      epitaph:       'He greeted every single day — and every single person — like a gift.',
+      portrait_url:  'https://placehold.co/400x400/c4a882/6b5a3e?text=🐾',
+      scans_count:   0,
+      plaque_status: 'ORDER_RECEIVED',
+    },
+  });
+
   console.log(`[seed] User:    ${seedUser.email} (${seedUser.id})`);
   console.log(`[seed] Profile: ${DEMO_SHORT_ID} → http://localhost:${PORT}/p/${DEMO_SHORT_ID}`);
   console.log(`[seed] QR SVG:  http://localhost:${PORT}/admin/qr/${DEMO_SHORT_ID}`);
+  console.log(`[seed] Pet:     ${PET_DEMO_SHORT_ID} → http://localhost:${PORT}/pet/${PET_DEMO_SHORT_ID}`);
+  console.log(`[seed] Pet QR:  http://localhost:${PORT}/admin/qr/${PET_DEMO_SHORT_ID}`);
 
   return seedUser.id;
 }

@@ -55,8 +55,24 @@ export default function MemorialCard({ memorial, onEdit, onPrivacyChange }: Prop
           </div>
 
           <div className="flex-1 min-w-0">
-            <h3 className="text-base font-semibold text-stone-800 truncate">{memorial.name}</h3>
-            <p className="text-xs text-stone-400 mt-0.5">{memorial.dateOfBirth} — {memorial.dateOfDeath}</p>
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-semibold text-stone-800 truncate">{memorial.name}</h3>
+              {memorial.type === 'pet' && (
+                <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                  🐾 Pet
+                </span>
+              )}
+              {memorial.type === 'monument' && (
+                <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">
+                  🏛 Monument
+                </span>
+              )}
+            </div>
+            {memorial.type === 'monument' ? (
+              <p className="text-xs text-stone-400 mt-0.5">{memorial.location ?? 'No location set'}</p>
+            ) : (
+              <p className="text-xs text-stone-400 mt-0.5">{memorial.dateOfBirth} — {memorial.dateOfDeath}</p>
+            )}
 
             <span className={`inline-block mt-2 text-[11px] font-semibold px-2.5 py-1 rounded-full ${status.color}`}>
               {status.label}
@@ -135,7 +151,7 @@ export default function MemorialCard({ memorial, onEdit, onPrivacyChange }: Prop
                 QR Code
               </button>
               <a
-                href={`http://localhost:3000/p/${memorial.shortId}`}
+                href={`http://localhost:3000/${memorial.type === 'pet' ? 'pet' : memorial.type === 'monument' ? 'monument' : 'profile'}/${memorial.shortId}`}
                 target="_blank"
                 rel="noreferrer"
                 className="text-xs text-stone-500 border border-stone-200 rounded-lg px-3 py-1.5 hover:bg-stone-50 transition-colors"

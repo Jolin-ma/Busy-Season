@@ -93,6 +93,8 @@ export default function ProfileWizard({ onComplete, onCancel }: Props) {
       if (res.ok) {
         const data = await res.json();
         setSavedShortId(data.shortId);
+        localStorage.setItem('ll_profile_id', data.profileId);
+        localStorage.setItem('ll_short_id',   data.shortId);
       }
     } catch {
       // Backend unreachable — still confirm so the user isn't stranded.

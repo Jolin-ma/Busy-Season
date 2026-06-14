@@ -38,6 +38,8 @@ export interface Memorial {
   scansCount: number;
   isPrivate: boolean;
   privacyPin: string;
+  type?: 'human' | 'pet' | 'monument';
+  location?: string;
 }
 
 export const EMPTY_DRAFT: ProfileDraft = {

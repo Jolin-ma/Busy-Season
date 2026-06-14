@@ -18,6 +18,7 @@ const MARGARET: Memorial = {
   privacyPin: '',
 };
 
+
 export default function AdminPage() {
   const [view, setView]           = useState<'dashboard' | 'wizard'>('dashboard');
   const [editingId, setEditingId] = useState<string | null>(null);

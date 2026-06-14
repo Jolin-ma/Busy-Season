@@ -1,5 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
 
@@ -10,6 +12,10 @@ interface Ticket {
   status: TicketStatus;
   response_due_at?: string;
   created_at: string;
+}
+
+interface Props {
+  profileId: string;
 }
 
 const STATUS_STYLES: Record<TicketStatus, string> = {
@@ -26,17 +32,6 @@ const STATUS_LABELS: Record<TicketStatus, string> = {
   CLOSED:      'Closed',
 };
 
-const MOCK_TICKETS: Ticket[] = [
-  {
-    id: 't1',
-    subject: 'Help uploading biography and photos',
-    message: 'We would like assistance uploading Margarets full biography and family photo collection.',
-    status: 'IN_PROGRESS',
-    response_due_at: '2026-05-31T16:00:00Z',
-    created_at: '2026-05-31T14:00:00Z',
-  },
-];
-
 function SLABadge({ due }: { due: string }) {
   const ms   = new Date(due).getTime() - Date.now();
   const hrs  = Math.floor(ms / 3_600_000);
@@ -50,30 +45,46 @@ function SLABadge({ due }: { due: string }) {
   );
 }
 
-export default function SupportPanel() {
-  const [tickets, setTickets]   = useState<Ticket[]>(MOCK_TICKETS);
+export default function SupportPanel({ profileId }: Props) {
+  const [tickets, setTickets]   = useState<Ticket[]>([]);
   const [subject, setSubject]   = useState('');
   const [message, setMessage]   = useState('');
   const [showForm, setShowForm] = useState(false);
   const [sending, setSending]   = useState(false);
 
-  const submit = () => {
+  useEffect(() => {
+    if (!profileId) return;
+    fetch(`${API}/api/v1/premium/support/${profileId}/tickets`)
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data.tickets)) setTickets(data.tickets); })
+      .catch(() => {});
+  }, [profileId]);
+
+  const submit = async () => {
     if (!subject.trim() || !message.trim()) return;
     setSending(true);
-    setTimeout(() => {
-      const due = new Date(Date.now() + 2 * 3_600_000).toISOString();
-      setTickets(prev => [{
-        id:              Date.now().toString(),
-        subject:         subject.trim(),
-        message:         message.trim(),
-        status:          'OPEN',
-        response_due_at: due,
-        created_at:      new Date().toISOString(),
-      }, ...prev]);
-      setSubject(''); setMessage('');
-      setShowForm(false);
-      setSending(false);
-    }, 800);
+    try {
+      const token = localStorage.getItem('ll_token');
+      const auth  = localStorage.getItem('ll_auth');
+      const user  = auth ? JSON.parse(auth) : null;
+
+      const res = await fetch(`${API}/api/v1/premium/support/${profileId}/tickets`, {
+        method:  'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ user_id: user?.id ?? '', subject: subject.trim(), message: message.trim() }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setTickets(prev => [data.ticket, ...prev]);
+        setSubject(''); setMessage('');
+        setShowForm(false);
+      }
+    } catch { /* ignore */ }
+    setSending(false);
   };
 
   return (

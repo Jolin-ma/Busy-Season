@@ -1,22 +1,24 @@
-export interface ProfileData {
-  name: string;
-  birthDate: string;
-  deathDate: string;
-  epitaph: string;
+export interface PetProfileData {
+  name:       string;
+  species:    string;
+  breed:      string;
+  birthDate:  string;
+  deathDate:  string;
+  epitaph:    string;
   portraitUrl: string;
-  timeline: { year: number; title: string; description: string }[];
-  gallery: { url: string; caption?: string }[];
-  memories: { message: string; author: string; date: string }[];
+  timeline:  { year: number; title: string; description: string }[];
+  gallery:   { url: string; caption?: string }[];
+  memories:  { message: string; author: string; date: string }[];
 }
 
-function yearsLived(birth: string, death: string): number {
+function yearsWithUs(birth: string, death: string): number {
   const b = new Date(birth);
   const d = new Date(death);
   if (isNaN(b.getTime()) || isNaN(d.getTime())) return 0;
   return d.getFullYear() - b.getFullYear();
 }
 
-function renderTimeline(events: ProfileData['timeline']): string {
+function renderTimeline(events: PetProfileData['timeline']): string {
   return events.map((e, i) => `
     <div class="relative flex gap-5 pb-10 last:pb-0 timeline-item" style="animation-delay:${i * 60}ms">
       <div class="flex flex-col items-center shrink-0 w-10">
@@ -31,7 +33,7 @@ function renderTimeline(events: ProfileData['timeline']): string {
     </div>`).join('');
 }
 
-function renderGallery(items: ProfileData['gallery']): string {
+function renderGallery(items: PetProfileData['gallery']): string {
   return items.map((item, i) => `
     <button onclick="openLightbox(${i})"
       class="aspect-square rounded-2xl overflow-hidden bg-stone-100 shadow-sm active:scale-95 transition-transform">
@@ -40,28 +42,28 @@ function renderGallery(items: ProfileData['gallery']): string {
     </button>`).join('');
 }
 
-function renderMemories(memories: ProfileData['memories']): string {
+function renderMemories(memories: PetProfileData['memories']): string {
   return memories.map((m, i) => `
     <div class="bg-white rounded-2xl px-5 pt-5 pb-4 shadow-sm border border-stone-100 memory-card" style="animation-delay:${i * 80}ms">
       <div class="flex gap-3 mb-3">
-        <div class="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 text-xs font-bold shrink-0">
+        <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-700 text-xs font-bold shrink-0">
           ${m.author.charAt(0)}
         </div>
         <div>
-          <p class="text-xs font-semibold text-stone-700 leading-none mb-0.5">${m.author}</p>
+          <p class="text-xs font-semibold text-stone-700">${m.author}</p>
           <p class="text-[10px] text-stone-400">${m.date}</p>
         </div>
       </div>
-      <p class="text-[0.85rem] text-stone-600 leading-relaxed italic">&ldquo;${m.message}&rdquo;</p>
+      <p class="text-[0.83rem] text-stone-600 leading-relaxed italic">&ldquo;${m.message}&rdquo;</p>
     </div>`).join('');
 }
 
-export function renderProfile(data: ProfileData, profileId: string = 'demo'): string {
-  const age = yearsLived(data.birthDate, data.deathDate);
+export function renderPetProfile(data: PetProfileData, shortId: string = 'demo'): string {
+  const years      = yearsWithUs(data.birthDate, data.deathDate);
   const galleryJson = JSON.stringify(data.gallery.map(g => ({ url: g.url, caption: g.caption ?? '' })));
-  const initCandles = 24 + Math.floor(Math.random() * 12);
-  const initHearts  = 18 + Math.floor(Math.random() * 10);
-  const initFlowers = 11 + Math.floor(Math.random() * 8);
+  const initCandles = 20 + Math.floor(Math.random() * 10);
+  const initHearts  = 15 + Math.floor(Math.random() * 8);
+  const initFlowers = 9  + Math.floor(Math.random() * 7);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -148,10 +150,11 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
           <img src="${data.portraitUrl}" alt="" class="w-full h-full object-cover" />
         </div>
         <span class="font-serif text-sm font-semibold text-stone-800 truncate">${data.name}</span>
+        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 shrink-0">${data.breed}</span>
       </div>
       <button onclick="openModal()"
         class="shrink-0 ml-3 px-3.5 py-2 bg-stone-900 text-white text-xs font-semibold rounded-full active:bg-stone-700 transition-colors">
-        Leave a Memory
+        Share a Memory
       </button>
     </div>
   </header>
@@ -166,23 +169,22 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
         <div class="w-32 h-32 rounded-full overflow-hidden ring-2 ring-amber-400/60 ring-offset-4 ring-offset-stone-900 shadow-2xl">
           <img id="portrait-img" src="${data.portraitUrl}" alt="${data.name}" class="w-full h-full object-cover" />
         </div>
-        <div class="absolute -bottom-1 -right-1 w-7 h-7 bg-amber-400 rounded-full flex items-center justify-center shadow-md">
-          <svg viewBox="0 0 20 20" fill="white" class="w-3.5 h-3.5">
-            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
+        <!-- Paw print badge -->
+        <div class="absolute -bottom-1 -right-1 w-7 h-7 bg-amber-400 rounded-full flex items-center justify-center shadow-md text-sm">
+          🐾
         </div>
       </div>
 
+      <span class="text-[10px] font-semibold tracking-[0.18em] uppercase text-amber-400/80 mb-2">${data.species} &middot; ${data.breed}</span>
       <h1 class="font-serif text-[2rem] font-semibold tracking-wide leading-tight mb-2">${data.name}</h1>
       <p class="text-stone-400 text-[0.7rem] tracking-[0.2em] uppercase mb-8">
         ${data.birthDate}&ensp;&middot;&ensp;${data.deathDate}
       </p>
 
+      <!-- Paw print divider -->
       <div class="flex items-center gap-3 mb-7 w-full max-w-xs">
         <div class="flex-1 h-px bg-stone-700"></div>
-        <svg viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5 text-amber-400/70 shrink-0">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-        </svg>
+        <span class="text-amber-400/70 text-sm">🐾</span>
         <div class="flex-1 h-px bg-stone-700"></div>
       </div>
 
@@ -190,6 +192,7 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
         &ldquo;${data.epitaph}&rdquo;
       </blockquote>
 
+      <!-- 2×2 action grid -->
       <div class="grid grid-cols-2 gap-3 w-full max-w-xs">
         <button id="candle-btn" onclick="lightCandle()"
           class="flex items-center justify-center gap-2 py-3 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/30 rounded-2xl text-amber-300 text-sm font-medium transition-colors active:scale-95">
@@ -224,14 +227,14 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
   <!-- STATS BAR -->
   <div class="bg-white border-b border-stone-100">
     <div class="max-w-lg mx-auto grid grid-cols-4 divide-x divide-stone-100">
-      ${age > 0 ? `
+      ${years > 0 ? `
       <div class="flex flex-col items-center py-4">
-        <span class="font-serif text-xl font-semibold text-stone-900">${age}</span>
+        <span class="font-serif text-xl font-semibold text-stone-900">${years}</span>
         <span class="text-[9px] font-semibold uppercase tracking-widest text-stone-400 mt-0.5">Years</span>
       </div>` : ''}
       <div class="flex flex-col items-center py-4">
         <span class="font-serif text-xl font-semibold text-stone-900">${data.timeline.length}</span>
-        <span class="text-[9px] font-semibold uppercase tracking-widest text-stone-400 mt-0.5">Life Events</span>
+        <span class="text-[9px] font-semibold uppercase tracking-widest text-stone-400 mt-0.5">Adventures</span>
       </div>
       <div class="flex flex-col items-center py-4">
         <span class="font-serif text-xl font-semibold text-stone-900">${data.memories.length}</span>
@@ -245,127 +248,89 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
   </div>
 
   <!-- TIMELINE -->
-  <section class="px-5 pt-10 pb-8 max-w-lg mx-auto">
-    <h2 class="text-[9px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-7">Life Journey</h2>
+  <section class="max-w-lg mx-auto px-5 py-10">
+    <h2 class="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-8">Adventures &amp; Milestones</h2>
     <div class="relative">
       ${renderTimeline(data.timeline)}
     </div>
   </section>
 
   <!-- GALLERY -->
-  <section class="px-5 pb-10 max-w-lg mx-auto">
-    <h2 class="text-[9px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-5">Photos &amp; Memories</h2>
-    <div class="grid grid-cols-3 gap-2">
-      ${renderGallery(data.gallery)}
+  ${data.gallery.length > 0 ? `
+  <section class="bg-white border-t border-b border-stone-100 py-10">
+    <div class="max-w-lg mx-auto px-5">
+      <h2 class="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-stone-400 mb-6">Photo Memories</h2>
+      <div class="grid grid-cols-3 gap-2">
+        ${renderGallery(data.gallery)}
+      </div>
     </div>
-  </section>
+  </section>` : ''}
 
-  <!-- MEMORY WALL -->
-  <section class="px-5 pb-10 max-w-lg mx-auto">
-    <div class="flex items-center justify-between mb-5">
-      <h2 class="text-[9px] font-bold uppercase tracking-[0.2em] text-stone-400">Memory Wall</h2>
-      <span class="text-[9px] text-stone-400">${data.memories.length} memories</span>
+  <!-- MEMORIES -->
+  ${data.memories.length > 0 ? `
+  <section class="max-w-lg mx-auto px-5 py-10">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-stone-400">Memories Shared</h2>
+      <button onclick="openModal()"
+        class="text-xs font-semibold text-stone-600 border border-stone-300 rounded-full px-3.5 py-1.5 hover:bg-stone-100 active:bg-stone-200 transition-colors">
+        + Share a Memory
+      </button>
     </div>
-    <div class="space-y-3">
+    <div class="space-y-4">
       ${renderMemories(data.memories)}
     </div>
-    <button onclick="openModal()"
-      class="mt-6 w-full py-4 border-2 border-dashed border-stone-200 rounded-2xl text-stone-500 text-sm font-medium hover:border-stone-400 hover:text-stone-700 active:bg-stone-100 transition-colors flex items-center justify-center gap-2">
-      <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-stone-400">
-        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
-      </svg>
-      Leave a Memory
-    </button>
-  </section>
+  </section>` : ''}
 
   <!-- FOOTER -->
-  <footer class="bg-stone-900 text-white px-6 py-10 text-center mt-4">
-    <div class="max-w-xs mx-auto">
-      <p class="font-serif italic text-stone-400 text-sm mb-6 leading-relaxed">
-        &ldquo;In loving memory — their story lives on.&rdquo;
-      </p>
-      <div class="border-t border-stone-700 pt-6">
-        <p class="text-[9px] font-semibold tracking-[0.2em] uppercase text-stone-500 mb-1">Preserved by</p>
-        <p class="font-serif text-base font-semibold text-stone-300">LegacyLink</p>
-        <p class="text-[9px] text-stone-600 mt-3 tracking-wide">Honoring lives. Forever.</p>
-      </div>
+  <footer class="border-t border-stone-100 bg-white py-8 mt-4">
+    <div class="max-w-lg mx-auto px-5 text-center">
+      <p class="text-[10px] text-stone-400 tracking-widest uppercase mb-1">Preserved with</p>
+      <p class="font-serif text-sm text-stone-600 font-semibold">LegacyLink</p>
+      <p class="text-[10px] text-stone-300 mt-3">Every companion deserves to be remembered.</p>
     </div>
   </footer>
 
-  <!-- MEMORY MODAL -->
-  <div id="memory-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end justify-center">
-    <div class="bg-white w-full max-w-lg rounded-t-3xl px-6 pt-6 pb-10 shadow-2xl">
-      <div class="w-10 h-1 bg-stone-200 rounded-full mx-auto mb-5"></div>
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h3 class="font-serif text-xl text-stone-800">Share a Memory</h3>
-          <p class="text-xs text-stone-400 mt-0.5">Reviewed by family before appearing publicly</p>
-        </div>
-        <button onclick="closeModal()"
-          class="w-8 h-8 flex items-center justify-center rounded-full bg-stone-100 text-stone-500 hover:bg-stone-200 transition-colors">
-          <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-          </svg>
-        </button>
+  <!-- LIGHTBOX -->
+  <div id="lightbox" class="fixed inset-0 z-50 bg-black/90 items-center justify-center p-4">
+    <button onclick="closeLightbox()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white text-lg">✕</button>
+    <button onclick="prevSlide()" class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white">‹</button>
+    <button onclick="nextSlide()" class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white">›</button>
+    <div class="max-w-sm w-full mx-auto">
+      <img id="lb-img" src="" alt="" class="w-full rounded-2xl object-contain max-h-[70vh]" />
+      <p id="lb-cap" class="text-white/60 text-xs text-center mt-3"></p>
+    </div>
+  </div>
+
+  <!-- SHARE MEMORY MODAL -->
+  <div id="memory-modal" class="hidden fixed inset-0 z-50 bg-black/60 flex items-end sm:items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl">
+      <div class="flex items-center justify-between mb-5">
+        <h3 class="font-serif text-lg font-semibold text-stone-800">Share a Memory</h3>
+        <button onclick="closeModal()" class="w-7 h-7 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 text-sm hover:bg-stone-200">✕</button>
       </div>
-      <form id="memory-form" onsubmit="handleMemorySubmit(event)" novalidate class="space-y-3">
-        <input type="text" id="memory-author" placeholder="Your name *" autocomplete="name"
-               class="w-full border border-stone-200 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-stone-300 bg-stone-50 placeholder:text-stone-400" />
-        <input type="email" id="memory-email" placeholder="Email (optional — never public)" autocomplete="email"
-               class="w-full border border-stone-200 rounded-xl px-4 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-stone-300 bg-stone-50 placeholder:text-stone-400" />
-        <textarea id="memory-text" placeholder="Write a memory or tribute… *" rows="4"
-                  class="w-full border border-stone-200 rounded-xl px-4 py-3.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-stone-300 bg-stone-50 placeholder:text-stone-400"></textarea>
-        <p id="form-error" class="hidden text-xs text-rose-500 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2">Please enter your name and a memory.</p>
-        <button type="submit" id="memory-submit-btn"
-                class="w-full bg-stone-900 text-white py-4 rounded-2xl text-sm font-semibold hover:bg-stone-800 active:bg-black transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+      <form onsubmit="handleMemorySubmit(event)" class="space-y-3">
+        <input id="memory-author" type="text" placeholder="Your name" required
+          class="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-400 placeholder:text-stone-300" />
+        <input id="memory-email" type="email" placeholder="Email (optional)"
+          class="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-400 placeholder:text-stone-300" />
+        <textarea id="memory-text" rows="4" placeholder="Share a memory of ${data.name}…" required
+          class="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-400 placeholder:text-stone-300 resize-none"></textarea>
+        <p id="form-error" class="hidden text-xs text-rose-500">Please fill in your name and memory.</p>
+        <button type="submit"
+          class="w-full bg-stone-900 text-white font-semibold text-sm py-3 rounded-xl hover:bg-stone-700 active:bg-stone-800 transition-colors">
           Submit Memory
         </button>
       </form>
     </div>
   </div>
 
-  <!-- TOAST: memory submitted -->
-  <div id="submit-toast" class="hidden fixed bottom-6 inset-x-4 z-50 pointer-events-none">
-    <div class="bg-stone-900 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm mx-auto">
-      <svg viewBox="0 0 16 16" fill="none" class="w-4 h-4 text-emerald-400 shrink-0">
-        <circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/>
-        <path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <div>
-        <p class="font-semibold text-sm leading-none mb-0.5">Memory submitted</p>
-        <p class="text-stone-400 text-xs">Awaiting family review</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- TOAST: link copied -->
-  <div id="copy-toast" class="hidden fixed bottom-6 inset-x-4 z-50 pointer-events-none">
-    <div class="bg-stone-900 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm mx-auto">
-      <span class="text-base">🔗</span>
-      <p class="text-sm font-medium">Link copied to clipboard</p>
-    </div>
-  </div>
-
-  <!-- LIGHTBOX -->
-  <div id="lightbox" class="fixed inset-0 bg-black z-50 flex-col items-center justify-center">
-    <button onclick="closeLightbox()" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-white/10 rounded-full text-white">
-      <svg viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-      </svg>
-    </button>
-    <button onclick="prevPhoto()" class="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center bg-white/10 rounded-full text-white">
-      <svg viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-    </button>
-    <button onclick="nextPhoto()" class="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-10 h-10 flex items-center justify-center bg-white/10 rounded-full text-white">
-      <svg viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg>
-    </button>
-    <img id="lightbox-img" src="" alt="" class="max-h-[80vh] max-w-full object-contain px-14" />
-    <p id="lightbox-caption" class="text-white/60 text-sm text-center mt-4 px-6"></p>
-    <p id="lightbox-counter" class="text-white/30 text-xs text-center mt-1"></p>
-  </div>
+  <!-- TOAST MESSAGES -->
+  <div id="copy-toast"    class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-stone-800 text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-lg z-50">Link copied!</div>
+  <div id="memory-toast"  class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-stone-800 text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-lg z-50">Memory submitted — thank you 🐾</div>
+  <div id="error-toast"   class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 bg-rose-600  text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-lg z-50">Something went wrong. Try again.</div>
 
   <script>
-    // Image fade-in
+    // Lazy-load images
     document.querySelectorAll('.ll-img').forEach(function(img) {
       if (img.complete) img.classList.add('loaded');
       else img.addEventListener('load', function() { img.classList.add('loaded'); });
@@ -460,63 +425,44 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
         document.getElementById('form-error').classList.remove('hidden');
         return;
       }
-      var btn = document.getElementById('memory-submit-btn');
-      btn.disabled = true;
-      btn.innerHTML = '<svg class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>&nbsp;Submitting…';
       try {
-        await fetch('/guestbook/${profileId}', {
+        var res = await fetch('/guestbook/${shortId}', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ author_name: author, message: text, author_email: email || undefined }),
         });
-      } catch (_) {}
-      closeModal();
-      document.getElementById('memory-form').reset();
-      btn.disabled = false;
-      btn.textContent = 'Submit Memory';
-      showToast('submit-toast');
+        closeModal();
+        showToast(res.ok ? 'memory-toast' : 'error-toast');
+      } catch {
+        closeModal();
+        showToast('error-toast');
+      }
     }
 
     // Toast
-    var toastTimers = {};
     function showToast(id) {
       var el = document.getElementById(id);
       el.classList.remove('hidden');
-      clearTimeout(toastTimers[id]);
-      toastTimers[id] = setTimeout(function() { el.classList.add('hidden'); }, 3500);
+      setTimeout(function() { el.classList.add('hidden'); }, 3000);
     }
 
     // Lightbox
     var gallery = ${galleryJson};
-    var lbIndex = 0;
+    var currentSlide = 0;
     function openLightbox(i) {
-      lbIndex = i; updateLightbox();
+      currentSlide = i;
+      updateLightbox();
       document.getElementById('lightbox').classList.add('open');
-      document.body.style.overflow = 'hidden';
     }
-    function closeLightbox() {
-      document.getElementById('lightbox').classList.remove('open');
-      document.body.style.overflow = '';
-    }
-    function prevPhoto() { lbIndex = (lbIndex - 1 + gallery.length) % gallery.length; updateLightbox(); }
-    function nextPhoto() { lbIndex = (lbIndex + 1) % gallery.length; updateLightbox(); }
+    function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+    function prevSlide() { currentSlide = (currentSlide - 1 + gallery.length) % gallery.length; updateLightbox(); }
+    function nextSlide() { currentSlide = (currentSlide + 1) % gallery.length; updateLightbox(); }
     function updateLightbox() {
-      var item = gallery[lbIndex];
-      document.getElementById('lightbox-img').src = item.url;
-      document.getElementById('lightbox-caption').textContent = item.caption || '';
-      document.getElementById('lightbox-counter').textContent = (lbIndex + 1) + ' / ' + gallery.length;
+      document.getElementById('lb-img').src = gallery[currentSlide].url;
+      document.getElementById('lb-cap').textContent = gallery[currentSlide].caption;
     }
-    var touchStartX = 0;
-    document.getElementById('lightbox').addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
-    document.getElementById('lightbox').addEventListener('touchend', function(e) {
-      var diff = touchStartX - e.changedTouches[0].screenX;
-      if (Math.abs(diff) > 50) { if (diff > 0) nextPhoto(); else prevPhoto(); }
-    }, { passive: true });
-    document.addEventListener('keydown', function(e) {
-      if (!document.getElementById('lightbox').classList.contains('open')) return;
-      if (e.key === 'ArrowRight') nextPhoto();
-      if (e.key === 'ArrowLeft')  prevPhoto();
-      if (e.key === 'Escape') closeLightbox();
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === this) closeLightbox();
     });
   </script>
 </body>

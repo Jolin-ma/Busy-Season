@@ -9,15 +9,15 @@ const PLANS = [
     name: 'Monthly',
     price: 15,
     priceLabel: '$15 / month',
-    description: 'Billed monthly — cancel any time',
+    description: '$15/month · 24-month term',
     popular: true,
   },
   {
     id: 'lifetime',
-    name: 'Lifetime',
+    name: 'One-Time',
     price: 199,
     priceLabel: '$199 one-time',
-    description: 'Pay once, keep access forever',
+    description: 'Pay once, no subscription needed',
     popular: false,
   },
 ] as const;
@@ -28,7 +28,7 @@ const PREMIUM_FEATURES = [
   'Audio clips & voice memories',
   'Expanded storage',
   'Collaborative guestbook',
-  'Geotagging & cemetery navigation',
+  'Location pinning & sharing',
   'Family tree integration',
   'Priority support',
 ];

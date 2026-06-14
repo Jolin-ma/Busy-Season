@@ -23,7 +23,7 @@ const PREMIUM_FEATURES = [
   'Audio clips & voice memories',
   'Expanded storage',
   'Collaborative guestbook',
-  'Geotagging & cemetery navigation',
+  'Location pinning & sharing',
   'Family tree integration',
   'Priority support',
 ];
@@ -110,7 +110,7 @@ function StepPlaque({ selected, onSelect, onNext, onBack }: {
           Choose your memorial plaque
         </h1>
         <p className="text-stone-400 text-sm leading-relaxed">
-          Laser-engraved, 3″ × 2″, fully weatherproof — with free standard shipping.
+          Laser-engraved, 3″ × 3″, fully weatherproof — with free standard shipping.
         </p>
       </div>
 
@@ -230,7 +230,7 @@ function StepPlan({ selected, onSelect, onNext, onBack }: {
                     onClick={() => setBilling(b)}
                     className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-all
                       ${billing === b ? 'bg-stone-600 text-white' : 'text-stone-400 hover:text-stone-200'}`}>
-                    {b === 'monthly' ? 'Monthly' : 'Lifetime'}
+                    {b === 'monthly' ? 'Monthly' : 'One-Time'}
                   </button>
                 ))}
               </div>
@@ -240,9 +240,8 @@ function StepPlan({ selected, onSelect, onNext, onBack }: {
                 <>
                   <div className="flex items-baseline gap-1">
                     <span className="text-2xl font-bold text-white">$15</span>
-                    <span className="text-sm text-stone-400">/ month</span>
+                    <span className="text-sm text-stone-400">/ month for 24 months</span>
                   </div>
-                  <p className="text-xs text-stone-400 mt-0.5">or $199 once for lifetime access</p>
                 </>
               ) : (
                 <div className="flex items-baseline gap-1">
@@ -291,8 +290,8 @@ function StepReview({ material, plan, onPlace, onBack, placing }: {
 }) {
   const planLabel =
     plan === 'basic'    ? 'Basic (included free)' :
-    plan === 'monthly'  ? 'Premium Monthly'        :
-                          'Premium Lifetime';
+    plan === 'monthly'  ? 'Premium Monthly (24 months)' :
+                          'Premium One-Time';
   const planPrice = plan === 'basic' ? 0 : plan === 'monthly' ? 15 : 199;
   const planSuffix = plan === 'monthly' ? '/mo' : '';
 
@@ -340,7 +339,7 @@ function StepReview({ material, plan, onPlace, onBack, placing }: {
 
           {plan === 'monthly' && (
             <p className="text-xs text-stone-400 -mt-1">
-              Plaque is a one-time charge. Subscription billed monthly — cancel any time.
+              Plaque is a one-time charge. Subscription billed monthly for 24 months.
             </p>
           )}
         </div>

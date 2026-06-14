@@ -4,37 +4,17 @@ import { useState } from 'react';
 type PinState = 'idle' | 'acquiring' | 'confirming' | 'saving' | 'pinned' | 'error';
 
 interface PinnedCoords {
-  latitude:          number;
-  longitude:         number;
-  accuracy_radius:   number | null;
-  cemetery_name:     string | null;
-  micro_nav_enabled: boolean;
-  pinned_at:         string;
+  latitude:        number;
+  longitude:       number;
+  accuracy_radius: number | null;
+  venue_name:      string | null;
+  visitor_note:    string | null;
+  pinned_at:       string;
 }
 
-interface Props {
-  profileId?: string;
-}
+interface Props { profileId?: string; }
 
-function Toggle({ checked, onChange, label, sublabel }: {
-  checked: boolean; onChange: (v: boolean) => void; label: string; sublabel?: string;
-}) {
-  return (
-    <label className="flex items-start justify-between gap-4 cursor-pointer">
-      <div>
-        <span className="text-sm text-stone-700 font-medium">{label}</span>
-        {sublabel && <p className="text-xs text-stone-400 mt-0.5">{sublabel}</p>}
-      </div>
-      <button
-        type="button"
-        onClick={() => onChange(!checked)}
-        className={`relative w-11 h-6 rounded-full transition-colors shrink-0 mt-0.5 ${checked ? 'bg-stone-800' : 'bg-stone-200'}`}
-      >
-        <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${checked ? 'translate-x-5' : 'translate-x-0'}`} />
-      </button>
-    </label>
-  );
-}
+const BASE = 'http://localhost:3000';
 
 function AccuracyBadge({ metres }: { metres: number | null }) {
   if (metres === null) return null;
@@ -53,18 +33,43 @@ function AccuracyBadge({ metres }: { metres: number | null }) {
   );
 }
 
-const BASE = 'http://localhost:3000';
+function CopyButton({ value, label }: { value: string; label: string }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+  return (
+    <button
+      onClick={copy}
+      className="flex items-center gap-2 text-xs font-semibold text-stone-600 border border-stone-200 px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors"
+    >
+      {copied ? (
+        <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5 text-green-500">
+          <path d="M3 8l3.5 3.5L13 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      ) : (
+        <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
+          <rect x="5" y="5" width="8" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.3"/>
+          <path d="M3 11V3.5A1.5 1.5 0 014.5 2H10" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+        </svg>
+      )}
+      {copied ? 'Copied!' : label}
+    </button>
+  );
+}
 
 export default function GeotagPanel({ profileId = 'demo' }: Props) {
-  const [pinState,      setPinState]      = useState<PinState>('idle');
-  const [errorMsg,      setErrorMsg]      = useState('');
-  const [pinned,        setPinned]        = useState<PinnedCoords | null>(null);
-  const [draft,         setDraft]         = useState<{ lat: number; lng: number; accuracy: number | null } | null>(null);
-  const [cemetery,      setCemetery]      = useState('');
-  const [microNav,      setMicroNav]      = useState(false);
-  const [settingsSaved, setSettingsSaved] = useState(false);
+  const [pinState,   setPinState]   = useState<PinState>('idle');
+  const [errorMsg,   setErrorMsg]   = useState('');
+  const [pinned,     setPinned]     = useState<PinnedCoords | null>(null);
+  const [draft,      setDraft]      = useState<{ lat: number; lng: number; accuracy: number | null } | null>(null);
+  const [venueName,  setVenueName]  = useState('');
+  const [visitorNote,setVisitorNote]= useState('');
+  const [saved,      setSaved]      = useState(false);
 
-  // ── Step 1: Acquire GPS from browser ────────────────────────────────────────
   const acquireLocation = () => {
     if (!navigator.geolocation) {
       setErrorMsg('Your browser or device does not support geolocation.');
@@ -73,89 +78,73 @@ export default function GeotagPanel({ profileId = 'demo' }: Props) {
     }
     setPinState('acquiring');
     setErrorMsg('');
-
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setDraft({
-          lat:      position.coords.latitude,
-          lng:      position.coords.longitude,
-          accuracy: position.coords.accuracy ?? null,
-        });
+      pos => {
+        setDraft({ lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy ?? null });
         setPinState('confirming');
       },
-      (err) => {
-        const messages: Record<number, string> = {
-          1: 'Location permission denied. Please allow location access in your browser settings.',
-          2: 'Position unavailable. Try moving outside or closer to a window.',
+      err => {
+        const msg: Record<number, string> = {
+          1: 'Location permission denied. Allow location access in your browser settings.',
+          2: 'Position unavailable. Try moving closer to a window or outside.',
           3: 'GPS signal timed out. Try again in an open area.',
         };
-        setErrorMsg(messages[err.code] ?? 'Unable to retrieve location.');
+        setErrorMsg(msg[err.code] ?? 'Unable to retrieve location.');
         setPinState('error');
       },
       { enableHighAccuracy: true, timeout: 15_000, maximumAge: 0 }
     );
   };
 
-  // ── Step 2: Confirm and POST to activate endpoint ────────────────────────────
   const confirmPin = async () => {
     if (!draft) return;
     setPinState('saving');
     try {
-      const res = await fetch(
-        `${BASE}/api/v1/premium/navigation/${profileId}/activate`,
-        {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body:    JSON.stringify({
-            latitude:       draft.lat,
-            longitude:      draft.lng,
-            accuracyRadius: draft.accuracy,
-          }),
-        }
-      );
-      if (!res.ok) throw new Error('Server rejected the coordinate.');
+      const res = await fetch(`${BASE}/api/v1/premium/location/${profileId}/activate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ latitude: draft.lat, longitude: draft.lng, accuracyRadius: draft.accuracy }),
+      });
+      if (!res.ok) throw new Error();
       const { coordinates } = await res.json();
       setPinned(coordinates);
-      setCemetery(coordinates.cemetery_name ?? '');
-      setMicroNav(coordinates.micro_nav_enabled ?? false);
-      setPinState('pinned');
+      setVenueName(coordinates.venue_name ?? '');
+      setVisitorNote(coordinates.visitor_note ?? '');
     } catch {
-      // Optimistic fallback — backend may not be running in dev
       setPinned({
-        latitude:          draft.lat,
-        longitude:         draft.lng,
-        accuracy_radius:   draft.accuracy,
-        cemetery_name:     null,
-        micro_nav_enabled: false,
-        pinned_at:         new Date().toISOString(),
+        latitude: draft.lat, longitude: draft.lng,
+        accuracy_radius: draft.accuracy,
+        venue_name: null, visitor_note: null,
+        pinned_at: new Date().toISOString(),
       });
-      setPinState('pinned');
     }
     setDraft(null);
+    setPinState('pinned');
   };
 
-  const saveSettings = async () => {
+  const saveDetails = async () => {
     if (!pinned) return;
     try {
-      await fetch(`${BASE}/api/v1/premium/navigation/${profileId}/settings`, {
-        method:  'PATCH',
+      await fetch(`${BASE}/api/v1/premium/location/${profileId}/settings`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ cemetery_name: cemetery, micro_nav_enabled: microNav }),
+        body: JSON.stringify({ venue_name: venueName, visitor_note: visitorNote }),
       });
-    } catch { /* optimistic — backend may not be running in dev */ }
-    setPinned(prev => prev ? { ...prev, cemetery_name: cemetery, micro_nav_enabled: microNav } : prev);
-    setSettingsSaved(true);
-    setTimeout(() => setSettingsSaved(false), 2000);
+    } catch { /* optimistic */ }
+    setPinned(prev => prev ? { ...prev, venue_name: venueName, visitor_note: visitorNote } : prev);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
   };
 
-  const mapsUrl      = pinned ? `https://www.google.com/maps?q=${pinned.latitude},${pinned.longitude}` : null;
-  const appleMapsUrl = pinned ? `https://maps.apple.com/?q=${pinned.latitude},${pinned.longitude}` : null;
+  const googleMapsUrl = pinned ? `https://www.google.com/maps?q=${pinned.latitude},${pinned.longitude}` : null;
+  const appleMapsUrl  = pinned ? `https://maps.apple.com/?q=${pinned.latitude},${pinned.longitude}` : null;
+  const coordsString  = pinned ? `${pinned.latitude.toFixed(7)}, ${pinned.longitude.toFixed(7)}` : '';
+  const shareLink     = pinned ? `https://www.google.com/maps?q=${pinned.latitude},${pinned.longitude}` : '';
 
-  // ── Render ───────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
 
-      {/* ── NOT YET PINNED ─────────────────────────────────────────────────── */}
+      {/* ── NOT YET PINNED ────────────────────────────────────────────────── */}
       {(pinState === 'idle' || pinState === 'error') && !pinned && (
         <>
           <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-8 text-center">
@@ -167,11 +156,11 @@ export default function GeotagPanel({ profileId = 'demo' }: Props) {
             </div>
             <h3 className="text-base font-semibold text-stone-800 mb-2">Location not yet pinned</h3>
             <p className="text-sm text-stone-400 leading-relaxed max-w-xs mx-auto mb-6">
-              Go to the gravesite, then tap <strong>Pin This Location</strong>. Your device's GPS will capture the exact coordinates automatically — no typing required.
+              Stand at the memorial site and tap <strong>Pin This Location</strong>. Your device captures the exact GPS coordinates — so family members who haven't been here can find it.
             </p>
 
             {pinState === 'error' && (
-              <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-600 mb-5">
+              <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-600 mb-5 text-left">
                 {errorMsg}
               </div>
             )}
@@ -186,41 +175,41 @@ export default function GeotagPanel({ profileId = 'demo' }: Props) {
               </svg>
               Pin This Location
             </button>
-            <p className="text-xs text-stone-400 mt-3">Requires location permission · best outdoors with clear sky</p>
+            <p className="text-xs text-stone-400 mt-3">Requires location permission · best accuracy outdoors</p>
           </div>
 
-          {/* Micro-nav feature preview (shown before pinning) */}
-          <div className="bg-stone-50 border border-stone-100 rounded-2xl p-5">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-xl bg-stone-200 flex items-center justify-center shrink-0 mt-0.5">
-                <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-stone-500">
-                  <path d="M8 2l1.5 4.5H14l-3.8 2.7 1.5 4.5L8 11 4.3 13.7l1.5-4.5L2 6.5h4.5L8 2z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-stone-700 mb-1">Micro-Navigation Walking Path</p>
-                <p className="text-xs text-stone-400 leading-relaxed">
-                  After pinning, enable turn-by-turn walking directions from the cemetery entrance directly to this grave plot. Visitors get a navigation prompt the moment they scan the QR code on-site.
-                </p>
-              </div>
+          {/* What this is for */}
+          <div className="bg-stone-50 border border-stone-100 rounded-2xl p-5 space-y-3">
+            <p className="text-xs font-semibold text-stone-600">Who is this for?</p>
+            <div className="space-y-2">
+              {[
+                { icon: '📍', text: 'Family members in another city who want to visit and need the exact spot.' },
+                { icon: '🏛', text: 'Large cemeteries and parks where GPS is the only reliable way to find a specific plot or bench.' },
+                { icon: '🔗', text: 'Anyone reading this memorial online who wants to make a trip — one tap opens Maps.' },
+              ].map(({ icon, text }) => (
+                <div key={text} className="flex gap-2.5 items-start">
+                  <span className="text-sm shrink-0 mt-0.5">{icon}</span>
+                  <p className="text-xs text-stone-500 leading-relaxed">{text}</p>
+                </div>
+              ))}
             </div>
           </div>
         </>
       )}
 
-      {/* ── ACQUIRING GPS ──────────────────────────────────────────────────── */}
+      {/* ── ACQUIRING ─────────────────────────────────────────────────────── */}
       {pinState === 'acquiring' && (
         <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-8 text-center">
           <div className="w-14 h-14 rounded-full border-4 border-stone-200 border-t-stone-800 animate-spin mx-auto mb-5" />
           <h3 className="text-base font-semibold text-stone-800 mb-2">Acquiring GPS signal…</h3>
-          <p className="text-sm text-stone-400">Stay still for best accuracy. This usually takes 5–15 seconds.</p>
+          <p className="text-sm text-stone-400">Stay still for best accuracy. Usually takes 5–15 seconds.</p>
         </div>
       )}
 
-      {/* ── CONFIRM PIN ─────────────────────────────────────────────────────── */}
+      {/* ── CONFIRM ───────────────────────────────────────────────────────── */}
       {pinState === 'confirming' && draft && (
         <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6">
-          <h3 className="text-sm font-semibold text-stone-800 mb-1">Confirm gravesite location</h3>
+          <h3 className="text-sm font-semibold text-stone-800 mb-1">Confirm location</h3>
           <p className="text-xs text-stone-400 mb-5">Review the captured coordinates before saving.</p>
 
           <div className="bg-stone-50 rounded-xl p-4 mb-5 space-y-2">
@@ -240,34 +229,28 @@ export default function GeotagPanel({ profileId = 'demo' }: Props) {
 
           {draft.accuracy && draft.accuracy > 30 && (
             <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-xs text-amber-700 mb-5">
-              Signal quality is low (±{Math.round(draft.accuracy)}m). For a more precise pin, move to open sky and try again.
+              Signal quality is low (±{Math.round(draft.accuracy)}m). Move to open sky and retry for a more precise pin.
             </div>
           )}
 
           <div className="flex gap-2">
-            <button
-              onClick={confirmPin}
-              className="bg-stone-900 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-stone-700 transition-colors"
-            >
-              Confirm &amp; Save Pin
+            <button onClick={confirmPin}
+              className="bg-stone-900 text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-stone-700 transition-colors">
+              Confirm &amp; Save
             </button>
-            <button
-              onClick={acquireLocation}
-              className="text-sm text-stone-500 border border-stone-200 px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors"
-            >
+            <button onClick={acquireLocation}
+              className="text-sm text-stone-500 border border-stone-200 px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors">
               Retry GPS
             </button>
-            <button
-              onClick={() => { setPinState('idle'); setDraft(null); }}
-              className="text-sm text-stone-400 px-4 py-2.5 rounded-xl hover:bg-stone-100 transition-colors"
-            >
+            <button onClick={() => { setPinState('idle'); setDraft(null); }}
+              className="text-sm text-stone-400 px-4 py-2.5 rounded-xl hover:bg-stone-100 transition-colors">
               Cancel
             </button>
           </div>
         </div>
       )}
 
-      {/* ── SAVING ──────────────────────────────────────────────────────────── */}
+      {/* ── SAVING ────────────────────────────────────────────────────────── */}
       {pinState === 'saving' && (
         <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-8 text-center">
           <div className="w-14 h-14 rounded-full border-4 border-stone-200 border-t-stone-800 animate-spin mx-auto mb-5" />
@@ -275,20 +258,20 @@ export default function GeotagPanel({ profileId = 'demo' }: Props) {
         </div>
       )}
 
-      {/* ── PINNED ──────────────────────────────────────────────────────────── */}
+      {/* ── PINNED ────────────────────────────────────────────────────────── */}
       {pinState === 'pinned' && pinned && (
         <>
-          {/* Pinned location card */}
+          {/* Confirmed coordinates */}
           <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6">
             <div className="flex items-start justify-between mb-4">
-              <div>
-                <div className="flex items-center gap-2 mb-0.5">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
-                  <h3 className="text-sm font-semibold text-stone-800">Location Pinned</h3>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-green-500 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold text-stone-800">Location pinned</p>
+                  <p className="text-xs text-stone-400">
+                    {new Date(pinned.pinned_at).toLocaleDateString('en-CA', { dateStyle: 'medium' })}
+                  </p>
                 </div>
-                <p className="text-xs text-stone-400">
-                  Pinned {new Date(pinned.pinned_at).toLocaleDateString('en-CA', { dateStyle: 'medium' })}
-                </p>
               </div>
               <AccuracyBadge metres={pinned.accuracy_radius} />
             </div>
@@ -304,90 +287,84 @@ export default function GeotagPanel({ profileId = 'demo' }: Props) {
               </div>
             </div>
 
-            <div className="flex gap-2 mb-5">
-              <a
-                href={mapsUrl!}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-xs font-semibold text-stone-600 border border-stone-200 px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors"
-              >
-                <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
-                  <circle cx="8" cy="7" r="2.5" stroke="currentColor" strokeWidth="1.4"/>
-                  <path d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 8 5 8s5-4.25 5-8c0-2.76-2.24-5-5-5z" stroke="currentColor" strokeWidth="1.3"/>
-                </svg>
-                Google Maps
-              </a>
-              <a
-                href={appleMapsUrl!}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-xs font-semibold text-stone-600 border border-stone-200 px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors"
-              >
-                <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
-                  <circle cx="8" cy="7" r="2.5" stroke="currentColor" strokeWidth="1.4"/>
-                  <path d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 8 5 8s5-4.25 5-8c0-2.76-2.24-5-5-5z" stroke="currentColor" strokeWidth="1.3"/>
-                </svg>
-                Apple Maps
-              </a>
-            </div>
-
-            <button
-              onClick={() => { setPinState('idle'); setPinned(null); }}
-              className="text-xs text-stone-400 hover:text-red-500 transition-colors"
-            >
+            <button onClick={() => { setPinState('idle'); setPinned(null); }}
+              className="text-xs text-stone-400 hover:text-red-500 transition-colors">
               Reset pin location
             </button>
           </div>
 
-          {/* Cemetery details */}
-          <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6">
-            <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-4">Cemetery Details</h3>
-            <label className="block text-xs font-semibold uppercase tracking-widest text-stone-400 mb-2">Cemetery Name</label>
-            <input
-              type="text"
-              placeholder="e.g. Oshawa Union Cemetery"
-              value={cemetery}
-              onChange={e => setCemetery(e.target.value)}
-              className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-stone-400"
-            />
-          </div>
-
-          {/* Micro-Navigation Walking Path */}
-          <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6 space-y-5">
+          {/* Venue name + visitor note */}
+          <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6 space-y-4">
             <div>
-              <h3 className="text-sm font-semibold text-stone-800 mb-1">Micro-Navigation Walking Path</h3>
-              <p className="text-xs text-stone-400 leading-relaxed">
-                When enabled, visitors who scan the QR code at the cemetery will receive turn-by-turn walking directions to this exact grave plot — powered by Google Maps and Apple Maps. No manual typing; the route is computed automatically from the pinned coordinates.
-              </p>
+              <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-4">Location Details</h3>
+              <label className="block text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1.5">
+                Venue / Site Name
+              </label>
+              <input
+                value={venueName}
+                onChange={e => setVenueName(e.target.value)}
+                placeholder="e.g. Victoria Park, Hamilton · Oshawa Union Cemetery"
+                className="w-full border border-stone-200 rounded-xl px-4 py-2.5 text-sm text-stone-700 placeholder-stone-300 focus:outline-none focus:ring-2 focus:ring-stone-200"
+              />
             </div>
 
-            <div className="h-px bg-stone-100" />
-
-            <Toggle
-              checked={microNav}
-              onChange={setMicroNav}
-              label="Enable Micro-Navigation Walking Path"
-              sublabel="Guides visitors from the cemetery entrance to this exact plot via Google & Apple Maps."
-            />
-
-            {microNav && (
-              <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-start gap-3">
-                <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 text-blue-500 shrink-0 mt-0.5">
-                  <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.4"/>
-                  <path d="M8 7v4M8 5.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                </svg>
-                <p className="text-xs text-blue-700 leading-relaxed">
-                  Walking path is active. Visitors scanning the QR code on-site will be offered step-by-step navigation from the cemetery entrance to this plot.
-                </p>
-              </div>
-            )}
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1.5">
+                Visitor Note <span className="normal-case font-normal text-stone-300">(optional — shown on the public memorial)</span>
+              </label>
+              <textarea
+                rows={3}
+                value={visitorNote}
+                onChange={e => setVisitorNote(e.target.value)}
+                placeholder="e.g. The bench is near the north entrance, past the fountain on the left. Look for the oak tree. — A sentence like this is often more useful than GPS alone."
+                className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm text-stone-700 placeholder-stone-300 resize-none focus:outline-none focus:ring-2 focus:ring-stone-200 leading-relaxed"
+              />
+            </div>
 
             <button
-              onClick={saveSettings}
-              className="w-full bg-stone-900 text-white py-3.5 rounded-2xl text-sm font-semibold hover:bg-stone-700 transition-colors"
+              onClick={saveDetails}
+              className="w-full bg-stone-900 text-white py-3 rounded-xl text-sm font-semibold hover:bg-stone-700 transition-colors"
             >
-              {settingsSaved ? '✓ Saved' : 'Save Settings'}
+              {saved ? '✓ Saved' : 'Save Details'}
             </button>
+          </div>
+
+          {/* Share this location */}
+          <div className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6">
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">
+              Share This Location
+            </h3>
+            <p className="text-xs text-stone-400 mb-5 leading-relaxed">
+              Send these to family members who want to visit. One tap opens the exact spot in their preferred maps app — no searching, no guessing.
+            </p>
+
+            <div className="flex flex-wrap gap-2 mb-4">
+              <a href={googleMapsUrl!} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 text-xs font-semibold text-stone-600 border border-stone-200 px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors">
+                <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
+                  <circle cx="8" cy="7" r="2.5" stroke="currentColor" strokeWidth="1.4"/>
+                  <path d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 8 5 8s5-4.25 5-8c0-2.76-2.24-5-5-5z" stroke="currentColor" strokeWidth="1.3"/>
+                </svg>
+                Open in Google Maps
+              </a>
+              <a href={appleMapsUrl!} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 text-xs font-semibold text-stone-600 border border-stone-200 px-4 py-2.5 rounded-xl hover:bg-stone-50 transition-colors">
+                <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
+                  <circle cx="8" cy="7" r="2.5" stroke="currentColor" strokeWidth="1.4"/>
+                  <path d="M8 2C5.24 2 3 4.24 3 7c0 3.75 5 8 5 8s5-4.25 5-8c0-2.76-2.24-5-5-5z" stroke="currentColor" strokeWidth="1.3"/>
+                </svg>
+                Open in Apple Maps
+              </a>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <CopyButton value={coordsString} label="Copy coordinates" />
+              <CopyButton value={shareLink}    label="Copy share link" />
+            </div>
+
+            <p className="text-[11px] text-stone-300 mt-4 leading-relaxed">
+              Tip: paste the share link into a text message, email, or the family guestbook — anyone who taps it goes straight to the pinned spot.
+            </p>
           </div>
         </>
       )}

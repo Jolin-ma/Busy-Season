@@ -5,6 +5,10 @@ import { useAuth } from '@/context/AuthContext';
 import Sidebar from './Sidebar';
 
 function hasPurchased() {
+  if (process.env.NODE_ENV === 'development') {
+    localStorage.setItem('ll_has_purchased', 'true');
+    return true;
+  }
   return localStorage.getItem('ll_has_purchased') === 'true';
 }
 
@@ -21,7 +25,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     }
   }, [user, isLoading, router]);
 
-  if (isLoading || !user) {
+  if (isLoading || !user || !hasPurchased()) {
     return (
       <div className="flex h-screen items-center justify-center bg-stone-50">
         <div className="w-5 h-5 rounded-full border-2 border-stone-300 border-t-stone-800 animate-spin" />
