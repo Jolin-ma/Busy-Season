@@ -1,6 +1,9 @@
 'use client';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { SUPPORT_TICKETS, BILLING_ACCOUNTS, SHIPPING_ORDERS } from '@/lib/mock-data';
+import { SUPPORT_TICKETS, BILLING_ACCOUNTS } from '@/lib/mock-data';
+
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 const NAV_MAIN = [
   {
@@ -33,7 +36,19 @@ export default function Sidebar() {
   const pathname = usePathname();
   const newCount      = SUPPORT_TICKETS.filter(t => t.status === 'NEW').length;
   const dupCount      = BILLING_ACCOUNTS.filter(a => a.transactions.some(t => t.isPotentialDup)).length;
-  const pendingOrders = SHIPPING_ORDERS.filter(o => o.status === 'PENDING_QR' || o.status === 'PENDING_SHIP').length;
+  const [pendingOrders, setPendingOrders] = useState(0);
+
+  useEffect(() => {
+    fetch(`${API}/admin/fulfillment`)
+      .then(r => r.json())
+      .then((d: { orders?: { plaqueStatus: string }[] }) => {
+        const pending = (d.orders ?? []).filter(
+          o => o.plaqueStatus === 'ORDER_RECEIVED' || o.plaqueStatus === 'ENGRAVING',
+        ).length;
+        setPendingOrders(pending);
+      })
+      .catch(() => {});
+  }, []);
 
   const isSupport      = pathname === '/support';
   const isBilling      = pathname === '/billing';

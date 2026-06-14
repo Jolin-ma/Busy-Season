@@ -204,7 +204,7 @@ export default function MediaPage() {
           >
             {/* Media */}
             <div className="bg-stone-950 flex items-center justify-center min-h-[320px]">
-              {preview.type === 'IMAGE' && (
+              {preview.type === 'PHOTO' && (
                 <img
                   src={preview.url}
                   alt={preview.caption ?? preview.profile.full_name}

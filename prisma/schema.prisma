@@ -130,6 +130,7 @@ model Profile {
   support_tickets      SupportTicket[]
   scan_logs            ScanLog[]
   qr_marker            QRMarker?
+  shipping_order       ShippingOrder?
 
   // short_id is already unique; the explicit index keeps the planner from
   // falling back to a seq scan when joining from the QR routing layer.
@@ -583,4 +584,33 @@ model Transaction {
   @@index([user_id, amount, created_at])  // speeds up duplicate window query
   @@index([status])
   @@map("transactions")
+}
+
+// =============================================================================
+// SHIPPING ORDER
+// One-to-one with Profile. Created when a plaque order is placed.
+// Tracks physical delivery details that don't belong on the Profile itself.
+// =============================================================================
+
+model ShippingOrder {
+  id              String    @id @default(uuid()) @db.Uuid
+
+  profile_id      String    @unique @db.Uuid
+  profile         Profile   @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  // Shipping destination — null until captured at order time.
+  address         String?
+  city            String?
+
+  // Product choice — null for orders placed before this field existed.
+  plaque_style    String?
+
+  // Set when Jolin ships the package.
+  tracking_number String?
+  shipped_at      DateTime?
+
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  @@map("shipping_orders")
 }

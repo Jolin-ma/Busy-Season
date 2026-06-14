@@ -1,25 +1,33 @@
 'use client';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { PROFILES, type Profile, type ProfileStatus } from '@/lib/mock-data';
+import { buildManufacturerPayload } from '@/lib/qr';
 import QRPreviewModal from './QRPreviewModal';
+
+export interface FulfillmentProfile {
+  shortId:      string;
+  profileName:  string;
+  customerName: string;
+  plaqueStatus: 'ORDER_RECEIVED' | 'ENGRAVING' | 'SHIPPED' | 'DELIVERED';
+  createdAt:    string;
+}
 
 interface QRProfile { id: string; name: string; url: string; svg: string }
 
-// ── Status badge ──────────────────────────────────────────────────────────────
-
-const STATUS_STYLES: Record<ProfileStatus, string> = {
-  PENDING_PRINT: 'bg-amber-50 text-amber-700 border-amber-100',
-  IN_PRODUCTION: 'bg-blue-50 text-blue-700 border-blue-100',
-  ACTIVE:        'bg-emerald-50 text-emerald-700 border-emerald-100',
+const STATUS_STYLES: Record<FulfillmentProfile['plaqueStatus'], string> = {
+  ORDER_RECEIVED: 'bg-amber-50 text-amber-700 border-amber-100',
+  ENGRAVING:      'bg-blue-50 text-blue-700 border-blue-100',
+  SHIPPED:        'bg-indigo-50 text-indigo-700 border-indigo-100',
+  DELIVERED:      'bg-emerald-50 text-emerald-700 border-emerald-100',
 };
-const STATUS_LABELS: Record<ProfileStatus, string> = {
-  PENDING_PRINT: 'Pending',
-  IN_PRODUCTION: 'In Production',
-  ACTIVE:        'Active',
+const STATUS_LABELS: Record<FulfillmentProfile['plaqueStatus'], string> = {
+  ORDER_RECEIVED: 'Pending',
+  ENGRAVING:      'In Production',
+  SHIPPED:        'Shipped',
+  DELIVERED:      'Delivered',
 };
 
-function StatusBadge({ status }: { status: ProfileStatus }) {
+function StatusBadge({ status }: { status: FulfillmentProfile['plaqueStatus'] }) {
   return (
     <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full border ${STATUS_STYLES[status]}`}>
       <span className="w-1.5 h-1.5 rounded-full bg-current" />
@@ -32,24 +40,26 @@ function Spinner() {
   return <span className="w-4 h-4 border-2 border-stone-300 border-t-stone-600 rounded-full animate-spin" />;
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
+interface Props {
+  profiles:      FulfillmentProfile[];
+  onStatusChange: (shortId: string, newStatus: FulfillmentProfile['plaqueStatus']) => void;
+}
 
-export default function FulfillmentQueue() {
-  const [profiles,    setProfiles]    = useState<Profile[]>(PROFILES);
+export default function FulfillmentQueue({ profiles, onStatusChange }: Props) {
   const [selected,    setSelected]    = useState<Set<string>>(new Set());
   const [sending,     setSending]     = useState(false);
   const [generating,  setGenerating]  = useState(false);
   const [qrLoading,   setQrLoading]   = useState<string | null>(null);
   const [qrModalData, setQrModalData] = useState<QRProfile[] | null>(null);
 
-  const pending = profiles.filter(p => p.status === 'PENDING_PRINT');
-  const allPendingSelected = pending.length > 0 && pending.every(p => selected.has(p.id));
+  const pending         = profiles.filter(p => p.plaqueStatus === 'ORDER_RECEIVED');
+  const allPendingSelected = pending.length > 0 && pending.every(p => selected.has(p.shortId));
 
   const toggleSelectAll = () => {
     if (allPendingSelected) {
-      setSelected(s => { const n = new Set(s); pending.forEach(p => n.delete(p.id)); return n; });
+      setSelected(s => { const n = new Set(s); pending.forEach(p => n.delete(p.shortId)); return n; });
     } else {
-      setSelected(s => { const n = new Set(s); pending.forEach(p => n.add(p.id)); return n; });
+      setSelected(s => { const n = new Set(s); pending.forEach(p => n.add(p.shortId)); return n; });
     }
   };
 
@@ -59,7 +69,7 @@ export default function FulfillmentQueue() {
   const generateQRCodes = async (ids: string[]) => {
     setGenerating(true);
     try {
-      const res  = await fetch('/api/qr', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ profileIds: ids }) });
+      const res  = await fetch('/api/qr', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ shortIds: ids }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Generation failed');
       setQrModalData(data.profiles);
@@ -70,13 +80,14 @@ export default function FulfillmentQueue() {
     }
   };
 
-  const previewSingleQR = async (profile: Profile) => {
-    setQrLoading(profile.id);
+  const previewSingleQR = async (profile: FulfillmentProfile) => {
+    setQrLoading(profile.shortId);
     try {
-      const res = await fetch(`/api/qr?id=${profile.id}`);
+      const res = await fetch(`/api/qr?id=${profile.shortId}`);
       if (!res.ok) throw new Error('Failed');
       const svg = await res.text();
-      setQrModalData([{ id: profile.id, name: profile.name, url: profile.qrCodeUrl, svg }]);
+      const url = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://legacylinkstudio.com'}/p/${profile.shortId}`;
+      setQrModalData([{ id: profile.shortId, name: profile.profileName, url, svg }]);
     } catch {
       toast.error('QR preview failed');
     } finally {
@@ -87,11 +98,12 @@ export default function FulfillmentQueue() {
   const sendToManufacturer = async () => {
     if (!selected.size) return;
     setSending(true);
+    const ids = [...selected];
     try {
-      const res  = await fetch('/api/manufacturing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ profileIds: [...selected] }) });
+      const res  = await fetch('/api/manufacturing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ shortIds: ids }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Request failed');
-      setProfiles(prev => prev.map(p => data.updatedIds.includes(p.id) ? { ...p, status: 'IN_PRODUCTION' } : p));
+      ids.forEach(id => onStatusChange(id, 'ENGRAVING'));
       setSelected(new Set());
       toast.success(`Sent ${data.sent} order${data.sent !== 1 ? 's' : ''} to manufacturer`, { description: `Order ID: ${data.orderId}` });
     } catch (err) {
@@ -115,7 +127,6 @@ export default function FulfillmentQueue() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Generate QR codes */}
             <button
               onClick={() => generateQRCodes([...selected])}
               disabled={selected.size === 0 || generating || sending}
@@ -135,7 +146,6 @@ export default function FulfillmentQueue() {
               }
             </button>
 
-            {/* Send to manufacturer */}
             <button
               onClick={sendToManufacturer}
               disabled={selected.size === 0 || sending || generating}
@@ -180,37 +190,37 @@ export default function FulfillmentQueue() {
             </thead>
             <tbody className="divide-y divide-stone-50">
               {profiles.map(profile => {
-                const isPending   = profile.status === 'PENDING_PRINT';
-                const isSelected  = selected.has(profile.id);
-                const isLoadingQR = qrLoading === profile.id;
+                const isPending   = profile.plaqueStatus === 'ORDER_RECEIVED';
+                const isSelected  = selected.has(profile.shortId);
+                const isLoadingQR = qrLoading === profile.shortId;
 
                 return (
                   <tr
-                    key={profile.id}
+                    key={profile.shortId}
                     className={['transition-colors', isSelected ? 'bg-stone-50' : 'hover:bg-stone-50/50'].join(' ')}
                   >
                     <td className="py-3.5 px-5">
                       <input
                         type="checkbox"
                         checked={isSelected}
-                        onChange={() => toggleRow(profile.id)}
+                        onChange={() => toggleRow(profile.shortId)}
                         disabled={!isPending}
                         className="accent-stone-900 w-3.5 h-3.5 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                       />
                     </td>
                     <td className="py-3.5 px-4">
                       <code className="text-xs font-mono text-stone-500 bg-stone-100 px-2 py-0.5 rounded-lg">
-                        {profile.id}
+                        {profile.shortId}
                       </code>
                     </td>
                     <td className="py-3.5 px-4">
-                      <span className="text-stone-800 font-medium">{profile.name}</span>
+                      <span className="text-stone-800 font-medium">{profile.profileName}</span>
                     </td>
                     <td className="py-3.5 px-4 text-stone-500 tabular-nums text-xs">
                       {new Date(profile.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="py-3.5 px-4">
-                      <StatusBadge status={profile.status} />
+                      <StatusBadge status={profile.plaqueStatus} />
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="flex items-center justify-end gap-3">
@@ -227,7 +237,7 @@ export default function FulfillmentQueue() {
                           QR
                         </button>
                         <a
-                          href={profile.qrCodeUrl}
+                          href={`${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://legacylinkstudio.com'}/p/${profile.shortId}`}
                           target="_blank"
                           rel="noreferrer"
                           className="text-xs text-stone-400 hover:text-stone-700 transition-colors"
@@ -239,6 +249,11 @@ export default function FulfillmentQueue() {
                   </tr>
                 );
               })}
+              {profiles.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="py-10 text-center text-xs text-stone-400">No profiles in the queue.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

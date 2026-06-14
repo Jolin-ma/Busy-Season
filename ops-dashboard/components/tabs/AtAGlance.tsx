@@ -1,5 +1,8 @@
 'use client';
-import { SUMMARY, SUPPORT_TICKETS, BILLING_ACCOUNTS, SHIPPING_ORDERS, FLAGGED_ITEMS } from '@/lib/mock-data';
+import { useState, useEffect } from 'react';
+import { SUMMARY, SUPPORT_TICKETS, BILLING_ACCOUNTS, FLAGGED_ITEMS } from '@/lib/mock-data';
+
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 // ── System health (mock) ──────────────────────────────────────────────────────
 const HEALTH = {
@@ -14,12 +17,10 @@ const MRR = BILLING_ACCOUNTS.reduce((sum, a) =>
   sum + (a.plan === 'PREMIUM' ? 1500 : 700), 0
 ) / 100;
 
-// ── Derived alerts ────────────────────────────────────────────────────────────
-const criticalTickets   = SUPPORT_TICKETS.filter(t => t.priority === 'CRITICAL' && t.status !== 'RESOLVED');
-const pendingShipments  = SHIPPING_ORDERS.filter(o => o.status === 'PENDING_SHIP').length;
-const pendingQR         = SHIPPING_ORDERS.filter(o => o.status === 'PENDING_QR').length;
-const dupCharges        = BILLING_ACCOUNTS.reduce((s, a) => s + a.transactions.filter(t => t.isPotentialDup).length, 0);
-const pendingFlags      = FLAGGED_ITEMS.filter(f => f.status === 'PENDING').length;
+// ── Derived alerts (static mock) ─────────────────────────────────────────────
+const criticalTickets = SUPPORT_TICKETS.filter(t => t.priority === 'CRITICAL' && t.status !== 'RESOLVED');
+const dupCharges      = BILLING_ACCOUNTS.reduce((s, a) => s + a.transactions.filter(t => t.isPotentialDup).length, 0);
+const pendingFlags    = FLAGGED_ITEMS.filter(f => f.status === 'PENDING').length;
 
 // ── Recent activity feed ──────────────────────────────────────────────────────
 const ACTIVITY = [
@@ -40,6 +41,20 @@ function Dot({ ok }: { ok: boolean }) {
 }
 
 export default function AtAGlance() {
+  const [pendingShipments, setPendingShipments] = useState(0);
+  const [pendingQR,        setPendingQR]        = useState(0);
+
+  useEffect(() => {
+    fetch(`${API}/admin/fulfillment`)
+      .then(r => r.json())
+      .then((d: { orders?: { plaqueStatus: string }[] }) => {
+        const orders = d.orders ?? [];
+        setPendingShipments(orders.filter(o => o.plaqueStatus === 'ENGRAVING').length);
+        setPendingQR(orders.filter(o => o.plaqueStatus === 'ORDER_RECEIVED').length);
+      })
+      .catch(() => {});
+  }, []);
+
   const alerts = [
     criticalTickets.length > 0 && { level: 'critical', text: `${criticalTickets.length} critical support ticket${criticalTickets.length > 1 ? 's' : ''} open` },
     dupCharges     > 0         && { level: 'warning',  text: `${dupCharges} potential duplicate charge${dupCharges > 1 ? 's' : ''} flagged` },

@@ -382,6 +382,92 @@ export function buildServer() {
     });
   });
 
+  // ── Admin: Fulfillment — list all orders ───────────────────────────────────
+  app.get('/admin/fulfillment', async (_req, reply) => {
+    const profiles = await rawPrisma.profile.findMany({
+      where:   { deleted_at: null },
+      orderBy: { created_at: 'desc' },
+      select: {
+        short_id:      true,
+        full_name:     true,
+        plaque_status: true,
+        created_at:    true,
+        user: { select: { name: true, email: true } },
+        shipping_order: {
+          select: {
+            address:         true,
+            city:            true,
+            plaque_style:    true,
+            tracking_number: true,
+            shipped_at:      true,
+          },
+        },
+      },
+    });
+
+    const orders = profiles.map(p => ({
+      shortId:        p.short_id,
+      profileName:    p.full_name,
+      customerName:   p.user.name,
+      customerEmail:  p.user.email,
+      plaqueStatus:   p.plaque_status,
+      createdAt:      p.created_at.toISOString(),
+      address:        p.shipping_order?.address        ?? null,
+      city:           p.shipping_order?.city           ?? null,
+      plaqueStyle:    p.shipping_order?.plaque_style   ?? null,
+      trackingNumber: p.shipping_order?.tracking_number ?? null,
+      shippedAt:      p.shipping_order?.shipped_at?.toISOString() ?? null,
+    }));
+
+    return reply.send({ orders });
+  });
+
+  // ── Admin: Fulfillment — mark as shipped ───────────────────────────────────
+  app.patch<{ Params: { shortId: string }; Body: { trackingNumber: string } }>(
+    '/admin/fulfillment/:shortId/ship',
+    async (req, reply) => {
+      const { shortId }       = req.params;
+      const { trackingNumber } = req.body;
+
+      const profile = await rawPrisma.profile.findUnique({ where: { short_id: shortId } });
+      if (!profile) return reply.code(404).send({ error: 'Profile not found' });
+
+      await rawPrisma.$transaction([
+        rawPrisma.profile.update({
+          where: { short_id: shortId },
+          data:  { plaque_status: 'SHIPPED' },
+        }),
+        rawPrisma.shippingOrder.upsert({
+          where:  { profile_id: profile.id },
+          create: { profile_id: profile.id, tracking_number: trackingNumber, shipped_at: new Date() },
+          update: { tracking_number: trackingNumber, shipped_at: new Date() },
+        }),
+      ]);
+
+      return reply.send({ ok: true });
+    },
+  );
+
+  // ── Admin: Fulfillment — update plaque status ──────────────────────────────
+  app.patch<{ Params: { shortId: string }; Body: { status: string } }>(
+    '/admin/fulfillment/:shortId/status',
+    async (req, reply) => {
+      const { shortId } = req.params;
+      const { status  } = req.body;
+
+      const validStatuses = ['ORDER_RECEIVED', 'ENGRAVING', 'SHIPPED', 'DELIVERED'];
+      if (!validStatuses.includes(status))
+        return reply.code(400).send({ error: 'Invalid status' });
+
+      await rawPrisma.profile.update({
+        where: { short_id: shortId },
+        data:  { plaque_status: status as any },
+      });
+
+      return reply.send({ ok: true });
+    },
+  );
+
   // ── Admin: List all media assets (ops dashboard) ────────────────────────────
   app.get('/admin/media', async (_req, reply) => {
     const assets = await rawPrisma.mediaAsset.findMany({
