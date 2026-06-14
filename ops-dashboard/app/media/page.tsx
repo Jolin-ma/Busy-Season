@@ -4,15 +4,18 @@ import Sidebar from '@/components/Sidebar';
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
-type MediaType = 'IMAGE' | 'VIDEO' | 'AUDIO';
+type MediaType = 'PHOTO' | 'VIDEO' | 'AUDIO';
+type ModerationStatus = 'PENDING' | 'APPROVED' | 'FLAGGED' | 'REJECTED';
 
 interface MediaAsset {
   id: string;
   type: MediaType;
   url: string;
+  thumbnail_url: string | null;
   caption: string | null;
   size_bytes: number | null;
   sort_order: number;
+  moderation_status: ModerationStatus;
   profile: {
     id: string;
     full_name: string;
@@ -28,15 +31,22 @@ function fmtBytes(n: number | null) {
 }
 
 const TYPE_LABELS: Record<MediaType, string> = {
-  IMAGE: 'Photo',
+  PHOTO: 'Photo',
   VIDEO: 'Video',
   AUDIO: 'Audio',
 };
 
 const TYPE_BADGE: Record<MediaType, string> = {
-  IMAGE: 'bg-sky-100 text-sky-700',
+  PHOTO: 'bg-sky-100 text-sky-700',
   VIDEO: 'bg-violet-100 text-violet-700',
   AUDIO: 'bg-amber-100 text-amber-700',
+};
+
+const MOD_BADGE: Record<ModerationStatus, string> = {
+  PENDING:  'bg-stone-100 text-stone-400',
+  APPROVED: 'bg-green-100 text-green-700',
+  FLAGGED:  'bg-amber-100 text-amber-700',
+  REJECTED: 'bg-red-100 text-red-700',
 };
 
 export default function MediaPage() {
@@ -56,7 +66,7 @@ export default function MediaPage() {
   }, []);
 
   const visible = assets.filter(a => {
-    if (filter !== 'ALL' && a.type !== filter) return false;
+    if (filter !== 'ALL' && a.type !== filter as MediaType) return false;
     if (search) {
       const q = search.toLowerCase();
       return (
@@ -70,7 +80,7 @@ export default function MediaPage() {
 
   const counts = {
     ALL:   assets.length,
-    IMAGE: assets.filter(a => a.type === 'IMAGE').length,
+    PHOTO: assets.filter(a => a.type === 'PHOTO').length,
     VIDEO: assets.filter(a => a.type === 'VIDEO').length,
     AUDIO: assets.filter(a => a.type === 'AUDIO').length,
   };
@@ -89,7 +99,7 @@ export default function MediaPage() {
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3 mb-6">
           <div className="flex gap-1 bg-white border border-stone-200 rounded-xl p-1">
-            {(['ALL', 'IMAGE', 'VIDEO', 'AUDIO'] as const).map(t => (
+            {(['ALL', 'PHOTO', 'VIDEO', 'AUDIO'] as const).map(t => (
               <button
                 key={t}
                 onClick={() => setFilter(t)}
@@ -100,7 +110,7 @@ export default function MediaPage() {
                     : 'text-stone-500 hover:text-stone-800',
                 ].join(' ')}
               >
-                {t === 'ALL' ? 'All' : TYPE_LABELS[t]}
+                {t === 'ALL' ? 'All' : TYPE_LABELS[t as MediaType]}
                 <span className="ml-1.5 opacity-60">{counts[t]}</span>
               </button>
             ))}
@@ -140,17 +150,19 @@ export default function MediaPage() {
               >
                 {/* Thumbnail */}
                 <div className="relative aspect-square bg-stone-100">
-                  {asset.type === 'IMAGE' && (
+                  {asset.type === 'PHOTO' && (
                     <img
-                      src={asset.url}
+                      src={asset.thumbnail_url ?? asset.url}
                       alt={asset.caption ?? asset.profile.full_name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   )}
                   {asset.type === 'VIDEO' && (
-                    <div className="w-full h-full flex items-center justify-center bg-stone-900">
-                      <svg viewBox="0 0 24 24" fill="white" className="w-10 h-10 opacity-70"><path d="M8 5v14l11-7z" /></svg>
-                    </div>
+                    asset.thumbnail_url
+                      ? <img src={asset.thumbnail_url} alt="Video thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      : <div className="w-full h-full flex items-center justify-center bg-stone-900">
+                          <svg viewBox="0 0 24 24" fill="white" className="w-10 h-10 opacity-70"><path d="M8 5v14l11-7z" /></svg>
+                        </div>
                   )}
                   {asset.type === 'AUDIO' && (
                     <div className="w-full h-full flex items-center justify-center bg-amber-50">
@@ -160,6 +172,9 @@ export default function MediaPage() {
 
                   <span className={`absolute top-2 left-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${TYPE_BADGE[asset.type]}`}>
                     {TYPE_LABELS[asset.type]}
+                  </span>
+                  <span className={`absolute top-2 right-2 text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${MOD_BADGE[asset.moderation_status]}`}>
+                    {asset.moderation_status}
                   </span>
                 </div>
 
@@ -214,6 +229,9 @@ export default function MediaPage() {
                 <p className="text-xs text-stone-400 mt-0.5">
                   {preview.profile.short_id} · {TYPE_LABELS[preview.type]} · {fmtBytes(preview.size_bytes)}
                 </p>
+                <span className={`inline-block mt-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full ${MOD_BADGE[preview.moderation_status]}`}>
+                  {preview.moderation_status}
+                </span>
                 {preview.caption && (
                   <p className="text-sm text-stone-600 mt-2 italic">"{preview.caption}"</p>
                 )}

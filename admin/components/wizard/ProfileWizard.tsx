@@ -50,8 +50,29 @@ export default function ProfileWizard({ onComplete, onCancel }: Props) {
     const token = typeof window !== 'undefined' ? localStorage.getItem('ll_token') : null;
     const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
 
-    // Helper: upload a single File, return the CDN URL
+    // Helper: upload a single File, return the CDN URL.
+    // In cloud mode: gets a presigned S3 URL, PUTs directly to S3 (bypasses server),
+    // returns the future delivery URL (available once Lambda optimises the file).
+    // In local dev: POSTs to the Fastify /admin/upload endpoint as before.
     async function uploadFile(file: File): Promise<string> {
+      if (process.env.NEXT_PUBLIC_USE_CLOUD === 'true') {
+        const signRes = await fetch(`${API}/admin/upload/sign`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json', ...authHeader },
+          body:    JSON.stringify({ filename: file.name, contentType: file.type }),
+        });
+        if (!signRes.ok) throw new Error('Could not get upload URL');
+        const { signedUrl, deliveryUrl } = await signRes.json();
+        const putRes = await fetch(signedUrl, {
+          method:  'PUT',
+          headers: { 'Content-Type': file.type },
+          body:    file,
+        });
+        if (!putRes.ok) throw new Error('Upload to storage failed');
+        return deliveryUrl as string;
+      }
+
+      // Local dev fallback
       const form = new FormData();
       form.append('file', file);
       const res = await fetch(`${API}/admin/upload`, { method: 'POST', headers: authHeader, body: form });

@@ -13,6 +13,7 @@ import { generateShortId }  from './shortId';
 import { createLink, lookupLink, lookupLinkForRouting, getScanHistory, setPrivacy, getTopScanLocations } from './db';
 import { db, rawPrisma } from './lib/db';
 import { storeEntry, getPending } from './guestbookStore';
+import { USE_CLOUD, presignUpload } from './lib/storage';
 import { recordScanAsync }  from './analytics';
 import { renderProfile, ProfileData } from './profileTemplate';
 import { renderPetProfile } from './petProfileTemplate';
@@ -274,6 +275,41 @@ export function buildServer() {
 
     const base = process.env.SERVER_BASE_URL ?? 'http://localhost:3000';
     return reply.send({ url: `${base}/uploads/${filename}` });
+  });
+
+  // ── Admin: Presigned Upload URL (cloud mode) ────────────────────────────────
+  // Issues a 5-min signed S3 PUT URL so the browser uploads raw files directly
+  // to the entry bucket, bypassing this server entirely.
+  // The Lambda optimizer picks up the raw file and writes the final WebP to the
+  // delivery bucket at the returned deliveryUrl.
+  app.post<{ Body: { filename: string; contentType: string } }>(
+    '/admin/upload/sign',
+    async (req, reply) => {
+      if (!USE_CLOUD) {
+        return reply.code(400).send({ error: 'Cloud storage not configured. Use /admin/upload instead.' });
+      }
+      const { filename, contentType } = req.body;
+      const result = await presignUpload(filename, contentType);
+      return reply.send(result);
+    },
+  );
+
+  // ── Admin: Lambda processing webhook ────────────────────────────────────────
+  // Called by the Lambda after it has optimised the asset and run moderation.
+  // Updates the MediaAsset record with the final thumbnail URL and status.
+  app.post<{
+    Body: {
+      deliveryUrl:      string;
+      thumbnailUrl:     string;
+      moderationStatus: 'APPROVED' | 'FLAGGED' | 'REJECTED';
+    };
+  }>('/admin/upload/webhook', async (req, reply) => {
+    const { deliveryUrl, thumbnailUrl, moderationStatus } = req.body;
+    await rawPrisma.mediaAsset.updateMany({
+      where: { url: deliveryUrl },
+      data:  { thumbnail_url: thumbnailUrl, moderation_status: moderationStatus },
+    });
+    return reply.send({ ok: true });
   });
 
   // ── Admin: Create Full Profile ───────────────────────────────────────────────
