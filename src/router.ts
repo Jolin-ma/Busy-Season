@@ -548,10 +548,63 @@ export function buildServer() {
   // ── Admin: List all media assets (ops dashboard) ────────────────────────────
   app.get('/admin/media', async (_req, reply) => {
     const assets = await rawPrisma.mediaAsset.findMany({
-      orderBy: { profile: { full_name: 'asc' } },
-      include: { profile: { select: { id: true, full_name: true, short_id: true } } },
+      orderBy: { created_at: 'desc' },
+      select: {
+        id:                true,
+        type:              true,
+        url:               true,
+        thumbnail_url:     true,
+        size_bytes:        true,
+        moderation_status: true,
+        created_at:        true,
+        profile: {
+          select: {
+            id:            true,
+            short_id:      true,
+            full_name:     true,
+            plaque_status: true,
+            user:          { select: { id: true, name: true, email: true } },
+          },
+        },
+      },
     });
-    return reply.send({ assets });
+
+    return reply.send({
+      assets: assets.map(a => ({
+        id:               a.id,
+        type:             a.type,
+        url:              a.url,
+        thumbnailUrl:     a.thumbnail_url,
+        sizeBytes:        Number(a.size_bytes ?? 0),
+        moderationStatus: a.moderation_status,
+        createdAt:        a.created_at,
+        profileId:        a.profile.id,
+        profileShortId:   a.profile.short_id,
+        profileName:      a.profile.full_name,
+        plaqueStatus:     a.profile.plaque_status,
+        ownerId:          a.profile.user?.id ?? null,
+        ownerName:        a.profile.user?.name ?? null,
+        ownerEmail:       a.profile.user?.email ?? null,
+      })),
+    });
+  });
+
+  // ── Admin: Update media moderation status ─────────────────────────────────
+  app.patch<{
+    Params: { id: string };
+    Body:   { status: 'APPROVED' | 'REJECTED' };
+  }>('/admin/media/:id/status', async (req, reply) => {
+    const { id }     = req.params;
+    const { status } = req.body;
+    if (status !== 'APPROVED' && status !== 'REJECTED') {
+      return reply.code(400).send({ error: 'status must be APPROVED or REJECTED' });
+    }
+    const asset = await rawPrisma.mediaAsset.update({
+      where: { id },
+      data:  { moderation_status: status },
+      select: { id: true, moderation_status: true },
+    });
+    return reply.send({ asset });
   });
 
   // ── Admin: Export QR SVG ────────────────────────────────────────────────────
