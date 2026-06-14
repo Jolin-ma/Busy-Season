@@ -193,10 +193,18 @@
             object-fit: cover;
             display: block;
             filter: grayscale(100%);
-            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        filter 0.5s ease;
+        }
+        .service-card:hover .service-img-wrap img {
+            filter: grayscale(0%);
         }
         #grieving-wrap img {
             filter: grayscale(100%);
+            transition: filter 0.5s ease;
+        }
+        .service-card:hover #grieving-wrap img {
+            filter: grayscale(0%);
         }
         .service-card:hover .service-img-wrap img {
             transform: scale(1.05);
