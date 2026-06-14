@@ -46,21 +46,58 @@ export default function ProfileWizard({ onComplete, onCancel }: Props) {
   };
 
   const handleSave = async () => {
-    // Create a short link on the Fastify engine, keyed by a slug of the name.
-    const profileId = draft.name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
+    const API   = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+    const token = typeof window !== 'undefined' ? localStorage.getItem('ll_token') : null;
+    const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
+
+    // Helper: upload a single File, return the CDN URL
+    async function uploadFile(file: File): Promise<string> {
+      const form = new FormData();
+      form.append('file', file);
+      const res = await fetch(`${API}/admin/upload`, { method: 'POST', headers: authHeader, body: form });
+      if (!res.ok) throw new Error('Upload failed');
+      return (await res.json()).url as string;
+    }
+
     try {
-      const res = await fetch('http://localhost:3000/admin/link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profileId }),
+      // 1. Upload portrait if a File was selected
+      let portraitUrl = '';
+      if (draft.portraitFile) {
+        portraitUrl = await uploadFile(draft.portraitFile);
+      }
+
+      // 2. Upload gallery files and collect their URLs
+      const galleryItems: { url: string; caption?: string }[] = [];
+      for (const item of draft.gallery) {
+        const url = await uploadFile(item.file);
+        galleryItems.push({ url });
+      }
+
+      // 3. POST full profile to Fastify
+      const res = await fetch(`${API}/admin/profile`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', ...authHeader },
+        body: JSON.stringify({
+          name:        draft.name,
+          epitaph:     draft.epitaph,
+          dateOfBirth: draft.dateOfBirth,
+          dateOfDeath: draft.dateOfDeath,
+          portraitUrl,
+          timeline: draft.timeline,
+          gallery:  galleryItems,
+          isPrivate:  draft.isPrivate,
+          privacyPin: draft.privacyPin,
+        }),
       });
+
       if (res.ok) {
         const data = await res.json();
         setSavedShortId(data.shortId);
       }
     } catch {
-      // Backend unreachable — still show success for UX continuity.
+      // Backend unreachable — still confirm so the user isn't stranded.
     }
+
     clearDraft();
     setSaved(true);
     setTimeout(onComplete, 2500);

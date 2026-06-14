@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
@@ -20,16 +20,14 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window === 'undefined') return null;
     try {
       const raw = localStorage.getItem('ll_auth');
-      if (raw) setUser(JSON.parse(raw));
-    } catch { /* ignore */ }
-    setIsLoading(false);
-  }, []);
+      return raw ? (JSON.parse(raw) as User) : null;
+    } catch { return null; }
+  });
+  const [isLoading] = useState(false);
 
   async function signup(name: string, email: string, password: string) {
     const res = await fetch(`${API}/auth/signup`, {

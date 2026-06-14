@@ -1,8 +1,13 @@
+import path   from 'path';
+import fs     from 'fs';
+import { pipeline } from 'stream/promises';
 import Fastify from 'fastify';
-import fastifyWebsocket from '@fastify/websocket';
-import fastifyJwt       from '@fastify/jwt';
-import fastifyCors      from '@fastify/cors';
-import bcrypt           from 'bcryptjs';
+import fastifyWebsocket  from '@fastify/websocket';
+import fastifyJwt        from '@fastify/jwt';
+import fastifyCors       from '@fastify/cors';
+import fastifyMultipart  from '@fastify/multipart';
+import fastifyStatic     from '@fastify/static';
+import bcrypt            from 'bcryptjs';
 import { generateLegacyQR } from './qrGenerator';
 import { generateShortId }  from './shortId';
 import { createLink, lookupLink, lookupLinkForRouting, getScanHistory, setPrivacy, getTopScanLocations } from './db';
@@ -35,6 +40,16 @@ export function buildServer() {
   app.register(fastifyJwt, {
     secret: process.env.JWT_SECRET ?? 'dev-secret-change-in-production',
   });
+
+  const UPLOADS_DIR = path.join(process.cwd(), 'uploads');
+  if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+  app.register(fastifyStatic, {
+    root:   UPLOADS_DIR,
+    prefix: '/uploads/',
+  });
+
+  app.register(fastifyMultipart, { limits: { fileSize: 20 * 1024 * 1024 } }); // 20 MB
 
   app.register(fastifyWebsocket);
   app.register(premiumRoutes);
@@ -194,7 +209,8 @@ export function buildServer() {
 
       if (!link) return reply.code(404).send({ error: 'Not found.' });
       if (!link.isPrivate) return reply.code(400).send({ error: 'Profile is not private.' });
-      if (!pin || pin !== link.privacyPin)
+      const pinValid = link.privacyPin && await bcrypt.compare(pin ?? '', link.privacyPin);
+      if (!pin || !pinValid)
         return reply.code(401).send({ error: 'Incorrect PIN.' });
 
       const profileBaseUrl = process.env.PROFILE_BASE_URL ?? 'http://localhost:3000/profile';
@@ -240,6 +256,93 @@ export function buildServer() {
       shortUrl:  `https://lglk.to/p/${shortId}`,
       profileId: record.profileId,
       createdAt: record.createdAt,
+    });
+  });
+
+  // ── Admin: File Upload ──────────────────────────────────────────────────────
+  // Accepts a single file via multipart/form-data.
+  // Returns { url } pointing to /uploads/<uuid>.<ext> served by @fastify/static.
+  app.post('/admin/upload', async (req, reply) => {
+    const part = await req.file();
+    if (!part) return reply.code(400).send({ error: 'No file provided.' });
+
+    const ext      = path.extname(part.filename).toLowerCase() || '.bin';
+    const filename = `${crypto.randomUUID()}${ext}`;
+    const dest     = path.join(UPLOADS_DIR, filename);
+
+    await pipeline(part.file, fs.createWriteStream(dest));
+
+    const base = process.env.SERVER_BASE_URL ?? 'http://localhost:3000';
+    return reply.send({ url: `${base}/uploads/${filename}` });
+  });
+
+  // ── Admin: Create Full Profile ───────────────────────────────────────────────
+  // Single call that creates Profile + TimelineMilestones + MediaAssets + privacy.
+  app.post<{
+    Body: {
+      name:        string;
+      epitaph:     string;
+      dateOfBirth: string;
+      dateOfDeath: string;
+      portraitUrl: string;
+      timeline:    { year: string; title: string; description: string }[];
+      gallery:     { url: string; caption?: string }[];
+      isPrivate:   boolean;
+      privacyPin:  string;
+    };
+  }>('/admin/profile', async (req, reply) => {
+    const { name, epitaph, dateOfBirth, dateOfDeath, portraitUrl, timeline, gallery, isPrivate, privacyPin } = req.body;
+
+    // Resolve owner: prefer authenticated user from JWT, fall back to seed
+    let userId = process.env.SEED_USER_ID;
+    try {
+      const auth = req.headers.authorization;
+      if (auth?.startsWith('Bearer ')) {
+        const payload = app.jwt.verify<{ userId: string }>(auth.slice(7));
+        userId = payload.userId;
+      }
+    } catch { /* invalid token — keep seed fallback */ }
+
+    if (!userId) return reply.code(503).send({ error: 'Server not ready.' });
+
+    const shortId     = generateShortId();
+    const hashedPin   = isPrivate && privacyPin ? await bcrypt.hash(privacyPin, 12) : null;
+
+    const profile = await rawPrisma.profile.create({
+      data: {
+        short_id:      shortId,
+        user_id:       userId,
+        full_name:     name.trim(),
+        epitaph:       epitaph.trim() || null,
+        date_of_birth: dateOfBirth ? new Date(dateOfBirth) : null,
+        date_of_death: dateOfDeath ? new Date(dateOfDeath) : null,
+        portrait_url:  portraitUrl || null,
+        is_private:    isPrivate,
+        privacy_pin:   hashedPin,
+        timeline: {
+          create: timeline
+            .filter(t => t.title.trim())
+            .map(t => ({
+              title:       t.title.trim(),
+              description: t.description.trim() || null,
+              occurred_at: new Date(`${t.year}-07-01`), // mid-year keeps UTC safe
+            })),
+        },
+        media: {
+          create: gallery.map((g, i) => ({
+            type:       'PHOTO' as const,
+            url:        g.url,
+            caption:    g.caption || null,
+            sort_order: i,
+          })),
+        },
+      },
+    });
+
+    return reply.code(201).send({
+      shortId,
+      profileId: profile.id,
+      shortUrl:  `${process.env.QR_BASE_URL ?? 'http://localhost:3000/r'}/${shortId}`,
     });
   });
 

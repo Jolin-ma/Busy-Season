@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import { db, rawPrisma } from './lib/db';
 
 // Reads  → `db`         (soft-delete extension silently adds deleted_at: null)
@@ -73,9 +74,10 @@ export async function setPrivacy(
   isPrivate:  boolean,
   privacyPin: string,
 ): Promise<boolean> {
+  const hashedPin = isPrivate && privacyPin ? await bcrypt.hash(privacyPin, 12) : null;
   const result = await rawPrisma.profile.updateMany({
     where: { short_id: shortId, deleted_at: null },
-    data:  { is_private: isPrivate, privacy_pin: isPrivate ? privacyPin : null },
+    data:  { is_private: isPrivate, privacy_pin: hashedPin },
   });
   return result.count > 0;
 }
