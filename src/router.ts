@@ -6,16 +6,15 @@ import bcrypt           from 'bcryptjs';
 import { generateLegacyQR } from './qrGenerator';
 import { generateShortId }  from './shortId';
 import { createLink, lookupLink, lookupLinkForRouting, getScanHistory, setPrivacy, getTopScanLocations } from './db';
-import { rawPrisma } from './lib/db';
+import { db, rawPrisma } from './lib/db';
 import { storeEntry, getPending } from './guestbookStore';
 import { recordScanAsync }  from './analytics';
-import { renderProfile }    from './profileTemplate';
+import { renderProfile, ProfileData } from './profileTemplate';
 import { renderPetProfile } from './petProfileTemplate';
 import { MOCK_PET_PROFILE } from './mockPetProfile';
 import { renderPinGate }    from './pinGateTemplate';
 import { renderAuthPage }       from './authTemplate';
 import { renderActivationPage } from './activationTemplate';
-import { MOCK_PROFILE }     from './mockProfile';
 import { premiumRoutes }    from './routes/premium';
 import { billingRoutes }    from './routes/billing';
 import { registerClient }   from './wsHub';
@@ -283,9 +282,64 @@ export function buildServer() {
   );
 
   // ── Memorial Profile Page ───────────────────────────────────────────────────
-  app.get<{ Params: { profileId: string } }>('/profile/:profileId', async (req, reply) =>
-    reply.header('Content-Type', 'text/html; charset=utf-8').send(renderProfile(MOCK_PROFILE, req.params.profileId))
-  );
+  app.get<{ Params: { profileId: string } }>('/profile/:profileId', async (req, reply) => {
+    const { profileId } = req.params;
+
+    // Accept UUID (normal path from /r/:shortId redirect) or short_id (dev/legacy)
+    const where = profileId.length <= 8
+      ? { short_id: profileId }
+      : { id: profileId };
+
+    const profile = await db.profile.findFirst({
+      where,
+      include: {
+        timeline: { orderBy: { occurred_at: 'asc' } },
+        media:    { where: { type: 'PHOTO' }, orderBy: { sort_order: 'asc' } },
+        guestbook: {
+          where:   { is_approved: true },
+          orderBy: { created_at: 'desc' },
+          take:    20,
+        },
+      },
+    });
+
+    if (!profile) {
+      return reply.code(404).header('Content-Type', 'text/html; charset=utf-8').send(
+        `<!DOCTYPE html><html><head><title>Not Found — LegacyLink</title></head>
+         <body style="font-family:sans-serif;text-align:center;padding:80px 24px">
+           <h1 style="font-size:1.5rem;color:#1c1917">Memorial not found</h1>
+           <p style="color:#78716c;margin-top:8px">This profile may have been removed or the link is incorrect.</p>
+         </body></html>`
+      );
+    }
+
+    const fmt = (d: Date) =>
+      d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+
+    const data: ProfileData = {
+      name:       profile.full_name,
+      birthDate:  profile.date_of_birth ? fmt(profile.date_of_birth) : '',
+      deathDate:  profile.date_of_death ? fmt(profile.date_of_death) : '',
+      epitaph:    profile.epitaph    ?? '',
+      portraitUrl: profile.portrait_url ?? 'https://placehold.co/400x400/d6cfc4/7a7166?text=LL',
+      timeline: profile.timeline.map(t => ({
+        year:        t.occurred_at.getUTCFullYear(),
+        title:       t.title,
+        description: t.description ?? '',
+      })),
+      gallery: profile.media.map(m => ({
+        url:     m.url,
+        caption: m.caption ?? undefined,
+      })),
+      memories: profile.guestbook.map(g => ({
+        message: g.message,
+        author:  g.author_name,
+        date:    fmt(g.created_at),
+      })),
+    };
+
+    return reply.header('Content-Type', 'text/html; charset=utf-8').send(renderProfile(data, profileId));
+  });
 
   // ── Pet Memorial Profile Page ────────────────────────────────────────────────
   app.get<{ Params: { shortId: string } }>('/pet/:shortId', async (req, reply) =>
