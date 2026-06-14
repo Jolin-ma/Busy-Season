@@ -1,11 +1,50 @@
 'use client';
-import { useState, useMemo, useEffect, Suspense } from 'react';
+import { useState, useMemo, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
-import {
-  BILLING_ACCOUNTS, SUPPORT_TICKETS,
-  MockBillingAccount, MockTransaction,
-} from '@/lib/mock-data';
+
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+
+// ── types ─────────────────────────────────────────────────────────────────────
+interface AccountSummary {
+  id:                string;
+  name:              string;
+  email:             string;
+  stripeCustomerId:  string | null;
+  plan:              'PREMIUM' | 'BASIC';
+  profileCount:      number;
+  hasDuplicate:      boolean;
+  totalPaidCents:    number;
+  totalRefundedCents: number;
+  shortIds:          string[];
+  lastTxStatus:      string | null;
+  createdAt:         string;
+  lastTxAt:          string | null;
+}
+
+interface AccountTx {
+  id:              string;
+  amount:          number;
+  currency:        string;
+  status:          'PAID' | 'FAILED' | 'REFUNDED' | 'PARTIALLY_REFUNDED';
+  isPotentialDup:  boolean;
+  refunded:        boolean;
+  refundedAmount:  number;
+  createdAt:       string;
+}
+
+interface AccountTicket {
+  id:          string;
+  subject:     string;
+  status:      string;
+  priority:    string;
+  submittedAt: string;
+}
+
+interface AccountDetail extends AccountSummary {
+  transactions: AccountTx[];
+  tickets:      AccountTicket[];
+}
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 function fmt(cents: number) {
@@ -27,15 +66,6 @@ function avatarText(id: string) {
   const palette = ['#d4b896', '#96b4d4', '#96d4b4', '#d4a896', '#c4a6e8', '#b4b4c8'];
   return palette[parseInt(id.replace(/\D/g, '').slice(-1) || '0') % palette.length];
 }
-function lastPaymentStatus(txs: MockTransaction[]) {
-  const paid = [...txs].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  return paid[0] ?? null;
-}
-function openTickets(accountName: string) {
-  return SUPPORT_TICKETS.filter(
-    t => t.name === accountName && t.status !== 'RESOLVED'
-  ).length;
-}
 
 // ── status + plan tokens ──────────────────────────────────────────────────────
 const ACCT_STATUS = {
@@ -46,7 +76,7 @@ const PLAN_STYLE = {
   PREMIUM: { bg: 'bg-indigo-50',  text: 'text-indigo-700',  border: 'border-indigo-100' },
   BASIC:   { bg: 'bg-stone-100',  text: 'text-stone-600',   border: 'border-stone-200'  },
 };
-const TX_STATUS = {
+const TX_STATUS: Record<AccountTx['status'], { bg: string; text: string }> = {
   PAID:                { bg: 'bg-emerald-50',  text: 'text-emerald-700' },
   FAILED:              { bg: 'bg-red-50',      text: 'text-red-700'     },
   REFUNDED:            { bg: 'bg-amber-50',    text: 'text-amber-700'   },
@@ -57,19 +87,19 @@ type DetailTab = 'overview' | 'billing' | 'support' | 'settings';
 
 // ── Detail panel ──────────────────────────────────────────────────────────────
 function AccountDetail({
-  account,
+  detail,
+  loading,
   onClose,
 }: {
-  account: MockBillingAccount;
+  detail:  AccountDetail | null;
+  loading: boolean;
   onClose: () => void;
 }) {
-  const [tab, setTab] = useState<DetailTab>('overview');
-  const [status, setStatus] = useState(account.status);
-  const tickets = SUPPORT_TICKETS.filter(t => t.name === account.name);
-  const totalPaid = account.transactions
-    .filter(t => t.status === 'PAID')
-    .reduce((s, t) => s + t.amount - t.refundedAmount, 0);
-  const dupCount = account.transactions.filter(t => t.isPotentialDup).length;
+  const [tab,    setTab]    = useState<DetailTab>('overview');
+  const [status, setStatus] = useState<'ACTIVE' | 'SUSPENDED'>('ACTIVE');
+
+  // Reset tab when account changes
+  useEffect(() => { setTab('overview'); setStatus('ACTIVE'); }, [detail?.id]);
 
   const TABS: { key: DetailTab; label: string }[] = [
     { key: 'overview',  label: 'Overview'  },
@@ -77,6 +107,34 @@ function AccountDetail({
     { key: 'support',   label: 'Support'   },
     { key: 'settings',  label: 'Settings'  },
   ];
+
+  if (loading || !detail) {
+    return (
+      <div className="flex flex-col h-full">
+        <div className="px-5 pt-5 pb-4 border-b border-stone-100 shrink-0">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-stone-100 animate-pulse" />
+              <div className="space-y-1.5">
+                <div className="h-3 w-28 bg-stone-100 rounded animate-pulse" />
+                <div className="h-2.5 w-36 bg-stone-50 rounded animate-pulse" />
+              </div>
+            </div>
+            <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg bg-stone-100 text-stone-400 hover:bg-stone-200 transition-colors text-lg leading-none">×</button>
+          </div>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-xs text-stone-300">Loading…</div>
+        </div>
+      </div>
+    );
+  }
+
+  const totalPaid = detail.transactions
+    .filter(t => t.status === 'PAID' || t.status === 'PARTIALLY_REFUNDED')
+    .reduce((s, t) => s + t.amount - t.refundedAmount, 0);
+  const dupCount = detail.transactions.filter(t => t.isPotentialDup).length;
+  const openTickets = detail.tickets.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED').length;
 
   return (
     <div className="flex flex-col h-full">
@@ -86,13 +144,13 @@ function AccountDetail({
           <div className="flex items-center gap-3">
             <div
               className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold shrink-0"
-              style={{ background: avatarColor(account.id), color: avatarText(account.id) }}
+              style={{ background: avatarColor(detail.id), color: avatarText(detail.id) }}
             >
-              {initials(account.name)}
+              {initials(detail.name)}
             </div>
             <div>
-              <p className="text-sm font-bold text-stone-900">{account.name}</p>
-              <p className="text-xs text-stone-400">{account.email}</p>
+              <p className="text-sm font-bold text-stone-900">{detail.name}</p>
+              <p className="text-xs text-stone-400">{detail.email}</p>
             </div>
           </div>
           <button
@@ -116,6 +174,9 @@ function AccountDetail({
               }`}
             >
               {t.label}
+              {t.key === 'support' && openTickets > 0 && (
+                <span className="ml-1 text-[9px] font-bold bg-red-500 text-white px-1 py-0.5 rounded-full">{openTickets}</span>
+              )}
             </button>
           ))}
         </div>
@@ -128,13 +189,13 @@ function AccountDetail({
         {tab === 'overview' && (
           <>
             <Section title="Account Info">
-              <Row label="Account ID"   value={account.id} mono />
-              <Row label="Stripe ID"    value={account.stripeCustomerId} mono />
-              <Row label="Member since" value={fmtDate(account.createdAt)} />
-              {account.shortIds.length > 0 && (
+              <Row label="Account ID"   value={detail.id} mono />
+              <Row label="Stripe ID"    value={detail.stripeCustomerId ?? '—'} mono />
+              <Row label="Member since" value={fmtDate(detail.createdAt)} />
+              {detail.shortIds.length > 0 && (
                 <Row label="Profile IDs">
                   <div className="flex flex-wrap gap-1 justify-end">
-                    {account.shortIds.map(sid => (
+                    {detail.shortIds.map(sid => (
                       <a
                         key={sid}
                         href={`http://localhost:3000/p/${sid}`}
@@ -158,11 +219,11 @@ function AccountDetail({
 
             <Section title="Plan & Usage">
               <Row label="Plan">
-                <span className={`inline-flex items-center text-[11px] font-bold px-2 py-0.5 rounded-full border ${PLAN_STYLE[account.plan].bg} ${PLAN_STYLE[account.plan].text} ${PLAN_STYLE[account.plan].border}`}>
-                  {account.plan}
+                <span className={`inline-flex items-center text-[11px] font-bold px-2 py-0.5 rounded-full border ${PLAN_STYLE[detail.plan].bg} ${PLAN_STYLE[detail.plan].text} ${PLAN_STYLE[detail.plan].border}`}>
+                  {detail.plan}
                 </span>
               </Row>
-              <Row label="Profiles"      value={`${account.profileCount} active`} />
+              <Row label="Profiles"      value={`${detail.profileCount} active`} />
               <Row label="Total revenue" value={fmt(totalPaid)} />
               {dupCount > 0 && (
                 <div className="flex items-center gap-2 mt-1 p-2.5 bg-amber-50 border border-amber-100 rounded-xl">
@@ -178,9 +239,12 @@ function AccountDetail({
 
         {/* ── Billing ── */}
         {tab === 'billing' && (
-          <Section title={`Transactions (${account.transactions.length})`}>
+          <Section title={`Transactions (${detail.transactions.length})`}>
             <div className="space-y-2">
-              {account.transactions.map(tx => {
+              {detail.transactions.length === 0 && (
+                <p className="text-xs text-stone-400 py-4 text-center">No transactions yet.</p>
+              )}
+              {detail.transactions.map(tx => {
                 const s = TX_STATUS[tx.status];
                 return (
                   <div key={tx.id} className={`rounded-xl border p-3 ${tx.isPotentialDup ? 'border-amber-200 bg-amber-50' : 'border-stone-100 bg-stone-50'}`}>
@@ -213,17 +277,17 @@ function AccountDetail({
 
         {/* ── Support ── */}
         {tab === 'support' && (
-          <Section title={`Tickets (${tickets.length})`}>
-            {tickets.length === 0 && (
+          <Section title={`Tickets (${detail.tickets.length})`}>
+            {detail.tickets.length === 0 && (
               <p className="text-xs text-stone-400 py-4 text-center">No support tickets on this account.</p>
             )}
             <div className="space-y-2">
-              {tickets.map(t => (
+              {detail.tickets.map(t => (
                 <div key={t.id} className="rounded-xl border border-stone-100 bg-stone-50 p-3">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-mono text-stone-400">{t.id}</span>
+                    <span className="text-[10px] font-mono text-stone-400">{t.id.slice(0, 8)}…</span>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      t.status === 'NEW'         ? 'bg-red-50 text-red-600'     :
+                      t.status === 'OPEN'        ? 'bg-red-50 text-red-600'     :
                       t.status === 'IN_PROGRESS' ? 'bg-amber-50 text-amber-700' :
                       'bg-emerald-50 text-emerald-700'
                     }`}>
@@ -261,14 +325,14 @@ function AccountDetail({
 
             <Section title="Plan">
               <p className="text-xs text-stone-500 mb-3">
-                Current plan: <strong className="text-stone-800">{account.plan}</strong>
+                Current plan: <strong className="text-stone-800">{detail.plan}</strong>
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {(['BASIC', 'PREMIUM'] as const).map(p => (
                   <button
                     key={p}
                     className={`py-2 rounded-xl text-xs font-semibold border transition-colors ${
-                      account.plan === p
+                      detail.plan === p
                         ? 'bg-stone-900 text-white border-stone-900'
                         : 'bg-white text-stone-500 border-stone-200 hover:border-stone-400'
                     }`}
@@ -322,36 +386,68 @@ function Row({
 // ── Inner page (needs useSearchParams inside Suspense) ────────────────────────
 function AccountsInner() {
   const searchParams = useSearchParams();
+  const [accounts,     setAccounts]     = useState<AccountSummary[]>([]);
+  const [detail,       setDetail]       = useState<AccountDetail | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [selectedId,   setSelectedId]   = useState<string | null>(null);
   const [search,       setSearch]       = useState('');
   const [planFilter,   setPlanFilter]   = useState<'ALL' | 'PREMIUM' | 'BASIC'>('ALL');
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'ACTIVE' | 'SUSPENDED'>('ALL');
-  const [selected,     setSelected]     = useState<MockBillingAccount | null>(null);
 
-  // Auto-open account when arriving from a map popup link
+  // Fetch account list
+  useEffect(() => {
+    fetch(`${API}/ops/billing/accounts`)
+      .then(r => r.json())
+      .then((d: { accounts?: AccountSummary[] }) => setAccounts(d.accounts ?? []))
+      .catch(() => {});
+  }, []);
+
+  // Fetch detail when selection changes
+  const fetchDetail = useCallback((id: string) => {
+    setDetailLoading(true);
+    setDetail(null);
+    fetch(`${API}/ops/billing/account/${id}`)
+      .then(r => r.json())
+      .then((d: { account?: AccountDetail }) => {
+        if (d.account) setDetail(d.account);
+      })
+      .catch(() => {})
+      .finally(() => setDetailLoading(false));
+  }, []);
+
+  // Auto-open via ?shortId= URL param
   useEffect(() => {
     const shortId = searchParams.get('shortId');
-    if (!shortId) return;
-    const match = BILLING_ACCOUNTS.find(a => a.shortIds.includes(shortId));
-    if (match) setSelected(match);
-  }, [searchParams]);
+    if (!shortId || accounts.length === 0) return;
+    const match = accounts.find(a => a.shortIds.includes(shortId));
+    if (match && match.id !== selectedId) {
+      setSelectedId(match.id);
+      fetchDetail(match.id);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, accounts]);
+
+  function selectAccount(id: string) {
+    if (id === selectedId) {
+      setSelectedId(null);
+      setDetail(null);
+    } else {
+      setSelectedId(id);
+      fetchDetail(id);
+    }
+  }
 
   const filtered = useMemo(() => {
-    return BILLING_ACCOUNTS.filter(a => {
+    return accounts.filter(a => {
       const q = search.toLowerCase();
       const matchSearch = !q || a.name.toLowerCase().includes(q) || a.email.toLowerCase().includes(q) || a.id.includes(q);
-      const matchPlan   = planFilter   === 'ALL' || a.plan   === planFilter;
-      const matchStatus = statusFilter === 'ALL' || a.status === statusFilter;
-      return matchSearch && matchPlan && matchStatus;
+      const matchPlan   = planFilter === 'ALL' || a.plan === planFilter;
+      return matchSearch && matchPlan;
     });
-  }, [search, planFilter, statusFilter]);
+  }, [accounts, search, planFilter]);
 
-  const totalRevenue = BILLING_ACCOUNTS.reduce((sum, a) =>
-    sum + a.transactions.filter(t => t.status === 'PAID').reduce((s, t) => s + t.amount - t.refundedAmount, 0), 0
-  );
-  const dupFlags = BILLING_ACCOUNTS.reduce((sum, a) =>
-    sum + a.transactions.filter(t => t.isPotentialDup).length, 0
-  );
-  const premiumCount = BILLING_ACCOUNTS.filter(a => a.plan === 'PREMIUM').length;
+  const totalRevenue  = accounts.reduce((s, a) => s + a.totalPaidCents, 0);
+  const dupFlags      = accounts.filter(a => a.hasDuplicate).length;
+  const premiumCount  = accounts.filter(a => a.plan === 'PREMIUM').length;
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: '#f7f6f3' }}>
@@ -369,17 +465,17 @@ function AccountsInner() {
                 <h1 className="text-2xl font-bold text-stone-900" style={{ fontFamily: 'var(--font-playfair)' }}>
                   Account Management
                 </h1>
-                <p className="text-xs text-stone-400 mt-1">{BILLING_ACCOUNTS.length} registered accounts</p>
+                <p className="text-xs text-stone-400 mt-1">{accounts.length} registered accounts</p>
               </div>
             </div>
 
             {/* Summary cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: 'Total Accounts',  value: BILLING_ACCOUNTS.length,             sub: 'all time'         },
-                { label: 'Premium',         value: premiumCount,                          sub: 'paying customers' },
-                { label: 'Total Revenue',   value: fmt(totalRevenue),                    sub: 'net of refunds'   },
-                { label: 'Flagged Charges', value: dupFlags, warn: dupFlags > 0,         sub: 'needs review'     },
+                { label: 'Total Accounts',  value: accounts.length,   sub: 'all time'         },
+                { label: 'Premium',         value: premiumCount,       sub: 'paying customers' },
+                { label: 'Total Revenue',   value: fmt(totalRevenue),  sub: 'net of refunds'   },
+                { label: 'Flagged Charges', value: dupFlags, warn: dupFlags > 0, sub: 'needs review' },
               ].map(c => (
                 <div key={c.label} className={`bg-white border rounded-2xl px-4 py-3.5 shadow-sm ${c.warn ? 'border-amber-200' : 'border-stone-100'}`}>
                   <p className="text-[10px] font-semibold uppercase tracking-widest text-stone-400 mb-1">{c.label}</p>
@@ -412,15 +508,6 @@ function AccountsInner() {
                 <option value="PREMIUM">Premium</option>
                 <option value="BASIC">Basic</option>
               </select>
-              <select
-                value={statusFilter}
-                onChange={e => setStatusFilter(e.target.value as typeof statusFilter)}
-                className="text-xs bg-white border border-stone-200 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-stone-300 text-stone-700"
-              >
-                <option value="ALL">All statuses</option>
-                <option value="ACTIVE">Active</option>
-                <option value="SUSPENDED">Suspended</option>
-              </select>
             </div>
 
             {/* Table */}
@@ -432,29 +519,26 @@ function AccountsInner() {
                     <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-stone-400 hidden sm:table-cell">Plan</th>
                     <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-stone-400 hidden md:table-cell">Profiles</th>
                     <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-stone-400 hidden lg:table-cell">Last Payment</th>
-                    <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-stone-400 hidden lg:table-cell">Tickets</th>
-                    <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-stone-400">Status</th>
+                    <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-stone-400 hidden lg:table-cell">Flags</th>
                     <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-stone-400 hidden md:table-cell">Joined</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-50">
                   {filtered.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="px-4 py-10 text-center text-xs text-stone-400">
-                        No accounts match your search.
+                      <td colSpan={6} className="px-4 py-10 text-center text-xs text-stone-400">
+                        {accounts.length === 0 ? 'Loading…' : 'No accounts match your search.'}
                       </td>
                     </tr>
                   )}
                   {filtered.map(a => {
-                    const lastTx  = lastPaymentStatus(a.transactions);
-                    const tickets = openTickets(a.name);
-                    const hasDup  = a.transactions.some(t => t.isPotentialDup);
-                    const isSelected = selected?.id === a.id;
+                    const isSelected = selectedId === a.id;
+                    const txStyle = a.lastTxStatus ? TX_STATUS[a.lastTxStatus as AccountTx['status']] : null;
 
                     return (
                       <tr
                         key={a.id}
-                        onClick={() => setSelected(isSelected ? null : a)}
+                        onClick={() => selectAccount(a.id)}
                         className={`cursor-pointer transition-colors ${isSelected ? 'bg-stone-50' : 'hover:bg-stone-50/70'}`}
                       >
                         {/* Account */}
@@ -487,37 +571,24 @@ function AccountsInner() {
 
                         {/* Last payment */}
                         <td className="px-4 py-3 hidden lg:table-cell">
-                          {lastTx ? (
-                            <div className="flex items-center gap-1.5">
-                              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${TX_STATUS[lastTx.status].bg} ${TX_STATUS[lastTx.status].text}`}>
-                                {lastTx.status.replace('_', ' ')}
-                              </span>
-                              {hasDup && (
-                                <span className="text-[10px] font-bold text-amber-600" title="Duplicate charge flagged">!</span>
-                              )}
-                            </div>
-                          ) : (
-                            <span className="text-[10px] text-stone-300">—</span>
-                          )}
-                        </td>
-
-                        {/* Tickets */}
-                        <td className="px-4 py-3 hidden lg:table-cell">
-                          {tickets > 0 ? (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-50 text-red-600">
-                              {tickets} open
+                          {txStyle ? (
+                            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${txStyle.bg} ${txStyle.text}`}>
+                              {a.lastTxStatus!.replace('_', ' ')}
                             </span>
                           ) : (
                             <span className="text-[10px] text-stone-300">—</span>
                           )}
                         </td>
 
-                        {/* Status */}
-                        <td className="px-4 py-3">
-                          <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-0.5 rounded-full ${ACCT_STATUS[a.status].bg} ${ACCT_STATUS[a.status].text}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${ACCT_STATUS[a.status].dot}`} />
-                            {a.status}
-                          </span>
+                        {/* Flags */}
+                        <td className="px-4 py-3 hidden lg:table-cell">
+                          {a.hasDuplicate ? (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600">
+                              ⚠ Dup
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-stone-300">—</span>
+                          )}
                         </td>
 
                         {/* Joined */}
@@ -542,17 +613,18 @@ function AccountsInner() {
         {/* ── Detail panel ── */}
         <div
           style={{
-            width: selected ? 360 : 0,
-            minWidth: selected ? 360 : 0,
+            width: selectedId ? 360 : 0,
+            minWidth: selectedId ? 360 : 0,
             transition: 'width 280ms cubic-bezier(0.23,1,0.32,1), min-width 280ms cubic-bezier(0.23,1,0.32,1)',
             overflow: 'hidden',
           }}
           className="bg-white border-l border-stone-100 h-screen sticky top-0 shrink-0"
         >
-          {selected && (
+          {selectedId && (
             <AccountDetail
-              account={selected}
-              onClose={() => setSelected(null)}
+              detail={detail}
+              loading={detailLoading}
+              onClose={() => { setSelectedId(null); setDetail(null); }}
             />
           )}
         </div>

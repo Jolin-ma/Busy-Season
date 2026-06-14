@@ -1,58 +1,69 @@
 'use client';
-import { useState, useMemo } from 'react';
-import { BILLING_ACCOUNTS, PROFILES, type MockBillingAccount, type Profile, type ProfileStatus } from '@/lib/mock-data';
+import { useState, useMemo, useEffect } from 'react';
 
-const STATUS_STYLE: Record<ProfileStatus, { bg: string; text: string; dot: string; label: string }> = {
-  PENDING_PRINT:  { bg: 'bg-amber-50',   text: 'text-amber-700',  dot: 'bg-amber-400',  label: 'Pending Print'  },
-  IN_PRODUCTION:  { bg: 'bg-blue-50',    text: 'text-blue-700',   dot: 'bg-blue-400',   label: 'In Production'  },
-  ACTIVE:         { bg: 'bg-emerald-50', text: 'text-emerald-700',dot: 'bg-emerald-400',label: 'Active'         },
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+
+type PlaqueStatus = 'ORDER_RECEIVED' | 'ENGRAVING' | 'SHIPPED' | 'DELIVERED';
+
+const STATUS_STYLE: Record<PlaqueStatus, { bg: string; text: string; dot: string; label: string }> = {
+  ORDER_RECEIVED: { bg: 'bg-amber-50',   text: 'text-amber-700',   dot: 'bg-amber-400',   label: 'Order Received' },
+  ENGRAVING:      { bg: 'bg-blue-50',    text: 'text-blue-700',    dot: 'bg-blue-400',    label: 'In Production'  },
+  SHIPPED:        { bg: 'bg-indigo-50',  text: 'text-indigo-700',  dot: 'bg-indigo-400',  label: 'Shipped'        },
+  DELIVERED:      { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-400', label: 'Active'         },
 };
+
+interface DirectoryProfile {
+  id:           string;
+  shortId:      string;
+  profileName:  string;
+  plaqueStatus: PlaqueStatus;
+  plan:         'PREMIUM' | 'BASIC';
+  createdAt:    string;
+  ownerId:      string | null;
+  ownerName:    string | null;
+  ownerEmail:   string | null;
+}
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-interface EnrichedProfile {
-  profile: Profile;
-  account: MockBillingAccount | undefined;
-}
+const STATUS_FILTER_OPTIONS: (PlaqueStatus | 'ALL')[] = ['ALL', 'DELIVERED', 'ENGRAVING', 'ORDER_RECEIVED'];
 
 export default function DirectoryTab() {
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<ProfileStatus | 'ALL'>('ALL');
-  const [planFilter, setPlanFilter] = useState<'ALL' | 'BASIC' | 'PREMIUM'>('ALL');
+  const [profiles,      setProfiles]      = useState<DirectoryProfile[]>([]);
+  const [search,        setSearch]        = useState('');
+  const [statusFilter,  setStatusFilter]  = useState<PlaqueStatus | 'ALL'>('ALL');
+  const [planFilter,    setPlanFilter]    = useState<'ALL' | 'BASIC' | 'PREMIUM'>('ALL');
   const [impersonating, setImpersonating] = useState<string | null>(null);
 
-  const accountByShortId = useMemo(() => {
-    const map: Record<string, MockBillingAccount> = {};
-    BILLING_ACCOUNTS.forEach(a => a.shortIds.forEach(sid => { map[sid] = a; }));
-    return map;
+  useEffect(() => {
+    fetch(`${API}/admin/directory`)
+      .then(r => r.json())
+      .then((d: { profiles?: DirectoryProfile[] }) => setProfiles(d.profiles ?? []))
+      .catch(() => {});
   }, []);
-
-  const enriched: EnrichedProfile[] = useMemo(() => {
-    return PROFILES.map(p => ({ profile: p, account: accountByShortId[p.id] }));
-  }, [accountByShortId]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return enriched.filter(({ profile: p, account: a }) => {
+    return profiles.filter(p => {
       const matchSearch =
         !q ||
-        p.name.toLowerCase().includes(q) ||
-        p.id.toLowerCase().includes(q) ||
-        a?.name.toLowerCase().includes(q) ||
-        a?.email.toLowerCase().includes(q);
-      const matchStatus = statusFilter === 'ALL' || p.status === statusFilter;
-      const matchPlan   = planFilter   === 'ALL' || a?.plan === planFilter;
+        p.profileName.toLowerCase().includes(q) ||
+        p.shortId.toLowerCase().includes(q) ||
+        p.ownerName?.toLowerCase().includes(q) ||
+        p.ownerEmail?.toLowerCase().includes(q);
+      const matchStatus = statusFilter === 'ALL' || p.plaqueStatus === statusFilter;
+      const matchPlan   = planFilter   === 'ALL' || p.plan         === planFilter;
       return matchSearch && matchStatus && matchPlan;
     });
-  }, [enriched, search, statusFilter, planFilter]);
+  }, [profiles, search, statusFilter, planFilter]);
 
   const counts = {
-    total:   enriched.length,
-    active:  enriched.filter(e => e.profile.status === 'ACTIVE').length,
-    pending: enriched.filter(e => e.profile.status === 'PENDING_PRINT').length,
-    prod:    enriched.filter(e => e.profile.status === 'IN_PRODUCTION').length,
+    total:     profiles.length,
+    active:    profiles.filter(p => p.plaqueStatus === 'DELIVERED').length,
+    inProd:    profiles.filter(p => p.plaqueStatus === 'ENGRAVING').length,
+    pending:   profiles.filter(p => p.plaqueStatus === 'ORDER_RECEIVED').length,
   };
 
   return (
@@ -60,10 +71,10 @@ export default function DirectoryTab() {
       {/* Stats row */}
       <div className="grid grid-cols-4 gap-3">
         {[
-          { label: 'Total Profiles', value: counts.total,   accent: 'bg-stone-900 text-white' },
-          { label: 'Active',         value: counts.active,  accent: 'bg-emerald-50 text-emerald-700' },
-          { label: 'In Production',  value: counts.prod,    accent: 'bg-blue-50 text-blue-700' },
-          { label: 'Pending Print',  value: counts.pending, accent: 'bg-amber-50 text-amber-700' },
+          { label: 'Total Profiles', value: counts.total,  accent: 'bg-stone-900 text-white'         },
+          { label: 'Active',         value: counts.active, accent: 'bg-emerald-50 text-emerald-700'  },
+          { label: 'In Production',  value: counts.inProd, accent: 'bg-blue-50 text-blue-700'        },
+          { label: 'Pending',        value: counts.pending,accent: 'bg-amber-50 text-amber-700'      },
         ].map(s => (
           <div key={s.label} className={`rounded-2xl px-5 py-4 ${s.accent} border border-stone-100`}>
             <p className="text-[10px] font-semibold uppercase tracking-widest opacity-60 mb-1">{s.label}</p>
@@ -88,15 +99,18 @@ export default function DirectoryTab() {
         </div>
 
         <div className="flex gap-1 bg-stone-50 rounded-xl p-1">
-          {(['ALL', 'ACTIVE', 'IN_PRODUCTION', 'PENDING_PRINT'] as const).map(s => (
+          {STATUS_FILTER_OPTIONS.map(s => (
             <button
               key={s}
-              onClick={() => setStatusFilter(s as ProfileStatus | 'ALL')}
+              onClick={() => setStatusFilter(s)}
               className={`px-3 py-1.5 rounded-lg text-[10px] font-semibold transition-colors ${
                 statusFilter === s ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-400 hover:text-stone-700'
               }`}
             >
-              {s === 'ALL' ? 'All Status' : s === 'IN_PRODUCTION' ? 'In Prod' : s === 'PENDING_PRINT' ? 'Pending' : 'Active'}
+              {s === 'ALL'            ? 'All Status'    :
+               s === 'DELIVERED'      ? 'Active'        :
+               s === 'ENGRAVING'      ? 'In Prod'       :
+               s === 'ORDER_RECEIVED' ? 'Pending'       : s}
             </button>
           ))}
         </div>
@@ -130,22 +144,32 @@ export default function DirectoryTab() {
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-50">
-              {filtered.map(({ profile: p, account: a }) => {
-                const s = STATUS_STYLE[p.status];
-                const isImpersonating = impersonating === p.id;
+              {profiles.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="px-4 py-12 text-center text-xs text-stone-400">Loading…</td>
+                </tr>
+              )}
+              {filtered.length === 0 && profiles.length > 0 && (
+                <tr>
+                  <td colSpan={7} className="px-4 py-12 text-center text-xs text-stone-400">No profiles match your filters.</td>
+                </tr>
+              )}
+              {filtered.map(p => {
+                const s = STATUS_STYLE[p.plaqueStatus];
+                const isImpersonating = impersonating === p.shortId;
                 return (
                   <tr key={p.id} className="hover:bg-stone-50/60 transition-colors">
                     <td className="px-4 py-3">
-                      <p className="text-xs font-semibold text-stone-800 whitespace-nowrap">{p.name}</p>
+                      <p className="text-xs font-semibold text-stone-800 whitespace-nowrap">{p.profileName}</p>
                     </td>
                     <td className="px-4 py-3">
                       <a
-                        href={`http://localhost:3000/p/${p.id}`}
+                        href={`http://localhost:3000/p/${p.shortId}`}
                         target="_blank"
                         rel="noreferrer"
                         className="font-mono text-[11px] text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-1.5 py-0.5 rounded transition-colors"
                       >
-                        {p.id}
+                        {p.shortId}
                       </a>
                     </td>
                     <td className="px-4 py-3">
@@ -155,37 +179,37 @@ export default function DirectoryTab() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      {a ? (
+                      {p.ownerName ? (
                         <>
-                          <p className="text-xs font-medium text-stone-800 whitespace-nowrap">{a.name}</p>
-                          <p className="text-[10px] text-stone-400">{a.email}</p>
+                          <p className="text-xs font-medium text-stone-800 whitespace-nowrap">{p.ownerName}</p>
+                          <p className="text-[10px] text-stone-400">{p.ownerEmail}</p>
                         </>
                       ) : (
                         <span className="text-[10px] text-stone-300">Unlinked</span>
                       )}
                     </td>
                     <td className="px-4 py-3">
-                      {a && (
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          a.plan === 'PREMIUM' ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-stone-600'
-                        }`}>
-                          {a.plan}
-                        </span>
-                      )}
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        p.plan === 'PREMIUM' ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-stone-600'
+                      }`}>
+                        {p.plan}
+                      </span>
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-xs text-stone-500 whitespace-nowrap">{fmtDate(p.createdAt)}</span>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <a
-                          href={`/accounts?shortId=${p.id}`}
-                          className="text-[10px] font-semibold text-stone-600 hover:text-stone-900 px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 transition-colors whitespace-nowrap"
-                        >
-                          Account ↗
-                        </a>
+                        {p.ownerId && (
+                          <a
+                            href={`/accounts?shortId=${p.shortId}`}
+                            className="text-[10px] font-semibold text-stone-600 hover:text-stone-900 px-2.5 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 transition-colors whitespace-nowrap"
+                          >
+                            Account ↗
+                          </a>
+                        )}
                         <button
-                          onClick={() => setImpersonating(isImpersonating ? null : p.id)}
+                          onClick={() => setImpersonating(isImpersonating ? null : p.shortId)}
                           className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg transition-colors whitespace-nowrap ${
                             isImpersonating
                               ? 'bg-red-100 text-red-700 hover:bg-red-200'
@@ -199,11 +223,6 @@ export default function DirectoryTab() {
                   </tr>
                 );
               })}
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-4 py-12 text-center text-xs text-stone-400">No profiles match your filters.</td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>

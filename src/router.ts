@@ -468,6 +468,83 @@ export function buildServer() {
     },
   );
 
+  // ── Admin: Analytics summary ──────────────────────────────────────────────
+  app.get('/admin/analytics/summary', async (_req, reply) => {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const [totalProfiles, scanAggregate, users, topProfiles, topCityRows] = await Promise.all([
+      rawPrisma.profile.count({ where: { deleted_at: null } }),
+      rawPrisma.profile.aggregate({ where: { deleted_at: null }, _sum: { scans_count: true } }),
+      rawPrisma.user.findMany({
+        select: { profiles: { select: { plan: true }, where: { deleted_at: null } } },
+      }),
+      rawPrisma.profile.findMany({
+        where:   { deleted_at: null },
+        orderBy: { scans_count: 'desc' },
+        take:    5,
+        select:  { short_id: true, full_name: true, scans_count: true },
+      }),
+      rawPrisma.scanLog.groupBy({
+        by:      ['city'],
+        where:   { city: { not: null }, scanned_at: { gte: thirtyDaysAgo } },
+        _count:  { city: true },
+        orderBy: { _count: { city: 'desc' } },
+        take:    1,
+      }),
+    ]);
+
+    const totalUsers   = users.length;
+    const premiumCount = users.filter(u => u.profiles.some(p => p.plan === 'PREMIUM')).length;
+    const basicCount   = totalUsers - premiumCount;
+    const topCityRow   = topCityRows[0];
+
+    return reply.send({
+      totalProfiles,
+      totalScans:    scanAggregate._sum.scans_count ?? 0,
+      totalUsers,
+      premiumCount,
+      basicCount,
+      topProfiles:   topProfiles.map(p => ({
+        shortId:    p.short_id,
+        name:       p.full_name,
+        scansCount: p.scans_count,
+      })),
+      topCity:       topCityRow?.city ?? null,
+      topCityScans:  topCityRow?._count.city ?? 0,
+    });
+  });
+
+  // ── Admin: Profile directory (with owner info) ────────────────────────────
+  app.get('/admin/directory', async (_req, reply) => {
+    const profiles = await rawPrisma.profile.findMany({
+      where:   { deleted_at: null },
+      orderBy: { created_at: 'desc' },
+      select: {
+        id:           true,
+        short_id:     true,
+        full_name:    true,
+        plaque_status: true,
+        plan:         true,
+        created_at:   true,
+        user: { select: { id: true, name: true, email: true } },
+      },
+    });
+
+    return reply.send({
+      profiles: profiles.map(p => ({
+        id:           p.id,
+        shortId:      p.short_id,
+        profileName:  p.full_name,
+        plaqueStatus: p.plaque_status,
+        plan:         p.plan,
+        createdAt:    p.created_at,
+        ownerId:      p.user?.id ?? null,
+        ownerName:    p.user?.name ?? null,
+        ownerEmail:   p.user?.email ?? null,
+      })),
+    });
+  });
+
   // ── Admin: List all media assets (ops dashboard) ────────────────────────────
   app.get('/admin/media', async (_req, reply) => {
     const assets = await rawPrisma.mediaAsset.findMany({

@@ -19,15 +19,18 @@ export async function billingRoutes(fastify: FastifyInstance) {
         email:              true,
         stripe_customer_id: true,
         created_at:         true,
-        profiles:           { select: { id: true, plan: true }, where: { deleted_at: null } },
+        profiles:           {
+          select:  { id: true, plan: true, short_id: true },
+          where:   { deleted_at: null },
+        },
         transactions:       {
           select: {
-            amount:          true,
-            status:          true,
+            amount:           true,
+            status:           true,
             is_potential_dup: true,
-            refunded:        true,
-            refunded_amount: true,
-            created_at:      true,
+            refunded:         true,
+            refunded_amount:  true,
+            created_at:       true,
           },
           orderBy: { created_at: 'desc' },
         },
@@ -47,6 +50,8 @@ export async function billingRoutes(fastify: FastifyInstance) {
         .filter(t => t.status === 'PAID' || t.status === 'PARTIALLY_REFUNDED')
         .reduce((s, t) => s + t.amount - t.refunded_amount, 0),
       totalRefundedCents: u.transactions.reduce((s, t) => s + t.refunded_amount, 0),
+      shortIds:           u.profiles.map(p => p.short_id),
+      lastTxStatus:       u.transactions[0]?.status ?? null,
       createdAt:          u.created_at,
       lastTxAt:           u.transactions[0]?.created_at ?? null,
     })) });
@@ -55,23 +60,30 @@ export async function billingRoutes(fastify: FastifyInstance) {
   // ── GET /ops/billing/account/:userId ──────────────────────────────────────
   // Full transaction ledger for a single account.
   fastify.get<{ Params: { userId: string } }>('/ops/billing/account/:userId', async (req, reply) => {
-    const user = await rawPrisma.user.findUnique({
-      where:  { id: req.params.userId },
-      select: {
-        id:                 true,
-        name:               true,
-        email:              true,
-        stripe_customer_id: true,
-        created_at:         true,
-        profiles:           {
-          where:   { deleted_at: null },
-          select:  { id: true, plan: true },
+    const [user, tickets] = await Promise.all([
+      rawPrisma.user.findUnique({
+        where:  { id: req.params.userId },
+        select: {
+          id:                 true,
+          name:               true,
+          email:              true,
+          stripe_customer_id: true,
+          created_at:         true,
+          profiles:           {
+            where:   { deleted_at: null },
+            select:  { id: true, plan: true, short_id: true },
+          },
+          transactions: {
+            orderBy: { created_at: 'desc' },
+          },
         },
-        transactions: {
-          orderBy: { created_at: 'desc' },
-        },
-      },
-    });
+      }),
+      rawPrisma.supportTicket.findMany({
+        where:   { user_id: req.params.userId },
+        orderBy: { created_at: 'desc' },
+        select:  { id: true, subject: true, status: true, priority: true, created_at: true },
+      }),
+    ]);
     if (!user) return reply.code(404).send({ error: 'Account not found.' });
 
     return reply.send({
@@ -82,18 +94,26 @@ export async function billingRoutes(fastify: FastifyInstance) {
         stripeCustomerId: user.stripe_customer_id,
         plan:             user.profiles.some(p => p.plan === 'PREMIUM') ? 'PREMIUM' : 'BASIC',
         profileCount:     user.profiles.length,
+        shortIds:         user.profiles.map(p => p.short_id),
         createdAt:        user.created_at,
         transactions:     user.transactions.map(t => ({
-          id:             t.id,
-          amount:         t.amount,
-          currency:       t.currency,
-          status:         t.status,
-          isPotentialDup: t.is_potential_dup,
+          id:              t.id,
+          amount:          t.amount,
+          currency:        t.currency,
+          status:          t.status,
+          isPotentialDup:  t.is_potential_dup,
           stripeInvoiceId: t.stripe_invoice_id,
-          refunded:       t.refunded,
-          refundedAmount: t.refunded_amount,
-          refundReason:   t.refund_reason,
-          createdAt:      t.created_at,
+          refunded:        t.refunded,
+          refundedAmount:  t.refunded_amount,
+          refundReason:    t.refund_reason,
+          createdAt:       t.created_at,
+        })),
+        tickets: tickets.map(t => ({
+          id:          t.id,
+          subject:     t.subject,
+          status:      t.status,
+          priority:    t.priority,
+          submittedAt: t.created_at,
         })),
       },
     });

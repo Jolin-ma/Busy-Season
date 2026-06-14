@@ -1,12 +1,21 @@
 'use client';
+import { useState, useEffect } from 'react';
 import ScanTrendsChart from '@/components/ScanTrendsChart';
 import DeviceChart from '@/components/DeviceChart';
 import TopScanLocationSection from '@/components/TopScanLocationSection';
-import { SUMMARY, BILLING_ACCOUNTS } from '@/lib/mock-data';
 
-const premiumCount = BILLING_ACCOUNTS.filter(a => a.plan === 'PREMIUM').length;
-const basicCount   = BILLING_ACCOUNTS.filter(a => a.plan === 'BASIC').length;
-const totalUsers   = BILLING_ACCOUNTS.length;
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+
+interface AnalyticsSummary {
+  totalProfiles: number;
+  totalScans:    number;
+  totalUsers:    number;
+  premiumCount:  number;
+  basicCount:    number;
+  topProfiles:   { shortId: string; name: string; scansCount: number }[];
+  topCity:       string | null;
+  topCityScans:  number;
+}
 
 const FUNNEL = [
   { label: 'QR Scans (30d)',      value: 7_820, pct: 100 },
@@ -16,24 +25,35 @@ const FUNNEL = [
   { label: 'Account Created',     value:    31, pct:  0.4 },
 ];
 
-const TOP_PROFILES = [
-  { name: 'Margaret Eleanor Whitfield', id: 'a5trneuj', scans: 763 },
-  { name: 'Harold James Foster',        id: 'b7kwmnpq', scans: 541 },
-  { name: 'Dorothy Mae Chen',           id: 'c2xvrtyu', scans: 387 },
-  { name: 'Florence Anna Park',         id: 'e4stuijk', scans: 312 },
-  { name: 'Robert Lee Thompson',        id: 'f1ghijkl', scans: 198 },
-];
-
 export default function AnalyticsTab() {
+  const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
+
+  useEffect(() => {
+    fetch(`${API}/admin/analytics/summary`)
+      .then(r => r.json())
+      .then((d: AnalyticsSummary) => setSummary(d))
+      .catch(() => {});
+  }, []);
+
+  const premiumCount  = summary?.premiumCount  ?? 0;
+  const basicCount    = summary?.basicCount    ?? 0;
+  const totalUsers    = summary?.totalUsers    ?? 0;
+  const totalScans    = summary?.totalScans    ?? 0;
+  const totalProfiles = summary?.totalProfiles ?? 0;
+  const topProfiles   = summary?.topProfiles   ?? [];
+  const topCity       = summary?.topCity       ?? '—';
+  const topCityScans  = summary?.topCityScans  ?? 0;
+  const avgScans      = totalProfiles > 0 ? Math.round(totalScans / totalProfiles) : 0;
+
   return (
     <div className="space-y-6">
       {/* KPI row */}
       <div className="grid grid-cols-4 gap-3">
         {[
-          { label: 'Total Scans (all time)', value: SUMMARY.totalScans.toLocaleString(), sub: `+${SUMMARY.scansTrend}% this week` },
-          { label: 'Premium Accounts',       value: premiumCount,                        sub: `${basicCount} basic` },
-          { label: 'Top City',               value: SUMMARY.topLocation,                 sub: `${SUMMARY.topLocationScans} scans` },
-          { label: 'Avg Scans / Profile',    value: Math.round(SUMMARY.totalScans / SUMMARY.totalProfiles), sub: 'all-time mean' },
+          { label: 'Total Scans (all time)', value: totalScans.toLocaleString(), sub: 'across all profiles'        },
+          { label: 'Premium Accounts',       value: premiumCount,                sub: `${basicCount} basic`         },
+          { label: 'Top City (30d)',          value: topCity,                     sub: `${topCityScans} scans`       },
+          { label: 'Avg Scans / Profile',     value: avgScans,                    sub: 'all-time mean'               },
         ].map(k => (
           <div key={k.label} className="bg-white border border-stone-100 rounded-2xl px-5 py-4 shadow-sm">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-stone-400 mb-1">{k.label}</p>
@@ -103,7 +123,7 @@ export default function AnalyticsTab() {
         </div>
       </div>
 
-      {/* Top profiles + geographic map */}
+      {/* Top profiles + account mix */}
       <div className="grid grid-cols-2 gap-4">
         {/* Top profiles */}
         <div className="bg-white border border-stone-100 rounded-2xl shadow-sm overflow-hidden">
@@ -112,21 +132,24 @@ export default function AnalyticsTab() {
             <p className="text-sm font-semibold text-stone-800">Most scanned (all time)</p>
           </div>
           <div className="divide-y divide-stone-50">
-            {TOP_PROFILES.map((p, i) => (
-              <div key={p.id} className="flex items-center gap-4 px-5 py-3">
+            {topProfiles.length === 0 && (
+              <div className="px-5 py-6 text-center text-xs text-stone-300">Loading…</div>
+            )}
+            {topProfiles.map((p, i) => (
+              <div key={p.shortId} className="flex items-center gap-4 px-5 py-3">
                 <span className="text-[11px] font-bold text-stone-300 w-5 text-center shrink-0">#{i + 1}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-stone-800 truncate">{p.name}</p>
-                  <code className="text-[10px] font-mono text-stone-400">{p.id}</code>
+                  <code className="text-[10px] font-mono text-stone-400">{p.shortId}</code>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <div className="h-1.5 w-20 bg-stone-100 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-stone-900 rounded-full"
-                      style={{ width: `${(p.scans / TOP_PROFILES[0].scans) * 100}%` }}
+                      style={{ width: topProfiles[0].scansCount > 0 ? `${(p.scansCount / topProfiles[0].scansCount) * 100}%` : '0%' }}
                     />
                   </div>
-                  <span className="text-xs font-bold text-stone-700 w-10 text-right">{p.scans}</span>
+                  <span className="text-xs font-bold text-stone-700 w-10 text-right">{p.scansCount}</span>
                 </div>
               </div>
             ))}
@@ -141,22 +164,22 @@ export default function AnalyticsTab() {
           </div>
           <div className="p-5 flex flex-col gap-5">
             {[
-              { label: 'Premium',  count: premiumCount, color: '#f59e0b', bg: '#fef3c7', text: '#92400e' },
-              { label: 'Basic',    count: basicCount,   color: '#6b7280', bg: '#f3f4f6', text: '#374151' },
+              { label: 'Premium', count: premiumCount, color: '#f59e0b', bg: '#fef3c7', text: '#92400e' },
+              { label: 'Basic',   count: basicCount,   color: '#6b7280', bg: '#f3f4f6', text: '#374151' },
             ].map(plan => (
               <div key={plan.label}>
                 <div className="flex items-center justify-between mb-2">
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full`} style={{ background: plan.bg, color: plan.text }}>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: plan.bg, color: plan.text }}>
                     {plan.label}
                   </span>
                   <span className="text-xs font-bold text-stone-700">
-                    {plan.count} / {totalUsers} ({Math.round((plan.count / totalUsers) * 100)}%)
+                    {plan.count} / {totalUsers}{totalUsers > 0 ? ` (${Math.round((plan.count / totalUsers) * 100)}%)` : ''}
                   </span>
                 </div>
                 <div className="h-3 bg-stone-100 rounded-full overflow-hidden">
                   <div
                     className="h-full rounded-full"
-                    style={{ width: `${(plan.count / totalUsers) * 100}%`, background: plan.color }}
+                    style={{ width: totalUsers > 0 ? `${(plan.count / totalUsers) * 100}%` : '0%', background: plan.color }}
                   />
                 </div>
               </div>
