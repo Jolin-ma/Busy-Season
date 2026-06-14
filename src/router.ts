@@ -1,5 +1,8 @@
 import Fastify from 'fastify';
 import fastifyWebsocket from '@fastify/websocket';
+import fastifyJwt       from '@fastify/jwt';
+import fastifyCors      from '@fastify/cors';
+import bcrypt           from 'bcryptjs';
 import { generateLegacyQR } from './qrGenerator';
 import { generateShortId }  from './shortId';
 import { createLink, lookupLink, lookupLinkForRouting, getScanHistory, setPrivacy, getTopScanLocations } from './db';
@@ -7,6 +10,8 @@ import { rawPrisma } from './lib/db';
 import { storeEntry, getPending } from './guestbookStore';
 import { recordScanAsync }  from './analytics';
 import { renderProfile }    from './profileTemplate';
+import { renderPetProfile } from './petProfileTemplate';
+import { MOCK_PET_PROFILE } from './mockPetProfile';
 import { renderPinGate }    from './pinGateTemplate';
 import { renderAuthPage }       from './authTemplate';
 import { renderActivationPage } from './activationTemplate';
@@ -17,6 +22,20 @@ import { registerClient }   from './wsHub';
 
 export function buildServer() {
   const app = Fastify({ logger: true });
+
+  app.register(fastifyCors, {
+    origin: [
+      'http://localhost:3001',
+      'http://localhost:3002',
+      process.env.ADMIN_URL ?? '',
+      process.env.OPS_URL  ?? '',
+    ].filter(Boolean),
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+  });
+
+  app.register(fastifyJwt, {
+    secret: process.env.JWT_SECRET ?? 'dev-secret-change-in-production',
+  });
 
   app.register(fastifyWebsocket);
   app.register(premiumRoutes);
@@ -30,20 +49,52 @@ export function buildServer() {
     reply.redirect('/login', 302)
   );
 
-  // Stub — replace with session + bcrypt when auth is wired
   app.post<{ Body: { email: string; password: string } }>('/auth/login', async (req, reply) => {
     const { email, password } = req.body;
     if (!email || !password)
       return reply.code(400).send({ error: 'Email and password are required.' });
-    return reply.code(401).send({ error: 'Invalid email or password.' });
+
+    const user = await rawPrisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() },
+    });
+    if (!user) return reply.code(401).send({ error: 'Invalid email or password.' });
+
+    const valid = await bcrypt.compare(password, user.password_hash);
+    if (!valid) return reply.code(401).send({ error: 'Invalid email or password.' });
+
+    const token = app.jwt.sign(
+      { userId: user.id, email: user.email, name: user.name },
+      { expiresIn: '30d' }
+    );
+    return reply.send({ token, user: { id: user.id, name: user.name, email: user.email } });
   });
+
   app.post<{ Body: { name: string; email: string; password: string } }>('/auth/signup', async (req, reply) => {
     const { name, email, password } = req.body;
     if (!name || !email || !password)
       return reply.code(400).send({ error: 'All fields are required.' });
     if (password.length < 8)
       return reply.code(400).send({ error: 'Password must be at least 8 characters.' });
-    return reply.code(201).send({ message: 'Account created.' });
+
+    const existing = await rawPrisma.user.findUnique({
+      where: { email: email.toLowerCase().trim() },
+    });
+    if (existing) return reply.code(409).send({ error: 'An account with that email already exists.' });
+
+    const password_hash = await bcrypt.hash(password, 12);
+    const user = await rawPrisma.user.create({
+      data: {
+        name:          name.trim(),
+        email:         email.toLowerCase().trim(),
+        password_hash,
+      },
+    });
+
+    const token = app.jwt.sign(
+      { userId: user.id, email: user.email, name: user.name },
+      { expiresIn: '30d' }
+    );
+    return reply.code(201).send({ token, user: { id: user.id, name: user.name, email: user.email } });
   });
 
   // ── Smart QR Router ─────────────────────────────────────────────────────────
@@ -234,6 +285,11 @@ export function buildServer() {
   // ── Memorial Profile Page ───────────────────────────────────────────────────
   app.get<{ Params: { profileId: string } }>('/profile/:profileId', async (req, reply) =>
     reply.header('Content-Type', 'text/html; charset=utf-8').send(renderProfile(MOCK_PROFILE, req.params.profileId))
+  );
+
+  // ── Pet Memorial Profile Page ────────────────────────────────────────────────
+  app.get<{ Params: { shortId: string } }>('/pet/:shortId', async (req, reply) =>
+    reply.header('Content-Type', 'text/html; charset=utf-8').send(renderPetProfile(MOCK_PET_PROFILE, req.params.shortId))
   );
 
   // ── Public Guestbook Submission ──────────────────────────────────────────────
