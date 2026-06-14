@@ -20,6 +20,10 @@ const NAV_MAIN = [
     icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg>,
   },
   {
+    label: 'Media', href: '/media',
+    icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 5 2-3 3 6z" clipRule="evenodd" /></svg>,
+  },
+  {
     label: 'Billing', href: '/billing',
     icon: <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" /><path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" /></svg>,
   },
@@ -36,7 +40,8 @@ export default function Sidebar() {
   const isAccounts     = pathname === '/accounts';
   const isGeographic   = pathname === '/geographic';
   const isFulfillment  = pathname === '/fulfillment';
-  const isMain         = !isSupport && !isBilling && !isAccounts && !isGeographic && !isFulfillment;
+  const isMedia        = pathname === '/media';
+  const isMain         = !isSupport && !isBilling && !isAccounts && !isGeographic && !isFulfillment && !isMedia;
 
   return (
     <aside className="hidden md:flex flex-col bg-white border-r border-stone-100 shrink-0 h-screen sticky top-0 w-[220px]">
@@ -55,6 +60,7 @@ export default function Sidebar() {
             item.href === '/billing'      ? isBilling      :
             item.href === '/geographic'   ? isGeographic   :
             item.href === '/fulfillment'  ? isFulfillment  :
+            item.href === '/media'        ? isMedia        :
             isMain;
 
           return (

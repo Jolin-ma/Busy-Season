@@ -346,6 +346,15 @@ export function buildServer() {
     });
   });
 
+  // ── Admin: List all media assets (ops dashboard) ────────────────────────────
+  app.get('/admin/media', async (_req, reply) => {
+    const assets = await rawPrisma.mediaAsset.findMany({
+      orderBy: { profile: { full_name: 'asc' } },
+      include: { profile: { select: { id: true, full_name: true, short_id: true } } },
+    });
+    return reply.send({ assets });
+  });
+
   // ── Admin: Export QR SVG ────────────────────────────────────────────────────
   app.get<{ Params: { shortId: string } }>('/admin/qr/:shortId', async (req, reply) => {
     const { shortId } = req.params;
