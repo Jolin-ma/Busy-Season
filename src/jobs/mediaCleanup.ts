@@ -5,6 +5,7 @@ const ENTRY_BUCKET    = process.env.S3_ENTRY_BUCKET    ?? '';
 const DELIVERY_BUCKET = process.env.S3_DELIVERY_BUCKET ?? '';
 
 export interface CleanupResult {
+  stale:  number;  // PENDING_UPLOAD assets timed out (Lambda never called back)
   marked: number;  // assets cascade-marked from soft-deleted profiles this run
   purged: number;  // assets successfully deleted from S3 + DB
   errors: number;  // assets that failed S3 deletion (left in DB for next run)
@@ -23,6 +24,19 @@ export interface CleanupResult {
  *   that don't exist return success.
  */
 export async function runMediaCleanup(): Promise<CleanupResult> {
+  // Phase 0: stale PENDING_UPLOAD rows — Lambda never called back (Lambda error,
+  // transient network failure, or upload was abandoned after presign). S3 lifecycle
+  // handles ghost files with no DB row; this handles rows that do exist.
+  // 2-hour window gives the Lambda ample time to complete and call the webhook.
+  const staleThreshold = new Date(Date.now() - 2 * 60 * 60 * 1000);
+  const { count: stale } = await rawPrisma.mediaAsset.updateMany({
+    where: {
+      upload_status: 'PENDING_UPLOAD',
+      created_at:    { lt: staleThreshold },
+    },
+    data: { upload_status: 'MARKED_FOR_DELETION' },
+  });
+
   // Phase 1: cascade mark from soft-deleted profiles
   const { count: marked } = await rawPrisma.mediaAsset.updateMany({
     where: {
@@ -59,7 +73,7 @@ export async function runMediaCleanup(): Promise<CleanupResult> {
     }
   }
 
-  return { marked, purged, errors };
+  return { stale, marked, purged, errors };
 }
 
 /**
@@ -71,8 +85,8 @@ export function scheduleMediaCleanup(intervalMs = 6 * 60 * 60 * 1000): void {
   const run = async () => {
     console.log('[cleanup] Media orphan cleanup starting...');
     try {
-      const { marked, purged, errors } = await runMediaCleanup();
-      console.log(`[cleanup] Done — marked: ${marked}, purged: ${purged}, errors: ${errors}`);
+      const { stale, marked, purged, errors } = await runMediaCleanup();
+      console.log(`[cleanup] Done — stale: ${stale}, marked: ${marked}, purged: ${purged}, errors: ${errors}`);
     } catch (err) {
       console.error('[cleanup] Unexpected top-level error:', err);
     }

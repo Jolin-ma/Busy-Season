@@ -50,7 +50,7 @@ Physical plaque QR  →  Fastify /p/:shortId
        render PIN gate HTML      302 → /profile/:profileId
        POST /p/:shortId/unlock          │
               │                  render profile HTML
-       verify PIN                 (still MOCK_PROFILE — not wired to DB yet)
+       verify PIN                 render profile HTML (real DB — Prisma query in router.ts:/profile/:profileId)
 ```
 
 ### Admin UI flow

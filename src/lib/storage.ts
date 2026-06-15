@@ -39,7 +39,7 @@ export async function presignUpload(
 ): Promise<SignedUpload> {
   const uuid = crypto.randomUUID();
   const ext  = path.extname(filename).toLowerCase() || '.bin';
-  const rawKey = `raw/${uuid}${ext}`;
+  const rawKey = `processing-stage/${uuid}${ext}`;
 
   const cmd = new PutObjectCommand({
     Bucket:      process.env.S3_ENTRY_BUCKET!,

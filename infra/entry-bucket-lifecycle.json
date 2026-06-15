@@ -1,0 +1,19 @@
+{
+  "_comment": "S3/R2 lifecycle policy for the entry bucket (S3_ENTRY_BUCKET).",
+  "_apply": "aws s3api put-bucket-lifecycle-configuration --bucket <S3_ENTRY_BUCKET> --lifecycle-configuration file://entry-bucket-lifecycle.json",
+  "_r2": "Apply via Cloudflare dashboard: R2 > Bucket > Settings > Object Lifecycle or the R2 S3-compat API.",
+  "Rules": [
+    {
+      "ID": "abort-incomplete-multipart",
+      "Status": "Enabled",
+      "Filter": { "Prefix": "processing-stage/" },
+      "AbortIncompleteMultipartUpload": { "DaysAfterInitiation": 2 }
+    },
+    {
+      "ID": "expire-ghost-uploads",
+      "Status": "Enabled",
+      "Filter": { "Prefix": "processing-stage/" },
+      "Expiration": { "Days": 3 }
+    }
+  ]
+}

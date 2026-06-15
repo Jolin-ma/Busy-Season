@@ -51,6 +51,7 @@ These are in production. Do not revisit without a strong reason.
 - [x] **`MediaAsset.upload_status`** — `UploadStatus` state machine (PENDING_UPLOAD → PROCESSING → READY | MARKED_FOR_DELETION). Separate from `ModerationStatus` — file lifecycle and content review are different concerns.
 - [x] **`ScanLog.id` → BigInt autoincrement** — Sequential IDs keep the clustered index tight on the highest-write table.
 - [x] **`ScanLog` composite index** — `[profile_id, scanned_at DESC]` covers the analytics dashboard hot path.
+- [x] **`Profile.is_qr_active`** — `Boolean @default(true)`. Gates the physical QR entry point without touching `short_id` or soft-deleting the profile.
 
 ### Connection hardening
 - [x] **Statement timeout** — `SET statement_timeout = 3000` applied to every pool connection via `pool.on('connect')`. Kills runaway queries before they cascade.
@@ -65,6 +66,30 @@ These are in production. Do not revisit without a strong reason.
 ## ✅ Phase 2 — Near-Term (COMPLETE)
 
 All near-term items are done. Phase 3 is the next decision point.
+
+### QR active gate (`is_qr_active`)
+- [x] **Schema** — `Profile.is_qr_active Boolean @default(true)`.
+- [x] **Scan routing** — `/r/:shortId` and `/p/:shortId` return HTTP 410 and skip scan recording when `is_qr_active = false`. No other behaviour changes.
+- [x] **Backend route** — `PATCH /admin/profile/:shortId/qr-active` accepts `{ isQrActive: boolean }`.
+- [x] **Billing endpoint** — `GET /ops/billing/account/:userId` includes `profiles: [{ shortId, isQrActive }]` so the ops dashboard can render per-plaque status.
+- [x] **Ops dashboard** — Accounts page Settings tab has a "QR Code Status" section: pill toggle per shortId, optimistic UI with automatic revert on API error.
+
+### Scan history — real DB
+- [x] **`GET /admin/stats/:shortId`** returns scan history from a live `ScanLog` Prisma query (`[profile_id, scanned_at DESC]` index). No longer in-memory.
+
+### Ops dashboard pages — all real data
+All six pages are fully wired to live Prisma/backend data. No mocks remain.
+
+| Route | Real data source |
+|---|---|
+| `/` | `GET /admin/analytics/summary` (4 tabs) |
+| `/geographic` | Ontario scan map + scan locations |
+| `/fulfillment` | QR generation, shipping sub-tabs |
+| `/accounts` | `?shortId=` URL param, profile detail |
+| `/billing` | Duplicate charge detection, per-account billing |
+| `/support` | Priority ticket queue |
+
+Sidebar badge counts (`pendingMediaCount`, `priorityTicketCount`) come from `GET /admin/analytics/summary`.
 
 ---
 
@@ -103,3 +128,6 @@ Build only when telemetry proves you need them.
 | 2026-06-14 | `UploadStatus` enum separate from `ModerationStatus` | File lifecycle (where is the file?) and content review (is it safe?) are independent concerns — a file can be READY but still FLAGGED |
 | 2026-06-14 | `setInterval` for cleanup cron, no external scheduler | No new dependency; 6-hour interval is sufficient and the startup run catches anything missed during downtime |
 | 2026-06-14 | `statement_timeout` via `pool.on('connect')` | Cleanest approach — applies to every connection without modifying the DATABASE_URL format |
+| 2026-06-14 | `is_qr_active` on Profile, not a separate table | Simplest toggle; one boolean, one PATCH route. No need for an activation/deactivation event log at this scale |
+| 2026-06-14 | HTTP 410 (Gone) for inactive QR scans | Semantically correct — the resource existed but is intentionally deactivated. 404 would mislead; 403 would suggest a permissions issue |
+| 2026-06-14 | Scan history from live ScanLog DB query | Removed in-memory fallback; `[profile_id, scanned_at DESC]` index makes the query fast enough that no cache is needed yet |
