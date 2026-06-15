@@ -16,7 +16,7 @@ export default function AuthPage() {
   const nameRef                 = useRef<HTMLInputElement>(null);
   const emailRef                = useRef<HTMLInputElement>(null);
 
-  const { signup, login, logout } = useAuth();
+  const { signup, login, logout, user } = useAuth();
   const router = useRouter();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -40,8 +40,14 @@ export default function AuthPage() {
     try {
       if (mode === 'signup') {
         if (!name.trim()) { setError('Please enter your full name.'); setBusy(false); return; }
-        signup(name, email, password);
-        router.push('/purchase');
+        await signup(name, email, password);
+        // If a new account was created, user state was set and cookie is in the browser.
+        // If the email already existed, user state is still null — redirect to sign-in.
+        if (user) {
+          router.push('/purchase');
+        } else {
+          switchMode('signin');
+        }
       } else {
         await login(email, password);
         router.push(hasPurchased() ? '/' : '/purchase');
@@ -165,7 +171,7 @@ export default function AuthPage() {
                 placeholder="••••••••"
                 autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
                 required
-                minLength={6}
+                minLength={mode === 'signup' ? 12 : 1}
                 className="w-full border border-stone-200 rounded-xl px-4 py-3 pr-11 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-stone-300 focus:border-stone-300 placeholder:text-stone-300 shadow-sm hover:border-stone-300 transition-all duration-150"
               />
               <button

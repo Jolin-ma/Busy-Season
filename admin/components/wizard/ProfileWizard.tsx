@@ -46,20 +46,16 @@ export default function ProfileWizard({ onComplete, onCancel }: Props) {
   };
 
   const handleSave = async () => {
-    const API   = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
-    const token = typeof window !== 'undefined' ? localStorage.getItem('ll_token') : null;
-    const authHeader = token ? { Authorization: `Bearer ${token}` } : {};
+    const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
-    // Helper: upload a single File, return the CDN URL.
-    // In cloud mode: gets a presigned S3 URL, PUTs directly to S3 (bypasses server),
-    // returns the future delivery URL (available once Lambda optimises the file).
-    // In local dev: POSTs to the Fastify /admin/upload endpoint as before.
+    // Cookie-based auth — session cookie is sent automatically by the browser.
     async function uploadFile(file: File): Promise<string> {
       if (process.env.NEXT_PUBLIC_USE_CLOUD === 'true') {
         const signRes = await fetch(`${API}/admin/upload/sign`, {
-          method:  'POST',
-          headers: { 'Content-Type': 'application/json', ...authHeader },
-          body:    JSON.stringify({ filename: file.name, contentType: file.type }),
+          method:      'POST',
+          headers:     { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body:        JSON.stringify({ filename: file.name, contentType: file.type }),
         });
         if (!signRes.ok) throw new Error('Could not get upload URL');
         const { signedUrl, deliveryUrl } = await signRes.json();
@@ -75,7 +71,7 @@ export default function ProfileWizard({ onComplete, onCancel }: Props) {
       // Local dev fallback
       const form = new FormData();
       form.append('file', file);
-      const res = await fetch(`${API}/admin/upload`, { method: 'POST', headers: authHeader, body: form });
+      const res = await fetch(`${API}/admin/upload`, { method: 'POST', credentials: 'include', body: form });
       if (!res.ok) throw new Error('Upload failed');
       return (await res.json()).url as string;
     }
@@ -96,8 +92,9 @@ export default function ProfileWizard({ onComplete, onCancel }: Props) {
 
       // 3. POST full profile to Fastify
       const res = await fetch(`${API}/admin/profile`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeader },
+        method:      'POST',
+        headers:     { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({
           name:        draft.name,
           epitaph:     draft.epitaph,

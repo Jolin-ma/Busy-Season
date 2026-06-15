@@ -14,7 +14,7 @@ interface AuthContextValue {
   isLoading: boolean;
   signup: (name: string, email: string, password: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -31,15 +31,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signup(name: string, email: string, password: string) {
     const res = await fetch(`${API}/auth/signup`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password }),
+      method:      'POST',
+      headers:     { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body:        JSON.stringify({ name, email, password }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error ?? 'Signup failed.');
-    localStorage.setItem('ll_token', data.token);
-    localStorage.setItem('ll_auth', JSON.stringify(data.user));
-    setUser(data.user);
+    // Token is in the HttpOnly cookie — never touches localStorage.
+    // Store only the display metadata (name, email, id) for UI use.
+    if (data.user) {
+      localStorage.setItem('ll_auth', JSON.stringify(data.user));
+      setUser(data.user);
+    }
+    // If data.user is absent (duplicate email case), no state is set —
+    // the caller redirects to sign-in and the user authenticates normally.
   }
 
   async function login(email: string, password: string) {
@@ -52,20 +58,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const res = await fetch(`${API}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      method:      'POST',
+      headers:     { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body:        JSON.stringify({ email, password }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error ?? 'Login failed.');
-    localStorage.setItem('ll_token', data.token);
+    // Token is in the HttpOnly cookie. Store only display metadata.
     localStorage.setItem('ll_auth', JSON.stringify(data.user));
     setUser(data.user);
   }
 
-  function logout() {
+  async function logout() {
+    // Ask the server to clear the HttpOnly cookie.
+    await fetch(`${API}/auth/logout`, { method: 'POST', credentials: 'include' }).catch(() => {});
     localStorage.removeItem('ll_auth');
-    localStorage.removeItem('ll_token');
     setUser(null);
   }
 

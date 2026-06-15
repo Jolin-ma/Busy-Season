@@ -5,8 +5,11 @@ import Fastify, { FastifyRequest } from 'fastify';
 import fastifyWebsocket  from '@fastify/websocket';
 import fastifyJwt        from '@fastify/jwt';
 import fastifyCors       from '@fastify/cors';
+import fastifyCookie     from '@fastify/cookie';
+import fastifyRateLimit  from '@fastify/rate-limit';
 import fastifyMultipart  from '@fastify/multipart';
 import fastifyStatic     from '@fastify/static';
+import { z }             from 'zod';
 import bcrypt            from 'bcryptjs';
 import { generateLegacyQR } from './qrGenerator';
 import { generateShortId }  from './shortId';
@@ -36,8 +39,41 @@ export function buildServer() {
       process.env.ADMIN_URL ?? '',
       process.env.OPS_URL  ?? '',
     ].filter(Boolean),
+    credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   });
+
+  // HttpOnly session cookie — JWT never touches client-side JS storage.
+  app.register(fastifyCookie);
+
+  // Rate limiting — applied per-route, not globally.
+  app.register(fastifyRateLimit, { global: false });
+
+  // Zod schemas — validated before any Prisma call.
+  const SignupSchema = z.object({
+    name:     z.string().min(1, 'Name is required').max(100).trim(),
+    email:    z.string().email('Invalid email address').max(255).transform(v => v.toLowerCase().trim()),
+    password: z.string()
+      .min(12, 'Password must be at least 12 characters')
+      .max(72, 'Password cannot exceed 72 characters')
+      .regex(/[A-Z]/, 'Must contain an uppercase letter')
+      .regex(/[a-z]/, 'Must contain a lowercase letter')
+      .regex(/[0-9]/, 'Must contain a number')
+      .regex(/[^A-Za-z0-9]/, 'Must contain a special character'),
+  });
+  const LoginSchema = z.object({
+    email:    z.string().email().max(255).transform(v => v.toLowerCase().trim()),
+    password: z.string().min(1).max(72),
+  });
+
+  const SESSION_COOKIE = 'll_session';
+  const COOKIE_OPTS = {
+    httpOnly: true,
+    secure:   process.env.NODE_ENV === 'production',
+    sameSite: 'strict' as const,
+    path:     '/',
+    maxAge:   30 * 24 * 60 * 60,
+  };
 
   app.register(fastifyJwt, {
     secret: process.env.JWT_SECRET ?? 'dev-secret-change-in-production',
@@ -57,15 +93,17 @@ export function buildServer() {
   app.register(premiumRoutes);
   app.register(billingRoutes);
 
-  // Verifies the Bearer JWT and checks auth_version against the DB.
+  // Verifies the session JWT and checks auth_version against the DB.
+  // Checks the HttpOnly cookie first; falls back to Authorization header for API clients.
   // Returns the userId on success, null on any failure (missing/invalid/revoked token).
-  // Use this in routes that have a SEED_USER_ID fallback. For routes that strictly
-  // require auth, reject when this returns null instead of falling back.
   async function resolveUserId(req: FastifyRequest): Promise<string | null> {
     try {
-      const auth = req.headers.authorization;
-      if (!auth?.startsWith('Bearer ')) return null;
-      const payload = app.jwt.verify<{ userId: string; authVersion: number }>(auth.slice(7));
+      const raw = req.cookies[SESSION_COOKIE] ?? (() => {
+        const auth = req.headers.authorization;
+        return auth?.startsWith('Bearer ') ? auth.slice(7) : null;
+      })();
+      if (!raw) return null;
+      const payload = app.jwt.verify<{ userId: string; authVersion: number }>(raw);
       const user = await rawPrisma.user.findUnique({
         where:  { id: payload.userId },
         select: { auth_version: true },
@@ -83,14 +121,14 @@ export function buildServer() {
     reply.redirect('/login', 302)
   );
 
-  app.post<{ Body: { email: string; password: string } }>('/auth/login', async (req, reply) => {
-    const { email, password } = req.body;
-    if (!email || !password)
-      return reply.code(400).send({ error: 'Email and password are required.' });
+  app.post<{ Body: { email: string; password: string } }>('/auth/login', {
+    config: { rateLimit: { max: 5, timeWindow: 60 * 1000 } },
+  }, async (req, reply) => {
+    const parsed = LoginSchema.safeParse(req.body);
+    if (!parsed.success) return reply.code(401).send({ error: 'Invalid email or password.' });
+    const { email, password } = parsed.data;
 
-    const user = await rawPrisma.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
-    });
+    const user = await rawPrisma.user.findUnique({ where: { email } });
     if (!user) return reply.code(401).send({ error: 'Invalid email or password.' });
 
     const valid = await bcrypt.compare(password, user.password_hash);
@@ -100,39 +138,49 @@ export function buildServer() {
       { userId: user.id, email: user.email, name: user.name, authVersion: user.auth_version },
       { expiresIn: '30d' }
     );
-    return reply.send({ token, user: { id: user.id, name: user.name, email: user.email } });
+    reply.setCookie(SESSION_COOKIE, token, COOKIE_OPTS);
+    return reply.send({ user: { id: user.id, name: user.name, email: user.email } });
   });
 
-  app.post<{ Body: { name: string; email: string; password: string } }>('/auth/signup', async (req, reply) => {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password)
-      return reply.code(400).send({ error: 'All fields are required.' });
-    if (password.length < 8)
-      return reply.code(400).send({ error: 'Password must be at least 8 characters.' });
+  app.post<{ Body: { name: string; email: string; password: string } }>('/auth/signup', {
+    config: { rateLimit: { max: 10, timeWindow: 60 * 1000 } },
+  }, async (req, reply) => {
+    const parsed = SignupSchema.safeParse(req.body);
+    if (!parsed.success) {
+      const msg = parsed.error.issues[0]?.message ?? 'Invalid input.';
+      return reply.code(422).send({ error: msg });
+    }
+    const { name, email, password } = parsed.data;
 
-    const existing = await rawPrisma.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
-    });
-    if (existing) return reply.code(409).send({ error: 'An account with that email already exists.' });
+    const existing = await rawPrisma.user.findUnique({ where: { email } });
+
+    // Return the same envelope whether the email already exists or not.
+    // Never confirm or deny that a specific email is registered.
+    if (existing) {
+      return reply.send({ ok: true });
+    }
 
     const password_hash = await bcrypt.hash(password, 12);
     const user = await rawPrisma.user.create({
-      data: {
-        name:          name.trim(),
-        email:         email.toLowerCase().trim(),
-        password_hash,
-      },
+      data: { name, email, password_hash },
     });
 
     const token = app.jwt.sign(
       { userId: user.id, email: user.email, name: user.name, authVersion: user.auth_version },
       { expiresIn: '30d' }
     );
-    return reply.code(201).send({ token, user: { id: user.id, name: user.name, email: user.email } });
+    reply.setCookie(SESSION_COOKIE, token, COOKIE_OPTS);
+    return reply.code(201).send({ ok: true, user: { id: user.id, name: user.name, email: user.email } });
   });
 
-  // Increments auth_version, instantly invalidating every active token for this user.
-  // Use on password change, account compromise, or explicit "log out everywhere".
+  // Clears the session cookie on this device only.
+  app.post('/auth/logout', async (_req, reply) => {
+    reply.clearCookie(SESSION_COOKIE, { path: '/' });
+    return reply.send({ ok: true });
+  });
+
+  // Increments auth_version, instantly invalidating every active token for this user,
+  // and clears the session cookie on the current device.
   app.post('/auth/logout-all', async (req, reply) => {
     const userId = await resolveUserId(req);
     if (!userId) return reply.code(401).send({ error: 'Invalid or expired token.' });
@@ -140,6 +188,7 @@ export function buildServer() {
       where: { id: userId },
       data:  { auth_version: { increment: 1 } },
     });
+    reply.clearCookie(SESSION_COOKIE, { path: '/' });
     return reply.send({ ok: true });
   });
 

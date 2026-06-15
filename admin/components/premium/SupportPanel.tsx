@@ -64,17 +64,14 @@ export default function SupportPanel({ profileId }: Props) {
     if (!subject.trim() || !message.trim()) return;
     setSending(true);
     try {
-      const token = localStorage.getItem('ll_token');
-      const auth  = localStorage.getItem('ll_auth');
-      const user  = auth ? JSON.parse(auth) : null;
+      const auth = localStorage.getItem('ll_auth');
+      const user = auth ? JSON.parse(auth) : null;
 
       const res = await fetch(`${API}/api/v1/premium/support/${profileId}/tickets`, {
-        method:  'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ user_id: user?.id ?? '', subject: subject.trim(), message: message.trim() }),
+        method:      'POST',
+        headers:     { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body:        JSON.stringify({ user_id: user?.id ?? '', subject: subject.trim(), message: message.trim() }),
       });
 
       if (res.ok) {
