@@ -104,7 +104,6 @@ When modifying the schema, always run `npm run db:generate` before TypeScript co
 
 ## Pending / stub areas
 
-- **`/profile/:profileId` route** — still renders `MOCK_PROFILE` from `src/mockProfile.ts`. Needs wiring to a real Prisma profile query.
 - **Auth routes** (`POST /auth/login`, `POST /auth/signup`) — Fastify stubs that return 401/201 without touching the DB. `bcrypt` not yet integrated.
 - **Privacy PIN** — stored as plaintext in the DB. Needs bcrypt hashing before any public-facing use.
 - **`POST /admin/link`** — uses `SEED_USER_ID` (set at startup) as the profile owner. Needs real auth token once sessions are wired.

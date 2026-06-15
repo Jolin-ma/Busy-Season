@@ -472,7 +472,7 @@ export function buildServer() {
   app.get('/admin/analytics/summary', async (_req, reply) => {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-    const [totalProfiles, scanAggregate, users, topProfiles, topCityRows] = await Promise.all([
+    const [totalProfiles, scanAggregate, users, topProfiles, topCityRows, pendingMediaCount, priorityTicketCount] = await Promise.all([
       rawPrisma.profile.count({ where: { deleted_at: null } }),
       rawPrisma.profile.aggregate({ where: { deleted_at: null }, _sum: { scans_count: true } }),
       rawPrisma.user.findMany({
@@ -491,6 +491,8 @@ export function buildServer() {
         orderBy: { _count: { city: 'desc' } },
         take:    1,
       }),
+      rawPrisma.mediaAsset.count({ where: { moderation_status: 'PENDING' } }),
+      rawPrisma.supportTicket.count({ where: { priority: 'PRIORITY', status: { notIn: ['RESOLVED', 'CLOSED'] } } }),
     ]);
 
     const totalUsers   = users.length;
@@ -500,17 +502,19 @@ export function buildServer() {
 
     return reply.send({
       totalProfiles,
-      totalScans:    scanAggregate._sum.scans_count ?? 0,
+      totalScans:         scanAggregate._sum.scans_count ?? 0,
       totalUsers,
       premiumCount,
       basicCount,
-      topProfiles:   topProfiles.map(p => ({
+      topProfiles:        topProfiles.map(p => ({
         shortId:    p.short_id,
         name:       p.full_name,
         scansCount: p.scans_count,
       })),
-      topCity:       topCityRow?.city ?? null,
-      topCityScans:  topCityRow?._count.city ?? 0,
+      topCity:            topCityRow?.city ?? null,
+      topCityScans:       topCityRow?._count.city ?? 0,
+      pendingMediaCount,
+      priorityTicketCount,
     });
   });
 
