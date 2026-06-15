@@ -107,6 +107,10 @@ model Profile {
   is_private    Boolean   @default(false)
   // 4-digit PIN stored as a bcrypt hash. Null when profile is public.
   privacy_pin   String?
+  // When false the QR redirect returns a deactivated page instead of routing.
+  // Use for lost/stolen plaques, test plaques, and decommissioned memorials.
+  // The profile itself remains intact — this only gates the physical QR entry point.
+  is_qr_active  Boolean   @default(true)
 
   // ── Plaque fulfilment ─────────────────────────────────────────────────────
   // Tracks physical order state so the dashboard status card stays in sync.

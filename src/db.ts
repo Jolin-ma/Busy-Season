@@ -10,6 +10,7 @@ export interface LinkRecord {
   scansCount: number;
   isPrivate:  boolean;
   privacyPin: string;
+  isQrActive: boolean;
 }
 
 export interface RoutingRecord extends LinkRecord {
@@ -163,11 +164,12 @@ export async function getTopScanLocations(days = 30, limit = 20) {
 // ---------------------------------------------------------------------------
 
 function toRecord(p: {
-  id:          string;
-  created_at:  Date;
-  scans_count: number;
-  is_private:  boolean;
-  privacy_pin: string | null;
+  id:            string;
+  created_at:    Date;
+  scans_count:   number;
+  is_private:    boolean;
+  privacy_pin:   string | null;
+  is_qr_active:  boolean;
 }): LinkRecord {
   return {
     profileId:  p.id,
@@ -175,5 +177,6 @@ function toRecord(p: {
     scansCount: p.scans_count,
     isPrivate:  p.is_private,
     privacyPin: p.privacy_pin ?? '',
+    isQrActive: p.is_qr_active,
   };
 }

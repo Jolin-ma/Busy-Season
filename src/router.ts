@@ -167,6 +167,17 @@ export function buildServer() {
 
     if (!link) return reply.code(404).send({ error: 'QR destination not found.' });
 
+    if (!link.isQrActive) {
+      return reply.code(410).header('Content-Type', 'text/html; charset=utf-8').send(
+        `<!DOCTYPE html><html><head><title>Memorial — LegacyLink</title></head>
+         <body style="font-family:sans-serif;text-align:center;padding:80px 24px;color:#1c1917">
+           <p style="font-size:2rem;margin-bottom:16px">🕊️</p>
+           <h1 style="font-size:1.25rem;font-weight:600;margin-bottom:8px">This memorial is no longer active</h1>
+           <p style="color:#78716c;font-size:0.9rem">Please contact the family or memorial administrator for assistance.</p>
+         </body></html>`
+      );
+    }
+
     recordScanAsync({
       shortId,
       timestamp: new Date().toISOString(),
@@ -213,6 +224,17 @@ export function buildServer() {
     const link = await lookupLink(shortId);
 
     if (!link) return reply.code(404).send({ error: 'QR destination not found.' });
+
+    if (!link.isQrActive) {
+      return reply.code(410).header('Content-Type', 'text/html; charset=utf-8').send(
+        `<!DOCTYPE html><html><head><title>Memorial — LegacyLink</title></head>
+         <body style="font-family:sans-serif;text-align:center;padding:80px 24px;color:#1c1917">
+           <p style="font-size:2rem;margin-bottom:16px">🕊️</p>
+           <h1 style="font-size:1.25rem;font-weight:600;margin-bottom:8px">This memorial is no longer active</h1>
+           <p style="color:#78716c;font-size:0.9rem">Please contact the family or memorial administrator for assistance.</p>
+         </body></html>`
+      );
+    }
 
     recordScanAsync({
       shortId,
