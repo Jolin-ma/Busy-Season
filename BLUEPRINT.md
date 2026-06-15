@@ -19,8 +19,9 @@ Ops Dashboard (port 3002)        Internal: Jolin manages all accounts
 ```
 
 Database: PostgreSQL on Neon (Prisma 7, `@prisma/adapter-pg`)
-Storage: S3-compatible (R2 preferred — zero egress fees)
-Auth: `bcryptjs` (cost 12) + `@fastify/jwt` (30-day tokens, authVersion-gated)
+Storage:  S3-compatible (R2 preferred — zero egress fees)
+Auth:     `bcryptjs` (cost 12) + `@fastify/jwt` (30-day tokens, authVersion-gated,
+          delivered via HttpOnly `ll_session` cookie — never in localStorage)
 
 ---
 
@@ -30,7 +31,7 @@ These are in production. Do not revisit without a strong reason.
 
 ### Data integrity
 - [x] **Stripe idempotency** — `Transaction.id` IS the Stripe charge ID (`@id`). Duplicate webhooks rejected at DB level.
-- [x] **Soft delete only** — `Profile.deleted_at`. The `db` Prisma extension silently appends `deleted_at: null` to every read. Hard delete is a manual admin-only operation.
+- [x] **Soft delete only** — `Profile.deleted_at`. The `db` Prisma extension silently appends `deleted_at: null` to every read. Hard delete is a manual admin-only operation after a configurable retention window.
 - [x] **`short_id` immutability** — `@unique @db.VarChar(8)`, generated before insert, never updated. Engraved on physical plaques.
 - [x] **Guestbook moderation gate** — `GuestbookEntry.is_approved` defaults to `false`. Public queries must always filter `is_approved: true`.
 
@@ -38,8 +39,8 @@ These are in production. Do not revisit without a strong reason.
 - [x] **bcrypt passwords** — `User.password_hash`, cost 12.
 - [x] **bcrypt privacy PIN** — `Profile.privacy_pin`, cost 12. Verified via `bcrypt.compare` on every unlock.
 - [x] **JWT auth routes** — `POST /auth/login` and `POST /auth/signup` fully wired. Tokens expire in 30 days and embed `authVersion`.
-- [x] **auth_version enforcement** — `resolveUserId()` in `router.ts` verifies JWT signature AND checks `User.auth_version` against the value encoded in the token on every authenticated request. Stale tokens are rejected immediately.
-- [x] **`POST /auth/logout-all`** — increments `auth_version`, invalidating every active token for that user instantly.
+- [x] **`auth_version` enforcement** — `resolveUserId()` in `router.ts` verifies JWT signature AND checks `User.auth_version` against the value encoded in the token on every authenticated request. Stale tokens are rejected immediately.
+- [x] **`POST /auth/logout-all`** — increments `auth_version`, invalidating every active token for that user instantly, and clears the current device's session cookie.
 
 ### Ownership & isolation
 - [x] **User → Profile ownership** — `Profile.user_id` FK. Every profile query can verify ownership in one hop.
@@ -74,8 +75,6 @@ These are in production. Do not revisit without a strong reason.
 
 ## ✅ Phase 2 — Near-Term (COMPLETE)
 
-All near-term items are done. Phase 3 is the next decision point.
-
 ### QR active gate (`is_qr_active`)
 - [x] **Schema** — `Profile.is_qr_active Boolean @default(true)`.
 - [x] **Scan routing** — `/r/:shortId` and `/p/:shortId` return HTTP 410 and skip scan recording when `is_qr_active = false`. No other behaviour changes.
@@ -100,13 +99,65 @@ All six pages are fully wired to live Prisma/backend data. No mocks remain.
 
 Sidebar badge counts (`pendingMediaCount`, `priorityTicketCount`) come from `GET /admin/analytics/summary`.
 
+### Auth security hardening
+- [x] **HttpOnly session cookie** — JWT delivered as `ll_session` cookie (`httpOnly`, `secure` in prod, `sameSite=strict`, 30-day `maxAge`). Token never touches `localStorage` or client-side JS.
+- [x] **`resolveUserId()` cookie-first** — checks `ll_session` cookie first, falls back to `Authorization: Bearer` header so the ops-dashboard and API clients keep working without changes.
+- [x] **`POST /auth/logout`** — clears the session cookie server-side (device-local sign-out).
+- [x] **`POST /auth/logout-all`** — increments `auth_version` (revokes all tokens globally) AND clears the current device's cookie in the same request.
+- [x] **CORS `credentials: true`** — required for the admin (port 3001) to send cookies cross-port to the API (port 3000).
+- [x] **Zod input validation** — `SignupSchema` enforces email format/max/lowercase and password min 12 / max 72 / uppercase / lowercase / digit / special-char. `LoginSchema` enforces email format and password max 72 (bcrypt truncation guard). Validation errors return 422 with the first human-readable message.
+- [x] **Account enumeration defence** — signup returns HTTP 200 `{ ok: true }` whether the email is new or already registered. The session cookie is set only for genuinely new accounts. The 409 "email already exists" leak is eliminated.
+- [x] **IP rate limiting** — login: 5 attempts/min per IP; signup: 10 attempts/min per IP. Applied per-route via `@fastify/rate-limit` (in-memory). QR scan and profile routes are unaffected.
+- [x] **Admin client cleaned up** — `ll_token` removed from `localStorage` entirely. `ProfileWizard` and `SupportPanel` switched to `credentials: 'include'`. Signup form `minLength` bumped to 12.
+
 ---
 
-## ⏳ Phase 3 — Defer (Premature Optimisations)
+## ⏳ Phase 3 — Defer Until Needed
 
-Build only when telemetry proves you need them.
+Build only when telemetry proves you need them. Each item lists its trigger condition.
 
-### Redis caching for auth_version
+### Argon2id password migration
+**What:** Replace bcrypt with Argon2id (memory-hard, GPU-resistant). Bcrypt at cost 12 is adequate today but vulnerable to GPU acceleration if a DB leak ever occurs.
+**Why defer:** Existing password hashes are bcrypt. A hard cutover locks out every current user. The correct migration is re-hash on next successful login: verify the existing bcrypt hash, then re-store as Argon2id. That's a week of careful work with a rollback plan.
+**Trigger:** Before first paid production users, or after a security audit recommends it.
+**How:** Install `argon2` package; update `bcrypt.hash` calls in signup and PIN creation; update `bcrypt.compare` calls with a detect-algorithm wrapper that handles both hash formats during the transition window.
+
+### Email-based rate limiting (per-target login)
+**What:** In addition to IP-based limits (already live), track failed login attempts per email address. Stops credential-stuffing attacks from distributed proxy networks.
+**Why defer:** In-memory per-IP limiting (already live) handles the common case. Per-email limiting requires a persistent counter that survives server restarts and works across multiple instances.
+**Trigger:** When server moves to multiple instances OR when bot traffic is observed targeting specific known email addresses.
+**How:** Add Redis (Upstash or Railway Redis); replace `@fastify/rate-limit` in-memory store with the Redis adapter; add a second limiter keyed on `req.body.email` (3 failures/min per address).
+
+### Read replica routing
+**What:** Route all Prisma reads to a Neon read replica, writes to the primary. Public profile loads (95% of traffic) hit the replica; signups and billing updates hit the primary.
+**Why defer:** Neon read replicas require a paid plan. At current scale a single Neon instance handles the load. The extension is a 3-line change when ready.
+**Trigger:** DB CPU consistently above 60% on the primary, or Neon instance costs justify a replica.
+**How:**
+```typescript
+// src/lib/db.ts — add when DATABASE_REPLICA_URL is set
+import { readReplicas } from '@prisma/extension-read-replicas';
+
+const prismaBase = new PrismaClient();
+export const db = DATABASE_REPLICA_URL
+  ? prismaBase.$extends(readReplicas({ url: DATABASE_REPLICA_URL }))
+  : prismaBase;
+```
+Add `DATABASE_REPLICA_URL` to `.env.example`. Verify `@prisma/extension-read-replicas` compatibility with Prisma 7 before installing.
+
+### `relationMode = "prisma"` for migration safety
+**What:** Move FK enforcement from PostgreSQL to application code so ALTER TABLE migrations don't acquire exclusive locks that block scan traffic.
+**Why defer:** At current scale, migration-caused lock contention is theoretical. The FK lock scenario requires concurrent write-heavy scan traffic that doesn't exist yet.
+**Important correction:** `relationMode` is a **datasource-level setting** in Prisma — it applies to all models or none. It cannot be applied selectively to just `ScanLog`. Switching globally removes referential integrity enforcement from every table, trading a theoretical performance concern for a real data-safety risk. Only adopt this if migrations are visibly causing timeouts in production.
+**Trigger:** Migrations routinely cause observable query timeouts on the public profile page during deploy windows.
+**How:** Set `relationMode = "prisma"` in `schema.prisma` datasource block, then re-run `db:generate`. All cascade deletes and FK lookups move to Prisma's query layer. Audit every `onDelete` relation for correctness before enabling.
+
+### Edge KV cache for QR short-URL routing
+**What:** Cache `short_id → profileId` mappings at the CDN edge (Cloudflare KV or Vercel Edge Config). QR scans resolve without hitting the Fastify origin or Neon at all on cache hits.
+**Why defer:** Fastify + Neon handles the current scan volume in well under 50 ms. Edge caching adds deployment complexity and a cache invalidation problem (what triggers a purge when `is_qr_active` changes?).
+**Trigger:** p95 scan-to-redirect latency exceeds 300 ms, or Fastify hosting costs rise noticeably from scan traffic.
+**How:** On every `/r/:shortId` hit, write `{ profileId, isQrActive, isPrivate }` to KV with a 5-minute TTL. Add a cache-bust call to the KV key in `PATCH /admin/profile/:shortId/qr-active`. The edge function short-circuits to the profile URL on a cache hit; misses fall through to Fastify as today.
+
+### Redis caching for `auth_version`
 **Why defer:** `resolveUserId()` does one PK lookup on `users`. PostgreSQL handles thousands of these per second. Move to Redis only when server costs rise or p99 latency degrades.
 
 ### ScanLog partitioning
@@ -140,3 +191,9 @@ Build only when telemetry proves you need them.
 | 2026-06-14 | `is_qr_active` on Profile, not a separate table | Simplest toggle; one boolean, one PATCH route. No need for an activation/deactivation event log at this scale |
 | 2026-06-14 | HTTP 410 (Gone) for inactive QR scans | Semantically correct — the resource existed but is intentionally deactivated. 404 would mislead; 403 would suggest a permissions issue |
 | 2026-06-14 | Scan history from live ScanLog DB query | Removed in-memory fallback; `[profile_id, scanned_at DESC]` index makes the query fast enough that no cache is needed yet |
+| 2026-06-15 | HttpOnly cookie for JWT, not localStorage | XSS cannot steal a token that JS cannot read. `sameSite=strict` mitigates CSRF. Cookie falls back to Authorization header so ops-dashboard keeps working |
+| 2026-06-15 | Signup returns HTTP 200 for both new and duplicate email | Eliminates the 409 enumeration leak. Duplicate-email path returns no session cookie; new-account path sets one. Frontend distinguishes by presence of `data.user` |
+| 2026-06-15 | Zod validation at API boundary, min password 12 chars | Never trust raw request body. Max 72 guards bcrypt's silent truncation limit. Complexity rules enforced at signup only so existing shorter passwords still work at login |
+| 2026-06-15 | IP rate limiting in-memory (no Redis yet) | `@fastify/rate-limit` default store is sufficient for a single-instance server. Redis store is a drop-in swap when multi-instance deployment happens |
+| 2026-06-15 | Defer `relationMode = "prisma"` | Cannot be applied per-model — it's datasource-wide. Removing global FK constraints trades a theoretical lock concern for a real integrity risk at current scale |
+| 2026-06-15 | Defer Argon2id | Bcrypt cost 12 is adequate. Migration requires a re-hash-on-next-login strategy to avoid locking out existing users — a separate, careful piece of work |
