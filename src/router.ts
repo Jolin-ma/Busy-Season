@@ -750,6 +750,68 @@ export function buildServer() {
     }
   });
 
+  // ── Admin: Support tickets ────────────────────────────────────────────────
+  app.get('/admin/support/tickets', async (_req, reply) => {
+    const tickets = await rawPrisma.supportTicket.findMany({
+      orderBy: { created_at: 'asc' },
+      select: {
+        id:               true,
+        subject:          true,
+        message:          true,
+        status:           true,
+        priority:         true,
+        response_due_at:  true,
+        resolved_at:      true,
+        created_at:       true,
+        profile: {
+          select: {
+            short_id:      true,
+            full_name:     true,
+            plan:          true,
+            plaque_status: true,
+            user:          { select: { id: true, name: true, email: true } },
+          },
+        },
+      },
+    });
+
+    return reply.send({
+      tickets: tickets.map(t => ({
+        id:              t.id,
+        subject:         t.subject,
+        message:         t.message,
+        status:          t.status,
+        priority:        t.priority,
+        createdAt:       t.created_at,
+        responseDueAt:   t.response_due_at,
+        resolvedAt:      t.resolved_at,
+        profileShortId:  t.profile.short_id,
+        profileName:     t.profile.full_name,
+        plaqueStatus:    t.profile.plaque_status,
+        plan:            t.profile.plan,
+        userId:          t.profile.user?.id ?? null,
+        customerName:    t.profile.user?.name ?? null,
+        customerEmail:   t.profile.user?.email ?? null,
+      })),
+    });
+  });
+
+  app.patch<{
+    Params: { id: string };
+    Body:   { status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED' };
+  }>('/admin/support/tickets/:id/status', async (req, reply) => {
+    const { id }     = req.params;
+    const { status } = req.body;
+    const valid = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
+    if (!valid.includes(status)) return reply.code(400).send({ error: 'Invalid status.' });
+    const ticket = await rawPrisma.supportTicket.update({
+      where: { id },
+      data:  { status, ...(status === 'RESOLVED' ? { resolved_at: new Date() } : {}) },
+      select: { id: true, status: true },
+    });
+    return reply.send({ ticket });
+  });
+
   // ── Admin: Scan Stats ───────────────────────────────────────────────────────
   app.get<{ Params: { shortId: string } }>('/admin/stats/:shortId', async (req, reply) => {
     const link = await lookupLink(req.params.shortId);

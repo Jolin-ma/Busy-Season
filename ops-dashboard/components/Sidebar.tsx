@@ -1,8 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import { SUPPORT_TICKETS } from '@/lib/mock-data';
-
 const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 const NAV_MAIN = [
@@ -34,9 +32,9 @@ const NAV_MAIN = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const newCount = SUPPORT_TICKETS.filter(t => t.status === 'NEW').length;
   const [pendingOrders, setPendingOrders] = useState(0);
   const [dupCount,      setDupCount]      = useState(0);
+  const [newCount,      setNewCount]      = useState(0);
 
   useEffect(() => {
     fetch(`${API}/admin/fulfillment`)
@@ -52,6 +50,13 @@ export default function Sidebar() {
       .then(r => r.json())
       .then((d: { accounts?: { hasDuplicate: boolean }[] }) => {
         setDupCount((d.accounts ?? []).filter(a => a.hasDuplicate).length);
+      })
+      .catch(() => {});
+
+    fetch(`${API}/admin/support/tickets`)
+      .then(r => r.json())
+      .then((d: { tickets?: { status: string }[] }) => {
+        setNewCount((d.tickets ?? []).filter(t => t.status === 'OPEN').length);
       })
       .catch(() => {});
   }, []);
