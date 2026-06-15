@@ -12,7 +12,7 @@ export interface User {
 interface AuthContextValue {
   user: User | null;
   isLoading: boolean;
-  signup: (name: string, email: string, password: string) => Promise<void>;
+  signup: (name: string, email: string, password: string) => Promise<boolean>;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
   const [isLoading] = useState(false);
 
-  async function signup(name: string, email: string, password: string) {
+  async function signup(name: string, email: string, password: string): Promise<boolean> {
     const res = await fetch(`${API}/auth/signup`, {
       method:      'POST',
       headers:     { 'Content-Type': 'application/json' },
@@ -38,14 +38,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error ?? 'Signup failed.');
-    // Token is in the HttpOnly cookie — never touches localStorage.
-    // Store only the display metadata (name, email, id) for UI use.
     if (data.user) {
       localStorage.setItem('ll_auth', JSON.stringify(data.user));
       setUser(data.user);
+      return true;
     }
-    // If data.user is absent (duplicate email case), no state is set —
-    // the caller redirects to sign-in and the user authenticates normally.
+    // Duplicate email — server returns { ok: true } with no user field.
+    return false;
   }
 
   async function login(email: string, password: string) {

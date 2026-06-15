@@ -96,22 +96,39 @@ function AccountDetail({
   detail,
   loading,
   onClose,
+  onDelete,
 }: {
-  detail:  AccountDetail | null;
-  loading: boolean;
-  onClose: () => void;
+  detail:   AccountDetail | null;
+  loading:  boolean;
+  onClose:  () => void;
+  onDelete: () => void;
 }) {
   const [tab,        setTab]        = useState<DetailTab>('overview');
   const [status,     setStatus]     = useState<'ACTIVE' | 'SUSPENDED'>('ACTIVE');
   const [qrStates,   setQrStates]   = useState<Record<string, boolean>>({});
   const [qrSaving,   setQrSaving]   = useState<Record<string, boolean>>({});
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting,      setDeleting]      = useState(false);
 
   // Reset tab + QR state when account changes
   useEffect(() => {
     setTab('overview');
     setStatus('ACTIVE');
     setQrStates({});
+    setConfirmDelete(false);
   }, [detail?.id]);
+
+  async function handleDeleteAccount() {
+    if (!detail) return;
+    setDeleting(true);
+    try {
+      await fetch(`${API}/ops/account/${detail.id}`, { method: 'DELETE' });
+      onDelete();
+    } finally {
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  }
 
   // Populate QR state when detail loads
   useEffect(() => {
@@ -401,9 +418,36 @@ function AccountDetail({
             </Section>
 
             <Section title="Danger Zone">
-              <button className="w-full py-2 rounded-xl text-xs font-semibold text-red-600 border border-red-100 hover:bg-red-50 transition-colors">
-                Delete Account
-              </button>
+              {!confirmDelete ? (
+                <button
+                  onClick={() => setConfirmDelete(true)}
+                  className="w-full py-2 rounded-xl text-xs font-semibold text-red-600 border border-red-100 hover:bg-red-50 transition-colors"
+                >
+                  Delete Account
+                </button>
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-[11px] text-red-600 leading-snug">
+                    This will soft-delete all profiles for this account. Are you sure?
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleDeleteAccount}
+                      disabled={deleting}
+                      className="flex-1 py-2 rounded-xl text-xs font-semibold bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
+                    >
+                      {deleting ? 'Deleting…' : 'Confirm Delete'}
+                    </button>
+                    <button
+                      onClick={() => setConfirmDelete(false)}
+                      disabled={deleting}
+                      className="flex-1 py-2 rounded-xl text-xs font-semibold border border-stone-200 text-stone-500 hover:bg-stone-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
             </Section>
           </>
         )}
@@ -682,6 +726,11 @@ function AccountsInner() {
               detail={detail}
               loading={detailLoading}
               onClose={() => { setSelectedId(null); setDetail(null); }}
+              onDelete={() => {
+                setAccounts(a => a.filter(acc => acc.id !== selectedId));
+                setSelectedId(null);
+                setDetail(null);
+              }}
             />
           )}
         </div>

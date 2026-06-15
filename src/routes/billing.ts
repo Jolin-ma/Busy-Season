@@ -13,6 +13,7 @@ export async function billingRoutes(fastify: FastifyInstance) {
   // Returns all users with their transaction summary for the billing panel list.
   fastify.get('/ops/billing/accounts', async (_req, reply) => {
     const users = await rawPrisma.user.findMany({
+      where: { profiles: { some: { deleted_at: null } } },
       select: {
         id:                 true,
         name:               true,
@@ -38,7 +39,7 @@ export async function billingRoutes(fastify: FastifyInstance) {
       orderBy: { created_at: 'desc' },
     });
 
-    return reply.send({ accounts: users.map(u => ({
+    return reply.send({ accounts: users.filter(u => u.profiles.length > 0).map(u => ({
       id:                 u.id,
       name:               u.name,
       email:              u.email,

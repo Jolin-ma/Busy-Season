@@ -247,7 +247,7 @@ export function buildServer() {
     }
 
     const profileBaseUrl = process.env.PROFILE_BASE_URL ?? 'http://localhost:3000/profile';
-    return reply.redirect(`${profileBaseUrl}/${link.profileId}`, 302);
+    return reply.header('Cache-Control', 'no-store').redirect(`${profileBaseUrl}/${link.profileId}`, 302);
   });
 
   // ── Activation Page ──────────────────────────────────────────────────────────
@@ -299,7 +299,7 @@ export function buildServer() {
     }
 
     const profileBaseUrl = process.env.PROFILE_BASE_URL ?? 'http://localhost:3000/profile';
-    return reply.redirect(`${profileBaseUrl}/${link.profileId}`, 302);
+    return reply.header('Cache-Control', 'no-store').redirect(`${profileBaseUrl}/${link.profileId}`, 302);
   });
 
   // ── PIN Unlock ──────────────────────────────────────────────────────────────
@@ -316,8 +316,7 @@ export function buildServer() {
       if (!pin || !pinValid)
         return reply.code(401).send({ error: 'Incorrect PIN.' });
 
-      const profileBaseUrl = process.env.PROFILE_BASE_URL ?? 'http://localhost:3000/profile';
-      return reply.send({ redirectUrl: `${profileBaseUrl}/${link.profileId}` });
+      return reply.send({ redirectUrl: `/profile/${link.profileId}` });
     }
   );
 
@@ -805,6 +804,7 @@ export function buildServer() {
       );
     }
 
+
     const fmt = (d: Date) =>
       d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 
@@ -1002,6 +1002,16 @@ export function buildServer() {
   // Each message is { type: 'scan', data: EnrichedScanEvent }.
   app.get('/ops/ws', { websocket: true }, (socket) => {
     registerClient(socket);
+  });
+
+  // Soft-delete all profiles for a user account (ops operator action).
+  app.delete<{ Params: { userId: string } }>('/ops/account/:userId', async (req, reply) => {
+    const { userId } = req.params;
+    const result = await rawPrisma.profile.updateMany({
+      where: { user_id: userId, deleted_at: null },
+      data:  { deleted_at: new Date() },
+    });
+    return reply.send({ ok: true, deactivated: result.count });
   });
 
   return app;

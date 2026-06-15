@@ -40,12 +40,12 @@ export default function AuthPage() {
     try {
       if (mode === 'signup') {
         if (!name.trim()) { setError('Please enter your full name.'); setBusy(false); return; }
-        await signup(name, email, password);
-        // If a new account was created, user state was set and cookie is in the browser.
-        // If the email already existed, user state is still null — redirect to sign-in.
-        if (user) {
+        const created = await signup(name, email, password);
+        if (created) {
           router.push('/purchase');
         } else {
+          // Duplicate email — switch to sign-in so they can authenticate.
+          setBusy(false);
           switchMode('signin');
         }
       } else {
