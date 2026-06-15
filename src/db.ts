@@ -18,16 +18,6 @@ export interface RoutingRecord extends LinkRecord {
   fullName:       string;
 }
 
-export interface ScanEvent {
-  shortId:   string;
-  timestamp: string;
-  userAgent?: string;
-  ip?:       string;
-}
-
-// Scan history is fire-and-forget in-memory (designed for a queue in production).
-const scanHistory = new Map<string, ScanEvent[]>();
-const HISTORY_CAP = 500;
 
 // ---------------------------------------------------------------------------
 // Profile / link operations
@@ -43,7 +33,6 @@ export async function createLink(
     update: {},
     create: { short_id: shortId, user_id: userId, full_name: fullName },
   });
-  scanHistory.set(shortId, []);
   return toRecord(profile);
 }
 
@@ -93,17 +82,6 @@ export async function incrementScanCount(shortId: string): Promise<void> {
   });
 }
 
-export function appendScanEvent(event: ScanEvent): void {
-  const history = scanHistory.get(event.shortId) ?? [];
-  history.push(event);
-  if (history.length > HISTORY_CAP) history.shift();
-  scanHistory.set(event.shortId, history);
-}
-
-export function getScanHistory(shortId: string): ScanEvent[] {
-  return scanHistory.get(shortId) ?? [];
-}
-
 // ---------------------------------------------------------------------------
 // Scan log (persisted, GeoIP-enriched)
 // ---------------------------------------------------------------------------
@@ -132,6 +110,32 @@ export async function writeScanLog(input: ScanLogInput): Promise<void> {
       longitude:  input.longitude,
     },
   });
+}
+
+export async function getScanHistory(profileId: string, limit = 100) {
+  const rows = await rawPrisma.scanLog.findMany({
+    where:   { profile_id: profileId },
+    orderBy: { scanned_at: 'desc' },
+    take:    limit,
+    select: {
+      scanned_at: true,
+      city:       true,
+      region:     true,
+      country:    true,
+      latitude:   true,
+      longitude:  true,
+      user_agent: true,
+    },
+  });
+  return rows.map(r => ({
+    scannedAt:  r.scanned_at.toISOString(),
+    city:       r.city       ?? undefined,
+    region:     r.region     ?? undefined,
+    country:    r.country    ?? undefined,
+    latitude:   r.latitude   ?? undefined,
+    longitude:  r.longitude  ?? undefined,
+    userAgent:  r.user_agent ?? undefined,
+  }));
 }
 
 // Returns the top N cities by scan count within the last `days` days.

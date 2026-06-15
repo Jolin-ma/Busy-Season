@@ -1,5 +1,5 @@
 import geoip from 'geoip-lite';
-import { incrementScanCount, appendScanEvent, writeScanLog } from './db';
+import { incrementScanCount, writeScanLog } from './db';
 import { broadcastScan } from './wsHub';
 
 export interface ScanEvent {
@@ -40,7 +40,6 @@ export function recordScanAsync(event: ScanEvent): void {
   setImmediate(async () => {
     try {
       await incrementScanCount(event.shortId);
-      appendScanEvent(event);
 
       const geo = enrichWithGeo(event.ip);
       const enriched: EnrichedScanEvent = { ...event, ...geo };

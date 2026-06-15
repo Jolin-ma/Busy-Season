@@ -62,14 +62,9 @@ These are in production. Do not revisit without a strong reason.
 
 ---
 
-## 🔜 Phase 2 — Near-Term
+## ✅ Phase 2 — Near-Term (COMPLETE)
 
-One item remaining. Not an emergency, but should ship before heavy user traffic.
-
-### Scan history persistence
-`getScanHistory()` in `src/db.ts` is still in-memory — data is lost on server restart.
-
-**What to build:** Replace with a `GET /admin/stats/:shortId/history` route that queries `ScanLog` directly using the `[profile_id, scanned_at DESC]` composite index. No queue needed until you have >10k scans/day.
+All near-term items are done. Phase 3 is the next decision point.
 
 ---
 

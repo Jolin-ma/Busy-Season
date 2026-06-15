@@ -868,11 +868,16 @@ export function buildServer() {
   });
 
   // ── Admin: Scan History ─────────────────────────────────────────────────────
-  app.get<{ Params: { shortId: string } }>('/admin/stats/:shortId/history', async (req, reply) => {
-    const link = await lookupLink(req.params.shortId);
-    if (!link) return reply.code(404).send({ error: 'Not found.' });
-    return reply.send({ shortId: req.params.shortId, events: getScanHistory(req.params.shortId) });
-  });
+  app.get<{ Params: { shortId: string }; Querystring: { limit?: string } }>(
+    '/admin/stats/:shortId/history',
+    async (req, reply) => {
+      const link = await lookupLink(req.params.shortId);
+      if (!link) return reply.code(404).send({ error: 'Not found.' });
+      const limit  = Math.min(parseInt(req.query.limit ?? '100', 10) || 100, 500);
+      const events = await getScanHistory(link.profileId, limit);
+      return reply.send({ shortId: req.params.shortId, events });
+    },
+  );
 
   // ── Ops: Top Scan Locations ─────────────────────────────────────────────────
   // Returns top scan cities with lat/lng for map rendering.
