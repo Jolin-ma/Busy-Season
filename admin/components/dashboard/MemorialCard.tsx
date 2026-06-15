@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Memorial, PlaqueStatus } from '@/types/profile';
 import QRModal from './QRModal';
 
@@ -20,6 +21,8 @@ interface Props {
 export default function MemorialCard({ memorial, onEdit, onPrivacyChange }: Props) {
   const [showQR, setShowQR] = useState(false);
   const status              = STATUS_CONFIG[memorial.plaqueStatus];
+  const router              = useRouter();
+  const isPremium           = memorial.plan === 'PREMIUM';
 
   const handleToggle = async () => {
     const isPrivate  = !memorial.isPrivate;
@@ -55,7 +58,7 @@ export default function MemorialCard({ memorial, onEdit, onPrivacyChange }: Prop
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h3 className="text-base font-semibold text-stone-800 truncate">{memorial.name}</h3>
               {memorial.type === 'pet' && (
                 <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
@@ -65,6 +68,15 @@ export default function MemorialCard({ memorial, onEdit, onPrivacyChange }: Prop
               {memorial.type === 'monument' && (
                 <span className="shrink-0 inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">
                   🏛 Monument
+                </span>
+              )}
+              {isPremium ? (
+                <span className="shrink-0 inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
+                  Premium active
+                </span>
+              ) : (
+                <span className="shrink-0 inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500">
+                  Basic
                 </span>
               )}
             </div>
@@ -144,6 +156,14 @@ export default function MemorialCard({ memorial, onEdit, onPrivacyChange }: Prop
               )}
             </div>
             <div className="flex gap-2">
+              {!isPremium && (
+                <button
+                  onClick={() => router.push('/upgrade')}
+                  className="text-xs font-semibold text-amber-700 border border-amber-200 rounded-lg px-3 py-1.5 hover:bg-amber-50 transition-colors"
+                >
+                  Upgrade
+                </button>
+              )}
               <button
                 onClick={() => setShowQR(true)}
                 className="text-xs text-stone-500 border border-stone-200 rounded-lg px-3 py-1.5 hover:bg-stone-50 transition-colors"

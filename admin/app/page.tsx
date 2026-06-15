@@ -1,11 +1,11 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppShell from '@/components/layout/AppShell';
 import DashboardHome from '@/components/dashboard/DashboardHome';
 import ProfileWizard from '@/components/wizard/ProfileWizard';
 import { Memorial } from '@/types/profile';
 
-const MARGARET: Memorial = {
+const MARGARET_BASE: Omit<Memorial, 'plan'> = {
   id: 'mem-001',
   shortId: 'a5trneuj',
   name: 'Margaret Eleanor Whitfield',
@@ -22,14 +22,17 @@ const MARGARET: Memorial = {
 export default function AdminPage() {
   const [view, setView]           = useState<'dashboard' | 'wizard'>('dashboard');
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [memorials, setMemorials] = useState<Memorial[]>([MARGARET]);
+  const [memorials, setMemorials] = useState<Memorial[]>([{ ...MARGARET_BASE, plan: 'BASIC' }]);
+
+  useEffect(() => {
+    try {
+      const plan: 'BASIC' | 'PREMIUM' = localStorage.getItem('ll_plan') === 'premium' ? 'PREMIUM' : 'BASIC';
+      setMemorials([{ ...MARGARET_BASE, plan }]);
+    } catch { /* ignore */ }
+  }, []);
 
   const handlePrivacyChange = (id: string, isPrivate: boolean, privacyPin: string) => {
-    setMemorials(prev => {
-      const updated = prev.map(m => m.id === id ? { ...m, isPrivate, privacyPin } : m);
-      try { localStorage.setItem('ll_memorials', JSON.stringify(updated)); } catch { /* ignore */ }
-      return updated;
-    });
+    setMemorials(prev => prev.map(m => m.id === id ? { ...m, isPrivate, privacyPin } : m));
   };
 
   const handleEdit = (id: string) => {

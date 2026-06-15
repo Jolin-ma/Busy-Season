@@ -40,6 +40,7 @@ export interface Memorial {
   privacyPin: string;
   type?: 'human' | 'pet' | 'monument';
   location?: string;
+  plan?: 'BASIC' | 'PREMIUM';
 }
 
 export const EMPTY_DRAFT: ProfileDraft = {

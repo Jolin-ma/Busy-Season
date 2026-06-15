@@ -44,9 +44,18 @@ export default function UpgradePage() {
     if (!isLoading && !user) router.replace('/auth');
   }, [user, isLoading, router]);
 
-  const handleUpgrade = () => {
+  const handleUpgrade = async () => {
     setUpgrading(true);
     try { localStorage.setItem('ll_plan', 'premium'); } catch { /* ignore */ }
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+      await fetch(`${API_URL}/admin/plan`, {
+        method:      'PATCH',
+        headers:     { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body:        JSON.stringify({ plan: 'PREMIUM', userId: user!.id }),
+      });
+    } catch { /* ignore — localStorage is the demo fallback */ }
     setTimeout(() => router.push('/'), 900);
   };
 

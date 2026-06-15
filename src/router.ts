@@ -1014,5 +1014,40 @@ export function buildServer() {
     return reply.send({ ok: true, deactivated: result.count });
   });
 
+  // Change plan for all active profiles on an account (ops operator action).
+  app.patch<{ Params: { userId: string }; Body: { plan: string } }>(
+    '/ops/account/:userId/plan',
+    async (req, reply) => {
+      const { userId } = req.params;
+      const { plan } = req.body;
+      if (!plan || !['BASIC', 'PREMIUM'].includes(plan))
+        return reply.code(400).send({ error: 'plan must be BASIC or PREMIUM.' });
+      const result = await rawPrisma.profile.updateMany({
+        where: { user_id: userId, deleted_at: null },
+        data:  { plan: plan as 'BASIC' | 'PREMIUM' },
+      });
+      return reply.send({ ok: true, updated: result.count });
+    }
+  );
+
+  // Upgrade/downgrade the calling user's own profiles (admin UI upgrade flow).
+  // Maps the demo account to SEED_USER_ID so the test flow works end-to-end.
+  app.patch<{ Body: { plan: string; userId: string } }>(
+    '/admin/plan',
+    async (req, reply) => {
+      reply.header('Access-Control-Allow-Origin', '*');
+      const { plan, userId } = req.body;
+      if (!plan || !['BASIC', 'PREMIUM'].includes(plan) || !userId)
+        return reply.code(400).send({ error: 'plan (BASIC|PREMIUM) and userId are required.' });
+      const resolvedId = userId === 'demo' ? (process.env.SEED_USER_ID ?? '') : userId;
+      if (!resolvedId) return reply.code(400).send({ error: 'Could not resolve user.' });
+      const result = await rawPrisma.profile.updateMany({
+        where: { user_id: resolvedId, deleted_at: null },
+        data:  { plan: plan as 'BASIC' | 'PREMIUM' },
+      });
+      return reply.send({ ok: true, updated: result.count });
+    }
+  );
+
   return app;
 }

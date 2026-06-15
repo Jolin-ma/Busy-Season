@@ -109,6 +109,10 @@ function AccountDetail({
   const [qrSaving,   setQrSaving]   = useState<Record<string, boolean>>({});
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting,      setDeleting]      = useState(false);
+  const [planOverride,  setPlanOverride]  = useState<'BASIC' | 'PREMIUM' | null>(null);
+  const [planSaving,    setPlanSaving]    = useState(false);
+
+  const currentPlan = planOverride ?? detail?.plan ?? 'BASIC';
 
   // Reset tab + QR state when account changes
   useEffect(() => {
@@ -116,6 +120,7 @@ function AccountDetail({
     setStatus('ACTIVE');
     setQrStates({});
     setConfirmDelete(false);
+    setPlanOverride(null);
   }, [detail?.id]);
 
   async function handleDeleteAccount() {
@@ -127,6 +132,21 @@ function AccountDetail({
     } finally {
       setDeleting(false);
       setConfirmDelete(false);
+    }
+  }
+
+  async function handlePlanChange(plan: 'BASIC' | 'PREMIUM') {
+    if (!detail) return;
+    setPlanSaving(true);
+    try {
+      await fetch(`${API}/ops/account/${detail.id}/plan`, {
+        method:  'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ plan }),
+      });
+      setPlanOverride(plan);
+    } finally {
+      setPlanSaving(false);
     }
   }
 
@@ -273,8 +293,8 @@ function AccountDetail({
 
             <Section title="Plan & Usage">
               <Row label="Plan">
-                <span className={`inline-flex items-center text-[11px] font-bold px-2 py-0.5 rounded-full border ${PLAN_STYLE[detail.plan].bg} ${PLAN_STYLE[detail.plan].text} ${PLAN_STYLE[detail.plan].border}`}>
-                  {detail.plan}
+                <span className={`inline-flex items-center text-[11px] font-bold px-2 py-0.5 rounded-full border ${PLAN_STYLE[currentPlan].bg} ${PLAN_STYLE[currentPlan].text} ${PLAN_STYLE[currentPlan].border}`}>
+                  {currentPlan}
                 </span>
               </Row>
               <Row label="Profiles"      value={`${detail.profileCount} active`} />
@@ -415,6 +435,41 @@ function AccountDetail({
               >
                 {status === 'ACTIVE' ? 'Suspend Account' : 'Reactivate Account'}
               </button>
+            </Section>
+
+            <Section title="Plan">
+              <Row label="Current plan">
+                <span className={`inline-flex items-center text-[11px] font-bold px-2 py-0.5 rounded-full border ${PLAN_STYLE[currentPlan].bg} ${PLAN_STYLE[currentPlan].text} ${PLAN_STYLE[currentPlan].border}`}>
+                  {currentPlan}
+                </span>
+              </Row>
+              <p className="text-xs text-stone-500 mt-2 mb-3">
+                Changing the plan updates all active profiles on this account.
+              </p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handlePlanChange('BASIC')}
+                  disabled={planSaving || currentPlan === 'BASIC'}
+                  className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-colors border disabled:opacity-50 ${
+                    currentPlan === 'BASIC'
+                      ? 'bg-stone-100 text-stone-600 border-stone-200 cursor-default'
+                      : 'border-stone-200 text-stone-500 hover:bg-stone-50'
+                  }`}
+                >
+                  Downgrade to Basic
+                </button>
+                <button
+                  onClick={() => handlePlanChange('PREMIUM')}
+                  disabled={planSaving || currentPlan === 'PREMIUM'}
+                  className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-colors border disabled:opacity-50 ${
+                    currentPlan === 'PREMIUM'
+                      ? 'bg-indigo-50 text-indigo-700 border-indigo-100 cursor-default'
+                      : 'border-indigo-100 text-indigo-600 hover:bg-indigo-50'
+                  }`}
+                >
+                  {planSaving ? 'Saving…' : 'Upgrade to Premium'}
+                </button>
+              </div>
             </Section>
 
             <Section title="Danger Zone">

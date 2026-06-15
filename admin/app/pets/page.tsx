@@ -24,6 +24,21 @@ const BISCUIT: Memorial = {
   type: 'pet',
 };
 
+const LUNA: Memorial = {
+  id: 'mem-003',
+  shortId: 'luna0003',
+  name: 'Luna',
+  dateOfBirth: 'June 3, 2018',
+  dateOfDeath: 'February 10, 2026',
+  portraitUrl: 'https://placehold.co/200x200/b8c4d4/4a5568?text=🐱',
+  plaqueStatus: 'engraving',
+  scansCount: 0,
+  isPrivate: false,
+  privacyPin: '',
+  type: 'pet',
+  plan: 'BASIC',
+};
+
 type Tab = 'media' | 'guestbook' | 'geo' | 'story' | 'support';
 
 const TABS: { id: Tab; label: string; description: string; icon: React.ReactNode }[] = [
@@ -89,12 +104,14 @@ export default function PetPremiumPage() {
   const [activeTab, setActiveTab] = useState<Tab>('media');
   const [isPremium, setIsPremium] = useState(false);
   const [profileId, setProfileId] = useState('a5trneuj');
-  const [pets, setPets] = useState<Memorial[]>([BISCUIT]);
+  const [pets, setPets] = useState<Memorial[]>([{ ...BISCUIT, plan: 'BASIC' }, LUNA]);
   const router = useRouter();
 
   useEffect(() => {
     try {
-      setIsPremium(localStorage.getItem('ll_plan') === 'premium');
+      const premium = localStorage.getItem('ll_plan') === 'premium';
+      setIsPremium(premium);
+      setPets([{ ...BISCUIT, plan: premium ? 'PREMIUM' : 'BASIC' }, LUNA]);
       const stored = localStorage.getItem('ll_profile_id');
       if (stored) setProfileId(stored);
     } catch { /* ignore */ }
@@ -117,9 +134,6 @@ export default function PetPremiumPage() {
                 <path d="M12 11c-4 0-7 2.5-7 5.5 0 2 1.5 3.5 3.5 3.5.8 0 1.6-.3 2.2-.8l1.3-1 1.3 1c.6.5 1.4.8 2.2.8 2 0 3.5-1.5 3.5-3.5C19 13.5 16 11 12 11z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
               </svg>
               <h1 className="text-2xl font-semibold text-stone-800">Pet Memorial</h1>
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isPremium ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-stone-500'}`}>
-                {isPremium ? 'Premium active' : 'Basic'}
-              </span>
             </div>
             <p className="text-stone-500 text-sm">
               Living Legacy — manage your companion's tribute and premium features.

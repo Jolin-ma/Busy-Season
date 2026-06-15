@@ -25,6 +25,22 @@ const VICTORIA_BENCH: Memorial = {
   type: 'monument',
 };
 
+const KING_ST_MEMORIAL: Memorial = {
+  id: 'mem-004',
+  shortId: 'kingstm4',
+  name: 'King Street War Memorial',
+  dateOfBirth: 'Established 1921',
+  dateOfDeath: '',
+  location: 'King Street West, Toronto, ON',
+  portraitUrl: 'https://placehold.co/200x200/b8b0a8/5a5248?text=⚔',
+  plaqueStatus: 'engraving',
+  scansCount: 0,
+  isPrivate: false,
+  privacyPin: '',
+  type: 'monument',
+  plan: 'BASIC',
+};
+
 type Tab = 'media' | 'guestbook' | 'geo' | 'history' | 'support';
 
 
@@ -85,7 +101,7 @@ const TABS: { id: Tab; label: string; description: string; icon: React.ReactNode
 ];
 
 export default function MonumentsPage() {
-  const [monuments, setMonuments] = useState<Memorial[]>([VICTORIA_BENCH]);
+  const [monuments, setMonuments] = useState<Memorial[]>([{ ...VICTORIA_BENCH, plan: 'BASIC' }, KING_ST_MEMORIAL]);
   const [activeTab, setActiveTab] = useState<Tab>('media');
   const [isPremium, setIsPremium] = useState(false);
   const [profileId, setProfileId] = useState('vctbnch1');
@@ -93,7 +109,9 @@ export default function MonumentsPage() {
 
   useEffect(() => {
     try {
-      setIsPremium(localStorage.getItem('ll_plan') === 'premium');
+      const premium = localStorage.getItem('ll_plan') === 'premium';
+      setIsPremium(premium);
+      setMonuments([{ ...VICTORIA_BENCH, plan: premium ? 'PREMIUM' : 'BASIC' }, KING_ST_MEMORIAL]);
       const stored = localStorage.getItem('ll_profile_id');
       if (stored) setProfileId(stored);
     } catch { /* ignore */ }
@@ -116,9 +134,6 @@ export default function MonumentsPage() {
                 <path d="M6 10H3l3-4M18 10h3l-3-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <h1 className="text-2xl font-semibold text-stone-800">Monuments</h1>
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isPremium ? 'bg-amber-100 text-amber-700' : 'bg-stone-100 text-stone-500'}`}>
-                {isPremium ? 'Premium active' : 'Basic'}
-              </span>
             </div>
             <p className="text-stone-500 text-sm">
               Buildings, benches, statues and civic memorials — manage your public plaques and archives.
