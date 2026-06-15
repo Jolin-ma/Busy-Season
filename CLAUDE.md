@@ -91,7 +91,7 @@ When modifying the schema, always run `npm run db:generate` before TypeScript co
 ### Next.js admin (`admin/`)
 
 - **App Router** with all pages in `admin/app/`
-- **`context/AuthContext.tsx`** — localStorage-only auth (no real session). Demo bypass: log in with `demo@legacylink.com` (any password). Auth routes on the Fastify side are currently stubs.
+- **`context/AuthContext.tsx`** — calls real Fastify auth endpoints; JWT token stored in `localStorage`. Demo bypass: log in with `demo@legacylink.com` (any password) to skip the API call entirely.
 - **Purchase gate** — `AppShell` checks `localStorage.getItem('ll_has_purchased') === 'true'`. Set this manually to bypass in development.
 - **`admin/app/api/qr/[shortId]/route.ts`** — the only Next.js API route; proxies QR SVG requests to Fastify to avoid CORS.
 
@@ -104,7 +104,6 @@ When modifying the schema, always run `npm run db:generate` before TypeScript co
 
 ## Pending / stub areas
 
-- **Auth routes** (`POST /auth/login`, `POST /auth/signup`) — Fastify stubs that return 401/201 without touching the DB. `bcrypt` not yet integrated.
 - **Privacy PIN** — stored as plaintext in the DB. Needs bcrypt hashing before any public-facing use.
 - **`POST /admin/link`** — uses `SEED_USER_ID` (set at startup) as the profile owner. Needs real auth token once sessions are wired.
 - **Scan history** — in-memory only, lost on restart. Designed to be replaced with a message queue (SQS/Kafka).
