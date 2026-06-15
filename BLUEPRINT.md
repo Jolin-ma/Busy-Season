@@ -20,89 +20,80 @@ Ops Dashboard (port 3002)        Internal: Jolin manages all accounts
 
 Database: PostgreSQL on Neon (Prisma 7, `@prisma/adapter-pg`)
 Storage: S3-compatible (R2 preferred — zero egress fees)
-Auth: `bcryptjs` (cost 12) + `@fastify/jwt` (30-day tokens)
+Auth: `bcryptjs` (cost 12) + `@fastify/jwt` (30-day tokens, authVersion-gated)
 
 ---
 
-## ✅ Phase 1 — Day 1 Non-Negotiables (COMPLETE)
+## ✅ Phase 1 — Non-Negotiables (COMPLETE)
 
 These are in production. Do not revisit without a strong reason.
 
 ### Data integrity
-- [x] **Stripe idempotency** — `Transaction.id` IS the Stripe charge ID (`@id`). Duplicate webhooks rejected at DB level. No application-layer check needed.
+- [x] **Stripe idempotency** — `Transaction.id` IS the Stripe charge ID (`@id`). Duplicate webhooks rejected at DB level.
 - [x] **Soft delete only** — `Profile.deleted_at`. The `db` Prisma extension silently appends `deleted_at: null` to every read. Hard delete is a manual admin-only operation.
 - [x] **`short_id` immutability** — `@unique @db.VarChar(8)`, generated before insert, never updated. Engraved on physical plaques.
 - [x] **Guestbook moderation gate** — `GuestbookEntry.is_approved` defaults to `false`. Public queries must always filter `is_approved: true`.
 
 ### Auth & security
-- [x] **bcrypt passwords** — `User.password_hash`, cost 12. Raw passwords never stored.
-- [x] **bcrypt privacy PIN** — `Profile.privacy_pin`, same cost. PIN verified via `bcrypt.compare` on every unlock attempt.
-- [x] **JWT auth routes** — `POST /auth/login` and `POST /auth/signup` fully wired. Tokens expire in 30 days.
-- [x] **`auth_version` column** — `User.auth_version Int @default(1)`. Exists on the model. Enables token revocation without a session table.
+- [x] **bcrypt passwords** — `User.password_hash`, cost 12.
+- [x] **bcrypt privacy PIN** — `Profile.privacy_pin`, cost 12. Verified via `bcrypt.compare` on every unlock.
+- [x] **JWT auth routes** — `POST /auth/login` and `POST /auth/signup` fully wired. Tokens expire in 30 days and embed `authVersion`.
+- [x] **auth_version enforcement** — `resolveUserId()` in `router.ts` verifies JWT signature AND checks `User.auth_version` against the value encoded in the token on every authenticated request. Stale tokens are rejected immediately.
+- [x] **`POST /auth/logout-all`** — increments `auth_version`, invalidating every active token for that user instantly.
 
 ### Ownership & isolation
 - [x] **User → Profile ownership** — `Profile.user_id` FK. Every profile query can verify ownership in one hop.
-- [x] **JWT-first profile creation** — Both `POST /admin/link` and `POST /admin/profile` read `userId` from the JWT first, fall back to `SEED_USER_ID` only in dev.
+- [x] **JWT-first profile creation** — Both `POST /admin/link` and `POST /admin/profile` use `resolveUserId()` first, fall back to `SEED_USER_ID` only in dev.
 
-### Schema optimisations (done this session)
-- [x] **`MediaAsset.original_key` / `processed_key`** — Deterministic S3/R2 keys required for orphan cleanup.
+### Schema
+- [x] **`User.auth_version`** — `Int @default(1)`. Token revocation without a session table.
+- [x] **`MediaAsset.original_key` / `processed_key`** — Deterministic S3/R2 keys for orphan cleanup.
+- [x] **`MediaAsset.upload_status`** — `UploadStatus` state machine (PENDING_UPLOAD → PROCESSING → READY | MARKED_FOR_DELETION). Separate from `ModerationStatus` — file lifecycle and content review are different concerns.
 - [x] **`ScanLog.id` → BigInt autoincrement** — Sequential IDs keep the clustered index tight on the highest-write table.
 - [x] **`ScanLog` composite index** — `[profile_id, scanned_at DESC]` covers the analytics dashboard hot path.
 
+### Connection hardening
+- [x] **Statement timeout** — `SET statement_timeout = 3000` applied to every pool connection via `pool.on('connect')`. Kills runaway queries before they cascade.
+- [x] **`DIRECT_URL` split** — `prisma.config.ts` uses `DIRECT_URL` for migrations (bypasses PgBouncer — advisory locks don't survive connection hand-offs). App queries use the pooled `DATABASE_URL`.
+
+### Media lifecycle
+- [x] **`UploadStatus` state machine** — Lambda webhook sets `READY` on success or `MARKED_FOR_DELETION` on `REJECTED`, and stores `original_key` / `processed_key` for cleanup.
+- [x] **Media orphan cleanup cron** — `src/jobs/mediaCleanup.ts`. Runs at startup + every 6 hours via `setInterval`. Phase 1 cascade-marks assets from soft-deleted profiles. Phase 2 deletes from S3 then hard-deletes the DB row. S3 failures leave the row intact for the next run. Manual trigger: `POST /admin/jobs/cleanup-media` (returns `{ marked, purged, errors }`).
+
 ---
 
-## 🔜 Phase 2 — Near-Term (Build When You Add the Feature)
+## 🔜 Phase 2 — Near-Term
 
-Infrastructure exists; logic not yet written. These are not emergencies but should ship before public launch.
-
-### Token revocation (auth_version enforcement)
-The `auth_version` column is on the model but the JWT middleware doesn't check it.
-
-**What to build:**
-1. In the JWT verify middleware, after decoding the token, fetch the user's current `auth_version` from DB and compare against the value encoded in the token.
-2. Add a `POST /auth/logout-all` route that increments `auth_version` by 1 — this silently invalidates every active token for that user.
-3. Increment `auth_version` automatically on `POST /auth/change-password`.
-
-**Cost:** ~50 lines. One DB lookup per authenticated request (negligible — see Redis note in Phase 3).
-
-### Media orphan cleanup
-`original_key` and `processed_key` are stored. No job yet deletes the S3/R2 objects.
-
-**What to build:**
-1. A Fastify route (or nightly cron) that queries `MediaAsset WHERE moderation_status = 'REJECTED'` or `Profile.deleted_at IS NOT NULL` and issues `DeleteObject` calls to R2 using the stored keys.
-2. Hook into the soft-delete flow so a profile purge enqueues its media keys for deletion.
-
-### PIN hashing note (already done — for reference)
-PIN is stored as a bcrypt hash. The PATCH `/admin/link/:shortId/privacy` response echoes the raw PIN back to the caller (`privacyPin: isPrivate ? privacyPin : ''`). This is safe (it was just sent in by the same admin session) but worth noting if the API ever becomes multi-user.
+One item remaining. Not an emergency, but should ship before heavy user traffic.
 
 ### Scan history persistence
-`getScanHistory()` in `src/db.ts` is still in-memory. Fine for dev; loses data on restart.
+`getScanHistory()` in `src/db.ts` is still in-memory — data is lost on server restart.
 
-**What to build:** A `GET /admin/stats/:shortId/history` route that queries `ScanLog` directly. No queue needed until you have >10k scans/day.
+**What to build:** Replace with a `GET /admin/stats/:shortId/history` route that queries `ScanLog` directly using the `[profile_id, scanned_at DESC]` composite index. No queue needed until you have >10k scans/day.
 
 ---
 
 ## ⏳ Phase 3 — Defer (Premature Optimisations)
 
-Build only when telemetry proves you need them. Building early adds complexity with no benefit.
+Build only when telemetry proves you need them.
 
 ### Redis caching for auth_version
-**Why defer:** A Prisma lookup on `users WHERE id = $userId` with a PK hit runs in ~1 ms. PostgreSQL handles thousands of these per second without issue. Move to Redis only when server costs rise or p99 latency degrades.
+**Why defer:** `resolveUserId()` does one PK lookup on `users`. PostgreSQL handles thousands of these per second. Move to Redis only when server costs rise or p99 latency degrades.
 
 ### ScanLog partitioning
-**Why defer:** PostgreSQL handles flat tables with hundreds of thousands of rows instantly. The BigInt PK and composite index already cover the analytics query pattern. Partition by month only when you are seeing tens of thousands of scans per day.
+**Why defer:** The BigInt PK and composite index already cover the analytics query pattern at current scale. Partition by month only when seeing tens of thousands of scans per day.
 
 ### Materialized views / stored procedures for QR marker health
-**Why defer:** A nightly cron that runs one bulk `UPDATE qr_markers SET status = CASE ... END FROM profiles ...` via `rawPrisma.$executeRaw` completes in milliseconds at current scale. Add a stored procedure only if the nightly window starts exceeding a few minutes.
+**Why defer:** A nightly cron with one bulk `rawPrisma.$executeRaw` UPDATE completes in milliseconds at current scale. Add a stored procedure only if the nightly window starts taking minutes.
 
 ### Organisation / tenant layer
-**Why defer:** LegacyLink's access model is flat: one user owns 1–3 profiles. The User → Profile FK is sufficient. Add an `Organisation` model only if B2B (funeral homes managing hundreds of profiles under one billing account) becomes a real roadmap item. Migration is straightforward when that time comes.
+**Why defer:** LegacyLink's access model is flat: one user owns 1–3 profiles. Add an `Organisation` model only if B2B (funeral homes managing hundreds of profiles under one billing account) becomes a real roadmap item.
 
 ### Message queue (SQS / Kafka) for scan events
-**Why defer:** `recordScanAsync` uses `setImmediate` fire-and-forget. Acceptable until scan volume is high enough that in-process async writes cause measurable latency. SQS integration is a one-file change in `src/analytics.ts` when needed.
+**Why defer:** `recordScanAsync` uses `setImmediate` fire-and-forget. SQS integration is a one-file change in `src/analytics.ts` when volume demands it.
 
 ### CDN / edge caching for profile pages
-**Why defer:** Profile HTML is rendered server-side per request. Add `Cache-Control` headers or move rendering to a CDN edge function only once profile traffic is high enough to stress the Fastify process.
+**Why defer:** Add `Cache-Control` headers or move to a CDN edge function only once profile traffic is high enough to stress the Fastify process.
 
 ---
 
@@ -111,6 +102,9 @@ Build only when telemetry proves you need them. Building early adds complexity w
 | Date | Decision | Rationale |
 |---|---|---|
 | 2026-06-05 | R2 over S3 for media storage | Zero egress fees; SDK is S3-compatible, same code |
-| 2026-06-05 | BigInt PK on ScanLog | Sequential IDs reduce B-tree write amplification on append-only table |
-| 2026-06-05 | auth_version as Int on User, not a session table | Simpler; one column achieves token revocation without statefulness |
-| 2026-06-05 | No Organisation model yet | Current business model is flat; migration is easy if B2B materialises |
+| 2026-06-14 | BigInt PK on ScanLog | Sequential IDs reduce B-tree write amplification on append-only table |
+| 2026-06-14 | `auth_version` as Int on User, not a session table | Simpler; one column achieves token revocation without statefulness |
+| 2026-06-14 | No Organisation model yet | Current business model is flat; migration is easy if B2B materialises |
+| 2026-06-14 | `UploadStatus` enum separate from `ModerationStatus` | File lifecycle (where is the file?) and content review (is it safe?) are independent concerns — a file can be READY but still FLAGGED |
+| 2026-06-14 | `setInterval` for cleanup cron, no external scheduler | No new dependency; 6-hour interval is sufficient and the startup run catches anything missed during downtime |
+| 2026-06-14 | `statement_timeout` via `pool.on('connect')` | Cleanest approach — applies to every connection without modifying the DATABASE_URL format |
