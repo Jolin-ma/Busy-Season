@@ -41,9 +41,15 @@ interface AccountTicket {
   submittedAt: string;
 }
 
+interface AccountProfile {
+  shortId:    string;
+  isQrActive: boolean;
+}
+
 interface AccountDetail extends AccountSummary {
   transactions: AccountTx[];
   tickets:      AccountTicket[];
+  profiles:     AccountProfile[];
 }
 
 // ── helpers ───────────────────────────────────────────────────────────────────
@@ -95,11 +101,42 @@ function AccountDetail({
   loading: boolean;
   onClose: () => void;
 }) {
-  const [tab,    setTab]    = useState<DetailTab>('overview');
-  const [status, setStatus] = useState<'ACTIVE' | 'SUSPENDED'>('ACTIVE');
+  const [tab,        setTab]        = useState<DetailTab>('overview');
+  const [status,     setStatus]     = useState<'ACTIVE' | 'SUSPENDED'>('ACTIVE');
+  const [qrStates,   setQrStates]   = useState<Record<string, boolean>>({});
+  const [qrSaving,   setQrSaving]   = useState<Record<string, boolean>>({});
 
-  // Reset tab when account changes
-  useEffect(() => { setTab('overview'); setStatus('ACTIVE'); }, [detail?.id]);
+  // Reset tab + QR state when account changes
+  useEffect(() => {
+    setTab('overview');
+    setStatus('ACTIVE');
+    setQrStates({});
+  }, [detail?.id]);
+
+  // Populate QR state when detail loads
+  useEffect(() => {
+    if (!detail) return;
+    const initial: Record<string, boolean> = {};
+    for (const p of detail.profiles ?? []) initial[p.shortId] = p.isQrActive;
+    setQrStates(initial);
+  }, [detail]);
+
+  async function toggleQr(shortId: string) {
+    const next = !qrStates[shortId];
+    setQrStates(s => ({ ...s, [shortId]: next }));
+    setQrSaving(s => ({ ...s, [shortId]: true }));
+    try {
+      await fetch(`${API}/admin/profile/${shortId}/qr-active`, {
+        method:  'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ isQrActive: next }),
+      });
+    } catch {
+      setQrStates(s => ({ ...s, [shortId]: !next }));
+    } finally {
+      setQrSaving(s => ({ ...s, [shortId]: false }));
+    }
+  }
 
   const TABS: { key: DetailTab; label: string }[] = [
     { key: 'overview',  label: 'Overview'  },
@@ -305,6 +342,46 @@ function AccountDetail({
         {/* ── Settings ── */}
         {tab === 'settings' && (
           <>
+            <Section title="QR Code Status">
+              <p className="text-xs text-stone-500 mb-3">
+                Deactivating a QR code shows a &ldquo;no longer active&rdquo; page to anyone who scans the physical plaque.
+                The memorial profile and all its data remain intact.
+              </p>
+              {(detail.profiles ?? []).length === 0 && (
+                <p className="text-xs text-stone-400 py-2 text-center">No profiles on this account.</p>
+              )}
+              <div className="space-y-2">
+                {(detail.profiles ?? []).map(p => {
+                  const active  = qrStates[p.shortId] ?? p.isQrActive;
+                  const saving  = qrSaving[p.shortId] ?? false;
+                  return (
+                    <div key={p.shortId} className="flex items-center justify-between gap-3">
+                      <span className="font-mono text-[11px] text-stone-600 bg-stone-100 px-2 py-0.5 rounded">
+                        {p.shortId}
+                      </span>
+                      <button
+                        onClick={() => toggleQr(p.shortId)}
+                        disabled={saving}
+                        className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200 focus:outline-none disabled:opacity-50 ${
+                          active ? 'bg-emerald-500' : 'bg-stone-300'
+                        }`}
+                        title={active ? 'Deactivate QR' : 'Activate QR'}
+                      >
+                        <span
+                          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 ${
+                            active ? 'translate-x-4' : 'translate-x-0.5'
+                          }`}
+                        />
+                      </button>
+                      <span className={`text-[10px] font-semibold w-16 ${active ? 'text-emerald-600' : 'text-stone-400'}`}>
+                        {saving ? 'Saving…' : active ? 'Active' : 'Deactivated'}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </Section>
+
             <Section title="Account Status">
               <p className="text-xs text-stone-500 mb-3">
                 {status === 'ACTIVE'
@@ -321,26 +398,6 @@ function AccountDetail({
               >
                 {status === 'ACTIVE' ? 'Suspend Account' : 'Reactivate Account'}
               </button>
-            </Section>
-
-            <Section title="Plan">
-              <p className="text-xs text-stone-500 mb-3">
-                Current plan: <strong className="text-stone-800">{detail.plan}</strong>
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                {(['BASIC', 'PREMIUM'] as const).map(p => (
-                  <button
-                    key={p}
-                    className={`py-2 rounded-xl text-xs font-semibold border transition-colors ${
-                      detail.plan === p
-                        ? 'bg-stone-900 text-white border-stone-900'
-                        : 'bg-white text-stone-500 border-stone-200 hover:border-stone-400'
-                    }`}
-                  >
-                    {p}
-                  </button>
-                ))}
-              </div>
             </Section>
 
             <Section title="Danger Zone">

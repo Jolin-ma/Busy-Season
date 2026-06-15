@@ -293,6 +293,21 @@ export function buildServer() {
       .code(204).send();
   });
 
+  // ── Admin: Toggle QR Active State ───────────────────────────────────────────
+  app.patch<{ Params: { shortId: string }; Body: { isQrActive: boolean } }>(
+    '/admin/profile/:shortId/qr-active',
+    async (req, reply) => {
+      const { shortId } = req.params;
+      const { isQrActive } = req.body;
+      const result = await rawPrisma.profile.updateMany({
+        where: { short_id: shortId, deleted_at: null },
+        data:  { is_qr_active: isQrActive },
+      });
+      if (result.count === 0) return reply.code(404).send({ error: 'Short ID not found.' });
+      return reply.send({ shortId, isQrActive });
+    },
+  );
+
   // ── Admin: Provision a New Short Link ───────────────────────────────────────
   app.post<{ Body: { profileId?: string; name?: string } }>('/admin/link', async (req, reply) => {
     const fullName = req.body.name ?? req.body.profileId ?? 'Unnamed Profile';

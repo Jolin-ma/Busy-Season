@@ -71,7 +71,7 @@ export async function billingRoutes(fastify: FastifyInstance) {
           created_at:         true,
           profiles:           {
             where:   { deleted_at: null },
-            select:  { id: true, plan: true, short_id: true },
+            select:  { id: true, plan: true, short_id: true, is_qr_active: true },
           },
           transactions: {
             orderBy: { created_at: 'desc' },
@@ -95,6 +95,7 @@ export async function billingRoutes(fastify: FastifyInstance) {
         plan:             user.profiles.some(p => p.plan === 'PREMIUM') ? 'PREMIUM' : 'BASIC',
         profileCount:     user.profiles.length,
         shortIds:         user.profiles.map(p => p.short_id),
+        profiles:         user.profiles.map(p => ({ shortId: p.short_id, isQrActive: p.is_qr_active })),
         createdAt:        user.created_at,
         transactions:     user.transactions.map(t => ({
           id:              t.id,
