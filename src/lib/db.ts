@@ -12,6 +12,12 @@ const pool = new Pool({
   idleTimeoutMillis: 30_000,
 });
 
+// Kill any query that runs longer than 3 s. Prevents a single unindexed
+// admin search from locking CPU and stalling all other concurrent requests.
+pool.on('connect', client => {
+  client.query('SET statement_timeout = 3000').catch(() => {});
+});
+
 const adapter   = new PrismaPg(pool);
 const rawPrisma = new PrismaClient({ adapter });
 

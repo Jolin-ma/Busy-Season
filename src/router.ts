@@ -1,7 +1,7 @@
 import path   from 'path';
 import fs     from 'fs';
 import { pipeline } from 'stream/promises';
-import Fastify from 'fastify';
+import Fastify, { FastifyRequest } from 'fastify';
 import fastifyWebsocket  from '@fastify/websocket';
 import fastifyJwt        from '@fastify/jwt';
 import fastifyCors       from '@fastify/cors';
@@ -56,6 +56,24 @@ export function buildServer() {
   app.register(premiumRoutes);
   app.register(billingRoutes);
 
+  // Verifies the Bearer JWT and checks auth_version against the DB.
+  // Returns the userId on success, null on any failure (missing/invalid/revoked token).
+  // Use this in routes that have a SEED_USER_ID fallback. For routes that strictly
+  // require auth, reject when this returns null instead of falling back.
+  async function resolveUserId(req: FastifyRequest): Promise<string | null> {
+    try {
+      const auth = req.headers.authorization;
+      if (!auth?.startsWith('Bearer ')) return null;
+      const payload = app.jwt.verify<{ userId: string; authVersion: number }>(auth.slice(7));
+      const user = await rawPrisma.user.findUnique({
+        where:  { id: payload.userId },
+        select: { auth_version: true },
+      });
+      if (!user || user.auth_version !== payload.authVersion) return null;
+      return payload.userId;
+    } catch { return null; }
+  }
+
   // ── Auth Pages ──────────────────────────────────────────────────────────────
   app.get('/login', async (_req, reply) =>
     reply.header('Content-Type', 'text/html; charset=utf-8').send(renderAuthPage())
@@ -78,7 +96,7 @@ export function buildServer() {
     if (!valid) return reply.code(401).send({ error: 'Invalid email or password.' });
 
     const token = app.jwt.sign(
-      { userId: user.id, email: user.email, name: user.name },
+      { userId: user.id, email: user.email, name: user.name, authVersion: user.auth_version },
       { expiresIn: '30d' }
     );
     return reply.send({ token, user: { id: user.id, name: user.name, email: user.email } });
@@ -106,10 +124,22 @@ export function buildServer() {
     });
 
     const token = app.jwt.sign(
-      { userId: user.id, email: user.email, name: user.name },
+      { userId: user.id, email: user.email, name: user.name, authVersion: user.auth_version },
       { expiresIn: '30d' }
     );
     return reply.code(201).send({ token, user: { id: user.id, name: user.name, email: user.email } });
+  });
+
+  // Increments auth_version, instantly invalidating every active token for this user.
+  // Use on password change, account compromise, or explicit "log out everywhere".
+  app.post('/auth/logout-all', async (req, reply) => {
+    const userId = await resolveUserId(req);
+    if (!userId) return reply.code(401).send({ error: 'Invalid or expired token.' });
+    await rawPrisma.user.update({
+      where: { id: userId },
+      data:  { auth_version: { increment: 1 } },
+    });
+    return reply.send({ ok: true });
   });
 
   // ── Smart QR Router ─────────────────────────────────────────────────────────
@@ -244,18 +274,8 @@ export function buildServer() {
   app.post<{ Body: { profileId?: string; name?: string } }>('/admin/link', async (req, reply) => {
     const fullName = req.body.name ?? req.body.profileId ?? 'Unnamed Profile';
 
-    let userId = process.env.SEED_USER_ID;
-    try {
-      const auth = req.headers.authorization;
-      if (auth?.startsWith('Bearer ')) {
-        const payload = app.jwt.verify<{ userId: string }>(auth.slice(7));
-        userId = payload.userId;
-      }
-    } catch { /* invalid token — keep seed fallback */ }
-
-    if (!userId) {
-      return reply.code(503).send({ error: 'Server is still initialising. Try again shortly.' });
-    }
+    const userId = (await resolveUserId(req)) ?? process.env.SEED_USER_ID;
+    if (!userId) return reply.code(503).send({ error: 'Server is still initialising. Try again shortly.' });
 
     const shortId = generateShortId();
     const record  = await createLink(shortId, userId, fullName);
@@ -310,12 +330,22 @@ export function buildServer() {
       deliveryUrl:      string;
       thumbnailUrl:     string;
       moderationStatus: 'APPROVED' | 'FLAGGED' | 'REJECTED';
+      rawKey?:          string;  // S3 entry-bucket key — stored for orphan cleanup
+      processedKey?:    string;  // S3 delivery-bucket key
     };
   }>('/admin/upload/webhook', async (req, reply) => {
-    const { deliveryUrl, thumbnailUrl, moderationStatus } = req.body;
+    const { deliveryUrl, thumbnailUrl, moderationStatus, rawKey, processedKey } = req.body;
+    // REJECTED assets are soft-deleted immediately — cron will remove them from S3.
+    const uploadStatus = moderationStatus === 'REJECTED' ? 'MARKED_FOR_DELETION' : 'READY';
     await rawPrisma.mediaAsset.updateMany({
       where: { url: deliveryUrl },
-      data:  { thumbnail_url: thumbnailUrl, moderation_status: moderationStatus },
+      data: {
+        thumbnail_url:     thumbnailUrl,
+        moderation_status: moderationStatus,
+        upload_status:     uploadStatus,
+        ...(rawKey       && { original_key:  rawKey }),
+        ...(processedKey && { processed_key: processedKey }),
+      },
     });
     return reply.send({ ok: true });
   });
@@ -337,16 +367,7 @@ export function buildServer() {
   }>('/admin/profile', async (req, reply) => {
     const { name, epitaph, dateOfBirth, dateOfDeath, portraitUrl, timeline, gallery, isPrivate, privacyPin } = req.body;
 
-    // Resolve owner: prefer authenticated user from JWT, fall back to seed
-    let userId = process.env.SEED_USER_ID;
-    try {
-      const auth = req.headers.authorization;
-      if (auth?.startsWith('Bearer ')) {
-        const payload = app.jwt.verify<{ userId: string }>(auth.slice(7));
-        userId = payload.userId;
-      }
-    } catch { /* invalid token — keep seed fallback */ }
-
+    const userId = (await resolveUserId(req)) ?? process.env.SEED_USER_ID;
     if (!userId) return reply.code(503).send({ error: 'Server not ready.' });
 
     const shortId     = generateShortId();
