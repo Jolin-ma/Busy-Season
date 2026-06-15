@@ -243,7 +243,15 @@ export function buildServer() {
   // ── Admin: Provision a New Short Link ───────────────────────────────────────
   app.post<{ Body: { profileId?: string; name?: string } }>('/admin/link', async (req, reply) => {
     const fullName = req.body.name ?? req.body.profileId ?? 'Unnamed Profile';
-    const userId   = process.env.SEED_USER_ID;
+
+    let userId = process.env.SEED_USER_ID;
+    try {
+      const auth = req.headers.authorization;
+      if (auth?.startsWith('Bearer ')) {
+        const payload = app.jwt.verify<{ userId: string }>(auth.slice(7));
+        userId = payload.userId;
+      }
+    } catch { /* invalid token — keep seed fallback */ }
 
     if (!userId) {
       return reply.code(503).send({ error: 'Server is still initialising. Try again shortly.' });

@@ -104,5 +104,4 @@ When modifying the schema, always run `npm run db:generate` before TypeScript co
 
 ## Pending / stub areas
 
-- **`POST /admin/link`** — uses `SEED_USER_ID` (set at startup) as the profile owner. Needs real auth token once sessions are wired.
 - **Scan history** — in-memory only, lost on restart. Designed to be replaced with a message queue (SQS/Kafka).
