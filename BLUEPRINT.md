@@ -59,7 +59,16 @@ These are in production. Do not revisit without a strong reason.
 
 ### Media lifecycle
 - [x] **`UploadStatus` state machine** — Lambda webhook sets `READY` on success or `MARKED_FOR_DELETION` on `REJECTED`, and stores `original_key` / `processed_key` for cleanup.
-- [x] **Media orphan cleanup cron** — `src/jobs/mediaCleanup.ts`. Runs at startup + every 6 hours via `setInterval`. Phase 1 cascade-marks assets from soft-deleted profiles. Phase 2 deletes from S3 then hard-deletes the DB row. S3 failures leave the row intact for the next run. Manual trigger: `POST /admin/jobs/cleanup-media` (returns `{ marked, purged, errors }`).
+- [x] **Media orphan cleanup cron** — `src/jobs/mediaCleanup.ts`. Runs at startup + every 6 hours via `setInterval`. Phase 0 marks stale PENDING_UPLOAD rows (Lambda timeout, > 2 h). Phase 1 cascade-marks assets from soft-deleted profiles. Phase 2 deletes from S3 then hard-deletes the DB row. S3 failures leave the row intact for the next run. Manual trigger: `POST /admin/jobs/cleanup-media` (returns `{ stale, marked, purged, errors }`).
+- [x] **Entry bucket key prefix** — `processing-stage/<uuid>.<ext>`. Enables the R2/S3 lifecycle policy in `infra/entry-bucket-lifecycle.json` to expire ghost uploads after 3 days.
+
+### R2 bucket setup (do once per environment)
+1. Create two R2 buckets: `legacylink-entry-<env>` and `legacylink-delivery-<env>`
+2. Enable public access on the delivery bucket → set `CDN_BASE_URL`
+3. Apply `infra/entry-bucket-lifecycle.json` to the **entry** bucket (ghost upload expiry)
+4. Create an R2 API token with Object Read & Write on both buckets
+5. Update the Lambda S3 trigger prefix filter to `processing-stage/`
+6. Fill in all `AWS_*`, `S3_*`, and `CDN_BASE_URL` vars — see `.env.example` for the full checklist
 
 ---
 
