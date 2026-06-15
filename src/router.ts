@@ -23,6 +23,7 @@ import { renderAuthPage }       from './authTemplate';
 import { renderActivationPage } from './activationTemplate';
 import { premiumRoutes }    from './routes/premium';
 import { billingRoutes }    from './routes/billing';
+import { runMediaCleanup }  from './jobs/mediaCleanup';
 import { registerClient }   from './wsHub';
 
 export function buildServer() {
@@ -321,6 +322,14 @@ export function buildServer() {
       return reply.send(result);
     },
   );
+
+  // ── Admin: Manual media cleanup trigger ─────────────────────────────────────
+  // Lets the ops dashboard run one cleanup pass on demand without waiting for
+  // the scheduled 6-hour interval. Returns the same stats as the cron log.
+  app.post('/admin/jobs/cleanup-media', async (_req, reply) => {
+    const result = await runMediaCleanup();
+    return reply.send(result);
+  });
 
   // ── Admin: Lambda processing webhook ────────────────────────────────────────
   // Called by the Lambda after it has optimised the asset and run moderation.

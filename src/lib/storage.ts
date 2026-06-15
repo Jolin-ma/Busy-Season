@@ -1,4 +1,4 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import crypto from 'crypto';
 import path from 'path';
@@ -51,4 +51,13 @@ export async function presignUpload(
   const deliveryUrl = `${process.env.CDN_BASE_URL}/${uuid}.webp`;
 
   return { rawKey, signedUrl, deliveryUrl };
+}
+
+/**
+ * Deletes a single object from the given bucket.
+ * S3 DeleteObject is idempotent — missing keys return success, not an error.
+ */
+export async function deleteStorageObject(bucket: string, key: string): Promise<void> {
+  if (!s3) throw new Error('Cloud storage not configured.');
+  await s3.send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
 }

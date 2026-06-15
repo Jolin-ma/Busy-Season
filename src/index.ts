@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import os   from 'os';
-import { buildServer }    from './router';
-import { rawPrisma }      from './lib/db';
+import { buildServer }          from './router';
+import { rawPrisma }            from './lib/db';
+import { scheduleMediaCleanup } from './jobs/mediaCleanup';
 
 const PORT = Number(process.env.PORT ?? 3000);
 const HOST = process.env.HOST ?? '0.0.0.0';
@@ -102,6 +103,9 @@ async function main() {
     app.log.error(err);
     process.exit(1);
   }
+
+  // Start media orphan cleanup — runs immediately then every 6 hours.
+  scheduleMediaCleanup();
 }
 
 main();
