@@ -52,6 +52,10 @@ model User {
   // bcrypt hash (cost ≥ 12). Raw passwords must never be stored.
   password_hash String
 
+  // Incremented on password change or explicit logout-all. JWTs carry the
+  // version at sign time; any token with a stale version is rejected.
+  auth_version  Int     @default(1)
+
   // Stripe customer context — null until first payment is captured.
   stripe_customer_id String? @unique
 
@@ -198,6 +202,12 @@ model MediaAsset {
   // Discriminator lets the frontend choose <img>, <video>, or <audio> without
   // parsing the URL or making an extra HEAD request.
   type        MediaType
+
+  // Raw upload path in object storage (e.g. "originals/uuid.jpg").
+  // Required to delete the blob when this record is purged or rejected.
+  original_key  String?
+  // Lambda-processed output path (e.g. "processed/uuid.webp"). Null until pipeline completes.
+  processed_key String?
 
   // Canonical CDN URL. The actual blob lives in object storage (S3/R2);
   // this column is just the reference.
@@ -481,7 +491,9 @@ model SupportTicket {
 // =============================================================================
 
 model ScanLog {
-  id         String   @id @default(uuid()) @db.Uuid
+  // BigInt autoincrement: append-only time-series table; sequential IDs keep
+  // the clustered index tight and avoid UUID write amplification at high volume.
+  id         BigInt   @id @default(autoincrement())
 
   profile_id String   @db.Uuid
   profile    Profile  @relation(fields: [profile_id], references: [id], onDelete: Cascade)
@@ -497,7 +509,9 @@ model ScanLog {
 
   user_agent String?  @db.Text
 
-  @@index([profile_id])
+  // Composite covers "all scans for profile X in time order" — the hot path
+  // for per-profile analytics dashboards. Supersedes a bare [profile_id] index.
+  @@index([profile_id, scanned_at(sort: Desc)])
   @@index([scanned_at])
   @@index([city])
   @@map("scan_logs")
