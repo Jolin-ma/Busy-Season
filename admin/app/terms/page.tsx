@@ -35,7 +35,7 @@ const TOC = [
   { id: 'refunds',       label: '6. Cancellations & Refunds'                  },
   { id: 'shipping',      label: '7. Shipping & Delivery'                      },
   { id: 'plaque',        label: '8. Physical Plaque Warranty & Liability'     },
-  { id: 'hosting',       label: '9. Lifetime Hosting — Definition'            },
+  { id: 'hosting',       label: '9. Lifetime Hosting & Legacy Trust Fund'     },
   { id: 'moderation',    label: '10. Content Moderation & Public QR Codes'   },
   { id: 'copyright',     label: '11. Media, Copyright & IP'                  },
   { id: 'inheritance',   label: '12. Account Ownership & Succession'         },
@@ -308,7 +308,7 @@ export default function TermsPage() {
           </Section>
 
           {/* ── 9 ── */}
-          <Section id="hosting" title='9. Lifetime Hosting — Definition & Commitment'>
+          <Section id="hosting" title='9. Lifetime Hosting — Definition, Commitment & Legacy Trust Fund'>
             <Callout color="stone">
               <strong>What &quot;permanent&quot; and &quot;lifetime&quot; hosting means at LegacyLink:</strong>{' '}
               We commit to hosting your digital memorial profile for a{' '}
@@ -329,6 +329,29 @@ export default function TermsPage() {
             <p>
               In the event of a corporate restructure, acquisition, or merger, these hosting commitments
               will transfer to the acquiring entity as a condition of any such transaction.
+            </p>
+
+            <SubHead>The LegacyLink Legacy Trust Fund</SubHead>
+            <Callout color="stone">
+              <strong>How we back the commitment with real money:</strong>{' '}
+              A portion of every upfront plaque sale is allocated to the LegacyLink Legacy Trust Fund —
+              a dedicated reserve invested solely to cover long-term domain registration, hosting
+              infrastructure, and data storage costs. The Trust Fund is ring-fenced from operating
+              revenue and cannot be used for salaries, marketing, or any purpose other than keeping
+              memorial profiles online.
+            </Callout>
+            <p>
+              The Legacy Trust Fund exists to answer one question every customer reasonably asks:{' '}
+              <em>&quot;How do I know this website will still exist in 20 or 50 years?&quot;</em>{' '}
+              The answer is that we structurally separate the money required to keep memorials online
+              from the money required to run the business. Even if LegacyLink as a commercial entity
+              were to wind down, the Trust Fund provides the runway to maintain hosting and arrange
+              an orderly transfer or archival of all profiles.
+            </p>
+            <p>
+              Trust Fund allocation details and annual balance disclosures will be published in
+              LegacyLink&apos;s annual transparency report, available to all registered customers upon
+              request.
             </p>
           </Section>
 
