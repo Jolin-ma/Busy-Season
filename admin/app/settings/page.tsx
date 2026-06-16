@@ -1,7 +1,9 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AppShell from '@/components/layout/AppShell';
 import { useAuth } from '@/context/AuthContext';
+
+const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 interface Toggle {
   label: string;
@@ -15,6 +17,20 @@ const NOTIFICATION_TOGGLES: Toggle[] = [
   { key: 'weeklyDigest',  label: 'Weekly Analytics',      description: 'A weekly summary of scan activity across all memorials' },
   { key: 'memoryWall',    label: 'New Memory Alerts',      description: 'Notify me when someone leaves a tribute on a profile' },
 ];
+
+interface Executor {
+  id: string;
+  name: string;
+  email: string;
+  relationship: string;
+  status: 'VERIFIED' | 'PENDING_VERIFICATION' | 'CLAIMED' | 'REVOKED';
+}
+
+interface Profile {
+  id: string;
+  shortId: string;
+  fullName: string;
+}
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -31,34 +47,87 @@ export default function SettingsPage() {
 
   const [qrEngine, setQrEngine] = useState('http://localhost:3000');
 
-  interface Executor {
-    id: string;
-    name: string;
-    email: string;
-    relationship: string;
-    status: 'VERIFIED' | 'PENDING_VERIFICATION';
-  }
+  // ── Succession state ───────────────────────────────────────────────────────
+  const [profiles,        setProfiles]        = useState<Profile[]>([]);
+  const [activeProfileId, setActiveProfileId] = useState<string | null>(null);
+  const [executors,       setExecutors]       = useState<Executor[]>([]);
+  const [exLoading,       setExLoading]       = useState(false);
+  const [exError,         setExError]         = useState<string | null>(null);
+  const [exName,          setExName]          = useState('');
+  const [exEmail,         setExEmail]         = useState('');
+  const [exRelationship,  setExRelationship]  = useState('');
+  const [exSubmitting,    setExSubmitting]    = useState(false);
+  const [exSubmitError,   setExSubmitError]   = useState<string | null>(null);
+  const [removingId,      setRemovingId]      = useState<string | null>(null);
 
-  const [executors, setExecutors] = useState<Executor[]>([
-    { id: '1', name: 'Sarah Whitfield', email: 'sarah@example.com', relationship: 'Daughter', status: 'VERIFIED' },
-    { id: '2', name: 'James Holloway',  email: 'james@example.com', relationship: 'Attorney', status: 'PENDING_VERIFICATION' },
-  ]);
-  const [exName,         setExName]         = useState('');
-  const [exEmail,        setExEmail]        = useState('');
-  const [exRelationship, setExRelationship] = useState('');
+  // Fetch user's profiles on mount
+  useEffect(() => {
+    fetch(`${API}/admin/profiles`, { credentials: 'include' })
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then((d: { profiles: Profile[] }) => {
+        setProfiles(d.profiles);
+        if (d.profiles.length > 0) setActiveProfileId(d.profiles[0].id);
+      })
+      .catch(() => {});
+  }, []);
 
-  const removeExecutor = (id: string) =>
-    setExecutors(prev => prev.filter(e => e.id !== id));
+  // Fetch executors whenever the active profile changes
+  const loadExecutors = useCallback((profileId: string) => {
+    setExLoading(true);
+    setExError(null);
+    fetch(`${API}/api/v1/succession/${profileId}`, { credentials: 'include' })
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then((d: { executors: Executor[] }) => setExecutors(d.executors))
+      .catch(() => setExError('Failed to load executors.'))
+      .finally(() => setExLoading(false));
+  }, []);
 
-  const addExecutor = () => {
-    if (!exName.trim() || !exEmail.trim()) return;
-    setExecutors(prev => [
-      ...prev,
-      { id: Date.now().toString(), name: exName.trim(), email: exEmail.trim(), relationship: exRelationship.trim(), status: 'PENDING_VERIFICATION' },
-    ]);
-    setExName('');
-    setExEmail('');
-    setExRelationship('');
+  useEffect(() => {
+    if (activeProfileId) loadExecutors(activeProfileId);
+  }, [activeProfileId, loadExecutors]);
+
+  const removeExecutor = async (executorId: string) => {
+    if (!activeProfileId) return;
+    setRemovingId(executorId);
+    try {
+      const res = await fetch(`${API}/api/v1/succession/${activeProfileId}/${executorId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const d = await res.json();
+        throw new Error(d.error ?? 'Failed to remove executor.');
+      }
+      setExecutors(prev => prev.filter(e => e.id !== executorId));
+    } catch {
+      // silently ignore — list stays unchanged
+    } finally {
+      setRemovingId(null);
+    }
+  };
+
+  const addExecutor = async () => {
+    if (!activeProfileId || !exName.trim() || !exEmail.trim()) return;
+    setExSubmitting(true);
+    setExSubmitError(null);
+    try {
+      const res = await fetch(`${API}/api/v1/succession/${activeProfileId}`, {
+        method:      'POST',
+        headers:     { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body:        JSON.stringify({ name: exName.trim(), email: exEmail.trim(), relationship: exRelationship.trim() }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error ?? 'Failed to send invitation.');
+      setExecutors(prev => [...prev, d.executor as Executor]);
+      setExName('');
+      setExEmail('');
+      setExRelationship('');
+    } catch (err: unknown) {
+      setExSubmitError(err instanceof Error ? err.message : 'Failed to send invitation.');
+    } finally {
+      setExSubmitting(false);
+    }
   };
 
   const handleSave = () => {
@@ -132,8 +201,28 @@ export default function SettingsPage() {
         <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">Succession Planning</h2>
         <p className="text-xs text-stone-400 mb-5">Designate trusted individuals who can claim account control on your behalf.</p>
 
+        {/* Profile selector — shown only when user has multiple profiles */}
+        {profiles.length > 1 && (
+          <div className="mb-5">
+            <label className="block text-xs font-semibold uppercase tracking-widest text-stone-400 mb-2">Memorial</label>
+            <select
+              value={activeProfileId ?? ''}
+              onChange={e => setActiveProfileId(e.target.value)}
+              className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-stone-400 bg-white"
+            >
+              {profiles.map(p => (
+                <option key={p.id} value={p.id}>{p.fullName} ({p.shortId})</option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* Executor list */}
-        {executors.length > 0 && (
+        {exLoading ? (
+          <p className="text-xs text-stone-400 mb-5">Loading…</p>
+        ) : exError ? (
+          <p className="text-xs text-red-400 mb-5">{exError}</p>
+        ) : executors.length > 0 ? (
           <div className="divide-y divide-stone-50 mb-5">
             {executors.map(ex => (
               <div key={ex.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
@@ -148,6 +237,10 @@ export default function SettingsPage() {
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-50 text-green-700 border border-green-100">
                       Verified
                     </span>
+                  ) : ex.status === 'CLAIMED' ? (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+                      Claim Pending
+                    </span>
                   ) : (
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-100">
                       Pending
@@ -155,15 +248,18 @@ export default function SettingsPage() {
                   )}
                   <button
                     onClick={() => removeExecutor(ex.id)}
-                    className="text-xs text-red-400 hover:text-red-600 transition-colors"
+                    disabled={removingId === ex.id}
+                    className="text-xs text-red-400 hover:text-red-600 transition-colors disabled:opacity-40"
                   >
-                    Remove
+                    {removingId === ex.id ? '…' : 'Remove'}
                   </button>
                 </div>
               </div>
             ))}
           </div>
-        )}
+        ) : activeProfileId ? (
+          <p className="text-xs text-stone-400 mb-5">No executors designated yet.</p>
+        ) : null}
 
         {/* Info callout */}
         <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-xs text-amber-800 leading-relaxed mb-4">
@@ -171,7 +267,9 @@ export default function SettingsPage() {
         </div>
 
         {/* Add executor form or limit message */}
-        {executors.length >= 3 ? (
+        {!activeProfileId ? (
+          <p className="text-xs text-stone-400">No memorial found. Create a profile first.</p>
+        ) : executors.length >= 3 ? (
           <p className="text-xs text-stone-400">You&apos;ve reached the maximum of 3 Legacy Executors.</p>
         ) : (
           <div className="space-y-3">
@@ -203,11 +301,15 @@ export default function SettingsPage() {
                 className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-stone-400 bg-white placeholder:text-stone-300"
               />
             </div>
+            {exSubmitError && (
+              <p className="text-xs text-red-500">{exSubmitError}</p>
+            )}
             <button
               onClick={addExecutor}
-              className="w-full py-2 rounded-xl text-sm font-semibold bg-stone-800 text-white hover:bg-stone-700 transition-colors"
+              disabled={exSubmitting || !exName.trim() || !exEmail.trim()}
+              className="w-full py-2 rounded-xl text-sm font-semibold bg-stone-800 text-white hover:bg-stone-700 transition-colors disabled:opacity-50"
             >
-              Send Invitation
+              {exSubmitting ? 'Sending…' : 'Send Invitation'}
             </button>
           </div>
         )}

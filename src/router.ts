@@ -358,6 +358,21 @@ export function buildServer() {
     },
   );
 
+  // ── Admin: List Authenticated User's Profiles ──────────────────────────────
+  app.get('/admin/profiles', async (req, reply) => {
+    reply.header('Access-Control-Allow-Origin', '*');
+    const userId = await resolveUserId(req);
+    if (!userId) return reply.code(401).send({ error: 'Unauthorised.' });
+
+    const profiles = await rawPrisma.profile.findMany({
+      where:   { user_id: userId, deleted_at: null },
+      select:  { id: true, short_id: true, full_name: true },
+      orderBy: { created_at: 'asc' },
+    });
+
+    return reply.send({ profiles: profiles.map(p => ({ id: p.id, shortId: p.short_id, fullName: p.full_name })) });
+  });
+
   // ── Admin: Provision a New Short Link ───────────────────────────────────────
   app.post<{ Body: { profileId?: string; name?: string } }>('/admin/link', async (req, reply) => {
     const fullName = req.body.name ?? req.body.profileId ?? 'Unnamed Profile';
