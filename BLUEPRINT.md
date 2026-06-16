@@ -127,6 +127,7 @@ Sidebar badge counts (`pendingMediaCount`, `priorityTicketCount`) come from `GET
 - [x] **Settings UI** — "Succession Planning" section in `admin/app/settings/page.tsx`: executor list with VERIFIED/PENDING status pills, Remove button, inline add-executor form (name/email/relationship), 3-executor hard cap, amber info callout. No real API call yet — UI-only mock state.
 - [x] **Executor verify page** — `admin/app/succession/verify/[token]/page.tsx`: standalone public page (no AppShell), 4 states (loading, error/expired, confirm, success), fetches GET then POST to Fastify `/succession/verify/:token`.
 - [x] **ToS Section 12 expanded** — "Account Ownership, Succession Planning & Inheritance" now covers Legacy Executor tool, manual transfer process, death-of-account-holder, and visitor access. TOC label updated.
+- [x] **Ops succession claims page** — `ops-dashboard/app/succession/page.tsx`. Lists all `CLAIMED` executors from `GET /ops/succession/claims`. Each row shows executor name/email/relationship, linked memorial name + shortId, time-ago, and expandable claim statement. Inline approve/reject panel with optional ops notes textarea; row fades out 800ms after resolution. Empty, loading, and error states. Sidebar "Succession" nav item added under Premium section with indigo badge count fetched on mount.
 
 ---
 
