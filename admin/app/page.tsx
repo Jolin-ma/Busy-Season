@@ -31,6 +31,25 @@ export default function AdminPage() {
     } catch { /* ignore */ }
   }, []);
 
+  // Sync isPrivate from the backend on mount so ops-dashboard PIN resets are reflected.
+  // The plaintext PIN is never stored server-side (bcrypt only), so privacyPin stays
+  // empty after a reload — it's only visible in the session where it was generated.
+  useEffect(() => {
+    memorials.forEach(m => {
+      if (!m.shortId) return;
+      fetch(`http://localhost:3000/admin/stats/${m.shortId}`)
+        .then(r => r.ok ? r.json() : null)
+        .then((d: { isPrivate?: boolean } | null) => {
+          if (d == null || d.isPrivate == null) return;
+          setMemorials(prev => prev.map(mem =>
+            mem.shortId === m.shortId ? { ...mem, isPrivate: d.isPrivate! } : mem
+          ));
+        })
+        .catch(() => {});
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handlePrivacyChange = (id: string, isPrivate: boolean, privacyPin: string) => {
     setMemorials(prev => prev.map(m => m.id === id ? { ...m, isPrivate, privacyPin } : m));
   };

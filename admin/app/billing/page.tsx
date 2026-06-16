@@ -13,6 +13,13 @@ const PLAN = {
   nextBilling: 'June 30, 2026',
 };
 
+// One-time upgrade is only available in the first 3 months.
+// Deadline = the next billing date (i.e. when month 4 would begin).
+const upgradeDeadline  = new Date(PLAN.nextBilling);
+const today            = new Date();
+const daysRemaining    = Math.max(0, Math.ceil((upgradeDeadline.getTime() - today.getTime()) / 86_400_000));
+const isUpgradeEligible = PLAN.monthsUsed <= 3 && daysRemaining > 0;
+
 const CARD = {
   brand: 'Visa',
   last4: '4242',
@@ -64,20 +71,18 @@ export default function BillingPage() {
         <section id="subscription" className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6 mb-5">
           <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-5">Subscription</h2>
 
-          <div className="flex items-start justify-between gap-4 mb-5">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <p className="text-sm font-semibold text-stone-800">{PLAN.name}</p>
-                <span className="text-[10px] font-semibold bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full">
-                  {PLAN.status}
-                </span>
-              </div>
-              <p className="text-xs text-stone-400">{PLAN.price} · {PLAN.term}</p>
-              <p className="text-xs text-stone-400 mt-0.5">Next billing: {PLAN.nextBilling}</p>
+          <div className="mb-5">
+            <div className="flex items-center gap-2 mb-1">
+              <svg viewBox="0 0 20 20" fill="none" className="w-4 h-4 text-amber-400 shrink-0">
+                <path d="M10 2l1.8 5.4H17l-4.5 3.3 1.7 5.3L10 13l-4.2 3 1.7-5.3L3 7.4h5.2L10 2z" fill="currentColor" />
+              </svg>
+              <p className="text-sm font-semibold text-stone-800">{PLAN.name}</p>
+              <span className="text-[10px] font-semibold bg-green-50 text-green-700 border border-green-100 px-2 py-0.5 rounded-full">
+                {PLAN.status}
+              </span>
             </div>
-            <svg viewBox="0 0 20 20" fill="none" className="w-7 h-7 text-amber-400 shrink-0 mt-0.5">
-              <path d="M10 2l1.8 5.4H17l-4.5 3.3 1.7 5.3L10 13l-4.2 3 1.7-5.3L3 7.4h5.2L10 2z" fill="currentColor" />
-            </svg>
+            <p className="text-xs text-stone-400">{PLAN.price} · {PLAN.term}</p>
+            <p className="text-xs text-stone-400 mt-0.5">Next billing: {PLAN.nextBilling}</p>
           </div>
 
           {/* Progress bar */}
@@ -86,7 +91,7 @@ export default function BillingPage() {
               <span>{PLAN.monthsUsed} of {PLAN.totalMonths} months used</span>
               <span>{PLAN.totalMonths - PLAN.monthsUsed} remaining</span>
             </div>
-            <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
+            <div className="h-1.5 bg-stone-200 rounded-full overflow-hidden">
               <div
                 className="h-full bg-stone-800 rounded-full transition-all"
                 style={{ width: `${progress}%` }}
@@ -102,12 +107,36 @@ export default function BillingPage() {
               </svg>
               Switched to one-time payment. No further monthly charges.
             </div>
-          ) : (
+          ) : isUpgradeEligible ? (
             <div className="bg-stone-50 border border-stone-100 rounded-xl p-4 mb-4">
-              <p className="text-xs font-semibold text-stone-700 mb-1">Switch to one-time payment</p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs font-semibold text-stone-700">Switch to one-time payment</p>
+                <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full">
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-2.5 h-2.5 shrink-0">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  Offer expires in {daysRemaining} day{daysRemaining !== 1 ? 's' : ''}
+                </span>
+              </div>
+
+              {/* Savings breakdown */}
+              <div className="space-y-1 mb-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-stone-400">{PLAN.totalMonths - PLAN.monthsUsed} remaining monthly charges</span>
+                  <span className="text-stone-400 line-through">${(PLAN.totalMonths - PLAN.monthsUsed) * 15}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm font-semibold text-stone-800 border-t border-stone-200 pt-2 mt-1">
+                  <span>One-time fee</span>
+                  <span>$199</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-emerald-700 font-semibold">You save</span>
+                  <span className="text-emerald-700 font-semibold">${(PLAN.totalMonths - PLAN.monthsUsed) * 15 - 199}</span>
+                </div>
+              </div>
+
               <p className="text-xs text-stone-400 mb-3">
-                Pay $199 now and skip the remaining {PLAN.totalMonths - PLAN.monthsUsed} monthly charges.
-                Your access continues uninterrupted.
+                Pay $199 now to unlock lifetime access and skip the remaining {PLAN.totalMonths - PLAN.monthsUsed} monthly charges. Your subscription cancels automatically — you&apos;ll never be charged again.
               </p>
               <button
                 onClick={() => setSwitchedToOneTime(true)}
@@ -116,7 +145,7 @@ export default function BillingPage() {
                 Switch to $199 one-time payment
               </button>
             </div>
-          )}
+          ) : null}
 
           {/* Cancel */}
           {cancelled ? (

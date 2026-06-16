@@ -72,7 +72,7 @@ export async function billingRoutes(fastify: FastifyInstance) {
           created_at:         true,
           profiles:           {
             where:   { deleted_at: null },
-            select:  { id: true, plan: true, short_id: true, is_qr_active: true },
+            select:  { id: true, plan: true, short_id: true, full_name: true, is_qr_active: true, is_private: true },
           },
           transactions: {
             orderBy: { created_at: 'desc' },
@@ -96,7 +96,7 @@ export async function billingRoutes(fastify: FastifyInstance) {
         plan:             user.profiles.some(p => p.plan === 'PREMIUM') ? 'PREMIUM' : 'BASIC',
         profileCount:     user.profiles.length,
         shortIds:         user.profiles.map(p => p.short_id),
-        profiles:         user.profiles.map(p => ({ shortId: p.short_id, isQrActive: p.is_qr_active })),
+        profiles:         user.profiles.map(p => ({ shortId: p.short_id, fullName: p.full_name, isQrActive: p.is_qr_active, isPrivate: p.is_private })),
         createdAt:        user.created_at,
         transactions:     user.transactions.map(t => ({
           id:              t.id,
@@ -119,6 +119,33 @@ export async function billingRoutes(fastify: FastifyInstance) {
         })),
       },
     });
+  });
+
+  // ── POST /admin/billing/switch-to-lifetime ────────────────────────────────
+  // Converts a monthly subscriber to a one-time lifetime payment.
+  // Only permitted within the first 3 paid months (90-day window).
+  fastify.post<{ Body: { userId: string } }>('/admin/billing/switch-to-lifetime', async (req, reply) => {
+    reply.header('Access-Control-Allow-Origin', '*');
+    const { userId } = req.body;
+
+    const paidCount = await rawPrisma.transaction.count({
+      where: { user_id: userId, status: { in: ['PAID', 'PARTIALLY_REFUNDED'] } },
+    });
+
+    if (paidCount > 3) {
+      return reply.code(403).send({
+        error: 'One-time payment upgrade is only available within the first 3 months of your subscription.',
+      });
+    }
+
+    // Upgrade all active profiles to PREMIUM (lifetime).
+    // The Stripe $199 charge is handled client-side via Payment Intent before calling this route.
+    await rawPrisma.profile.updateMany({
+      where: { user_id: userId, deleted_at: null },
+      data:  { plan: 'PREMIUM' },
+    });
+
+    return reply.send({ success: true });
   });
 
   // ── POST /admin/billing/refund ────────────────────────────────────────────

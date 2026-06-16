@@ -115,9 +115,11 @@ export default function MemorialCard({ memorial, onEdit, onPrivacyChange }: Prop
                 <span className="text-xs font-medium text-stone-600">
                   {memorial.isPrivate ? 'Private — PIN required' : 'Public — anyone with the QR code'}
                 </span>
-                {memorial.isPrivate && memorial.privacyPin && (
+                {memorial.isPrivate && (
                   <p className="text-[11px] text-stone-400 mt-0.5">
-                    PIN: <span className="font-mono font-semibold text-stone-600 tracking-widest">{memorial.privacyPin}</span>
+                    {memorial.privacyPin
+                      ? <>PIN: <span className="font-mono font-semibold text-stone-600 tracking-widest">{memorial.privacyPin}</span></>
+                      : 'PIN set — contact support to retrieve'}
                   </p>
                 )}
               </div>

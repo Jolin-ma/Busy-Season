@@ -288,6 +288,7 @@ function StepReview({ material, plan, onPlace, onBack, placing }: {
   onBack: () => void;
   placing: boolean;
 }) {
+  const [tosAccepted, setTosAccepted] = useState(false);
   const planLabel =
     plan === 'basic'    ? 'Basic (included free)' :
     plan === 'monthly'  ? 'Premium Monthly (24 months)' :
@@ -346,8 +347,45 @@ function StepReview({ material, plan, onPlace, onBack, placing }: {
       </div>
 
       <div className="w-full max-w-md space-y-3">
-        <button type="button" onClick={onPlace} disabled={placing}
-          className="w-full bg-stone-900 text-white py-4 rounded-2xl text-sm font-semibold hover:bg-stone-700 transition-all disabled:opacity-60 flex items-center justify-center gap-2">
+        {/* ToS acknowledgement */}
+        <label className="flex items-start gap-3 cursor-pointer select-none">
+          <div className="relative mt-0.5 shrink-0">
+            <input
+              type="checkbox"
+              checked={tosAccepted}
+              onChange={e => setTosAccepted(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-4 h-4 rounded border-2 border-stone-300 peer-checked:border-stone-800 peer-checked:bg-stone-800 transition-colors flex items-center justify-center">
+              {tosAccepted && (
+                <svg viewBox="0 0 10 8" fill="none" className="w-2.5 h-2.5">
+                  <path d="M1 4l2.5 2.5L9 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+            </div>
+          </div>
+          <span className="text-xs text-stone-500 leading-relaxed">
+            I have read and agree to the{' '}
+            <a
+              href="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-stone-700 underline underline-offset-2 hover:text-stone-900"
+              onClick={e => e.stopPropagation()}
+            >
+              Terms of Service
+            </a>
+            .{' '}
+            {plan === 'monthly' && (
+              <span className="text-amber-700 font-medium">
+                I understand the optional one-time payment upgrade is only available within the first 90 days of enrollment.
+              </span>
+            )}
+          </span>
+        </label>
+
+        <button type="button" onClick={onPlace} disabled={placing || !tosAccepted}
+          className="w-full bg-stone-900 text-white py-4 rounded-2xl text-sm font-semibold hover:bg-stone-700 transition-all disabled:opacity-40 flex items-center justify-center gap-2">
           {placing ? (
             <>
               <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />

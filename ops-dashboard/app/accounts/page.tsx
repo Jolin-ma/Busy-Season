@@ -43,7 +43,9 @@ interface AccountTicket {
 
 interface AccountProfile {
   shortId:    string;
+  fullName:   string;
   isQrActive: boolean;
+  isPrivate:  boolean;
 }
 
 interface AccountDetail extends AccountSummary {
@@ -111,6 +113,8 @@ function AccountDetail({
   const [deleting,      setDeleting]      = useState(false);
   const [planOverride,  setPlanOverride]  = useState<'BASIC' | 'PREMIUM' | null>(null);
   const [planSaving,    setPlanSaving]    = useState(false);
+  const [pinResetMap,   setPinResetMap]   = useState<Record<string, string>>({});
+  const [pinSaving,     setPinSaving]     = useState<Record<string, boolean>>({});
 
   const currentPlan = planOverride ?? detail?.plan ?? 'BASIC';
 
@@ -121,6 +125,8 @@ function AccountDetail({
     setQrStates({});
     setConfirmDelete(false);
     setPlanOverride(null);
+    setPinResetMap({});
+    setPinSaving({});
   }, [detail?.id]);
 
   async function handleDeleteAccount() {
@@ -157,6 +163,21 @@ function AccountDetail({
     for (const p of detail.profiles ?? []) initial[p.shortId] = p.isQrActive;
     setQrStates(initial);
   }, [detail]);
+
+  async function resetPin(shortId: string) {
+    const newPin = String(Math.floor(1000 + Math.random() * 9000));
+    setPinSaving(s => ({ ...s, [shortId]: true }));
+    try {
+      await fetch(`${API}/admin/link/${shortId}/privacy`, {
+        method:  'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ isPrivate: true, privacyPin: newPin }),
+      });
+      setPinResetMap(s => ({ ...s, [shortId]: newPin }));
+    } finally {
+      setPinSaving(s => ({ ...s, [shortId]: false }));
+    }
+  }
 
   async function toggleQr(shortId: string) {
     const next = !qrStates[shortId];
@@ -393,9 +414,10 @@ function AccountDetail({
                   const saving  = qrSaving[p.shortId] ?? false;
                   return (
                     <div key={p.shortId} className="flex items-center justify-between gap-3">
-                      <span className="font-mono text-[11px] text-stone-600 bg-stone-100 px-2 py-0.5 rounded">
-                        {p.shortId}
-                      </span>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-stone-700 truncate">{p.fullName}</p>
+                        <span className="font-mono text-[10px] text-stone-400">{p.shortId}</span>
+                      </div>
                       <button
                         onClick={() => toggleQr(p.shortId)}
                         disabled={saving}
@@ -416,6 +438,53 @@ function AccountDetail({
                     </div>
                   );
                 })}
+              </div>
+            </Section>
+
+            <Section title="Privacy & PIN">
+              <p className="text-xs text-stone-500 mb-3">
+                Private profiles require a 4-digit PIN to view. Reset generates a new PIN — share it with the customer.
+              </p>
+              {(detail.profiles ?? []).length === 0 && (
+                <p className="text-xs text-stone-400 py-2 text-center">No profiles on this account.</p>
+              )}
+              <div className="space-y-3">
+                {(detail.profiles ?? []).map(p => (
+                  <div key={p.shortId} className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="min-w-0">
+                          <p className="text-xs font-semibold text-stone-700 truncate">{p.fullName}</p>
+                          <span className="font-mono text-[10px] text-stone-400">{p.shortId}</span>
+                        </div>
+                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                          p.isPrivate
+                            ? 'bg-amber-50 text-amber-700'
+                            : 'bg-stone-100 text-stone-400'
+                        }`}>
+                          {p.isPrivate ? 'Private' : 'Public'}
+                        </span>
+                      </div>
+                      {p.isPrivate && (
+                        <button
+                          onClick={() => resetPin(p.shortId)}
+                          disabled={pinSaving[p.shortId]}
+                          className="text-[11px] font-semibold text-indigo-600 border border-indigo-100 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50 shrink-0"
+                        >
+                          {pinSaving[p.shortId] ? 'Saving…' : 'Reset PIN'}
+                        </button>
+                      )}
+                    </div>
+                    {pinResetMap[p.shortId] && (
+                      <div className="flex items-center justify-between bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2">
+                        <span className="text-[11px] text-emerald-700">New PIN</span>
+                        <span className="font-mono text-base font-bold text-emerald-800 tracking-[0.25em]">
+                          {pinResetMap[p.shortId]}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             </Section>
 
