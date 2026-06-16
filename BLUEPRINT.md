@@ -110,6 +110,24 @@ Sidebar badge counts (`pendingMediaCount`, `priorityTicketCount`) come from `GET
 - [x] **IP rate limiting** — login: 5 attempts/min per IP; signup: 10 attempts/min per IP. Applied per-route via `@fastify/rate-limit` (in-memory). QR scan and profile routes are unaffected.
 - [x] **Admin client cleaned up** — `ll_token` removed from `localStorage` entirely. `ProfileWizard` and `SupportPanel` switched to `credentials: 'include'`. Signup form `minLength` bumped to 12.
 
+### Succession planning (Legacy Executor)
+- [x] **`ExecutorStatus` enum** — `PENDING_VERIFICATION → VERIFIED → CLAIMED | REVOKED`. Tracks the full executor lifecycle in the DB.
+- [x] **`LegacyExecutor` model** — `profile_id` FK (cascade delete), `name`, `email`, `relationship`, `verification_token` (unique, 40-char hex), `token_expires_at` (7-day window), `verified_at`, `claim_initiated_at`, `claim_notes`, `ops_notes`. Indexed on `[profile_id]`, `[verification_token]`, `[status]`.
+- [x] **`Profile.executors` relation** — One Profile → many LegacyExecutors.
+- [x] **`src/routes/succession.ts`** — 10 routes registered via `successionRoutes`:
+  - `GET  /api/v1/succession/:profileId` — list non-REVOKED executors
+  - `POST /api/v1/succession/:profileId` — invite executor (3-max + duplicate-email guard, logs verify URL)
+  - `DELETE /api/v1/succession/:profileId/:executorId` — revoke (sets status, does not hard-delete)
+  - `POST /api/v1/succession/:profileId/:executorId/resend` — re-issue token (PENDING_VERIFICATION only)
+  - `GET  /succession/verify/:token` — public executor lookup (for landing page, no auth)
+  - `POST /succession/verify/:token` — confirm verification → status becomes VERIFIED
+  - `POST /succession/claim/:executorId` — VERIFIED executor initiates claim → CLAIMED
+  - `GET  /ops/succession/claims` — ops queue of all CLAIMED executors with profile join
+  - `PATCH /ops/succession/claims/:executorId` — approve (no status change, ops_notes set) or reject (clear claim fields, ops_notes set)
+- [x] **Settings UI** — "Succession Planning" section in `admin/app/settings/page.tsx`: executor list with VERIFIED/PENDING status pills, Remove button, inline add-executor form (name/email/relationship), 3-executor hard cap, amber info callout. No real API call yet — UI-only mock state.
+- [x] **Executor verify page** — `admin/app/succession/verify/[token]/page.tsx`: standalone public page (no AppShell), 4 states (loading, error/expired, confirm, success), fetches GET then POST to Fastify `/succession/verify/:token`.
+- [x] **ToS Section 12 expanded** — "Account Ownership, Succession Planning & Inheritance" now covers Legacy Executor tool, manual transfer process, death-of-account-holder, and visitor access. TOC label updated.
+
 ---
 
 ## ⏳ Phase 3 — Defer Until Needed
@@ -197,3 +215,6 @@ Add `DATABASE_REPLICA_URL` to `.env.example`. Verify `@prisma/extension-read-rep
 | 2026-06-15 | IP rate limiting in-memory (no Redis yet) | `@fastify/rate-limit` default store is sufficient for a single-instance server. Redis store is a drop-in swap when multi-instance deployment happens |
 | 2026-06-15 | Defer `relationMode = "prisma"` | Cannot be applied per-model — it's datasource-wide. Removing global FK constraints trades a theoretical lock concern for a real integrity risk at current scale |
 | 2026-06-15 | Defer Argon2id | Bcrypt cost 12 is adequate. Migration requires a re-hash-on-next-login strategy to avoid locking out existing users — a separate, careful piece of work |
+| 2026-06-15 | `verification_token` as 40-char hex (crypto.randomBytes), not nanoid | Node built-in, no dependency. 160 bits of entropy is more than sufficient for a 7-day email token |
+| 2026-06-15 | Claim approval leaves status as VERIFIED, doesn't add a new enum value | Account transfer is completed manually (outside the system) — no need for a TRANSFER_COMPLETED state at this scale. ops_notes records the decision |
+| 2026-06-15 | 3-executor limit at application layer, not DB constraint | Simpler than a check constraint; consistent with how other per-profile limits are handled |

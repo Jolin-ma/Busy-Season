@@ -47,6 +47,13 @@ enum UploadStatus {
   MARKED_FOR_DELETION // Soft-deleted; background cron will remove from S3 then purge row
 }
 
+enum ExecutorStatus {
+  PENDING_VERIFICATION  // Invitation sent; executor has not yet clicked the link
+  VERIFIED              // Executor confirmed their email address
+  CLAIMED               // Executor submitted a claim request (pending ops review)
+  REVOKED               // Account holder removed this executor
+}
+
 // =============================================================================
 // USER
 // =============================================================================
@@ -148,6 +155,7 @@ model Profile {
   scan_logs            ScanLog[]
   qr_marker            QRMarker?
   shipping_order       ShippingOrder?
+  executors            LegacyExecutor[]
 
   // short_id is already unique; the explicit index keeps the planner from
   // falling back to a seq scan when joining from the QR routing layer.
@@ -645,4 +653,46 @@ model ShippingOrder {
   updated_at      DateTime  @updatedAt
 
   @@map("shipping_orders")
+}
+
+// =============================================================================
+// LEGACY EXECUTOR
+// Designated succession contacts who can claim account control after the
+// account holder's death. Verification is token-based (email link).
+// Claims go through an ops review before account transfer completes.
+// =============================================================================
+
+model LegacyExecutor {
+  id                 String         @id @default(uuid()) @db.Uuid
+
+  profile_id         String         @db.Uuid
+  profile            Profile        @relation(fields: [profile_id], references: [id], onDelete: Cascade)
+
+  name               String
+  email              String
+  relationship       String         // e.g. "Spouse", "Child", "Attorney"
+
+  status             ExecutorStatus @default(PENDING_VERIFICATION)
+
+  // Secure random token (nanoid, 32 chars) emailed to the executor.
+  // Expires 7 days after creation; re-invite generates a new token.
+  verification_token String         @unique
+  token_expires_at   DateTime
+
+  verified_at        DateTime?
+
+  // Set when executor submits a claim request
+  claim_initiated_at DateTime?
+  claim_notes        String?        @db.Text   // executor's statement of relationship
+
+  // Internal ops field; not visible to admin or executor
+  ops_notes          String?        @db.Text
+
+  created_at         DateTime       @default(now())
+  updated_at         DateTime       @updatedAt
+
+  @@index([profile_id])
+  @@index([verification_token])
+  @@index([status])
+  @@map("legacy_executors")
 }

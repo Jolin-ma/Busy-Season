@@ -26,6 +26,7 @@ import { renderAuthPage }       from './authTemplate';
 import { renderActivationPage } from './activationTemplate';
 import { premiumRoutes }    from './routes/premium';
 import { billingRoutes }    from './routes/billing';
+import { successionRoutes } from './routes/succession';
 import { runMediaCleanup }  from './jobs/mediaCleanup';
 import { registerClient }   from './wsHub';
 
@@ -92,6 +93,7 @@ export function buildServer() {
   app.register(fastifyWebsocket);
   app.register(premiumRoutes);
   app.register(billingRoutes);
+  app.register(successionRoutes);
 
   // Verifies the session JWT and checks auth_version against the DB.
   // Checks the HttpOnly cookie first; falls back to Authorization header for API clients.

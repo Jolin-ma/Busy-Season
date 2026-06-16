@@ -31,6 +31,36 @@ export default function SettingsPage() {
 
   const [qrEngine, setQrEngine] = useState('http://localhost:3000');
 
+  interface Executor {
+    id: string;
+    name: string;
+    email: string;
+    relationship: string;
+    status: 'VERIFIED' | 'PENDING_VERIFICATION';
+  }
+
+  const [executors, setExecutors] = useState<Executor[]>([
+    { id: '1', name: 'Sarah Whitfield', email: 'sarah@example.com', relationship: 'Daughter', status: 'VERIFIED' },
+    { id: '2', name: 'James Holloway',  email: 'james@example.com', relationship: 'Attorney', status: 'PENDING_VERIFICATION' },
+  ]);
+  const [exName,         setExName]         = useState('');
+  const [exEmail,        setExEmail]        = useState('');
+  const [exRelationship, setExRelationship] = useState('');
+
+  const removeExecutor = (id: string) =>
+    setExecutors(prev => prev.filter(e => e.id !== id));
+
+  const addExecutor = () => {
+    if (!exName.trim() || !exEmail.trim()) return;
+    setExecutors(prev => [
+      ...prev,
+      { id: Date.now().toString(), name: exName.trim(), email: exEmail.trim(), relationship: exRelationship.trim(), status: 'PENDING_VERIFICATION' },
+    ]);
+    setExName('');
+    setExEmail('');
+    setExRelationship('');
+  };
+
   const handleSave = () => {
     setSaved(true);
     setTimeout(() => setSaved(false), 2500);
@@ -95,6 +125,92 @@ export default function SettingsPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      {/* Succession Planning */}
+      <section className="bg-white rounded-2xl border border-stone-100 shadow-sm p-6 mb-5">
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-400 mb-1">Succession Planning</h2>
+        <p className="text-xs text-stone-400 mb-5">Designate trusted individuals who can claim account control on your behalf.</p>
+
+        {/* Executor list */}
+        {executors.length > 0 && (
+          <div className="divide-y divide-stone-50 mb-5">
+            {executors.map(ex => (
+              <div key={ex.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-stone-700 truncate">
+                    {ex.name}{ex.relationship ? ` · ${ex.relationship}` : ''}
+                  </p>
+                  <p className="text-xs text-stone-400 mt-0.5 truncate">{ex.email}</p>
+                </div>
+                <div className="flex items-center gap-3 ml-4 shrink-0">
+                  {ex.status === 'VERIFIED' ? (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-50 text-green-700 border border-green-100">
+                      Verified
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-50 text-amber-700 border border-amber-100">
+                      Pending
+                    </span>
+                  )}
+                  <button
+                    onClick={() => removeExecutor(ex.id)}
+                    className="text-xs text-red-400 hover:text-red-600 transition-colors"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Info callout */}
+        <div className="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 text-xs text-amber-800 leading-relaxed mb-4">
+          Legacy Executors receive an email invitation to verify their identity. They can only initiate a claim request after verification. All claims are reviewed by our team before any account transfer occurs.
+        </div>
+
+        {/* Add executor form or limit message */}
+        {executors.length >= 3 ? (
+          <p className="text-xs text-stone-400">You&apos;ve reached the maximum of 3 Legacy Executors.</p>
+        ) : (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-widest text-stone-400 mb-2">Name</label>
+              <input
+                type="text"
+                value={exName}
+                onChange={e => setExName(e.target.value)}
+                className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-stone-400 bg-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-widest text-stone-400 mb-2">Email</label>
+              <input
+                type="email"
+                value={exEmail}
+                onChange={e => setExEmail(e.target.value)}
+                className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-stone-400 bg-white"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-widest text-stone-400 mb-2">Relationship</label>
+              <input
+                type="text"
+                value={exRelationship}
+                onChange={e => setExRelationship(e.target.value)}
+                placeholder="e.g. Spouse, Child, Attorney"
+                className="w-full border border-stone-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-1 focus:ring-stone-400 bg-white placeholder:text-stone-300"
+              />
+            </div>
+            <button
+              onClick={addExecutor}
+              className="w-full py-2 rounded-xl text-sm font-semibold bg-stone-800 text-white hover:bg-stone-700 transition-colors"
+            >
+              Send Invitation
+            </button>
+          </div>
+        )}
       </section>
 
       {/* QR Engine */}
