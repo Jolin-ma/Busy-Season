@@ -32,9 +32,10 @@ const NAV_MAIN = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [pendingOrders, setPendingOrders] = useState(0);
-  const [dupCount,      setDupCount]      = useState(0);
-  const [newCount,      setNewCount]      = useState(0);
+  const [pendingOrders,  setPendingOrders]  = useState(0);
+  const [dupCount,       setDupCount]       = useState(0);
+  const [newCount,       setNewCount]       = useState(0);
+  const [claimsCount,    setClaimsCount]    = useState(0);
 
   useEffect(() => {
     fetch(`${API}/admin/fulfillment`)
@@ -59,6 +60,11 @@ export default function Sidebar() {
         setNewCount((d.tickets ?? []).filter(t => t.status === 'OPEN').length);
       })
       .catch(() => {});
+
+    fetch(`${API}/ops/succession/claims`)
+      .then(r => r.json())
+      .then((d: { claims?: unknown[] }) => setClaimsCount((d.claims ?? []).length))
+      .catch(() => {});
   }, []);
 
   const isSupport      = pathname === '/support';
@@ -67,7 +73,8 @@ export default function Sidebar() {
   const isGeographic   = pathname === '/geographic';
   const isFulfillment  = pathname === '/fulfillment';
   const isMedia        = pathname === '/media';
-  const isMain         = !isSupport && !isBilling && !isAccounts && !isGeographic && !isFulfillment && !isMedia;
+  const isSuccession   = pathname === '/succession';
+  const isMain         = !isSupport && !isBilling && !isAccounts && !isGeographic && !isFulfillment && !isMedia && !isSuccession;
 
   return (
     <aside className="hidden md:flex flex-col bg-white border-r border-stone-100 shrink-0 h-screen sticky top-0 w-[220px]">
@@ -140,6 +147,28 @@ export default function Sidebar() {
           {newCount > 0 && (
             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isSupport ? 'bg-white text-stone-900' : 'bg-red-500 text-white'}`}>
               {newCount}
+            </span>
+          )}
+        </a>
+
+        <a
+          href="/succession"
+          className={[
+            'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors',
+            isSuccession
+              ? 'bg-stone-900 text-white'
+              : 'text-stone-500 hover:bg-stone-50 hover:text-stone-800',
+          ].join(' ')}
+        >
+          <span className="shrink-0">
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+            </svg>
+          </span>
+          <span className="flex-1">Succession</span>
+          {claimsCount > 0 && (
+            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${isSuccession ? 'bg-white text-stone-900' : 'bg-indigo-500 text-white'}`}>
+              {claimsCount}
             </span>
           )}
         </a>
