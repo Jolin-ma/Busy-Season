@@ -251,6 +251,7 @@
             #products-row > div .range-photo { width: 100% !important; }
             #products-row > div .range-info { width: 100% !important; padding-top: 20px; }
             #products-divider { display: none !important; }
+            #products-mobile-label { display: block !important; }
 
             .service-card { flex-direction: column !important; align-items: flex-start !important; }
             .service-card .service-img-wrap { flex: none !important; width: 100% !important; }
@@ -508,6 +509,9 @@
      PRODUCTS
 ════════════════════════════════════════════ -->
     <section style="padding:30px 0 64px;">
+
+        <!-- Mobile-only label (desktop shows "OUR RANGES" inside the vertical divider) -->
+        <p id="products-mobile-label" class="eyebrow" style="display:none; text-align:center; margin-bottom:32px;">OUR RANGES</p>
 
         <!-- Two product cards with vertical divider -->
         <div id="products-row" style="display:flex; align-items:stretch; padding:0 1%; position:relative;">
