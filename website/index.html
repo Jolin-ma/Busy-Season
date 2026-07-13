@@ -7,6 +7,8 @@
     <title>Legacy Link — Digital Life Stories</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&display=swap"
@@ -174,49 +176,42 @@
             background: rgba(35,35,35,0.07);
         }
 
-        /* Service cards */
+        /* Service rows (text left, large photo right, top-aligned) */
         .service-card {
-            padding-bottom: 28px;
-            transition: transform 0.38s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                        box-shadow 0.38s ease;
-        }
-        .service-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 18px 42px rgba(35,35,35,0.11);
+            display: flex;
+            align-items: flex-start;
+            gap: 8%;
         }
         .service-img-wrap {
+            flex: 0 0 62%;
             overflow: hidden;
-            margin-bottom: 20px;
         }
         .service-img-wrap img {
             width: 100%;
-            height: 360px;
+            height: 320px;
             object-fit: cover;
             display: block;
             filter: grayscale(100%);
-            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                        filter 0.5s ease;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
         .service-card:hover .service-img-wrap img {
-            filter: grayscale(0%);
+            transform: scale(1.04);
         }
-        #grieving-wrap img {
-            filter: grayscale(100%);
-            transition: filter 0.5s ease;
+        .service-card-text {
+            flex: 1;
+            height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        .service-card:hover #grieving-wrap img {
-            filter: grayscale(0%);
+        .service-card-text .cta-link {
+            border-bottom: none;
+            padding-bottom: 0;
         }
-        .service-card:hover .service-img-wrap img {
-            transform: scale(1.05);
-        }
-        .service-card h3,
-        .service-card > p {
-            padding-left: 18px;
-            padding-right: 18px;
-        }
-        .service-card > a {
-            margin-left: 18px;
+        .service-divider {
+            border: none;
+            border-top: 1px solid #232323;
+            opacity: 0.15;
         }
 
         /* ─── Mobile ─── */
@@ -257,13 +252,9 @@
             #products-row > div .range-info { width: 100% !important; padding-top: 20px; }
             #products-divider { display: none !important; }
 
-            #services-grid { grid-template-columns: 1fr !important; }
-
-            .story-row {
-                flex-direction: column !important;
-                gap: 24px !important;
-            }
-            .story-row > div { flex: none !important; width: 100% !important; }
+            .service-card { flex-direction: column !important; align-items: flex-start !important; }
+            .service-card .service-img-wrap { flex: none !important; width: 100% !important; }
+            .service-card-text { height: auto !important; gap: 20px; }
 
             #footer-info-row, #footer-bottom-bar {
                 flex-direction: column !important;
@@ -271,17 +262,11 @@
                 text-align: center !important;
                 gap: 20px !important;
             }
-            #footer-social-row {
-                flex-wrap: wrap !important;
-                justify-content: center !important;
-                gap: 16px !important;
-            }
-
             /* Range photos — show full image, no cropping on mobile */
             .range-photo img { height: auto !important; }
 
-            /* Service cards */
-            #services-grid { gap: 16px !important; }
+            /* Service rows */
+            #services-grid { gap: 40px !important; }
             section:has(#services-grid) { padding-left: 4% !important; padding-right: 4% !important; }
             .service-img-wrap img { height: 220px !important; }
             .service-card h3 {
@@ -290,16 +275,8 @@
             }
             .service-card p { font-size: 0.72rem !important; }
 
-            /* Grieving families rotated image wrapper */
-            #grieving-wrap { height: 220px !important; }
-            #grieving-wrap img { width: 220px !important; height: 460px !important; }
-
             /* Marquee */
             .marquee-step { flex: 0 0 150px !important; padding: 0 8px !important; }
-
-            /* Story section */
-            #latest-stories { padding: 36px 5% 40px !important; }
-            .story-img { height: 260px !important; }
 
             /* Brochure buttons */
             .brochure-btn { padding: 10px 16px !important; font-size: 0.72rem !important; }
@@ -313,24 +290,6 @@
             /* CTA link */
             .cta-link { font-size: 0.8rem !important; }
         }
-        .social-link { position: relative; display: inline-block; }
-        .social-link::after {
-            content: 'Coming soon';
-            position: absolute;
-            bottom: calc(100% + 10px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: #e8ded0;
-            color: #232323;
-            font-size: 0.46rem;
-            letter-spacing: 0.18em;
-            padding: 4px 10px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.18s;
-        }
-        .social-link:hover::after { opacity: 1; }
     </style>
 </head>
 
@@ -608,56 +567,79 @@
     <section style="padding:40px 8% 0px;">
         <p class="eyebrow" style="text-align:center; margin-bottom:52px; opacity:0.65;">OUR SERVICES</p>
 
-        <div id="services-grid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:30px;">
+        <div id="services-grid" style="display:flex; flex-direction:column; gap:56px;">
+
+            <hr class="service-divider">
 
             <!-- pre planner -->
-            <a href="packages.html" class="service-card" style="display:block;">
+            <a href="packages.html" class="service-card">
+                <div class="service-card-text">
+                    <h3 class="serif" style="font-size:1.55rem; font-weight:400;">Pre-Planners <br>(End-of-Life Planning)</h3>
+                    <div>
+                        <p style="font-size:0.85rem; line-height:1.9; margin-bottom:16px; opacity:0.82;">
+                            Older adults who want to take control of their own narrative and curate how they will be remembered
+                        </p>
+                        <span class="cta-link">PLAN YOUR LEGACY</span>
+                    </div>
+                </div>
                 <div class="service-img-wrap">
                     <img src="image/end life.png" alt="Pre-Planners (End-of-Life Planning)"
                         style="object-position:center 80%;" />
                 </div>
-                <h3 class="serif" style="font-size:1.55rem; font-weight:400; margin-bottom:12px; min-height:4.5rem;">Pre-Planners <br>(End-of-Life Planning)</h3>
-                <p style="font-size:0.85rem; line-height:1.9; margin-bottom:20px; opacity:0.82;">
-                    Older adults who want to take control of their own narrative and curate how they will be remembered
-                </p>
-                <span class="cta-link">PLAN YOUR LEGACY</span>
             </a>
+
+            <hr class="service-divider">
 
             <!-- grieving families -->
-            <a href="packages.html" class="service-card" style="display:block;">
-                <div id="grieving-wrap" style="overflow:hidden; height:360px; position:relative; margin-bottom:20px;">
-                    <img src="image/grieving.jpeg" alt="Grieving Families"
-                        style="position:absolute; top:50%; left:50%; width:360px; height:700px; max-width:none; object-fit:cover; transform:translate(-50%,-50%) rotate(90deg);" />
+            <a href="packages.html" class="service-card">
+                <div class="service-card-text">
+                    <h3 class="serif" style="font-size:1.55rem; font-weight:400;">Grieving Families</h3>
+                    <div>
+                        <p style="font-size:0.85rem; line-height:1.9; margin-bottom:16px; opacity:0.82;">
+                            Individuals looking to honor a recently lost parent, spouse, or relative in a unique way.
+                        </p>
+                        <span class="cta-link">HONOUR A LOVED ONE</span>
+                    </div>
                 </div>
-                <h3 class="serif" style="font-size:1.55rem; font-weight:400; margin-bottom:12px; min-height:4.5rem;">Grieving Families</h3>
-                <p style="font-size:0.85rem; line-height:1.9; margin-bottom:20px; opacity:0.82;">
-                    Individuals looking to honor a recently lost parent, spouse, or relative in a unique way.
-                </p>
-                <span class="cta-link">HONOUR A LOVED ONE</span>
+                <div class="service-img-wrap">
+                    <img src="image/grieving.jpeg" alt="Grieving Families" />
+                </div>
             </a>
 
+            <hr class="service-divider">
+
             <!-- pet memorials -->
-            <a href="pet-memorials.html" class="service-card" style="display:block;">
+            <a href="pet-memorials.html" class="service-card">
+                <div class="service-card-text">
+                    <h3 class="serif" style="font-size:1.55rem; font-weight:400;">Pet Memorials</h3>
+                    <div>
+                        <p style="font-size:0.85rem; line-height:1.9; margin-bottom:16px; opacity:0.82;">
+                            Honouring the companions who gave us everything — the same marine-grade plaques, crafted for beloved animals.
+                        </p>
+                        <span class="cta-link">HONOUR YOUR COMPANION</span>
+                    </div>
+                </div>
                 <div class="service-img-wrap">
                     <img src="image/pets.png" alt="Pet Memorials" />
                 </div>
-                <h3 class="serif" style="font-size:1.55rem; font-weight:400; margin-bottom:12px; min-height:4.5rem;">Pet Memorials</h3>
-                <p style="font-size:0.85rem; line-height:1.9; margin-bottom:20px; opacity:0.82;">
-                    Honouring the companions who gave us everything — the same marine-grade plaques, crafted for beloved animals.
-                </p>
-                <span class="cta-link">HONOUR YOUR COMPANION</span>
             </a>
 
+            <hr class="service-divider">
+
             <!-- monuments & public memorials -->
-            <a href="monuments.html" class="service-card" style="display:block;">
+            <a href="monuments.html" class="service-card">
+                <div class="service-card-text">
+                    <h3 class="serif" style="font-size:1.55rem; font-weight:400;">Monuments &amp; Public Memorials</h3>
+                    <div>
+                        <p style="font-size:0.85rem; line-height:1.9; margin-bottom:16px; opacity:0.82;">
+                            Buildings, statues, memorial benches, and civic monuments — permanent QR plaques that bring institutional histories and community stories to life.
+                        </p>
+                        <span class="cta-link">EXPLORE MONUMENTS</span>
+                    </div>
+                </div>
                 <div class="service-img-wrap">
                     <img src="image/bench.png" alt="Monuments & Public Memorials" />
                 </div>
-                <h3 class="serif" style="font-size:1.55rem; font-weight:400; margin-bottom:12px; min-height:4.5rem;">Monuments &amp; Public Memorials</h3>
-                <p style="font-size:0.85rem; line-height:1.9; margin-bottom:20px; opacity:0.82;">
-                    Buildings, statues, memorial benches, and civic monuments — permanent QR plaques that bring institutional histories and community stories to life.
-                </p>
-                <span class="cta-link">EXPLORE MONUMENTS</span>
             </a>
 
         </div>
@@ -669,61 +651,6 @@
         <a href="pet-brochure.html" target="_blank" style="font-family:'Cormorant Garamond',serif; font-size:0.9rem; letter-spacing:0.18em; color:#232323; background:transparent; text-decoration:none; border:1px solid #232323; padding:12px 32px; transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='#232323';this.style.color='#e8ded0';" onmouseout="this.style.background='transparent';this.style.color='#232323';">PET MEMORIAL BROCHURE</a>
         <a href="monument-brochure.html" target="_blank" style="font-family:'Cormorant Garamond',serif; font-size:0.9rem; letter-spacing:0.18em; color:#232323; background:transparent; text-decoration:none; border:1px solid #232323; padding:12px 32px; transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='#232323';this.style.color='#e8ded0';" onmouseout="this.style.background='transparent';this.style.color='#232323';">MONUMENT BROCHURE</a>
     </div>
-
-    <!-- ═══════════════════════════════════════════
-     LATEST STORIES
-════════════════════════════════════════════ -->
-    <section id="latest-stories" style="padding:72px 8% 80px;">
-
-        <p class="eyebrow" style="text-align:center; margin-bottom:56px; opacity:0.55;">LATEST STORIES</p>
-
-        <!-- Article 1 -->
-        <div class="story-row" style="display:flex; align-items:flex-start; gap:6%; margin-bottom:52px;">
-            <div style="flex:0 0 42%;">
-                <img src="image/Launching.png"
-                    alt="Launching Legacy Link"
-                    class="story-img" style="width:auto; max-width:100%; max-height:340px; height:auto; display:block;" />
-            </div>
-            <div style="flex:1; padding-top:10px;">
-                <p style="font-size:0.72rem; letter-spacing:0.22em; opacity:0.5; margin-bottom:14px;">JANUARY 12, 2026</p>
-                <hr style="border:none; border-top:1px solid #232323; opacity:0.2; margin-bottom:20px;">
-                <h3 class="serif" style="
-                    font-size:clamp(1.3rem,2.2vw,1.9rem);
-                    font-weight:300;
-                    font-style:italic;
-                    line-height:1.22;
-                ">Launching LegacyLink — a new way to<br>preserve the stories that matter most</h3>
-            </div>
-        </div>
-
-        <!-- Divider between articles -->
-        <hr style="border:none; border-top:1px solid #232323; opacity:0.12; margin-bottom:52px;">
-
-        <!-- Article 2 -->
-        <div class="story-row" style="display:flex; align-items:flex-start; gap:6%; margin-bottom:56px;">
-            <div style="flex:0 0 42%;">
-                <img src="image/QR code craft.png"
-                    alt="The quiet craft behind each plaque"
-                    class="story-img" style="width:100%; height:auto; display:block;" />
-            </div>
-            <div style="flex:1; padding-top:10px;">
-                <p style="font-size:0.72rem; letter-spacing:0.22em; opacity:0.5; margin-bottom:14px;">MARCH 3, 2026</p>
-                <hr style="border:none; border-top:1px solid #232323; opacity:0.2; margin-bottom:20px;">
-                <h3 class="serif" style="
-                    font-size:clamp(1.3rem,2.2vw,1.9rem);
-                    font-weight:300;
-                    font-style:italic;
-                    line-height:1.22;
-                ">From laser to legacy — the precision and<br>materials behind every engraving we make</h3>
-            </div>
-        </div>
-
-        <!-- CTA -->
-        <div style="text-align:center;">
-            <a href="our-stories.html" class="cta-link" style="font-size:0.72rem; letter-spacing:0.28em;">MORE STORIES</a>
-        </div>
-
-    </section>
 
     <!-- ═══════════════════════════════════════════
      FOOTER
@@ -795,14 +722,6 @@
                 <div style="flex:1; font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7; text-align:right;">
                     info@legacylinkstudio.com
                 </div>
-            </div>
-
-            <!-- Social links row -->
-            <div id="footer-social-row" style="display:flex; justify-content:space-between; align-items:center; padding:36px 0; border-bottom:1px solid rgba(232,222,208,0.18);">
-                <a href="#" class="social-link" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">INSTAGRAM</a>
-                <a href="#" class="social-link" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">FACEBOOK</a>
-                <a href="#" class="social-link" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">TWITTER</a>
-                <a href="#" class="social-link" style="color:#e8ded0; text-decoration:none; font-size:0.58rem; letter-spacing:0.3em; opacity:0.6; border-bottom:1px solid rgba(232,222,208,0.35); padding-bottom:2px;">YOUTUBE</a>
             </div>
 
             <!-- Bottom bar: copyright / logo / legal -->
@@ -1086,6 +1005,28 @@
         }
 
         animate();
+    })();
+    </script>
+
+    <!-- ─── Scroll-triggered grayscale → color reveal (service photos) ─── -->
+    <script>
+    (function () {
+        'use strict';
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+        gsap.registerPlugin(ScrollTrigger);
+
+        document.querySelectorAll('.service-img-wrap img').forEach(function (img) {
+            gsap.to(img, {
+                filter: 'grayscale(0%)',
+                duration: 1.1,
+                ease: 'power2.out',
+                scrollTrigger: {
+                    trigger: img,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
     })();
     </script>
 </body>
