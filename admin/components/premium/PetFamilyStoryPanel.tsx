@@ -315,7 +315,7 @@ function BondSection() {
   const loadPhoto = (setter: typeof setBonds | typeof setAdventures, id: string, file: File) => {
     if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
-    reader.onload = e => (setter as any)(p => p.map((x: any) => x.id === id ? { ...x, photoPreview: e.target?.result, preview: e.target?.result } : x));
+    reader.onload = e => (setter as any)((p: any[]) => p.map((x: any) => x.id === id ? { ...x, photoPreview: e.target?.result, preview: e.target?.result } : x));
     reader.readAsDataURL(file);
   };
 
