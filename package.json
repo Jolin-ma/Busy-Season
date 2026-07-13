@@ -4,7 +4,7 @@
   "description": "QR routing and code generation engine for LegacyLink memorials",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "prisma generate && tsc",
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "db:generate": "prisma generate",
