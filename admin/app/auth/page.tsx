@@ -225,23 +225,6 @@ export default function AuthPage() {
           </button>
         </form>
 
-        {/* Demo account */}
-        <div className="mt-6 pt-5 border-t border-stone-100">
-          <p className="text-xs text-stone-400 text-center mb-3">Just exploring?</p>
-          <button
-            type="button"
-            disabled={busy}
-            onClick={async () => {
-              setBusy(true);
-              await login('demo@legacylink.com', '');
-              router.push(hasPurchased() ? '/' : '/purchase');
-            }}
-            className="w-full py-3 border border-stone-200 rounded-2xl text-sm font-medium text-stone-500 hover:bg-stone-100 hover:border-stone-300 hover:text-stone-700 active:scale-[0.98] transition-all duration-150 disabled:opacity-50"
-          >
-            Continue with demo account
-          </button>
-        </div>
-
       </div>
     </div>
   );

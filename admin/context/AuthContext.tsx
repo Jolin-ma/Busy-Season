@@ -48,14 +48,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function login(email: string, password: string) {
-    // Demo bypass — no API call
-    if (email.trim().toLowerCase() === 'demo@legacylink.com') {
-      const demo: User = { id: 'demo', name: 'Demo User', email: 'demo@legacylink.com' };
-      localStorage.setItem('ll_auth', JSON.stringify(demo));
-      setUser(demo);
-      return;
-    }
-
     const res = await fetch(`${API}/auth/login`, {
       method:      'POST',
       headers:     { 'Content-Type': 'application/json' },
