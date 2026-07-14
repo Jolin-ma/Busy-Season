@@ -105,3 +105,19 @@ When modifying the schema, always run `npm run db:generate` before TypeScript co
 ## Pending / stub areas
 
 - **Scan history** — in-memory only, lost on restart. Designed to be replaced with a message queue (SQS/Kafka).
+
+## Production deployment
+
+Three independent deployments from this one repo, each its own host/project:
+
+| App | Root Directory | Host | Domain |
+|---|---|---|---|
+| Marketing site (`website/`) | `.` (repo root `vercel.json`, `outputDirectory: website`) | Vercel | `legacylinkstudio.com` |
+| Admin UI (`admin/`) | `admin` (own `admin/vercel.json`) | Vercel (separate project) | `app.legacylinkstudio.com` |
+| Fastify API (`src/`) | `.` (repo root) | Railway | `api.legacylinkstudio.com` |
+
+- **DNS** is managed at Namecheap (not delegated to Vercel), so every subdomain needs a manual CNAME record added there, even though the apex domain is a Vercel project.
+- **Database**: Neon project `legacylink`, branch `prod-railway`. Root `.env`/local dev points at a separate branch — never at prod.
+- **`admin/vercel.json`** exists specifically so the admin project doesn't inherit the repo-root `vercel.json`'s `outputDirectory: website` setting (that bit both projects once — Next.js builds into `.next`, not `website`, so the wrong setting causes a 404 on every route despite a successful build).
+- **`ADMIN_URL`** (Railway env var) and **`NEXT_PUBLIC_API_URL`** (Vercel admin project env var) must point at each other's production domain, or CORS/signup breaks. `NEXT_PUBLIC_API_URL` is baked in at build time — changing it requires a fresh deploy, not just a dashboard save.
+- **Session cookie is `sameSite: 'strict'`** (`src/router.ts`), so the admin app and API must share a root domain (`legacylinkstudio.com`) — if either ever moves to an unrelated domain, login breaks silently.
