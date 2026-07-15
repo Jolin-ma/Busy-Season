@@ -1,5 +1,6 @@
 import path   from 'path';
 import fs     from 'fs';
+import crypto from 'crypto';
 import { pipeline } from 'stream/promises';
 import Fastify, { FastifyRequest } from 'fastify';
 import fastifyWebsocket  from '@fastify/websocket';
@@ -29,8 +30,9 @@ import { billingRoutes }    from './routes/billing';
 import { successionRoutes } from './routes/succession';
 import { runMediaCleanup }  from './jobs/mediaCleanup';
 import { registerClient }   from './wsHub';
+import { OPS_API_KEY, requireOpsKey } from './lib/opsAuth';
 
-export function buildServer() {
+export async function buildServer() {
   const app = Fastify({ logger: true });
 
   app.register(fastifyCors, {
@@ -48,7 +50,9 @@ export function buildServer() {
   app.register(fastifyCookie);
 
   // Rate limiting — applied per-route, not globally.
-  app.register(fastifyRateLimit, { global: false });
+  // MUST be awaited: the plugin attaches an onRoute hook, and routes declared
+  // before the plugin has booted are silently left without a limiter.
+  await app.register(fastifyRateLimit, { global: false });
 
   // Zod schemas — validated before any Prisma call.
   const SignupSchema = z.object({
@@ -76,6 +80,13 @@ export function buildServer() {
     maxAge:   30 * 24 * 60 * 60,
   };
 
+  if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET must be set in production — refusing to start with the dev fallback secret.');
+  }
+  if (process.env.NODE_ENV === 'production' && !OPS_API_KEY) {
+    app.log.warn('OPS_API_KEY is not set — ops/back-office routes are unprotected. Set OPS_API_KEY on the API host.');
+  }
+
   app.register(fastifyJwt, {
     secret: process.env.JWT_SECRET ?? 'dev-secret-change-in-production',
   });
@@ -86,6 +97,12 @@ export function buildServer() {
   app.register(fastifyStatic, {
     root:   UPLOADS_DIR,
     prefix: '/uploads/',
+    // Uploaded files must never execute in the browser (uploaded .html/.svg
+    // would otherwise be stored XSS on this origin).
+    setHeaders: res => {
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('Content-Security-Policy', "default-src 'none'; sandbox");
+    },
   });
 
   app.register(fastifyMultipart, { limits: { fileSize: 20 * 1024 * 1024 } }); // 20 MB
@@ -159,7 +176,10 @@ export function buildServer() {
     // Return the same envelope whether the email already exists or not.
     // Never confirm or deny that a specific email is registered.
     if (existing) {
-      return reply.send({ ok: true });
+      // Burn the same bcrypt cost as the create path so response timing
+      // can't be used to probe which emails are registered.
+      await bcrypt.hash(password, 12);
+      return reply.code(201).send({ ok: true });
     }
 
     const password_hash = await bcrypt.hash(password, 12);
@@ -231,6 +251,7 @@ export function buildServer() {
 
     recordScanAsync({
       shortId,
+      profileId: link.profileId,
       timestamp: new Date().toISOString(),
       userAgent: req.headers['user-agent'],
       ip:        req.ip,
@@ -264,6 +285,13 @@ export function buildServer() {
     if (link.plan !== 'PREMIUM')
       return reply.code(403).send({ error: 'GPS activation requires a Premium plan.' });
 
+    // Already pinned — activation is one-time. Send visitors to the profile
+    // instead of letting anyone with the plaque URL re-run GPS capture.
+    if (link.hasCoordinates) {
+      const profileBaseUrl = process.env.PROFILE_BASE_URL ?? 'http://localhost:3000/profile';
+      return reply.redirect(`${profileBaseUrl}/${link.profileId}`, 302);
+    }
+
     return reply
       .header('Content-Type', 'text/html; charset=utf-8')
       .send(renderActivationPage(shortId, link.fullName));
@@ -289,6 +317,7 @@ export function buildServer() {
 
     recordScanAsync({
       shortId,
+      profileId: link.profileId,
       timestamp: new Date().toISOString(),
       userAgent: req.headers['user-agent'],
       ip: req.ip,
@@ -307,6 +336,8 @@ export function buildServer() {
   // ── PIN Unlock ──────────────────────────────────────────────────────────────
   app.post<{ Params: { shortId: string }; Body: { pin: string } }>(
     '/p/:shortId/unlock',
+    // 4-digit PIN = 10k combinations — without a rate limit it's brute-forceable in minutes.
+    { config: { rateLimit: { max: 5, timeWindow: 60 * 1000 } } },
     async (req, reply) => {
       const { shortId } = req.params;
       const { pin } = req.body;
@@ -346,6 +377,7 @@ export function buildServer() {
   // ── Admin: Toggle QR Active State ───────────────────────────────────────────
   app.patch<{ Params: { shortId: string }; Body: { isQrActive: boolean } }>(
     '/admin/profile/:shortId/qr-active',
+    { preHandler: requireOpsKey },
     async (req, reply) => {
       const { shortId } = req.params;
       const { isQrActive } = req.body;
@@ -394,11 +426,21 @@ export function buildServer() {
   // ── Admin: File Upload ──────────────────────────────────────────────────────
   // Accepts a single file via multipart/form-data.
   // Returns { url } pointing to /uploads/<uuid>.<ext> served by @fastify/static.
-  app.post('/admin/upload', async (req, reply) => {
+  const ALLOWED_UPLOAD_EXT = new Set([
+    '.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic',
+    '.mp4', '.mov', '.webm', '.mp3', '.m4a', '.wav',
+  ]);
+
+  app.post('/admin/upload', {
+    config: { rateLimit: { max: 20, timeWindow: 60 * 1000 } },
+  }, async (req, reply) => {
     const part = await req.file();
     if (!part) return reply.code(400).send({ error: 'No file provided.' });
 
-    const ext      = path.extname(part.filename).toLowerCase() || '.bin';
+    const ext = path.extname(part.filename).toLowerCase();
+    if (!ALLOWED_UPLOAD_EXT.has(ext)) {
+      return reply.code(415).send({ error: 'Unsupported file type. Allowed: images, video, audio.' });
+    }
     const filename = `${crypto.randomUUID()}${ext}`;
     const dest     = path.join(UPLOADS_DIR, filename);
 
@@ -420,6 +462,10 @@ export function buildServer() {
         return reply.code(400).send({ error: 'Cloud storage not configured. Use /admin/upload instead.' });
       }
       const { filename, contentType } = req.body;
+      if (typeof filename !== 'string' || typeof contentType !== 'string' ||
+          !/^(image|video|audio)\//.test(contentType)) {
+        return reply.code(400).send({ error: 'filename and an image/video/audio contentType are required.' });
+      }
       const result = await presignUpload(filename, contentType);
       return reply.send(result);
     },
@@ -428,7 +474,7 @@ export function buildServer() {
   // ── Admin: Manual media cleanup trigger ─────────────────────────────────────
   // Lets the ops dashboard run one cleanup pass on demand without waiting for
   // the scheduled 6-hour interval. Returns the same stats as the cron log.
-  app.post('/admin/jobs/cleanup-media', async (_req, reply) => {
+  app.post('/admin/jobs/cleanup-media', { preHandler: requireOpsKey }, async (_req, reply) => {
     const result = await runMediaCleanup();
     return reply.send(result);
   });
@@ -444,7 +490,7 @@ export function buildServer() {
       rawKey?:          string;  // S3 entry-bucket key — stored for orphan cleanup
       processedKey?:    string;  // S3 delivery-bucket key
     };
-  }>('/admin/upload/webhook', async (req, reply) => {
+  }>('/admin/upload/webhook', { preHandler: requireOpsKey }, async (req, reply) => {
     const { deliveryUrl, thumbnailUrl, moderationStatus, rawKey, processedKey } = req.body;
     // REJECTED assets are soft-deleted immediately — cron will remove them from S3.
     const uploadStatus = moderationStatus === 'REJECTED' ? 'MARKED_FOR_DELETION' : 'READY';
@@ -475,11 +521,41 @@ export function buildServer() {
       isPrivate:   boolean;
       privacyPin:  string;
     };
-  }>('/admin/profile', async (req, reply) => {
-    const { name, epitaph, dateOfBirth, dateOfDeath, portraitUrl, timeline, gallery, isPrivate, privacyPin } = req.body;
+  }>('/admin/profile', {
+    config: { rateLimit: { max: 20, timeWindow: 60 * 1000 } },
+  }, async (req, reply) => {
+    const CreateProfileSchema = z.object({
+      name:        z.string().trim().min(1, 'name is required').max(200),
+      epitaph:     z.string().max(1000).default(''),
+      dateOfBirth: z.string().max(30).default(''),
+      dateOfDeath: z.string().max(30).default(''),
+      portraitUrl: z.string().max(2000).default(''),
+      timeline:    z.array(z.object({
+        year:        z.string().max(10).default(''),
+        title:       z.string().max(300).default(''),
+        description: z.string().max(2000).default(''),
+      })).max(100).default([]),
+      gallery:     z.array(z.object({
+        url:     z.string().max(2000),
+        caption: z.string().max(500).optional(),
+      })).max(100).default([]),
+      isPrivate:   z.boolean().default(false),
+      privacyPin:  z.string().max(72).default(''),
+    });
+    const parsed = CreateProfileSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return reply.code(422).send({ error: parsed.error.issues[0]?.message ?? 'Invalid input.' });
+    }
+    const { name, epitaph, dateOfBirth, dateOfDeath, portraitUrl, timeline, gallery, isPrivate, privacyPin } = parsed.data;
 
     const userId = (await resolveUserId(req)) ?? process.env.SEED_USER_ID;
     if (!userId) return reply.code(503).send({ error: 'Server not ready.' });
+
+    const parseDate = (s: string): Date | null => {
+      if (!s) return null;
+      const d = new Date(s);
+      return isNaN(d.getTime()) ? null : d;
+    };
 
     const shortId     = generateShortId();
     const hashedPin   = isPrivate && privacyPin ? await bcrypt.hash(privacyPin, 12) : null;
@@ -488,20 +564,20 @@ export function buildServer() {
       data: {
         short_id:      shortId,
         user_id:       userId,
-        full_name:     name.trim(),
+        full_name:     name,
         epitaph:       epitaph.trim() || null,
-        date_of_birth: dateOfBirth ? new Date(dateOfBirth) : null,
-        date_of_death: dateOfDeath ? new Date(dateOfDeath) : null,
+        date_of_birth: parseDate(dateOfBirth),
+        date_of_death: parseDate(dateOfDeath),
         portrait_url:  portraitUrl || null,
         is_private:    isPrivate,
         privacy_pin:   hashedPin,
         timeline: {
           create: timeline
-            .filter(t => t.title.trim())
+            .filter(t => t.title.trim() && /^\d{4}$/.test(t.year.trim()))
             .map(t => ({
               title:       t.title.trim(),
               description: t.description.trim() || null,
-              occurred_at: new Date(`${t.year}-07-01`), // mid-year keeps UTC safe
+              occurred_at: new Date(`${t.year.trim()}-07-01`), // mid-year keeps UTC safe
             })),
         },
         media: {
@@ -523,7 +599,7 @@ export function buildServer() {
   });
 
   // ── Admin: Fulfillment — list all orders ───────────────────────────────────
-  app.get('/admin/fulfillment', async (_req, reply) => {
+  app.get('/admin/fulfillment', { preHandler: requireOpsKey }, async (_req, reply) => {
     const profiles = await rawPrisma.profile.findMany({
       where:   { deleted_at: null },
       orderBy: { created_at: 'desc' },
@@ -565,6 +641,7 @@ export function buildServer() {
   // ── Admin: Fulfillment — mark as shipped ───────────────────────────────────
   app.patch<{ Params: { shortId: string }; Body: { trackingNumber: string } }>(
     '/admin/fulfillment/:shortId/ship',
+    { preHandler: requireOpsKey },
     async (req, reply) => {
       const { shortId }       = req.params;
       const { trackingNumber } = req.body;
@@ -591,6 +668,7 @@ export function buildServer() {
   // ── Admin: Fulfillment — update plaque status ──────────────────────────────
   app.patch<{ Params: { shortId: string }; Body: { status: string } }>(
     '/admin/fulfillment/:shortId/status',
+    { preHandler: requireOpsKey },
     async (req, reply) => {
       const { shortId } = req.params;
       const { status  } = req.body;
@@ -609,7 +687,7 @@ export function buildServer() {
   );
 
   // ── Admin: Analytics summary ──────────────────────────────────────────────
-  app.get('/admin/analytics/summary', async (_req, reply) => {
+  app.get('/admin/analytics/summary', { preHandler: requireOpsKey }, async (_req, reply) => {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
     const [totalProfiles, scanAggregate, users, topProfiles, topCityRows, pendingMediaCount, priorityTicketCount] = await Promise.all([
@@ -659,7 +737,7 @@ export function buildServer() {
   });
 
   // ── Admin: Profile directory (with owner info) ────────────────────────────
-  app.get('/admin/directory', async (_req, reply) => {
+  app.get('/admin/directory', { preHandler: requireOpsKey }, async (_req, reply) => {
     const profiles = await rawPrisma.profile.findMany({
       where:   { deleted_at: null },
       orderBy: { created_at: 'desc' },
@@ -690,7 +768,7 @@ export function buildServer() {
   });
 
   // ── Admin: List all media assets (ops dashboard) ────────────────────────────
-  app.get('/admin/media', async (_req, reply) => {
+  app.get('/admin/media', { preHandler: requireOpsKey }, async (_req, reply) => {
     const assets = await rawPrisma.mediaAsset.findMany({
       orderBy: { created_at: 'desc' },
       select: {
@@ -737,7 +815,7 @@ export function buildServer() {
   app.patch<{
     Params: { id: string };
     Body:   { status: 'APPROVED' | 'REJECTED' };
-  }>('/admin/media/:id/status', async (req, reply) => {
+  }>('/admin/media/:id/status', { preHandler: requireOpsKey }, async (req, reply) => {
     const { id }     = req.params;
     const { status } = req.body;
     if (status !== 'APPROVED' && status !== 'REJECTED') {
@@ -851,9 +929,13 @@ export function buildServer() {
   });
 
   // ── Pet Memorial Profile Page ────────────────────────────────────────────────
-  app.get<{ Params: { shortId: string } }>('/pet/:shortId', async (req, reply) =>
-    reply.header('Content-Type', 'text/html; charset=utf-8').send(renderPetProfile(MOCK_PET_PROFILE, req.params.shortId))
-  );
+  app.get<{ Params: { shortId: string } }>('/pet/:shortId', async (req, reply) => {
+    // The param is interpolated into the page — only accept short-id-shaped values.
+    if (!/^[a-z0-9]{1,12}$/i.test(req.params.shortId)) {
+      return reply.code(404).send({ error: 'Not found.' });
+    }
+    return reply.header('Content-Type', 'text/html; charset=utf-8').send(renderPetProfile(MOCK_PET_PROFILE, req.params.shortId));
+  });
 
   // ── Public Guestbook Submission ──────────────────────────────────────────────
   // Called by the "Share a Memory" form on the public profile page.
@@ -861,7 +943,9 @@ export function buildServer() {
   app.post<{
     Params: { profileId: string };
     Body:   { author_name: string; message: string; author_email?: string };
-  }>('/guestbook/:profileId', async (req, reply) => {
+  }>('/guestbook/:profileId', {
+    config: { rateLimit: { max: 10, timeWindow: 60 * 1000 } },
+  }, async (req, reply) => {
     const { profileId } = req.params;
     const { author_name, message, author_email } = req.body;
 
@@ -896,7 +980,7 @@ export function buildServer() {
   });
 
   // ── Admin: Support tickets ────────────────────────────────────────────────
-  app.get('/admin/support/tickets', async (_req, reply) => {
+  app.get('/admin/support/tickets', { preHandler: requireOpsKey }, async (_req, reply) => {
     const tickets = await rawPrisma.supportTicket.findMany({
       orderBy: { created_at: 'asc' },
       select: {
@@ -944,7 +1028,7 @@ export function buildServer() {
   app.patch<{
     Params: { id: string };
     Body:   { status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED' };
-  }>('/admin/support/tickets/:id/status', async (req, reply) => {
+  }>('/admin/support/tickets/:id/status', { preHandler: requireOpsKey }, async (req, reply) => {
     const { id }     = req.params;
     const { status } = req.body;
     const valid = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
@@ -976,7 +1060,7 @@ export function buildServer() {
     async (req, reply) => {
       const link = await lookupLink(req.params.shortId);
       if (!link) return reply.code(404).send({ error: 'Not found.' });
-      const limit  = Math.min(parseInt(req.query.limit ?? '100', 10) || 100, 500);
+      const limit  = Math.min(Math.max(parseInt(req.query.limit ?? '100', 10) || 100, 1), 500);
       const events = await getScanHistory(link.profileId, limit);
       return reply.send({ shortId: req.params.shortId, events });
     },
@@ -985,10 +1069,10 @@ export function buildServer() {
   // ── Ops: Top Scan Locations ─────────────────────────────────────────────────
   // Returns top scan cities with lat/lng for map rendering.
   // Uses Prisma _count to avoid loading raw scan rows.
-  app.get<{ Querystring: { days?: string; limit?: string } }>('/ops/scan-locations', async (req, reply) => {
+  app.get<{ Querystring: { days?: string; limit?: string } }>('/ops/scan-locations', { preHandler: requireOpsKey }, async (req, reply) => {
     reply.header('Access-Control-Allow-Origin', '*');
-    const days  = Math.min(parseInt(req.query.days  ?? '30',  10) || 30,  365);
-    const limit = Math.min(parseInt(req.query.limit ?? '20',  10) || 20,  100);
+    const days  = Math.min(Math.max(parseInt(req.query.days  ?? '30',  10) || 30, 1),  365);
+    const limit = Math.min(Math.max(parseInt(req.query.limit ?? '20',  10) || 20, 1),  100);
     const rows  = await getTopScanLocations(days, limit);
     return reply.send({ rows });
   });
@@ -996,7 +1080,7 @@ export function buildServer() {
   // ── Ops: QR Marker Map Data ─────────────────────────────────────────────────
   // Returns all QRMarker rows for the ops map.  Optimised with _count on
   // scan_logs so the client receives precomputed scan volumes in one query.
-  app.get('/ops/markers', async (_req, reply) => {
+  app.get('/ops/markers', { preHandler: requireOpsKey }, async (_req, reply) => {
     reply.header('Access-Control-Allow-Origin', '*');
     const markers = await rawPrisma.qRMarker.findMany({
       include: {
@@ -1017,12 +1101,18 @@ export function buildServer() {
   // ── Ops: Live Scan WebSocket ────────────────────────────────────────────────
   // The ops dashboard connects here to receive real-time scan events.
   // Each message is { type: 'scan', data: EnrichedScanEvent }.
-  app.get('/ops/ws', { websocket: true }, (socket) => {
+  app.get<{ Querystring: { key?: string } }>('/ops/ws', { websocket: true }, (socket, req) => {
+    // Browsers can't set headers on WebSocket upgrades, so the key rides in
+    // the query string: ws://…/ops/ws?key=<OPS_API_KEY>
+    if (OPS_API_KEY && req.query.key !== OPS_API_KEY) {
+      socket.close(1008, 'Unauthorised');
+      return;
+    }
     registerClient(socket);
   });
 
   // Soft-delete all profiles for a user account (ops operator action).
-  app.delete<{ Params: { userId: string } }>('/ops/account/:userId', async (req, reply) => {
+  app.delete<{ Params: { userId: string } }>('/ops/account/:userId', { preHandler: requireOpsKey }, async (req, reply) => {
     const { userId } = req.params;
     const result = await rawPrisma.profile.updateMany({
       where: { user_id: userId, deleted_at: null },
@@ -1034,6 +1124,7 @@ export function buildServer() {
   // Change plan for all active profiles on an account (ops operator action).
   app.patch<{ Params: { userId: string }; Body: { plan: string } }>(
     '/ops/account/:userId/plan',
+    { preHandler: requireOpsKey },
     async (req, reply) => {
       const { userId } = req.params;
       const { plan } = req.body;

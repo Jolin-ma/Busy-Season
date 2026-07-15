@@ -426,7 +426,7 @@ export function renderPetProfile(data: PetProfileData, shortId: string = 'demo')
         return;
       }
       try {
-        var res = await fetch('/guestbook/${shortId}', {
+        var res = await fetch(${JSON.stringify('/guestbook/' + shortId).replace(/</g, '\\u003c')}, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ author_name: author, message: text, author_email: email || undefined }),

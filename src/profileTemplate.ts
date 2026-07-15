@@ -9,6 +9,32 @@ export interface ProfileData {
   memories: { message: string; author: string; date: string }[];
 }
 
+// Escape user-supplied strings for HTML text/attribute contexts.
+// Profile names, epitaphs, timeline entries, captions, and guestbook messages
+// all come from users — rendering them raw is stored XSS.
+function esc(v: string | number): string {
+  return String(v)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// Safe embedding of a value inside an inline <script> block.
+// <-escaping prevents `</script>` breakout.
+function jsStr(v: unknown): string {
+  return JSON.stringify(v).replace(/</g, '\\u003c');
+}
+
+// Only allow http(s)/protocol-relative/relative/data-image URLs in src attributes
+// (blocks javascript: and other script-bearing schemes).
+function safeUrl(u: string): string {
+  const t = (u ?? '').trim();
+  if (/^(https?:)?\/\//i.test(t) || t.startsWith('/') || /^data:image\//i.test(t)) return t;
+  return '';
+}
+
 function yearsLived(birth: string, death: string): number {
   const b = new Date(birth);
   const d = new Date(death);
@@ -24,9 +50,9 @@ function renderTimeline(events: ProfileData['timeline']): string {
         <div class="w-px flex-1 bg-stone-200 mt-1"></div>
       </div>
       <div class="pb-2 flex-1">
-        <span class="inline-block text-[9px] font-bold tracking-[0.18em] uppercase text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full mb-1.5">${e.year}</span>
-        <h3 class="text-[0.9rem] font-semibold text-stone-800 leading-snug mb-1">${e.title}</h3>
-        <p class="text-[0.83rem] text-stone-500 leading-relaxed">${e.description}</p>
+        <span class="inline-block text-[9px] font-bold tracking-[0.18em] uppercase text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full mb-1.5">${esc(e.year)}</span>
+        <h3 class="text-[0.9rem] font-semibold text-stone-800 leading-snug mb-1">${esc(e.title)}</h3>
+        <p class="text-[0.83rem] text-stone-500 leading-relaxed">${esc(e.description)}</p>
       </div>
     </div>`).join('');
 }
@@ -35,7 +61,7 @@ function renderGallery(items: ProfileData['gallery']): string {
   return items.map((item, i) => `
     <button onclick="openLightbox(${i})"
       class="aspect-square rounded-2xl overflow-hidden bg-stone-100 shadow-sm active:scale-95 transition-transform">
-      <img src="${item.url}" alt="${item.caption ?? ''}" loading="lazy"
+      <img src="${esc(safeUrl(item.url))}" alt="${esc(item.caption ?? '')}" loading="lazy"
            class="w-full h-full object-cover transition-opacity duration-500 opacity-0 ll-img" />
     </button>`).join('');
 }
@@ -45,20 +71,20 @@ function renderMemories(memories: ProfileData['memories']): string {
     <div class="bg-white rounded-2xl px-5 pt-5 pb-4 shadow-sm border border-stone-100 memory-card" style="animation-delay:${i * 80}ms">
       <div class="flex gap-3 mb-3">
         <div class="w-8 h-8 rounded-full bg-stone-200 flex items-center justify-center text-stone-600 text-xs font-bold shrink-0">
-          ${m.author.charAt(0)}
+          ${esc(m.author.charAt(0))}
         </div>
         <div>
-          <p class="text-xs font-semibold text-stone-700 leading-none mb-0.5">${m.author}</p>
-          <p class="text-[10px] text-stone-400">${m.date}</p>
+          <p class="text-xs font-semibold text-stone-700 leading-none mb-0.5">${esc(m.author)}</p>
+          <p class="text-[10px] text-stone-400">${esc(m.date)}</p>
         </div>
       </div>
-      <p class="text-[0.85rem] text-stone-600 leading-relaxed italic">&ldquo;${m.message}&rdquo;</p>
+      <p class="text-[0.85rem] text-stone-600 leading-relaxed italic">&ldquo;${esc(m.message)}&rdquo;</p>
     </div>`).join('');
 }
 
 export function renderProfile(data: ProfileData, profileId: string = 'demo'): string {
   const age = yearsLived(data.birthDate, data.deathDate);
-  const galleryJson = JSON.stringify(data.gallery.map(g => ({ url: g.url, caption: g.caption ?? '' })));
+  const galleryJson = jsStr(data.gallery.map(g => ({ url: safeUrl(g.url), caption: g.caption ?? '' })));
   const initCandles = 24 + Math.floor(Math.random() * 12);
   const initHearts  = 18 + Math.floor(Math.random() * 10);
   const initFlowers = 11 + Math.floor(Math.random() * 8);
@@ -69,7 +95,7 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#1c1917" />
-  <title>${data.name} — LegacyLink</title>
+  <title>${esc(data.name)} — LegacyLink</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
@@ -145,9 +171,9 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
     <div class="flex items-center justify-between px-4 py-3 max-w-lg mx-auto">
       <div class="flex items-center gap-2.5 min-w-0">
         <div class="w-7 h-7 rounded-full overflow-hidden shrink-0 ring-1 ring-stone-200">
-          <img src="${data.portraitUrl}" alt="" class="w-full h-full object-cover" />
+          <img src="${esc(safeUrl(data.portraitUrl))}" alt="" class="w-full h-full object-cover" />
         </div>
-        <span class="font-serif text-sm font-semibold text-stone-800 truncate">${data.name}</span>
+        <span class="font-serif text-sm font-semibold text-stone-800 truncate">${esc(data.name)}</span>
       </div>
       <button onclick="openModal()"
         class="shrink-0 ml-3 px-3.5 py-2 bg-stone-900 text-white text-xs font-semibold rounded-full active:bg-stone-700 transition-colors">
@@ -164,7 +190,7 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
     <div class="relative z-10 flex flex-col items-center text-center px-6 pt-14 pb-12">
       <div class="mb-7 relative">
         <div class="w-32 h-32 rounded-full overflow-hidden ring-2 ring-amber-400/60 ring-offset-4 ring-offset-stone-900 shadow-2xl">
-          <img id="portrait-img" src="${data.portraitUrl}" alt="${data.name}" class="w-full h-full object-cover" />
+          <img id="portrait-img" src="${esc(safeUrl(data.portraitUrl))}" alt="${esc(data.name)}" class="w-full h-full object-cover" />
         </div>
         <div class="absolute -bottom-1 -right-1 w-7 h-7 bg-amber-400 rounded-full flex items-center justify-center shadow-md">
           <svg viewBox="0 0 20 20" fill="white" class="w-3.5 h-3.5">
@@ -173,9 +199,9 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
         </div>
       </div>
 
-      <h1 class="font-serif text-[2rem] font-semibold tracking-wide leading-tight mb-2">${data.name}</h1>
+      <h1 class="font-serif text-[2rem] font-semibold tracking-wide leading-tight mb-2">${esc(data.name)}</h1>
       <p class="text-stone-400 text-[0.7rem] tracking-[0.2em] uppercase mb-8">
-        ${data.birthDate}&ensp;&middot;&ensp;${data.deathDate}
+        ${esc(data.birthDate)}&ensp;&middot;&ensp;${esc(data.deathDate)}
       </p>
 
       <div class="flex items-center gap-3 mb-7 w-full max-w-xs">
@@ -187,7 +213,7 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
       </div>
 
       <blockquote class="font-serif italic text-stone-300 text-[1rem] max-w-[17rem] leading-relaxed mb-9">
-        &ldquo;${data.epitaph}&rdquo;
+        &ldquo;${esc(data.epitaph)}&rdquo;
       </blockquote>
 
       <div class="grid grid-cols-2 gap-3 w-full max-w-xs">
@@ -430,7 +456,7 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
     // Share
     function shareProfile() {
       if (navigator.share) {
-        navigator.share({ title: '${data.name} — LegacyLink', text: 'In loving memory of ${data.name}', url: window.location.href }).catch(function() {});
+        navigator.share({ title: ${jsStr(data.name + ' — LegacyLink')}, text: ${jsStr('In loving memory of ' + data.name)}, url: window.location.href }).catch(function() {});
       } else {
         navigator.clipboard.writeText(window.location.href).then(function() { showToast('copy-toast'); });
       }
@@ -464,7 +490,7 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
       btn.disabled = true;
       btn.innerHTML = '<svg class="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>&nbsp;Submitting…';
       try {
-        await fetch('/guestbook/${profileId}', {
+        await fetch(${jsStr('/guestbook/' + profileId)}, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ author_name: author, message: text, author_email: email || undefined }),

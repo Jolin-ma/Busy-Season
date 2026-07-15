@@ -86,7 +86,7 @@ async function seedDemo(): Promise<string> {
 }
 
 async function main() {
-  const app = buildServer();
+  const app = await buildServer();
 
   // Seed the demo profile and expose the seed user ID so unauthenticated
   // profile creation via /admin/link has a valid user_id to reference.

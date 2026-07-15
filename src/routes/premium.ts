@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { rawPrisma } from '../lib/db';
 import { getPending, moderateEntry } from '../guestbookStore';
+import { requireOpsKey } from '../lib/opsAuth';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -20,6 +21,19 @@ function cors(reply: any) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function premiumRoutes(app: FastifyInstance) {
+
+  // Guard every premium route (they expose guestbook author emails, grave
+  // coordinates, support tickets, …). Two exceptions:
+  //   - OPTIONS preflight
+  //   - the token-based activation endpoint, which is called by the public
+  //     /activate/:shortId page and is protected by the short-id token +
+  //     the one-time-pin rule below.
+  // The guard is a no-op until OPS_API_KEY is set (see lib/opsAuth.ts).
+  app.addHook('preHandler', async (req, reply) => {
+    if (req.method === 'OPTIONS') return;
+    if (req.method === 'POST' && req.url.split('?')[0] === '/api/v1/premium/navigation/activate') return;
+    return requireOpsKey(req, reply);
+  });
 
   // Preflight for all /api/v1/premium routes
   app.options('/api/v1/premium/*', async (_req, reply) =>
@@ -185,25 +199,22 @@ export async function premiumRoutes(app: FastifyInstance) {
       if (profile.plan !== 'PREMIUM')
         return cors(reply).code(403).send({ error: 'GPS activation requires a Premium plan.' });
 
-      const now    = new Date();
-      const coords = await rawPrisma.graveCoordinates.upsert({
-        where:  { profile_id: profile.id },
-        create: {
+      // First scan wins. The activation token is printed on the plaque itself,
+      // so anyone at the grave knows it — once pinned, re-pinning must go
+      // through the authenticated per-profile route, not this public one.
+      const existing = await rawPrisma.graveCoordinates.findUnique({
+        where: { profile_id: profile.id },
+      });
+      if (existing)
+        return cors(reply).code(409).send({ error: 'This memorial has already been pinned. Re-pin from the admin dashboard.' });
+
+      const coords = await rawPrisma.graveCoordinates.create({
+        data: {
           profile_id:      profile.id,
           latitude,
           longitude,
           accuracy_radius: gpsAccuracy ?? null,
-          pinned_at:       now,
-        },
-        update: {
-          latitude,
-          longitude,
-          accuracy_radius:   gpsAccuracy ?? null,
-          pinned_at:         now,
-          // Re-pinning voids the existing micro-nav gate since the position changed.
-          micro_nav_enabled: false,
-          gate_latitude:     null,
-          gate_longitude:    null,
+          pinned_at:       new Date(),
         },
       });
       return cors(reply).code(201).send({ profileId: profile.id, coordinates: coords });

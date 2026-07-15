@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import { FastifyInstance } from 'fastify';
 import { rawPrisma } from '../lib/db';
+import { requireOpsKey } from '../lib/opsAuth';
 
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
@@ -211,7 +212,7 @@ export async function successionRoutes(app: FastifyInstance) {
   );
 
   // ── GET /ops/succession/claims ─────────────────────────────────────────────
-  app.get('/ops/succession/claims', async (_req, reply) => {
+  app.get('/ops/succession/claims', { preHandler: requireOpsKey }, async (_req, reply) => {
     const claimed = await rawPrisma.legacyExecutor.findMany({
       where:   { status: 'CLAIMED' },
       orderBy: { claim_initiated_at: 'asc' },
@@ -238,6 +239,7 @@ export async function successionRoutes(app: FastifyInstance) {
     Body:   { action: 'approve' | 'reject'; opsNotes?: string };
   }>(
     '/ops/succession/claims/:executorId',
+    { preHandler: requireOpsKey },
     async (req, reply) => {
       const { action, opsNotes } = req.body;
       const executor = await rawPrisma.legacyExecutor.findUnique({

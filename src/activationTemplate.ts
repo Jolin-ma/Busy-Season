@@ -1,3 +1,13 @@
+// fullName is user-supplied — escape it for the HTML context.
+function esc(v: string): string {
+  return v
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function renderActivationPage(shortId: string, fullName: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
@@ -31,7 +41,7 @@ export function renderActivationPage(shortId: string, fullName: string): string 
     <h1 class="text-xl font-semibold text-stone-800 mb-1" style="font-family:'Playfair Display',serif">
       Activate Gravesite Location
     </h1>
-    <p class="text-stone-500 text-sm mb-4">${fullName}</p>
+    <p class="text-stone-500 text-sm mb-4">${esc(fullName)}</p>
     <p class="text-stone-400 text-sm leading-relaxed mb-8 max-w-xs mx-auto">
       Stand directly at the grave marker, then tap <strong class="text-stone-600">Pin This Location</strong>.
       Your device GPS will capture the exact coordinates — no typing required.
@@ -121,7 +131,7 @@ export function renderActivationPage(shortId: string, fullName: string): string 
   <p class="text-[10px] text-stone-300 mt-10 absolute bottom-6">LegacyLink &mdash; Memorial Location Setup</p>
 
   <script>
-    var shortId = '${shortId}';
+    var shortId = ${JSON.stringify(shortId).replace(/</g, '\\u003c')};
     var draft   = null;
 
     function show(state) {

@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import Stripe from 'stripe';
 import { rawPrisma } from '../lib/db';
+import { requireOpsKey } from '../lib/opsAuth';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? 'sk_test_placeholder');
 
@@ -9,9 +10,22 @@ const DUP_WINDOW_MS = 5 * 60 * 1000;
 
 export async function billingRoutes(fastify: FastifyInstance) {
 
+  // Scoped to this plugin: parse JSON bodies but keep the raw bytes on
+  // req.rawBody — Stripe signature verification needs the exact raw payload,
+  // and Fastify's default parser discards it.
+  fastify.addContentTypeParser('application/json', { parseAs: 'buffer' }, (req, body: Buffer, done) => {
+    (req as unknown as { rawBody: Buffer }).rawBody = body;
+    try {
+      done(null, body.length ? JSON.parse(body.toString('utf8')) : {});
+    } catch (err) {
+      (err as { statusCode?: number }).statusCode = 400;
+      done(err as Error, undefined);
+    }
+  });
+
   // ── GET /ops/billing/accounts ─────────────────────────────────────────────
   // Returns all users with their transaction summary for the billing panel list.
-  fastify.get('/ops/billing/accounts', async (_req, reply) => {
+  fastify.get('/ops/billing/accounts', { preHandler: requireOpsKey }, async (_req, reply) => {
     const users = await rawPrisma.user.findMany({
       where: { profiles: { some: { deleted_at: null } } },
       select: {
@@ -60,7 +74,7 @@ export async function billingRoutes(fastify: FastifyInstance) {
 
   // ── GET /ops/billing/account/:userId ──────────────────────────────────────
   // Full transaction ledger for a single account.
-  fastify.get<{ Params: { userId: string } }>('/ops/billing/account/:userId', async (req, reply) => {
+  fastify.get<{ Params: { userId: string } }>('/ops/billing/account/:userId', { preHandler: requireOpsKey }, async (req, reply) => {
     const [user, tickets] = await Promise.all([
       rawPrisma.user.findUnique({
         where:  { id: req.params.userId },
@@ -124,7 +138,7 @@ export async function billingRoutes(fastify: FastifyInstance) {
   // ── POST /admin/billing/switch-to-lifetime ────────────────────────────────
   // Converts a monthly subscriber to a one-time lifetime payment.
   // Only permitted within the first 3 paid months (90-day window).
-  fastify.post<{ Body: { userId: string } }>('/admin/billing/switch-to-lifetime', async (req, reply) => {
+  fastify.post<{ Body: { userId: string } }>('/admin/billing/switch-to-lifetime', { preHandler: requireOpsKey }, async (req, reply) => {
     reply.header('Access-Control-Allow-Origin', '*');
     const { userId } = req.body;
 
@@ -152,7 +166,7 @@ export async function billingRoutes(fastify: FastifyInstance) {
   // Issues a full or partial refund via Stripe and mirrors the result locally.
   fastify.post<{
     Body: { transactionId: string; reason?: string; amountCents?: number }
-  }>('/admin/billing/refund', async (req, reply) => {
+  }>('/admin/billing/refund', { preHandler: requireOpsKey }, async (req, reply) => {
     reply.header('Access-Control-Allow-Origin', '*');
     const { transactionId, reason = 'duplicate', amountCents } = req.body;
 
@@ -160,24 +174,29 @@ export async function billingRoutes(fastify: FastifyInstance) {
     if (!tx)           return reply.code(404).send({ error: 'Transaction not found.' });
     if (tx.refunded)   return reply.code(409).send({ error: 'Transaction already fully refunded.' });
 
+    // Refunds accumulate across calls — never exceed what's left on the charge.
+    const remaining     = tx.amount - tx.refunded_amount;
+    const refundedCents = amountCents ?? remaining;
+    if (!Number.isInteger(refundedCents) || refundedCents <= 0 || refundedCents > remaining) {
+      return reply.code(400).send({ error: `Refund amount must be between 1 and ${remaining} cents.` });
+    }
+
     try {
-      const refundParams: Parameters<typeof stripe.refunds.create>[0] = {
+      const refund = await stripe.refunds.create({
         charge: transactionId,
+        amount: refundedCents,
         reason: reason as 'duplicate' | 'fraudulent' | 'requested_by_customer',
-      };
-      if (amountCents) refundParams.amount = amountCents;
+      });
 
-      const refund = await stripe.refunds.create(refundParams);
-
-      const refundedCents = amountCents ?? tx.amount;
-      const isFullRefund  = refundedCents >= tx.amount;
+      const newTotal     = tx.refunded_amount + refundedCents;
+      const isFullRefund = newTotal >= tx.amount;
 
       const updated = await rawPrisma.transaction.update({
         where: { id: transactionId },
         data:  {
           status:          isFullRefund ? 'REFUNDED' : 'PARTIALLY_REFUNDED',
           refunded:        isFullRefund,
-          refunded_amount: refundedCents,
+          refunded_amount: newTotal,
           refund_reason:   reason,
         },
       });
@@ -192,19 +211,20 @@ export async function billingRoutes(fastify: FastifyInstance) {
 
   // ── POST /stripe/webhook ──────────────────────────────────────────────────
   // Receives Stripe events, writes Transaction rows, and flags duplicates.
-  fastify.post('/stripe/webhook', {
-    config: { rawBody: true },      // Fastify must expose the raw body for sig verification
-  }, async (req, reply) => {
-    const sig = req.headers['stripe-signature'] as string;
+  fastify.post('/stripe/webhook', async (req, reply) => {
+    if (!process.env.STRIPE_WEBHOOK_SECRET) {
+      fastify.log.error('STRIPE_WEBHOOK_SECRET is not set — rejecting webhook.');
+      return reply.code(503).send({ error: 'Webhook not configured.' });
+    }
+
+    const sig     = req.headers['stripe-signature'] as string;
+    const rawBody = (req as unknown as { rawBody?: Buffer }).rawBody;
+    if (!sig || !rawBody) return reply.code(400).send({ error: 'Invalid webhook signature.' });
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let event: any;
-
     try {
-      event = stripe.webhooks.constructEvent(
-        (req as unknown as { rawBody: Buffer }).rawBody,
-        sig,
-        process.env.STRIPE_WEBHOOK_SECRET ?? '',
-      );
+      event = stripe.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
     } catch {
       return reply.code(400).send({ error: 'Invalid webhook signature.' });
     }
