@@ -1,7 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { rawPrisma } from '../lib/db';
 import { getPending, moderateEntry } from '../guestbookStore';
-import { requireOpsKey } from '../lib/opsAuth';
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -22,19 +21,14 @@ function cors(reply: any) {
 
 export async function premiumRoutes(app: FastifyInstance) {
 
-  // Guard every premium route (they expose guestbook author emails, grave
-  // coordinates, support tickets, …). Two exceptions:
-  //   - OPTIONS preflight
-  //   - the token-based activation endpoint, which is called by the public
-  //     /activate/:shortId page and is protected by the short-id token +
-  //     the one-time-pin rule below.
-  // The guard is a no-op until OPS_API_KEY is set (see lib/opsAuth.ts).
-  app.addHook('preHandler', async (req, reply) => {
-    if (req.method === 'OPTIONS') return;
-    if (req.method === 'POST' && req.url.split('?')[0] === '/api/v1/premium/navigation/activate') return;
-    return requireOpsKey(req, reply);
-  });
-
+  // NOT gated by OPS_API_KEY: these routes back customer-facing premium
+  // features (guestbook moderation, priority support, geotagging, family
+  // tree) called directly from the admin app's browser code — the same
+  // paying customers who own the profile, not internal ops staff. There's
+  // no per-user session check on these yet (same gap as /admin/link/:id/privacy
+  // and /admin/plan — see CLAUDE.md); that needs resolveUserId + an
+  // ownership check tied to profileId, not a single shared ops secret that
+  // would otherwise have to ship to every customer's browser.
   // Preflight for all /api/v1/premium routes
   app.options('/api/v1/premium/*', async (_req, reply) =>
     cors(reply).code(204).send()

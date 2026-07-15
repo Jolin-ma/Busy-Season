@@ -108,13 +108,14 @@ When modifying the schema, always run `npm run db:generate` before TypeScript co
 
 ## Production deployment
 
-Three independent deployments from this one repo, each its own host/project:
+Four independent deployments from this one repo, each its own host/project:
 
 | App | Root Directory | Host | Domain |
 |---|---|---|---|
 | Marketing site (`website/`) | `.` (repo root `vercel.json`, `outputDirectory: website`) | Vercel | `legacylinkstudio.com` |
 | Admin UI (`admin/`) | `admin` (own `admin/vercel.json`) | Vercel (separate project) | `app.legacylinkstudio.com` |
 | Fastify API (`src/`) | `.` (repo root) | Railway | `api.legacylinkstudio.com` |
+| Ops dashboard (`ops-dashboard/`) | `ops-dashboard` (own `ops-dashboard/vercel.json`) | Vercel (separate project) | `ops.legacylinkstudio.com` |
 
 - **DNS** is managed at Namecheap (not delegated to Vercel), so every subdomain needs a manual CNAME record added there, even though the apex domain is a Vercel project.
 - **Database**: Neon project `legacylink`, branch `prod-railway`. Root `.env`/local dev points at a separate branch — never at prod.
@@ -122,8 +123,9 @@ Three independent deployments from this one repo, each its own host/project:
 - **`ADMIN_URL`** (Railway env var) and **`NEXT_PUBLIC_API_URL`** (Vercel admin project env var) must point at each other's production domain, or CORS/signup breaks. `NEXT_PUBLIC_API_URL` is baked in at build time — changing it requires a fresh deploy, not just a dashboard save.
 - **Session cookie is `sameSite: 'strict'`** (`src/router.ts`), so the admin app and API must share a root domain (`legacylinkstudio.com`) — if either ever moves to an unrelated domain, login breaks silently.
 - **`JWT_SECRET`** (Railway env var, Fastify API) is mandatory in production — the server refuses to start without it rather than falling back to the dev secret.
-- **`OPS_API_KEY`** gates all ops/back-office routes on the Fastify API (`/ops/*` except `/ops/ws`, `/admin/fulfillment*`, `/admin/directory`, `/admin/media*`, `/admin/analytics/*`, `/admin/support/*`, `/admin/billing/*`, `/api/v1/premium/*` except the public activation endpoint, plus the media-cleanup and Lambda-webhook endpoints). Callers send `x-ops-key: <key>`. **When unset the guard is disabled** so local dev works with zero config.
-  - Set the **same** `OPS_API_KEY` value in two places: on the **Fastify API host (Railway)**, which checks it, and on whatever host runs `ops-dashboard/` in production, which sends it.
+- **`OPS_API_KEY`** gates internal-only back-office routes on the Fastify API (`/ops/*` except `/ops/ws`, `/admin/fulfillment*`, `/admin/directory`, `/admin/media*`, `/admin/analytics/*`, `/admin/support/*`, `/admin/billing/*`, plus the media-cleanup and Lambda-webhook endpoints). Callers send `x-ops-key: <key>`. **When unset the guard is disabled** so local dev works with zero config.
+  - **`/api/v1/premium/*` is deliberately NOT gated by this key** (`src/routes/premium.ts`), even though it lives next to the ops-only routes. It backs customer-facing premium features (guestbook moderation, priority support, geotagging, family tree) called directly from the **admin app's** browser code by the paying customers who own the profile — not internal ops staff. It was gated once by mistake, which 401'd those features in production for every admin-app user until reverted. If you're tempted to add auth here, it needs a per-user session check (`resolveUserId` + an ownership check tied to `profileId`), not a shared ops secret — an ops secret would either have to ship to every customer's browser (defeating its purpose) or be proxied per-request with no way to distinguish which customer is asking.
+  - Set the **same** `OPS_API_KEY` value in two places: on the **Fastify API host (Railway)**, which checks it, and on the **ops dashboard's Vercel project**, which sends it.
   - `ops-dashboard`'s browser code never touches this key directly — it isn't safe to ship a secret into a `NEXT_PUBLIC_*` var since these client components render with no login of their own. Instead, `ops-dashboard/app/api/gw/[...path]/route.ts` is a server-side catch-all proxy: the browser calls same-origin `/api/gw/<fastify-path>`, and that Next.js route (running server-side, reading the plain `OPS_API_KEY` env var — no `NEXT_PUBLIC_` prefix) attaches `x-ops-key` and forwards to Fastify. All ops-dashboard client components that hit a guarded route go through `/api/gw/...` rather than calling `NEXT_PUBLIC_API_URL` directly.
   - `/ops/ws` (the live-scan WebSocket) is deliberately **exempt** from the guard — browsers can't set custom headers on a WS upgrade, and putting the key in a query string would mean shipping it to the browser, undermining the guard everywhere else. Known gap until the ops dashboard has its own login and can mint scoped, short-lived tickets.
-  - `ops-dashboard/` is not yet in the production deployment table below — it has no host documented here. Wherever it's deployed, `OPS_API_KEY` must be set as a **server-only** env var (not `NEXT_PUBLIC_`) on that host too.
+  - Before gating any *new* route with this key, check whether the admin app (customer-facing) calls it too — grep `admin/` for the path first. Everything currently gated was cross-checked against admin's actual fetch calls (see git history on this file), except `/api/v1/premium/*`, which was missed the first time.
