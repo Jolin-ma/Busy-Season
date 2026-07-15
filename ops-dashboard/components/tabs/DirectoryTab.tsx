@@ -1,8 +1,6 @@
 'use client';
 import { useState, useMemo, useEffect } from 'react';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
-
 type PlaqueStatus = 'ORDER_RECEIVED' | 'ENGRAVING' | 'SHIPPED' | 'DELIVERED';
 
 const STATUS_STYLE: Record<PlaqueStatus, { bg: string; text: string; dot: string; label: string }> = {
@@ -38,7 +36,7 @@ export default function DirectoryTab() {
   const [impersonating, setImpersonating] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${API}/admin/directory`)
+    fetch('/api/gw/admin/directory')
       .then(r => r.json())
       .then((d: { profiles?: DirectoryProfile[] }) => setProfiles(d.profiles ?? []))
       .catch(() => {});

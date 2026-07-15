@@ -4,8 +4,6 @@ import ScanTrendsChart from '@/components/ScanTrendsChart';
 import DeviceChart from '@/components/DeviceChart';
 import TopScanLocationSection from '@/components/TopScanLocationSection';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
-
 interface AnalyticsSummary {
   totalProfiles: number;
   totalScans:    number;
@@ -29,7 +27,7 @@ export default function AnalyticsTab() {
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
 
   useEffect(() => {
-    fetch(`${API}/admin/analytics/summary`)
+    fetch('/api/gw/admin/analytics/summary')
       .then(r => r.json())
       .then((d: AnalyticsSummary) => setSummary(d))
       .catch(() => {});

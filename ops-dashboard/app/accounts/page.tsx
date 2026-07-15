@@ -133,7 +133,7 @@ function AccountDetail({
     if (!detail) return;
     setDeleting(true);
     try {
-      await fetch(`${API}/ops/account/${detail.id}`, { method: 'DELETE' });
+      await fetch(`/api/gw/ops/account/${detail.id}`, { method: 'DELETE' });
       onDelete();
     } finally {
       setDeleting(false);
@@ -145,7 +145,7 @@ function AccountDetail({
     if (!detail) return;
     setPlanSaving(true);
     try {
-      await fetch(`${API}/ops/account/${detail.id}/plan`, {
+      await fetch(`/api/gw/ops/account/${detail.id}/plan`, {
         method:  'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ plan }),
@@ -184,7 +184,7 @@ function AccountDetail({
     setQrStates(s => ({ ...s, [shortId]: next }));
     setQrSaving(s => ({ ...s, [shortId]: true }));
     try {
-      await fetch(`${API}/admin/profile/${shortId}/qr-active`, {
+      await fetch(`/api/gw/admin/profile/${shortId}/qr-active`, {
         method:  'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ isQrActive: next }),
@@ -620,7 +620,7 @@ function AccountsInner() {
 
   // Fetch account list
   useEffect(() => {
-    fetch(`${API}/ops/billing/accounts`)
+    fetch('/api/gw/ops/billing/accounts')
       .then(r => r.json())
       .then((d: { accounts?: AccountSummary[] }) => setAccounts(d.accounts ?? []))
       .catch(() => {});
@@ -630,7 +630,7 @@ function AccountsInner() {
   const fetchDetail = useCallback((id: string) => {
     setDetailLoading(true);
     setDetail(null);
-    fetch(`${API}/ops/billing/account/${id}`)
+    fetch(`/api/gw/ops/billing/account/${id}`)
       .then(r => r.json())
       .then((d: { account?: AccountDetail }) => {
         if (d.account) setDetail(d.account);

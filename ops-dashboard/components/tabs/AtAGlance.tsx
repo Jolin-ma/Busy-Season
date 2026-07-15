@@ -2,8 +2,6 @@
 import { useState, useEffect } from 'react';
 import { SUMMARY, SUPPORT_TICKETS, FLAGGED_ITEMS } from '@/lib/mock-data';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
-
 // ── System health (mock) ──────────────────────────────────────────────────────
 const HEALTH = {
   api:      { label: 'Fastify API',        ms: 42,   uptime: 99.94, ok: true  },
@@ -41,7 +39,7 @@ export default function AtAGlance() {
   const [mrr,              setMrr]              = useState(0);
 
   useEffect(() => {
-    fetch(`${API}/admin/fulfillment`)
+    fetch('/api/gw/admin/fulfillment')
       .then(r => r.json())
       .then((d: { orders?: { plaqueStatus: string }[] }) => {
         const orders = d.orders ?? [];
@@ -50,7 +48,7 @@ export default function AtAGlance() {
       })
       .catch(() => {});
 
-    fetch(`${API}/ops/billing/accounts`)
+    fetch('/api/gw/ops/billing/accounts')
       .then(r => r.json())
       .then((d: { accounts?: { plan: string; hasDuplicate: boolean }[] }) => {
         const accounts = d.accounts ?? [];

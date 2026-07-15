@@ -2,8 +2,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Sidebar from '@/components/Sidebar';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
-
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type TicketStatus   = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
@@ -363,7 +361,7 @@ export default function SupportPage() {
   const [contextTicket, setContextTicket] = useState<Ticket | null>(null);
 
   useEffect(() => {
-    fetch(`${API}/admin/support/tickets`)
+    fetch('/api/gw/admin/support/tickets')
       .then(r => r.json())
       .then((d: { tickets?: Ticket[] }) => setTickets(d.tickets ?? []))
       .catch(() => {});
@@ -371,7 +369,7 @@ export default function SupportPage() {
 
   const updateStatus = useCallback((id: string, status: TicketStatus) => {
     setTickets(prev => prev.map(t => t.id === id ? { ...t, status } : t));
-    fetch(`${API}/admin/support/tickets/${id}/status`, {
+    fetch(`/api/gw/admin/support/tickets/${id}/status`, {
       method:  'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ status }),

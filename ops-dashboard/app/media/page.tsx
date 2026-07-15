@@ -2,8 +2,6 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '@/components/Sidebar';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
-
 type MediaType = 'PHOTO' | 'VIDEO' | 'AUDIO';
 type ModerationStatus = 'PENDING' | 'APPROVED' | 'FLAGGED' | 'REJECTED';
 
@@ -58,7 +56,7 @@ export default function MediaPage() {
   const [preview, setPreview]   = useState<MediaAsset | null>(null);
 
   useEffect(() => {
-    fetch(`${API}/admin/media`)
+    fetch('/api/gw/admin/media')
       .then(r => r.json())
       .then(d => setAssets(d.assets ?? []))
       .catch(() => setError('Could not reach the backend.'))

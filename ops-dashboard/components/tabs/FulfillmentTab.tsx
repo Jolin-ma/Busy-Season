@@ -2,8 +2,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import FulfillmentQueue, { type FulfillmentProfile } from '@/components/FulfillmentQueue';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
-
 type PlaqueStatus = 'ORDER_RECEIVED' | 'ENGRAVING' | 'SHIPPED' | 'DELIVERED';
 
 interface FulfillmentOrder {
@@ -137,7 +135,7 @@ export default function FulfillmentTab() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const res  = await fetch(`${API}/admin/fulfillment`);
+      const res  = await fetch('/api/gw/admin/fulfillment');
       const data = await res.json();
       setOrders(data.orders ?? []);
     } catch {
@@ -154,7 +152,7 @@ export default function FulfillmentTab() {
   };
 
   const handleShip = async (shortId: string, trackingNumber: string) => {
-    await fetch(`${API}/admin/fulfillment/${shortId}/ship`, {
+    await fetch(`/api/gw/admin/fulfillment/${shortId}/ship`, {
       method:  'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ trackingNumber }),

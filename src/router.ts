@@ -1101,13 +1101,14 @@ export async function buildServer() {
   // ── Ops: Live Scan WebSocket ────────────────────────────────────────────────
   // The ops dashboard connects here to receive real-time scan events.
   // Each message is { type: 'scan', data: EnrichedScanEvent }.
-  app.get<{ Querystring: { key?: string } }>('/ops/ws', { websocket: true }, (socket, req) => {
-    // Browsers can't set headers on WebSocket upgrades, so the key rides in
-    // the query string: ws://…/ops/ws?key=<OPS_API_KEY>
-    if (OPS_API_KEY && req.query.key !== OPS_API_KEY) {
-      socket.close(1008, 'Unauthorised');
-      return;
-    }
+  // Deliberately NOT gated by OPS_API_KEY: browsers can't set custom headers
+  // on a WebSocket upgrade, so the only way to check the key here would be a
+  // ?key= query param — which would require shipping the master ops key to
+  // the browser (in ops-dashboard's client bundle), defeating the guard on
+  // every other route. This feed is read-only scan telemetry (no PII beyond
+  // IP/city), so the trade-off is accepted for now. Revisit once the ops
+  // dashboard has its own login and can mint short-lived, scoped tickets.
+  app.get('/ops/ws', { websocket: true }, (socket) => {
     registerClient(socket);
   });
 

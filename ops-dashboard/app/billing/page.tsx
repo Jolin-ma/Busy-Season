@@ -4,8 +4,6 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import Sidebar from '@/components/Sidebar';
 import AccountBillingPanel from '@/components/billing/AccountBillingPanel';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
-
 export interface BillingAccountSummary {
   id:                 string;
   name:               string;
@@ -61,7 +59,7 @@ export default function BillingPage() {
   });
 
   useEffect(() => {
-    fetch(`${API}/ops/billing/accounts`)
+    fetch('/api/gw/ops/billing/accounts')
       .then(r => r.json())
       .then(d => {
         const accs: BillingAccountSummary[] = d.accounts ?? [];
@@ -76,7 +74,7 @@ export default function BillingPage() {
   const fetchDetail = useCallback(async (userId: string) => {
     setDetailLoading(true);
     try {
-      const res  = await fetch(`${API}/ops/billing/account/${userId}`);
+      const res  = await fetch(`/api/gw/ops/billing/account/${userId}`);
       const data = await res.json();
       if (data.account) {
         const acct = data.account as BillingAccountDetail;

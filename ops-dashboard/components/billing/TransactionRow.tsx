@@ -4,8 +4,6 @@ import { useState } from 'react';
 import RefundModal from './RefundModal';
 import type { BillingTransaction } from '@/app/billing/page';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
-
 interface Props {
   tx:        BillingTransaction;
   onRefresh: () => void;
@@ -30,7 +28,7 @@ export default function TransactionRow({ tx, onRefresh }: Props) {
   const { dot, text, label } = STATUS_STYLE[tx.status];
 
   async function handleConfirm(reason: string) {
-    const res = await fetch(`${API}/admin/billing/refund`, {
+    const res = await fetch('/api/gw/admin/billing/refund', {
       method:  'POST',
       headers: { 'Content-Type': 'application/json' },
       body:    JSON.stringify({ transactionId: tx.id, reason }),

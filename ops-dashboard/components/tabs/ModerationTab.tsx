@@ -1,7 +1,6 @@
 'use client';
 import { useState, useMemo, useEffect, useCallback } from 'react';
 
-const API             = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 const STORAGE_TOTAL_GB = 500;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -695,7 +694,7 @@ export default function ModerationTab() {
   const [assets, setAssets] = useState<RealAsset[]>([]);
 
   useEffect(() => {
-    fetch(`${API}/admin/media`)
+    fetch('/api/gw/admin/media')
       .then(r => r.json())
       .then((d: { assets?: RealAsset[] }) => setAssets(d.assets ?? []))
       .catch(() => {});
@@ -706,7 +705,7 @@ export default function ModerationTab() {
     setAssets(prev => prev.map(a => ids.includes(a.id) ? { ...a, moderationStatus: next } : a));
     // Persist each in the background
     ids.forEach(id => {
-      fetch(`${API}/admin/media/${id}/status`, {
+      fetch(`/api/gw/admin/media/${id}/status`, {
         method:  'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ status: next }),

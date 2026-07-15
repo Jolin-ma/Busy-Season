@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
 
 const NAV_MAIN = [
   {
@@ -38,7 +37,7 @@ export default function Sidebar() {
   const [claimsCount,    setClaimsCount]    = useState(0);
 
   useEffect(() => {
-    fetch(`${API}/admin/fulfillment`)
+    fetch('/api/gw/admin/fulfillment')
       .then(r => r.json())
       .then((d: { orders?: { plaqueStatus: string }[] }) => {
         setPendingOrders(
@@ -47,21 +46,21 @@ export default function Sidebar() {
       })
       .catch(() => {});
 
-    fetch(`${API}/ops/billing/accounts`)
+    fetch('/api/gw/ops/billing/accounts')
       .then(r => r.json())
       .then((d: { accounts?: { hasDuplicate: boolean }[] }) => {
         setDupCount((d.accounts ?? []).filter(a => a.hasDuplicate).length);
       })
       .catch(() => {});
 
-    fetch(`${API}/admin/support/tickets`)
+    fetch('/api/gw/admin/support/tickets')
       .then(r => r.json())
       .then((d: { tickets?: { status: string }[] }) => {
         setNewCount((d.tickets ?? []).filter(t => t.status === 'OPEN').length);
       })
       .catch(() => {});
 
-    fetch(`${API}/ops/succession/claims`)
+    fetch('/api/gw/ops/succession/claims')
       .then(r => r.json())
       .then((d: { claims?: unknown[] }) => setClaimsCount((d.claims ?? []).length))
       .catch(() => {});

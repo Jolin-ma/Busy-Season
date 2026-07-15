@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { buildManufacturerPayload } from '@/lib/qr';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+const API         = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
+const OPS_API_KEY = process.env.OPS_API_KEY ?? ''; // server-only; never sent to the browser
 
 // POST /api/manufacturing — advance profiles to ENGRAVING and build manufacturer payload
 // Body: { shortIds: string[] }
@@ -26,7 +27,10 @@ export async function POST(req: NextRequest) {
       shortIds.map(id =>
         fetch(`${API}/admin/fulfillment/${id}/status`, {
           method:  'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(OPS_API_KEY ? { 'x-ops-key': OPS_API_KEY } : {}),
+          },
           body:    JSON.stringify({ status: 'ENGRAVING' }),
         }),
       ),

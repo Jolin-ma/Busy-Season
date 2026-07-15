@@ -2,8 +2,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import Sidebar from '@/components/Sidebar';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000';
-
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface ClaimProfile {
@@ -64,7 +62,7 @@ function ClaimRow({
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch(`${API}/ops/succession/claims/${claim.id}`, {
+      const res = await fetch(`/api/gw/ops/succession/claims/${claim.id}`, {
         method:  'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ action, opsNotes: opsNotes.trim() || undefined }),
@@ -218,7 +216,7 @@ export default function SuccessionPage() {
   const load = useCallback(() => {
     setLoading(true);
     setError(null);
-    fetch(`${API}/ops/succession/claims`)
+    fetch('/api/gw/ops/succession/claims')
       .then(r => r.ok ? r.json() : Promise.reject(r))
       .then((d: { claims: Claim[] }) => setClaims(d.claims))
       .catch(() => setError('Failed to load claims. Is the Fastify server running?'))
