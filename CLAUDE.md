@@ -18,9 +18,12 @@ They never share `node_modules`. Run `npm install` separately in each.
 
 **Fastify (repo root)**
 ```bash
-npm run dev          # ts-node, hot-ish reload
-npm run build        # tsc → dist/
+npm run dev          # ts-node, hot-ish reload (does NOT watch client/ — see below)
+npm run build        # tsc → dist/, then bundles client/ via build:client
 npm run start        # node dist/index.js
+
+npm run build:client # esbuild client/background-entry.tsx → public/static/background-paths.js
+npm run dev:client   # same, with --watch — run in a second terminal while editing client/*.tsx
 
 npm run db:generate  # regenerate Prisma client after schema changes
 npm run db:migrate   # create + apply a new migration (needs DATABASE_URL)
@@ -104,6 +107,14 @@ Next.js ops dashboard (port 3002) — internal staff only, no login of its own y
 - **`src/router.ts`** — all Fastify routes. All db calls are async/await.
 - **`src/index.ts`** — entry point. Seeds demo user + Margaret's profile via Prisma upsert at startup; stores `SEED_USER_ID` in `process.env` for unauthenticated profile creation.
 
+### Client-side bundle (`client/`)
+
+The only React/JSX in this repo outside `admin/` and `ops-dashboard/`. Isolated on purpose from the server's TypeScript build:
+- **`client/tsconfig.client.json`** — separate `jsx`-enabled tsconfig, `include: ["**/*"]` scoped to `client/`. The root `tsconfig.json` (`include: ["src/**/*"]`) never touches these files, so `npm run build`'s `tsc` step is unaffected.
+- **`client/BackgroundPaths.tsx`** + **`client/background-entry.tsx`** — the animated line background behind the profile hero (framer-motion), mounted into `#bg-paths-root` in `src/profileTemplate.ts`.
+- Bundled by **esbuild** (`npm run build:client` / `dev:client`, see Commands above) into `public/static/background-paths.js`, served by a second `@fastify/static` registration in `src/router.ts` (`prefix: '/static/'`, deliberately no sandbox CSP — unlike `/uploads/`, this directory only ever holds the server's own build output and must execute as JS).
+- If you add more client-side React, this is the pattern to extend, not a one-off.
+
 ### Prisma (Prisma 7)
 
 Prisma 7 is a breaking change from earlier versions:
@@ -126,9 +137,11 @@ When modifying the schema, always run `npm run db:generate` before TypeScript co
 - **Soft delete only.** Deleting a profile sets `deleted_at = now()`. The `db` client extension makes this invisible to all standard reads. Hard deletion is a separate admin-only operation. Use `rawPrisma` to see tombstoned records.
 - **Guestbook entries are unapproved by default** (`is_approved: false`). Public profile queries must always filter on `is_approved: true`.
 - **The demo `short_id` `a5trneuj`** is hardcoded in both `src/index.ts` (Fastify seed) and `admin/app/page.tsx` (Next.js dashboard mock). Both must stay in sync.
+- **The demo profile is pinned to `plan: 'BASIC'`** in the seed upsert (`src/index.ts`). If it's ever `PREMIUM` with no `GraveCoordinates` row, scanning its QR redirects to the one-time GPS `/activate/:shortId` flow instead of the profile — this bit the demo once already.
 
 ## Pending / stub areas
 
+- **PIN gate is currently disabled** — the `if (link.isPrivate)` checks in both `/r/:shortId` and `/p/:shortId` (`src/router.ts`) are commented out (not deleted), so every profile scan goes straight through regardless of `is_private`. This was done temporarily to preview/iterate on the profile template without re-entering a PIN each time. Re-enable by uncommenting those two blocks before treating private profiles as actually gated.
 - **Scan history** — in-memory only, lost on restart. Designed to be replaced with a message queue (SQS/Kafka).
 - **Ops dashboard has no login of its own.** Anyone with the URL can view it; the only real protection is that `OPS_API_KEY` (server-side only) gates the Fastify calls it proxies. `/ops/ws` isn't even gated by that (see below). Add real auth before treating this as more than a soft barrier.
 - **No per-user ownership check on customer-facing premium/admin-link routes** (`/api/v1/premium/*`, `/admin/link/:shortId/privacy`, `/admin/plan`, `/admin/profile`, `/admin/upload*`) — the admin app calls these with no session header at all right now. Anyone who knows or guesses a `shortId`/`profileId` can currently hit them. Needs `resolveUserId` + an ownership check tied to the profile, not the shared ops key (see `OPS_API_KEY` bullet — that key is wrong for this because these are customer routes, not internal-ops routes).
