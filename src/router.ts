@@ -105,6 +105,16 @@ export async function buildServer() {
     },
   });
 
+  // Server's own build output (esbuild bundle for profile-page client JS) —
+  // unlike /uploads/, this must execute as script, so no sandbox CSP here.
+  const PUBLIC_DIR = path.join(process.cwd(), 'public', 'static');
+  if (!fs.existsSync(PUBLIC_DIR)) fs.mkdirSync(PUBLIC_DIR, { recursive: true });
+  app.register(fastifyStatic, {
+    root:   PUBLIC_DIR,
+    prefix: '/static/',
+    decorateReply: false, // second @fastify/static registration — avoids reply-decorator collision
+  });
+
   app.register(fastifyMultipart, { limits: { fileSize: 20 * 1024 * 1024 } }); // 20 MB
 
   app.register(fastifyWebsocket);
@@ -262,12 +272,12 @@ export async function buildServer() {
       return reply.redirect(`/activate/${shortId}`, 302);
     }
 
-    // Private profile → PIN gate (applies to both plans)
-    if (link.isPrivate) {
-      return reply
-        .header('Content-Type', 'text/html; charset=utf-8')
-        .send(renderPinGate(shortId, false));
-    }
+    // PIN gate temporarily disabled for template redesign work.
+    // if (link.isPrivate) {
+    //   return reply
+    //     .header('Content-Type', 'text/html; charset=utf-8')
+    //     .send(renderPinGate(shortId, false));
+    // }
 
     const profileBaseUrl = process.env.PROFILE_BASE_URL ?? 'http://localhost:3000/profile';
     return reply.header('Cache-Control', 'no-store').redirect(`${profileBaseUrl}/${link.profileId}`, 302);
@@ -323,11 +333,12 @@ export async function buildServer() {
       ip: req.ip,
     });
 
-    if (link.isPrivate) {
-      return reply
-        .header('Content-Type', 'text/html; charset=utf-8')
-        .send(renderPinGate(shortId, false));
-    }
+    // PIN gate temporarily disabled for template redesign work.
+    // if (link.isPrivate) {
+    //   return reply
+    //     .header('Content-Type', 'text/html; charset=utf-8')
+    //     .send(renderPinGate(shortId, false));
+    // }
 
     const profileBaseUrl = process.env.PROFILE_BASE_URL ?? 'http://localhost:3000/profile';
     return reply.header('Cache-Control', 'no-store').redirect(`${profileBaseUrl}/${link.profileId}`, 302);

@@ -87,7 +87,6 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
   const galleryJson = jsStr(data.gallery.map(g => ({ url: safeUrl(g.url), caption: g.caption ?? '' })));
   const initCandles = 24 + Math.floor(Math.random() * 12);
   const initHearts  = 18 + Math.floor(Math.random() * 10);
-  const initFlowers = 11 + Math.floor(Math.random() * 8);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -99,6 +98,7 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/static/background-paths.js" defer></script>
   <script>
     tailwind.config = {
       theme: {
@@ -141,14 +141,6 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
     }
     .heart-sent { animation: heartPop 0.4s ease forwards; }
 
-    @keyframes flowerBloom {
-      0%   { transform: scale(1) rotate(0deg); }
-      35%  { transform: scale(1.5) rotate(-12deg); }
-      65%  { transform: scale(1.2) rotate(8deg); }
-      100% { transform: scale(1) rotate(0deg); }
-    }
-    .flower-laid { animation: flowerBloom 0.5s ease forwards; }
-
     @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
     .timeline-item { opacity: 0; animation: fadeUp 0.5s ease forwards; }
     .memory-card   { opacity: 0; animation: fadeUp 0.5s ease forwards; }
@@ -186,6 +178,7 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
   <section class="hero-grain relative bg-stone-900 text-white overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-b from-stone-900 via-stone-900 to-stone-950 opacity-90"></div>
     <div class="absolute inset-0 bg-gradient-to-br from-amber-950/20 via-transparent to-transparent"></div>
+    <div id="bg-paths-root" class="absolute inset-0 z-0" aria-hidden="true"></div>
 
     <div class="relative z-10 flex flex-col items-center text-center px-6 pt-14 pb-12">
       <div class="mb-7 relative">
@@ -227,22 +220,10 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
           <span id="heart-icon" class="text-lg leading-none">🤍</span>
           <span id="heart-label">Send Heart</span>
         </button>
-        <button id="flower-btn" onclick="layFlowers()"
-          class="flex items-center justify-center gap-2 py-3 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/30 rounded-2xl text-emerald-300 text-sm font-medium transition-colors active:scale-95">
-          <span id="flower-icon" class="text-lg leading-none">🌸</span>
-          <span id="flower-label">Lay Flowers</span>
-        </button>
-        <button onclick="shareProfile()"
-          class="flex items-center justify-center gap-1.5 py-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-2xl text-white text-sm font-medium transition-colors active:scale-95">
-          <svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-            <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z"/>
-          </svg>
-          Share
-        </button>
       </div>
 
       <p class="text-stone-500 text-[10px] mt-3 tracking-wide">
-        <span id="candle-count">${initCandles}</span> candles&ensp;&middot;&ensp;<span id="heart-count">${initHearts}</span> hearts&ensp;&middot;&ensp;<span id="flower-count">${initFlowers}</span> flowers
+        <span id="candle-count">${initCandles}</span> candles&ensp;&middot;&ensp;<span id="heart-count">${initHearts}</span> hearts
       </p>
     </div>
   </section>
@@ -364,14 +345,6 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
     </div>
   </div>
 
-  <!-- TOAST: link copied -->
-  <div id="copy-toast" class="hidden fixed bottom-6 inset-x-4 z-50 pointer-events-none">
-    <div class="bg-stone-900 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm mx-auto">
-      <span class="text-base">🔗</span>
-      <p class="text-sm font-medium">Link copied to clipboard</p>
-    </div>
-  </div>
-
   <!-- LIGHTBOX -->
   <div id="lightbox" class="fixed inset-0 bg-black z-50 flex-col items-center justify-center">
     <button onclick="closeLightbox()" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-white/10 rounded-full text-white">
@@ -434,32 +407,6 @@ export function renderProfile(data: ProfileData, profileId: string = 'demo'): st
       var btn = document.getElementById('heart-btn');
       btn.classList.replace('bg-rose-500/20', 'bg-rose-500/40');
       btn.classList.replace('border-rose-400/30', 'border-rose-400/60');
-    }
-
-    // Flowers
-    var flowersLaid = false;
-    var flowerCount = ${initFlowers};
-    function layFlowers() {
-      if (flowersLaid) return;
-      flowersLaid = true;
-      flowerCount++;
-      document.getElementById('flower-count').textContent = flowerCount;
-      var icon = document.getElementById('flower-icon');
-      icon.textContent = '💐';
-      icon.classList.add('flower-laid');
-      document.getElementById('flower-label').textContent = 'Flowers Laid';
-      var btn = document.getElementById('flower-btn');
-      btn.classList.replace('bg-emerald-500/20', 'bg-emerald-500/40');
-      btn.classList.replace('border-emerald-400/30', 'border-emerald-400/60');
-    }
-
-    // Share
-    function shareProfile() {
-      if (navigator.share) {
-        navigator.share({ title: ${jsStr(data.name + ' — LegacyLink')}, text: ${jsStr('In loving memory of ' + data.name)}, url: window.location.href }).catch(function() {});
-      } else {
-        navigator.clipboard.writeText(window.location.href).then(function() { showToast('copy-toast'); });
-      }
     }
 
     // Modal
