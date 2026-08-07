@@ -56,16 +56,6 @@ const NAV = [
     ),
   },
   {
-    href: '/monuments',
-    label: 'Monuments',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
-        <path d="M3 21h18M6 21V10M18 21V10M12 21V5M9 5h6M12 2v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M6 10H3l3-4M18 10h3l-3-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    ),
-  },
-  {
     href: '/settings',
     label: 'Settings',
     icon: (
