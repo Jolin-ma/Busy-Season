@@ -236,21 +236,19 @@
             #pet-hero-section { margin-top: 0 !important; }
 
             #pm-site-header {
+                padding: 24px 16px 40px !important;
+                gap: 14px !important;
+            }
+            #pm-logo-row {
                 flex-direction: column !important;
-                padding: 24px 16px 60px !important;
+                gap: 10px !important;
             }
-            #pm-logo-wrap {
-                position: relative !important;
-                left: auto !important;
-                transform: none !important;
-                margin: 16px 0 !important;
-                order: -1;
-            }
+            #pm-logo-wrap { order: -1; }
             #pm-logo-wrap img { height: 130px !important; }
             .nav-link { font-size: 0.78rem !important; }
-            .cta-nav-btn { flex-basis: 100% !important; text-align: center; margin-top: 4px; }
+            #pm-nav-under-logo { margin-top: 4px !important; }
+            .cta-nav-btn { text-align: center; }
             #pm-nav-left, #pm-nav-right {
-                flex: none !important;
                 width: 100%;
                 justify-content: center !important;
                 flex-wrap: wrap !important;
@@ -300,21 +298,26 @@
          NAVIGATION
     ════════════════════════════════════════════ -->
     <header id="pm-site-header" style="
-        display:flex; align-items:center; justify-content:space-between;
-        padding:100px 44px 180px; position:relative; z-index:20;
+        display:flex; flex-direction:column; align-items:center;
+        padding:70px 44px 34px; position:relative; z-index:20;
     ">
-        <nav id="pm-nav-left" style="display:flex; gap:52px; align-items:center; flex:1; justify-content:flex-start;">
-            <a href="packages.html" class="nav-link">OUR PACKAGES</a>
-        </nav>
+        <div id="pm-logo-row" style="display:flex; align-items:center; justify-content:center; width:100%; gap:56px;">
+            <nav id="pm-nav-left" style="display:flex; align-items:center;">
+                <a href="packages.html" class="nav-link">OUR PACKAGES</a>
+            </nav>
 
-        <div id="pm-logo-wrap" style="position:absolute; left:50%; transform:translateX(-50%); text-align:center; line-height:1;">
-            <a href="index.html">
-                <img src="image/legacy_link_logo.png" alt="Legacy Link" style="height:260px; width:auto; display:block; margin:0 auto;" />
-            </a>
+            <div id="pm-logo-wrap" style="text-align:center; line-height:1;">
+                <a href="index.html">
+                    <img src="image/legacy_link_logo.png" alt="Legacy Link" style="height:260px; width:auto; display:block; margin:0 auto;" />
+                </a>
+            </div>
+
+            <nav id="pm-nav-right" style="display:flex; align-items:center;">
+                <a href="pet-memorials.html" class="nav-link active" style="font-weight:700; border-bottom:1px solid #232323; padding-bottom:2px;">PET MEMORIALS</a>
+            </nav>
         </div>
 
-        <nav id="pm-nav-right" style="display:flex; gap:26px; align-items:center; flex:1; justify-content:flex-end;">
-            <a href="pet-memorials.html" class="nav-link active" style="font-weight:700; border-bottom:1px solid #232323; padding-bottom:2px;">PET MEMORIALS</a>
+        <nav id="pm-nav-under-logo" style="margin-top:22px;">
             <a href="https://app.legacylinkstudio.com/auth" class="cta-nav-btn" style="
                 font-family:'Cormorant Garamond',serif;
                 font-size:0.9rem; letter-spacing:0.18em;
@@ -329,7 +332,7 @@
     <!-- ═══════════════════════════════════════════
          HERO
     ════════════════════════════════════════════ -->
-    <section id="pet-hero-section" style="position:relative; margin-top:-120px;">
+    <section id="pet-hero-section" style="position:relative; margin-top:-40px;">
         <div id="pet-three-container" style="clip-path:url(#archClip); position:relative; overflow:hidden; height:82vh; min-height:520px; background:#111;">
             <canvas id="pet-three-canvas" style="position:absolute; top:0; left:0; display:block;"></canvas>
             <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.22) 50%, transparent 80%); pointer-events:none;"></div>

@@ -175,27 +175,24 @@
 
         @media (max-width: 768px) {
             #pk-site-header {
+                padding: 24px 16px 40px !important;
+                gap: 14px !important;
+            }
+            #pk-logo-row {
                 flex-direction: column !important;
-                align-items: center !important;
-                padding: 24px 16px 48px !important;
-                gap: 12px !important;
+                gap: 10px !important;
             }
-            #pk-logo-wrap {
-                position: relative !important;
-                left: auto !important;
-                transform: none !important;
-                order: -1;
-            }
+            #pk-logo-wrap { order: -1; }
             #pk-logo-wrap img { height: 130px !important; }
             #pk-nav-left, #pk-nav-right {
-                flex: none !important;
                 width: 100%;
                 justify-content: center !important;
                 flex-wrap: wrap;
                 gap: 10px 16px !important;
             }
             .nav-link { font-size: 0.78rem !important; }
-            .cta-nav-btn { flex-basis: 100% !important; text-align: center; margin-top: 4px; }
+            #pk-nav-under-logo { margin-top: 4px !important; }
+            .cta-nav-btn { text-align: center; }
 
             #pk-plaques-grid { grid-template-columns: 1fr !important; }
 
@@ -222,21 +219,26 @@
      NAVIGATION
 ════════════════════════════════════════════ -->
     <header id="pk-site-header" style="
-        display:flex; align-items:center; justify-content:space-between;
-        padding:100px 44px 180px; position:relative; z-index:20;
+        display:flex; flex-direction:column; align-items:center;
+        padding:70px 44px 34px; position:relative; z-index:20;
     ">
-        <nav id="pk-nav-left" style="display:flex; gap:52px; align-items:center; flex:1; justify-content:flex-start;">
-            <a href="packages.html" class="nav-link" style="font-weight:700; border-bottom:1px solid #232323; padding-bottom:2px;">OUR PACKAGES</a>
-        </nav>
+        <div id="pk-logo-row" style="display:flex; align-items:center; justify-content:center; width:100%; gap:56px;">
+            <nav id="pk-nav-left" style="display:flex; align-items:center;">
+                <a href="packages.html" class="nav-link" style="font-weight:700; border-bottom:1px solid #232323; padding-bottom:2px;">OUR PACKAGES</a>
+            </nav>
 
-        <div id="pk-logo-wrap" style="position:absolute; left:50%; transform:translateX(-50%); text-align:center; line-height:1;">
-            <a href="index.html">
-                <img src="image/legacy_link_logo.png" alt="Legacy Link" style="height:260px; width:auto; display:block; margin:0 auto;" />
-            </a>
+            <div id="pk-logo-wrap" style="text-align:center; line-height:1;">
+                <a href="index.html">
+                    <img src="image/legacy_link_logo.png" alt="Legacy Link" style="height:260px; width:auto; display:block; margin:0 auto;" />
+                </a>
+            </div>
+
+            <nav id="pk-nav-right" style="display:flex; align-items:center;">
+                <a href="pet-memorials.html" class="nav-link">PET MEMORIALS</a>
+            </nav>
         </div>
 
-        <nav id="pk-nav-right" style="display:flex; gap:26px; align-items:center; flex:1; justify-content:flex-end;">
-            <a href="pet-memorials.html" class="nav-link">PET MEMORIALS</a>
+        <nav id="pk-nav-under-logo" style="margin-top:22px;">
             <a href="https://app.legacylinkstudio.com/auth" class="cta-nav-btn" style="
                 font-family:'Cormorant Garamond',serif;
                 font-size:0.9rem; letter-spacing:0.18em;

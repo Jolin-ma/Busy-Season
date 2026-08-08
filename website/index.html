@@ -218,27 +218,24 @@
         /* ─── Mobile ─── */
         @media (max-width: 768px) {
             #site-header {
+                padding: 24px 16px 40px !important;
+                gap: 14px !important;
+            }
+            #logo-row {
                 flex-direction: column !important;
-                align-items: center !important;
-                padding: 24px 16px 60px !important;
-                gap: 12px !important;
+                gap: 10px !important;
             }
-            #logo-wrap {
-                position: relative !important;
-                left: auto !important;
-                transform: none !important;
-                order: -1;
-            }
+            #logo-wrap { order: -1; }
             #logo-wrap img { height: 130px !important; }
             #nav-left, #nav-right {
-                flex: none !important;
                 width: 100%;
                 justify-content: center !important;
                 flex-wrap: wrap;
                 gap: 10px 16px !important;
             }
             .nav-link { font-size: 0.78rem !important; }
-            .cta-nav-btn { flex-basis: 100% !important; text-align: center; margin-top: 4px; }
+            #nav-under-logo { margin-top: 4px !important; }
+            .cta-nav-btn { text-align: center; }
 
             /* Fix hero overlapping nav */
             #hero-section { margin-top: 0 !important; }
@@ -323,28 +320,29 @@
 ════════════════════════════════════════════ -->
     <header id="site-header" style="
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 100px 44px 180px;
+  padding: 70px 44px 34px;
   position: relative;
   z-index: 20;
 ">
-        <!-- Left links -->
-        <nav id="nav-left" style="display:flex; gap:52px; align-items:center; flex:1; justify-content:flex-start;">
-            <a href="packages.html" class="nav-link">OUR PACKAGES</a>
-        </nav>
+        <!-- Logo row: OUR PACKAGES beside the logo, PET MEMORIALS on the other side -->
+        <div id="logo-row" style="display:flex; align-items:center; justify-content:center; width:100%; gap:56px;">
+            <nav id="nav-left" style="display:flex; align-items:center;">
+                <a href="packages.html" class="nav-link">OUR PACKAGES</a>
+            </nav>
 
-        <!-- Centre logo -->
-        <div id="logo-wrap" style="
-    position: absolute; left: 50%; transform: translateX(-50%);
-    text-align: center; line-height: 1;
-  ">
-            <img src="image/legacy_link_logo.png" alt="Legacy Link" style="height:260px; width:auto; display:block; margin:0 auto;" />
+            <div id="logo-wrap" style="text-align:center; line-height:1;">
+                <img src="image/legacy_link_logo.png" alt="Legacy Link" style="height:260px; width:auto; display:block; margin:0 auto;" />
+            </div>
+
+            <nav id="nav-right" style="display:flex; align-items:center;">
+                <a href="pet-memorials.html" class="nav-link">PET MEMORIALS</a>
+            </nav>
         </div>
 
-        <!-- Right links -->
-        <nav id="nav-right" style="display:flex; gap:26px; align-items:center; flex:1; justify-content:flex-end;">
-            <a href="pet-memorials.html" class="nav-link">PET MEMORIALS</a>
+        <!-- Create account, dropped into the open space under the logo, above the wave -->
+        <nav id="nav-under-logo" style="margin-top:22px;">
             <a href="https://app.legacylinkstudio.com/auth" class="cta-nav-btn" style="
                 font-family:'Cormorant Garamond',serif;
                 font-size:0.9rem; letter-spacing:0.18em;
@@ -360,7 +358,7 @@
     <!-- ═══════════════════════════════════════════
      HERO
 ════════════════════════════════════════════ -->
-    <section id="hero-section" style="position:relative; margin-top:-120px;">
+    <section id="hero-section" style="position:relative; margin-top:-40px;">
 
         <!-- 3D gallery with arch clip -->
         <div id="hero-three-container" style="clip-path:url(#archClip); position:relative; overflow:hidden; height:82vh; min-height:520px; background:#111;">
@@ -398,7 +396,7 @@
                 LegacyLink is a modern memorial technology company that bridges the physical and digital worlds.
             </p>
             <p style="font-size:0.85rem; line-height:1.9; margin-bottom:18px;">
-                By placing durable, weather-resistant QR codes on tombstones, monuments, and urns, we allow grieving
+                By placing durable, weather-resistant QR codes on tombstones and urns, we allow grieving
                 families, genealogists, and future generations to instantly access a rich, multimedia biography of the
                 deceased via a simple smartphone scan.
             </p>
