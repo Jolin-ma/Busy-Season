@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legacy Link — Digital Life Stories</title>
+    <link rel="icon" type="image/png" href="image/legacy_link_logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #e8ded0;
+            color: #232323;
+            font-family: 'Space Mono', monospace;
+            font-size: 1em;
+            line-height: 1.4;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .serif {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .nav-link {
+            font-size: 1.16rem;
+            letter-spacing: 0.1em;
+            color: #232323;
+            transition: opacity 0.2s;
+        }
+
+        .nav-link:hover {
+            opacity: 0.45;
+        }
+
+        .cta-link {
+            font-size: 1.05rem;
+            letter-spacing: 0.14em;
+            text-decoration: none;
+            color: inherit;
+            border-bottom: 1px solid currentColor;
+            padding-bottom: 2px;
+            transition: opacity 0.2s;
+        }
+
+        .cta-link:hover {
+            opacity: 0.5;
+        }
+
+        .eyebrow {
+            font-size: 1.16rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        @keyframes dot-blink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            40%       { opacity: 0.15; transform: scale(0.6); }
+            70%       { opacity: 0.85; transform: scale(1.1); }
+        }
+
+        .timeline-dot {
+            border-radius: 50%;
+            cursor: default;
+            transition: box-shadow 0.2s;
+        }
+
+        .timeline-dot:hover {
+            animation: dot-blink 0.9s ease-in-out 2;
+            box-shadow: 0 0 0 5px rgba(35, 35, 35, 0.18);
+        }
+
+        @keyframes marquee-scroll {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        #marquee-outer {
+            overflow: hidden;
+            width: 100%;
+            position: relative;
+            margin-bottom: 54px;
+        }
+
+        #marquee-outer::before,
+        #marquee-outer::after {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 100px;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        #marquee-outer::before {
+            left: 0;
+            background: linear-gradient(to right, #e8ded0, transparent);
+        }
+
+        #marquee-outer::after {
+            right: 0;
+            background: linear-gradient(to left, #e8ded0, transparent);
+        }
+
+        #marquee-track {
+            display: flex;
+            width: max-content;
+            animation: marquee-scroll 30s linear infinite;
+            position: relative;
+        }
+
+        #marquee-outer:hover #marquee-track {
+            animation-play-state: paused;
+        }
+
+        .marquee-step {
+            flex: 0 0 220px;
+            text-align: center;
+            padding: 0 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .marquee-step-dot-row {
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Our Ranges photo hover */
+        .range-photo {
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+        .range-photo img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .range-photo:hover img {
+            transform: scale(1.04);
+        }
+        .range-photo::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(35,35,35,0);
+            transition: background 0.6s ease;
+            pointer-events: none;
+        }
+        .range-photo:hover::after {
+            background: rgba(35,35,35,0.07);
+        }
+
+        /* Service rows (text left, large photo right, top-aligned) */
+        .service-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 8%;
+        }
+        .service-img-wrap {
+            flex: 0 0 62%;
+            overflow: hidden;
+        }
+        .service-img-wrap img {
+            width: 100%;
+            height: 320px;
+            object-fit: cover;
+            display: block;
+            filter: grayscale(100%);
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .service-card:hover .service-img-wrap img {
+            transform: scale(1.04);
+        }
+        .service-card-text {
+            flex: 1;
+            height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .service-card-text .cta-link {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .service-divider {
+            border: none;
+            border-top: 1px solid #232323;
+            opacity: 0.15;
+        }
+
+        /* ─── Mobile ─── */
+        @media (max-width: 768px) {
+            #site-header {
+                padding: 24px 16px 40px !important;
+                gap: 14px !important;
+            }
+            #logo-row {
+                flex-direction: column !important;
+                gap: 10px !important;
+            }
+            #logo-wrap { order: -1; }
+            #logo-wrap img { height: 130px !important; }
+            #nav-left, #nav-right {
+                width: 100%;
+                justify-content: center !important;
+                flex-wrap: wrap;
+                gap: 10px 16px !important;
+            }
+            .nav-link { font-size: 0.78rem !important; }
+            #nav-under-logo { margin-top: 4px !important; }
+            .cta-nav-btn { text-align: center; }
+
+            /* Fix hero overlapping nav */
+            #hero-section { margin-top: 0 !important; }
+
+            #products-row {
+                flex-direction: column !important;
+                padding: 0 5% !important;
+                gap: 40px !important;
+            }
+            #products-row > div { width: 100% !important; align-items: flex-start !important; }
+            #products-row > div .range-photo { width: 100% !important; }
+            #products-row > div .range-info { width: 100% !important; padding-top: 20px; }
+            #products-divider { display: none !important; }
+            #products-mobile-label { display: block !important; }
+
+            .service-card { flex-direction: column !important; align-items: flex-start !important; }
+            .service-card .service-img-wrap { flex: none !important; width: 100% !important; }
+            .service-card-text { height: auto !important; gap: 20px; }
+
+            #footer-info-row, #footer-bottom-bar {
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+                gap: 20px !important;
+            }
+            /* Range photos — show full image, no cropping on mobile */
+            .range-photo img { height: auto !important; }
+
+            /* Service rows */
+            #services-grid { gap: 40px !important; }
+            section:has(#services-grid) { padding-left: 4% !important; padding-right: 4% !important; }
+            .service-img-wrap img { height: 220px !important; }
+            .service-card h3 {
+                font-size: 1.1rem !important;
+                min-height: auto !important;
+            }
+            .service-card p { font-size: 0.72rem !important; }
+
+            /* Marquee */
+            .marquee-step { flex: 0 0 150px !important; padding: 0 8px !important; }
+
+            /* Brochure buttons */
+            .brochure-btn { padding: 10px 16px !important; font-size: 0.72rem !important; }
+
+            /* Hero header padding */
+            #site-header { padding: 20px 16px 40px !important; }
+
+            /* Eyebrow */
+            .eyebrow { font-size: 0.8rem !important; }
+
+            /* CTA link */
+            .cta-link { font-size: 0.8rem !important; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ─── SVG CLIP PATH (arch cutout for hero) ─── -->
+    <svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+        <defs>
+            <!--
+      objectBoundingBox coords (0–1).
+      Visible shape: the image minus two arch-shaped bites from the top.
+      Shoulders at y≈0.25, arch peaks at y=0, centre V at (0.5, 0.14).
+    -->
+            <clipPath id="archClip" clipPathUnits="objectBoundingBox">
+                <path d="
+        M 0,0.16
+        C 0.07,0.16 0.16,0   0.27,0
+        C 0.37,0   0.45,0.09 0.5,0.09
+        C 0.55,0.09 0.63,0  0.73,0
+        C 0.84,0   0.93,0.16 1,0.16
+        L 1,1 L 0,1 Z
+      " />
+            </clipPath>
+        </defs>
+    </svg>
+
+    <!-- ═══════════════════════════════════════════
+     NAVIGATION
+════════════════════════════════════════════ -->
+    <header id="site-header" style="
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 70px 44px 34px;
+  position: relative;
+  z-index: 20;
+">
+        <!-- Logo row: OUR PACKAGES beside the logo, PET MEMORIALS on the other side -->
+        <div id="logo-row" style="display:flex; align-items:center; justify-content:center; width:100%; gap:56px;">
+            <nav id="nav-left" style="display:flex; align-items:center;">
+                <a href="packages.html" class="nav-link">OUR PACKAGES</a>
+            </nav>
+
+            <div id="logo-wrap" style="text-align:center; line-height:1;">
+                <img src="image/legacy_link_logo.png" alt="Legacy Link" style="height:260px; width:auto; display:block; margin:0 auto;" />
+            </div>
+
+            <nav id="nav-right" style="display:flex; align-items:center;">
+                <a href="pet-memorials.html" class="nav-link">PET MEMORIALS</a>
+            </nav>
+        </div>
+
+        <!-- Create account, dropped into the open space under the logo, above the wave -->
+        <nav id="nav-under-logo" style="margin-top:22px;">
+            <a href="https://app.legacylinkstudio.com/auth" class="cta-nav-btn" style="
+                font-family:'Cormorant Garamond',serif;
+                font-size:0.9rem; letter-spacing:0.18em;
+                color:#232323; text-decoration:none;
+                border:1px solid #232323;
+                padding:10px 24px;
+                transition:background 0.2s, color 0.2s;
+            " onmouseover="this.style.background='#232323';this.style.color='#fff';"
+               onmouseout="this.style.background='transparent';this.style.color='#232323';">CREATE ACCOUNT</a>
+        </nav>
+    </header>
+
+    <!-- ═══════════════════════════════════════════
+     HERO
+════════════════════════════════════════════ -->
+    <section id="hero-section" style="position:relative; margin-top:-40px;">
+
+        <!-- 3D gallery with arch clip -->
+        <div id="hero-three-container" style="clip-path:url(#archClip); position:relative; overflow:hidden; height:82vh; min-height:520px; background:#111;">
+            <canvas id="hero-three-canvas" style="position:absolute; top:0; left:0; display:block;"></canvas>
+            <!-- Gradient overlay for text legibility -->
+            <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.28) 45%, transparent 75%); pointer-events:none;"></div>
+        </div>
+
+        <!-- Hero text overlay (not clipped — lives outside the clip div) -->
+        <div style="
+    position:absolute;
+    left:5.5%; bottom:12%;
+    color:#fff;
+    z-index:5;
+  ">
+            <p class="eyebrow" style="margin-bottom:14px; opacity:0.85; color:#fff;">LEGACY LINK</p>
+            <h1 class="serif" style="
+      font-size:clamp(2rem,4.8vw,3.8rem);
+      font-weight:300;
+      font-style:italic;
+      line-height:1.06;
+      margin-bottom:24px;
+      letter-spacing:0.01em;
+      text-shadow:0 1px 4px rgba(0,0,0,0.18);
+    ">Preserving Life Stories Through<br>Digital Memorials</h1>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+     ABOUT
+════════════════════════════════════════════ -->
+    <section style="padding:82px 0 68px; text-align:center;">
+        <div style="max-width:760px; margin:0 auto; padding:0 24px;">
+            <p style="font-size:0.85rem; line-height:1.9; margin-bottom:18px;">
+                LegacyLink is a modern memorial technology company that bridges the physical and digital worlds.
+            </p>
+            <p style="font-size:0.85rem; line-height:1.9; margin-bottom:18px;">
+                By placing durable, weather-resistant QR codes on tombstones and urns, we allow grieving
+                families, genealogists, and future generations to instantly access a rich, multimedia biography of the
+                deceased via a simple smartphone scan.
+            </p>
+            <p style="font-size:0.85rem; line-height:1.9;">
+                Our mission is to ensure that no one’s story is ever forgotten.
+            </p>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+      SIZE SELECTOR
+════════════════════════════════════════════ -->
+    <section style="padding:10px 0 84px; text-align:center;">
+        <p class="eyebrow" style="margin-bottom:14px; opacity:0.65;">YOUR PROJECT</p>
+
+        <h2 class="serif" style="
+    font-size:clamp(1.7rem,3.5vw,2.65rem);
+    font-weight:300;
+    line-height:1.18;
+    margin-bottom:54px;
+  ">A seamless, respectful <br>Tech-hardware integration</h2>
+
+        <!-- Process timeline — infinite marquee -->
+        <div id="marquee-outer">
+            <!-- Continuous connecting line — static inside outer so it never scrolls or chips -->
+            <div style="position:absolute; top:14px; left:0; right:0; height:1px; background:rgba(35,35,35,0.14); z-index:0; pointer-events:none;"></div>
+            <div id="marquee-track">
+
+                <!-- ── Set A ── -->
+                <div class="marquee-step">
+                    <div class="marquee-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">01</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Choose your<br>plaque material</p>
+                </div>
+                <div class="marquee-step">
+                    <div class="marquee-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">02</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Build the<br>digital memorial</p>
+                </div>
+                <div class="marquee-step">
+                    <div class="marquee-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">03</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">We engrave<br>& embed the QR</p>
+                </div>
+                <div class="marquee-step">
+                    <div class="marquee-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">04</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Install at<br>the memorial</p>
+                </div>
+                <div class="marquee-step">
+                    <div class="marquee-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">05</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Scan & revisit<br>forever</p>
+                </div>
+
+                <!-- ── Set B (duplicate for seamless loop) ── -->
+                <div class="marquee-step" aria-hidden="true">
+                    <div class="marquee-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">01</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Choose your<br>plaque material</p>
+                </div>
+                <div class="marquee-step" aria-hidden="true">
+                    <div class="marquee-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">02</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Build the<br>digital memorial</p>
+                </div>
+                <div class="marquee-step" aria-hidden="true">
+                    <div class="marquee-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">03</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">We engrave<br>& embed the QR</p>
+                </div>
+                <div class="marquee-step" aria-hidden="true">
+                    <div class="marquee-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">04</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Install at<br>the memorial</p>
+                </div>
+                <div class="marquee-step" aria-hidden="true">
+                    <div class="marquee-step-dot-row">
+                        <div class="timeline-dot" style="width:8px; height:8px; background:#9a9480;"></div>
+                    </div>
+                    <p style="font-size:0.48rem; letter-spacing:0.22em; opacity:0.55; margin:12px 0 8px;">05</p>
+                    <p class="serif" style="font-size:0.9rem; font-weight:400; font-style:italic; line-height:1.35;">Scan & revisit<br>forever</p>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+     PRODUCTS
+════════════════════════════════════════════ -->
+    <section style="padding:30px 0 64px;">
+
+        <!-- Mobile-only label (desktop shows "OUR RANGES" inside the vertical divider) -->
+        <p id="products-mobile-label" class="eyebrow" style="display:none; text-align:center; margin-bottom:32px;">OUR RANGES</p>
+
+        <!-- Two product cards with vertical divider -->
+        <div id="products-row" style="display:flex; align-items:stretch; padding:0 1%; position:relative;">
+
+            <!-- Left: Stainless Steel — photo + info together -->
+            <div style="flex:1; display:flex; flex-direction:column; align-items:flex-start;">
+                <a href="packages.html" class="range-photo" style="width:86%; display:block;">
+                    <img src="image/stainless steel.png" alt="Marine-Grade Stainless Steel" />
+                </a>
+                <div class="range-info" style="width:86%; text-align:center; padding-top:32px;">
+                    <p class="eyebrow" style="font-size:0.72rem; margin-bottom:10px; opacity:0.6;">Stainless Steel</p>
+                    <div class="serif"
+                        style="font-size:clamp(1.7rem,3.5vw,2.65rem); font-weight:300; line-height:1.18; margin-bottom:9px; min-height:6.5rem; display:flex; align-items:center; justify-content:center;">
+                        Marine-Grade Stainless Steel
+                    </div>
+                    <p style="font-size:0.72rem; letter-spacing:0.06em; opacity:0.65; margin-bottom:20px;">Ultra-durable · Brushed satin finish · $169 CAD</p>
+                </div>
+            </div>
+
+            <!-- Vertical divider with centred label -->
+            <div id="products-divider" style="
+      width:1px; background:#9a9480; align-self:stretch; flex-shrink:0; position:relative;
+    ">
+                <div style="
+        position:absolute; top:50%; left:50%;
+        transform:translate(-50%,-50%);
+        background:#e8ded0;
+        padding:10px 8px;
+        white-space:nowrap;
+      ">
+                    <p class="eyebrow" style="font-size:0.75rem;">OUR RANGES</p>
+                </div>
+            </div>
+
+            <!-- Right: Marine Bronzes — photo + info together -->
+            <div style="flex:1; display:flex; flex-direction:column; align-items:flex-end;">
+                <a href="packages.html" class="range-photo" style="width:86%; display:block;">
+                    <img src="image/marine brozes.png" alt="Marine Brushed Bronze" />
+                </a>
+                <div class="range-info" style="width:86%; text-align:center; padding-top:32px;">
+                    <p class="eyebrow" style="font-size:0.72rem; margin-bottom:10px; opacity:0.6;">Bronze</p>
+                    <div class="serif"
+                        style="font-size:clamp(1.7rem,3.5vw,2.65rem); font-weight:300; line-height:1.18; margin-bottom:9px; min-height:6.5rem; display:flex; align-items:center; justify-content:center;">
+                        Marine Bronzes
+                    </div>
+                    <p style="font-size:0.72rem; letter-spacing:0.06em; opacity:0.65; margin-bottom:20px;">Warm heritage tone · Museum quality · $189 CAD</p>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+     NOS SERVICES
+════════════════════════════════════════════ -->
+    <section style="padding:40px 8% 0px;">
+        <p class="eyebrow" style="text-align:center; margin-bottom:52px; opacity:0.65;">OUR SERVICES</p>
+
+        <div id="services-grid" style="display:flex; flex-direction:column; gap:56px;">
+
+            <hr class="service-divider">
+
+            <!-- pre planner -->
+            <a href="packages.html" class="service-card">
+                <div class="service-card-text">
+                    <h3 class="serif" style="font-size:1.55rem; font-weight:400;">Pre-Planners <br>(End-of-Life Planning)</h3>
+                    <div>
+                        <p style="font-size:0.85rem; line-height:1.9; margin-bottom:16px; opacity:0.82;">
+                            Older adults who want to take control of their own narrative and curate how they will be remembered
+                        </p>
+                        <span class="cta-link">PLAN YOUR LEGACY</span>
+                    </div>
+                </div>
+                <div class="service-img-wrap">
+                    <img src="image/end life.png" alt="Pre-Planners (End-of-Life Planning)"
+                        style="object-position:center 80%;" />
+                </div>
+            </a>
+
+            <hr class="service-divider">
+
+            <!-- grieving families -->
+            <a href="packages.html" class="service-card">
+                <div class="service-card-text">
+                    <h3 class="serif" style="font-size:1.55rem; font-weight:400;">Grieving Families</h3>
+                    <div>
+                        <p style="font-size:0.85rem; line-height:1.9; margin-bottom:16px; opacity:0.82;">
+                            Individuals looking to honor a recently lost parent, spouse, or relative in a unique way.
+                        </p>
+                        <span class="cta-link">HONOUR A LOVED ONE</span>
+                    </div>
+                </div>
+                <div class="service-img-wrap">
+                    <img src="image/grieving.jpeg" alt="Grieving Families" />
+                </div>
+            </a>
+
+            <hr class="service-divider">
+
+            <!-- pet memorials -->
+            <a href="pet-memorials.html" class="service-card">
+                <div class="service-card-text">
+                    <h3 class="serif" style="font-size:1.55rem; font-weight:400;">Pet Memorials</h3>
+                    <div>
+                        <p style="font-size:0.85rem; line-height:1.9; margin-bottom:16px; opacity:0.82;">
+                            Honouring the companions who gave us everything — the same marine-grade plaques, crafted for beloved animals.
+                        </p>
+                        <span class="cta-link">HONOUR YOUR COMPANION</span>
+                    </div>
+                </div>
+                <div class="service-img-wrap">
+                    <img src="image/pets.png" alt="Pet Memorials" />
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- ─── Brochure buttons ─── -->
+    <div style="display:flex; justify-content:center; align-items:center; gap:16px; flex-wrap:wrap; margin-top:64px; margin-bottom:24px;">
+        <a href="brochure.html" target="_blank" style="font-family:'Cormorant Garamond',serif; font-size:0.9rem; letter-spacing:0.18em; color:#232323; background:transparent; text-decoration:none; border:1px solid #232323; padding:12px 32px; transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='#232323';this.style.color='#e8ded0';" onmouseout="this.style.background='transparent';this.style.color='#232323';">MEMORIAL BROCHURE</a>
+        <a href="pet-brochure.html" target="_blank" style="font-family:'Cormorant Garamond',serif; font-size:0.9rem; letter-spacing:0.18em; color:#232323; background:transparent; text-decoration:none; border:1px solid #232323; padding:12px 32px; transition:background 0.2s,color 0.2s;" onmouseover="this.style.background='#232323';this.style.color='#e8ded0';" onmouseout="this.style.background='transparent';this.style.color='#232323';">PET MEMORIAL BROCHURE</a>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════ -->
+    <footer style="position:relative; margin-top:0;">
+
+        <!-- Double-arch SVG wave: beige top, dark below -->
+        <div style="position:relative; line-height:0;">
+            <svg viewBox="0 0 1440 110" preserveAspectRatio="none"
+                style="width:100%; height:110px; display:block;"
+                xmlns="http://www.w3.org/2000/svg">
+                <!--
+                  Two concave arches bitten out of the top of the dark fill.
+                  The beige page background shows through the cutouts.
+                  Shape: starts top-left, sweeps down in two U-curves, fills to bottom.
+                -->
+                <!--
+                  Two arch peaks pointing up into the beige area,
+                  dark fill below — matching the mitinavi.png footer top edge.
+                  Path traces the bottom of the beige, then fills dark downward.
+                -->
+                <path d="
+                    M 0,110 L 0,80
+                    C 120,80 240,0 360,0
+                    C 480,0 600,80 720,80
+                    C 840,80 960,0 1080,0
+                    C 1200,0 1320,80 1440,80
+                    L 1440,110 Z
+                " fill="#232323"/>
+            </svg>
+        </div>
+
+        <!-- Dark footer body -->
+        <div style="background:#232323; color:#e8ded0; padding:0 5% 40px;">
+
+            <!-- BACK TO TOP -->
+            <div style="text-align:center; padding:28px 0 52px;">
+                <a href="#" style="
+                    color:#e8ded0; text-decoration:none;
+                    font-size:0.62rem; letter-spacing:0.3em;
+                    line-height:1.8; display:inline-block;
+                    opacity:0.7; transition:opacity 0.2s;
+                " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">
+                    BACK<br>TO THE<br>TOP
+                </a>
+            </div>
+
+            <!-- Address / Contact / Contact Info row -->
+            <div id="footer-info-row" style="display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:48px; border-bottom:1px solid rgba(232,222,208,0.18);">
+
+                <!-- Left: address -->
+                <div style="flex:1; font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7;">
+                    LegacyLink Inc.<br>
+                    Oshawa, Ontario, Canada
+                </div>
+
+                <!-- Center: contact us -->
+                <div style="flex:1; text-align:center;">
+                    <a href="mailto:info@legacylinkstudio.com" style="
+                        color:#e8ded0; text-decoration:none;
+                        font-size:0.65rem; letter-spacing:0.28em;
+                        border-bottom:1px solid rgba(232,222,208,0.5);
+                        padding-bottom:3px;
+                        opacity:0.8;
+                    ">CONTACT US</a>
+                </div>
+
+                <!-- Right: email -->
+                <div style="flex:1; font-size:0.62rem; line-height:2; letter-spacing:0.06em; opacity:0.7; text-align:right;">
+                    info@legacylinkstudio.com
+                </div>
+            </div>
+
+            <!-- Bottom bar: copyright / logo / legal -->
+            <div id="footer-bottom-bar" style="display:flex; justify-content:space-between; align-items:center; padding-top:28px;">
+
+                <!-- Copyright -->
+                <p style="flex:1; font-size:0.52rem; letter-spacing:0.12em; opacity:0.45;">
+                    &copy; 2026 LegacyLink, all rights reserved.
+                </p>
+
+                <!-- Wordmark logo -->
+                <div class="serif" style="font-size:1.4rem; font-weight:700; letter-spacing:0.3em; opacity:0.85;">
+                    LEGACY LINK
+                </div>
+
+                <!-- Links -->
+                <div style="flex:1; display:flex; justify-content:flex-end; gap:20px;">
+                    <a href="brochure.html" target="_blank" style="color:#e8ded0; text-decoration:none; font-size:0.52rem; letter-spacing:0.15em; opacity:0.45;">DOWNLOAD OUR BROCHURE</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+    (function () {
+        'use strict';
+
+        var IMAGES = [
+            'image/hero1.jpeg','image/hero2.jpeg','image/hero3.jpeg',
+            'image/hero4.jpeg','image/hero5.jpeg','image/hero6.jpeg',
+            'image/hero7.jpeg','image/hero8.jpeg','image/hero9.jpeg',
+            'image/hero10.jpeg','image/hero11.jpeg'
+        ];
+        var VISIBLE_COUNT  = 10;
+        var DEPTH_RANGE    = 50;
+        var AUTO_SPEED     = 0.28;
+        var MAX_H_OFFSET   = 8;
+        var MAX_V_OFFSET   = 6;
+        var FADE_IN_START  = 0.05; var FADE_IN_END  = 0.25;
+        var FADE_OUT_START = 0.40; var FADE_OUT_END = 0.43;
+        var BLUR_IN_START  = 0.00; var BLUR_IN_END  = 0.10;
+        var BLUR_OUT_START = 0.40; var BLUR_OUT_END = 0.43;
+        var MAX_BLUR       = 8.0;
+
+        var container = document.getElementById('hero-three-container');
+        var canvas    = document.getElementById('hero-three-canvas');
+        if (!canvas || !container || typeof THREE === 'undefined') return;
+
+        // ── WebGL check ────────────────────────────────────────────────────
+        try {
+            var testCtx = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            if (!testCtx) return;
+        } catch (e) { return; }
+
+        // ── Scene / Camera / Renderer ──────────────────────────────────────
+        var scene    = new THREE.Scene();
+        var camera   = new THREE.PerspectiveCamera(55, 1, 0.01, 200);
+        camera.position.set(0, 0, 0);
+
+        var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+        function resize() {
+            var w = container.clientWidth;
+            var h = container.clientHeight;
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(w, h);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        // ── Shaders ────────────────────────────────────────────────────────
+        var vertexShader = [
+            'uniform float scrollForce;',
+            'uniform float time;',
+            'varying vec2 vUv;',
+            'void main() {',
+            '  vUv = uv;',
+            '  vec3 pos = position;',
+            '  float curveIntensity = scrollForce * 0.3;',
+            '  float dist = length(pos.xy);',
+            '  float curve = dist * dist * curveIntensity;',
+            '  float ripple1 = sin(pos.x * 2.0 + scrollForce * 3.0) * 0.02;',
+            '  float ripple2 = sin(pos.y * 2.5 + scrollForce * 2.0) * 0.015;',
+            '  float cloth = (ripple1 + ripple2) * abs(curveIntensity) * 2.0;',
+            '  pos.z -= (curve + cloth);',
+            '  gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);',
+            '}'
+        ].join('\n');
+
+        var fragmentShader = [
+            'uniform sampler2D map;',
+            'uniform float opacity;',
+            'uniform float blurAmount;',
+            'uniform float scrollForce;',
+            'varying vec2 vUv;',
+            'void main() {',
+            '  vec4 color;',
+            '  if (blurAmount > 0.0) {',
+            '    vec4 blurred = vec4(0.0);',
+            '    float total = 0.0;',
+            '    vec2 px = vec2(0.0015) * blurAmount;',
+            '    for (float x = -2.0; x <= 2.0; x += 1.0) {',
+            '      for (float y = -2.0; y <= 2.0; y += 1.0) {',
+            '        float w = 1.0 / (1.0 + length(vec2(x, y)));',
+            '        blurred += texture2D(map, vUv + vec2(x,y)*px) * w;',
+            '        total += w;',
+            '      }',
+            '    }',
+            '    color = blurred / total;',
+            '  } else {',
+            '    color = texture2D(map, vUv);',
+            '  }',
+            '  color.rgb += vec3(abs(scrollForce) * 0.005);',
+            '  gl_FragColor = vec4(color.rgb, color.a * opacity);',
+            '}'
+        ].join('\n');
+
+        // ── Materials ──────────────────────────────────────────────────────
+        function makeMaterial() {
+            return new THREE.ShaderMaterial({
+                transparent: true,
+                uniforms: {
+                    map:         { value: null },
+                    opacity:     { value: 1.0 },
+                    blurAmount:  { value: 0.0 },
+                    scrollForce: { value: 0.0 },
+                    time:        { value: 0.0 },
+                },
+                vertexShader:   vertexShader,
+                fragmentShader: fragmentShader,
+            });
+        }
+        var materials = [];
+        for (var mi = 0; mi < VISIBLE_COUNT; mi++) materials.push(makeMaterial());
+
+        // ── Spatial distribution (golden-angle, same as original) ──────────
+        var spatialPos = [];
+        for (var si = 0; si < VISIBLE_COUNT; si++) {
+            var hA = (si * 2.618) % (Math.PI * 2);
+            var vA = (si * 1.618 + Math.PI / 3) % (Math.PI * 2);
+            var hR = (si % 3) * 1.2;
+            var vR = ((si + 1) % 4) * 0.8;
+            spatialPos.push({
+                x: (Math.sin(hA) * hR * MAX_H_OFFSET) / 3,
+                y: (Math.cos(vA) * vR * MAX_V_OFFSET) / 4
+            });
+        }
+
+        // ── Planes ────────────────────────────────────────────────────────
+        var geo = new THREE.PlaneGeometry(1, 1, 32, 32);
+        var meshes = [];
+        var planesData = [];
+        for (var pi = 0; pi < VISIBLE_COUNT; pi++) {
+            var mesh = new THREE.Mesh(geo, materials[pi]);
+            scene.add(mesh);
+            meshes.push(mesh);
+            planesData.push({
+                z:          ((DEPTH_RANGE / VISIBLE_COUNT) * pi) % DEPTH_RANGE,
+                imageIndex: pi % IMAGES.length,
+                x:          spatialPos[pi].x,
+                y:          spatialPos[pi].y
+            });
+        }
+
+        // ── Textures ──────────────────────────────────────────────────────
+        var textures = new Array(IMAGES.length).fill(null);
+        var loader   = new THREE.TextureLoader();
+        IMAGES.forEach(function (src, i) {
+            loader.load(src, function (tex) {
+                tex.colorSpace = THREE.SRGBColorSpace;
+                textures[i] = tex;
+            });
+        });
+
+        // ── Scroll / input ────────────────────────────────────────────────
+        var scrollVelocity = 0;
+        var autoPlay       = true;
+        var lastInteract   = Date.now();
+
+        canvas.addEventListener('wheel', function (e) {
+            scrollVelocity += e.deltaY * 0.01;
+            autoPlay = false;
+            lastInteract = Date.now();
+        }, { passive: true });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                scrollVelocity -= 2; autoPlay = false; lastInteract = Date.now();
+            } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                scrollVelocity += 2; autoPlay = false; lastInteract = Date.now();
+            }
+        });
+
+        setInterval(function () {
+            if (Date.now() - lastInteract > 1500) autoPlay = true;
+        }, 1000);
+
+        // ── Helpers ───────────────────────────────────────────────────────
+        function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+        function calcOpacity(norm) {
+            if (norm < FADE_IN_START)  return 0;
+            if (norm <= FADE_IN_END)   return (norm - FADE_IN_START) / (FADE_IN_END - FADE_IN_START);
+            if (norm < FADE_OUT_START) return 1;
+            if (norm <= FADE_OUT_END)  return 1 - (norm - FADE_OUT_START) / (FADE_OUT_END - FADE_OUT_START);
+            return 0;
+        }
+
+        function calcBlur(norm) {
+            if (norm < BLUR_IN_START)  return MAX_BLUR;
+            if (norm <= BLUR_IN_END)   return MAX_BLUR * (1 - (norm - BLUR_IN_START) / (BLUR_IN_END - BLUR_IN_START));
+            if (norm < BLUR_OUT_START) return 0;
+            if (norm <= BLUR_OUT_END)  return MAX_BLUR * (norm - BLUR_OUT_START) / (BLUR_OUT_END - BLUR_OUT_START);
+            return MAX_BLUR;
+        }
+
+        // ── Animation loop ────────────────────────────────────────────────
+        var halfRange    = DEPTH_RANGE / 2;
+        var imageAdvance = VISIBLE_COUNT % IMAGES.length || IMAGES.length;
+        var clock        = new THREE.Clock();
+        var lastTime     = performance.now();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            var now   = performance.now();
+            var delta = Math.min((now - lastTime) / 1000, 0.05);
+            lastTime  = now;
+            var time  = clock.getElapsedTime();
+
+            if (autoPlay) scrollVelocity += AUTO_SPEED * delta;
+            scrollVelocity *= 0.95;
+
+            for (var i = 0; i < VISIBLE_COUNT; i++) {
+                var plane = planesData[i];
+                var newZ  = plane.z + scrollVelocity * delta * 10;
+                var wrapsF = 0, wrapsB = 0;
+
+                if (newZ >= DEPTH_RANGE) {
+                    wrapsF = Math.floor(newZ / DEPTH_RANGE);
+                    newZ  -= DEPTH_RANGE * wrapsF;
+                } else if (newZ < 0) {
+                    wrapsB = Math.ceil(-newZ / DEPTH_RANGE);
+                    newZ  += DEPTH_RANGE * wrapsB;
+                }
+
+                if (wrapsF > 0) plane.imageIndex = (plane.imageIndex + wrapsF * imageAdvance) % IMAGES.length;
+                if (wrapsB > 0) {
+                    var step = plane.imageIndex - wrapsB * imageAdvance;
+                    plane.imageIndex = ((step % IMAGES.length) + IMAGES.length) % IMAGES.length;
+                }
+
+                plane.z = ((newZ % DEPTH_RANGE) + DEPTH_RANGE) % DEPTH_RANGE;
+
+                var norm   = plane.z / DEPTH_RANGE;
+                var worldZ = plane.z - halfRange;
+                var tex    = textures[plane.imageIndex];
+                var mat    = materials[i];
+                var m      = meshes[i];
+
+                if (tex && mat.uniforms.map.value !== tex) {
+                    mat.uniforms.map.value = tex;
+                    var aspect = (tex.image && tex.image.width && tex.image.height)
+                        ? tex.image.width / tex.image.height : 1;
+                    m.scale.set(aspect > 1 ? 2 * aspect : 2, aspect > 1 ? 2 : 2 / aspect, 1);
+                }
+
+                mat.uniforms.opacity.value     = clamp(calcOpacity(norm), 0, 1);
+                mat.uniforms.blurAmount.value  = clamp(calcBlur(norm), 0, MAX_BLUR);
+                mat.uniforms.scrollForce.value = scrollVelocity;
+                mat.uniforms.time.value        = time;
+
+                m.position.set(plane.x, plane.y, worldZ);
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    })();
+    </script>
+
+    <!-- ─── Scroll-triggered grayscale → color reveal (service photos) ─── -->
+    <script>
+    (function () {
+        'use strict';
+        if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+        gsap.registerPlugin(ScrollTrigger);
+
+        document.querySelectorAll('.service-img-wrap img').forEach(function (img) {
+            gsap.to(img, {
+                filter: 'grayscale(0%)',
+                duration: 1.1,
+                ease: 'power2.out',
+                scrollTrigger: {
+                    trigger: img,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
+    })();
+    </script>
+</body>
+
+</html>

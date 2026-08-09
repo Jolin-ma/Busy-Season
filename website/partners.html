@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Partners — LegacyLink Studio</title>
+  <meta name="description" content="Referral partnerships for veterinary clinics, crematoria, and pet loss providers with LegacyLink Studio." />
+  <link rel="icon" href="image/legacy_link_logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header" data-site-header>
+    <div class="container">
+      <a href="index.html" class="brand">
+        <img src="image/legacy_link_logo.png" alt="LegacyLink Studio" />
+        LegacyLink Studio
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html">About</a>
+        <a href="partners.html" aria-current="page">Partners</a>
+        <a href="press.html">Press</a>
+      </nav>
+      <div class="nav-cta-wrap">
+        <a href="contact.html" class="nav-cta">Contact</a>
+      </div>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" style="padding-bottom: 3rem;">
+      <div class="container">
+        <p class="eyebrow">Partners</p>
+        <h1>A natural extension of the care you already provide.</h1>
+        <p class="lede">
+          Veterinary clinics, crematoria, and pet loss providers are often
+          the first place a grieving family turns. Remember Paws gives you
+          something meaningful to offer at that moment, without adding to
+          your team's workload.
+        </p>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container grid grid-3">
+        <div class="card">
+          <h3>Simple referral model</h3>
+          <p class="ink-light">
+            Share a card, flyer, or link with families at the point of
+            care. We handle production, delivery, and support directly
+            with them from there.
+          </p>
+        </div>
+        <div class="card">
+          <h3>No operational burden</h3>
+          <p class="ink-light">
+            No uploads to manage, no fulfillment on your end. Your role is
+            the introduction — we take it from there.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Built for the moment</h3>
+          <p class="ink-light">
+            Remember Paws is designed for people in a vulnerable moment —
+            gentle, unhurried, and free of pressure tactics, which reflects
+            on your practice as well as ours.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container grid grid-2" style="align-items: flex-start;">
+        <div>
+          <p class="eyebrow">Partner inquiry</p>
+          <h2>Tell us about your practice</h2>
+          <p class="ink-light">
+            Fill in a few details and we'll follow up to discuss what a
+            partnership could look like for your clinic or organization.
+          </p>
+          <div class="notice" style="margin-top: 1.5rem;">
+            This form is in preview — submissions are not yet sent to our
+            team automatically. For now, please also email
+            partners@legacylinkstudio.com directly.
+          </div>
+        </div>
+
+        <form id="partner-form" class="card" onsubmit="event.preventDefault(); document.getElementById('partner-form').style.display='none'; document.getElementById('partner-success').style.display='block';">
+          <div class="form-field">
+            <label for="org">Practice / organization name</label>
+            <input id="org" name="org" type="text" required />
+          </div>
+          <div class="form-field">
+            <label for="contact-name">Your name</label>
+            <input id="contact-name" name="contact-name" type="text" required />
+          </div>
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required />
+          </div>
+          <div class="form-field">
+            <label for="type">Organization type</label>
+            <select id="type" name="type">
+              <option>Veterinary clinic</option>
+              <option>Pet crematorium</option>
+              <option>Pet insurance provider</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="4"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Send inquiry</button>
+        </form>
+        <div id="partner-success" class="card" style="display:none;">
+          <h3>Thank you.</h3>
+          <p class="ink-light">We'll be in touch within one business day.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="brand" style="margin-bottom: 0.75rem;">
+            <img src="image/legacy_link_logo.png" alt="LegacyLink Studio" />
+            LegacyLink Studio
+          </a>
+          <p class="ink-light" style="max-width: 22rem;">
+            An AI production studio building lasting, produced tributes to
+            the people and pets we love.
+          </p>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="about.html">About</a></li>
+            <li><a href="partners.html">Partners</a></li>
+            <li><a href="press.html">Press</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Products</h4>
+          <ul>
+            <li><a href="https://rememberpaws.com">Remember Paws</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> LegacyLink Studio. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About — LegacyLink Studio</title>
+  <meta name="description" content="LegacyLink Studio's story, mission, and founder background." />
+  <link rel="icon" href="image/legacy_link_logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header" data-site-header>
+    <div class="container">
+      <a href="index.html" class="brand">
+        <img src="image/legacy_link_logo.png" alt="LegacyLink Studio" />
+        LegacyLink Studio
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="index.html">Home</a>
+        <a href="about.html" aria-current="page">About</a>
+        <a href="partners.html">Partners</a>
+        <a href="press.html">Press</a>
+      </nav>
+      <div class="nav-cta-wrap">
+        <a href="contact.html" class="nav-cta">Contact</a>
+      </div>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" style="padding-bottom: 3rem;">
+      <div class="container">
+        <p class="eyebrow">About</p>
+        <h1>Built to make produced tribute films the standard, not the exception.</h1>
+        <p class="lede">
+          LegacyLink Studio started with a simple observation: the way we
+          keep personal media — photos, video, voice notes — has moved
+          entirely to the phone in our pocket, but the way we honor the
+          people and pets we've lost hasn't caught up to that shift.
+        </p>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container grid grid-2" style="align-items: center;">
+        <div>
+          <p class="eyebrow">Our mission</p>
+          <h2>Turn personal memory into produced, lasting tribute.</h2>
+          <p class="ink-light">
+            We combine AI production — writing, narration, scoring, and
+            editing — with permanent, ownable pages so that a tribute isn't
+            a folder of files but something considered: a short film that
+            actually feels like the life it's honoring.
+          </p>
+        </div>
+        <div>
+          <p class="ink-light">
+            We started with Remember Paws because pet loss is often
+            under-served by traditional memorial products, even though
+            it's one of the most universally felt losses people
+            experience. It's also where we could prove the model end to
+            end: production quality, permanence, and a page that grows
+            with the people who cared.
+          </p>
+          <p class="ink-light">
+            What we build next extends the same idea to other kinds of
+            personal legacy.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <p class="eyebrow">Founder background</p>
+        <h2>Why we're building this</h2>
+        <div class="card" style="max-width: 40rem;">
+          <p class="ink-light">
+            LegacyLink Studio was founded to bring a production studio's
+            care and craft to something most companies treat as a
+            commodity upload flow. Founder background and a fuller company
+            story will be added here as the studio grows — reach out via
+            our <a href="contact.html">contact page</a> if you'd like to
+            talk to us directly in the meantime.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-navy">
+      <div class="container" style="text-align: center;">
+        <p class="eyebrow">See it in practice</p>
+        <h2>Remember Paws is our first product, live today.</h2>
+        <a href="https://rememberpaws.com" class="btn btn-secondary" style="margin-top: 1rem;">
+          Visit rememberpaws.com →
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="brand" style="margin-bottom: 0.75rem;">
+            <img src="image/legacy_link_logo.png" alt="LegacyLink Studio" />
+            LegacyLink Studio
+          </a>
+          <p class="ink-light" style="max-width: 22rem;">
+            An AI production studio building lasting, produced tributes to
+            the people and pets we love.
+          </p>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="about.html">About</a></li>
+            <li><a href="partners.html">Partners</a></li>
+            <li><a href="press.html">Press</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Products</h4>
+          <ul>
+            <li><a href="https://rememberpaws.com">Remember Paws</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html">Terms of Service</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span id="year"></span> LegacyLink Studio. All rights reserved.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
