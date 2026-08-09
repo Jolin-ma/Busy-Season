@@ -86,8 +86,12 @@ img {
 }
 
 .brand img {
-  height: 2rem;
+  height: 3.5rem;
   width: auto;
+}
+
+.footer-grid .brand img {
+  height: 4.5rem;
 }
 
 .nav-links {
