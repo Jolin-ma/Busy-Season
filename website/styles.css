@@ -130,6 +130,14 @@ img {
   background: var(--navy-dark);
 }
 
+/* On desktop this wrapper has zero layout effect (its children act as
+   direct flex items of .site-header .container, same as before it
+   existed) — it only becomes a real box on mobile so the Contact button
+   can live inside the same toggled dropdown as the nav links. */
+.nav-panel {
+  display: contents;
+}
+
 .nav-toggle {
   display: none;
   background: none;
@@ -423,10 +431,10 @@ img {
     display: inline-flex;
   }
 
-  .site-header.open .nav-links {
+  .site-header.open .nav-panel {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 0.25rem;
     position: absolute;
     top: 5rem;
@@ -437,9 +445,26 @@ img {
     padding: 1rem 1.5rem 1.5rem;
   }
 
+  .site-header.open .nav-links {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
   .site-header.open .nav-links a {
     padding: 0.6rem 0;
     width: 100%;
+  }
+
+  .site-header.open .nav-cta-wrap {
+    display: block;
+    margin-top: 0.5rem;
+  }
+
+  .site-header.open .nav-cta {
+    width: 100%;
+    justify-content: center;
   }
 
   .footer-grid {
