@@ -145,8 +145,11 @@ Content decisions, not build gaps:
    "within about a week." The brief doesn't specify a turnaround — this was
    inferred from Growth's biweekly-batch-of-4 cadence. Confirm it's a
    promise you want to make, or change the wording.
-3. **Contact email.** `hello@legacylinkstudio.com` is carried over from the
-   old site and used throughout. Confirm it's live and monitored.
+3. ~~**Contact email.**~~ Settled 2026-08-13: `info@legacylinkstudio.com`
+   is the address, used throughout the site and as the `data-inbox` the
+   quote form composes to. It replaced `hello@`, which was carried over
+   from the old site. Just confirm the mailbox is live and monitored —
+   every conversion path on the site lands there.
 4. **Usage rights** (brief §10) — `terms.html#usage-rights` states a
    reasonable default position and carries a visible note that it's still
    an open founder decision. Settle it before the first paying client.

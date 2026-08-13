@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (form) {
     const status = document.querySelector("[data-quote-status]");
-    const inbox = form.dataset.inbox || "hello@legacylinkstudio.com";
+    const inbox = form.dataset.inbox || "info@legacylinkstudio.com";
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
