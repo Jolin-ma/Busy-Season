@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Get a Quote — LegacyLink Studio</title>
+  <meta name="description" content="Tell us about your business and we'll come back with a straight answer on cost and timing, usually within one business day." />
+  <link rel="icon" href="image/mark.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <header class="site-header" data-site-header>
+    <div class="container">
+      <a href="index.html" class="brand">
+        <img src="image/mark.svg" alt="" width="32" height="32" />
+        <span>LegacyLink <em>Studio</em></span>
+      </a>
+      <div class="nav-panel">
+        <nav class="nav-links" aria-label="Primary">
+          <a href="work.html">Work</a>
+          <a href="pricing.html">Services &amp; Pricing</a>
+          <a href="how-it-works.html">How It Works</a>
+          <a href="about.html">About</a>
+        </nav>
+        <div class="nav-cta-wrap">
+          <a href="quote.html" class="nav-cta" aria-current="page">Get a Quote</a>
+        </div>
+      </div>
+      <button class="nav-toggle" data-nav-toggle aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-head">
+      <div class="container">
+        <p class="eyebrow">Get a Quote</p>
+        <h1>Tell us about your business.</h1>
+        <p class="lede">
+          Six fields. We'll come back with a straight answer on cost and
+          timing — usually within one business day.
+        </p>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container grid grid-split" style="align-items: start;">
+        <!-- Native validation is left on: the submit handler only runs once
+             the required fields are filled, so a half-empty lead can't be
+             sent. -->
+        <form class="card" data-quote-form data-inbox="hello@legacylinkstudio.com">
+          <div class="form-field">
+            <label for="business">Business name</label>
+            <input id="business" name="business" type="text" autocomplete="organization" required />
+          </div>
+
+          <div class="form-field">
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required />
+          </div>
+
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" required />
+          </div>
+
+          <div class="form-field">
+            <label for="phone">Phone <span class="hint">(optional)</span></label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" />
+          </div>
+
+          <div class="form-field">
+            <label for="location">Where you operate <span class="hint">(city / service area)</span></label>
+            <input id="location" name="location" type="text" />
+          </div>
+
+          <fieldset class="form-field" style="border: 0; padding: 0; margin-inline: 0;">
+            <legend style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 0.5rem; padding: 0;">What are you after?</legend>
+            <div class="radio-row">
+              <label class="radio-card">
+                <input type="radio" name="package" value="Starter — $400 for 2 videos" />
+                <span><strong>Starter</strong> — $400 for 2 videos<small>One-off batch, no commitment</small></span>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="package" value="Growth — $1,500/mo for 8 videos" />
+                <span><strong>Growth</strong> — $1,500/mo for 8 videos<small>Biweekly batches, reserved slot</small></span>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="package" value="Free spec ad" />
+                <span><strong>A free spec ad</strong><small>One sample ad for my business, before I commit to anything</small></span>
+              </label>
+              <label class="radio-card">
+                <input type="radio" name="package" value="Not sure yet" checked />
+                <span><strong>Not sure yet</strong><small>Tell me what makes sense</small></span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div class="form-field">
+            <label for="details">What do you want the ads to do? <span class="hint">(optional)</span></label>
+            <textarea id="details" name="details" rows="4" placeholder="e.g. Roof replacements in the Tampa area. Storm damage season. We offer free inspections."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Send my request</button>
+
+          <p class="muted" style="font-size: 0.8125rem; margin-top: 1rem; text-align: center;">
+            This opens a pre-filled email in your mail app so you can see
+            exactly what's being sent. Prefer to write it yourself?
+            <a href="mailto:hello@legacylinkstudio.com" class="link">Email us</a>.
+          </p>
+        </form>
+
+        <div>
+          <div class="notice notice-success" data-quote-status hidden tabindex="-1" role="status">
+            <strong>Your email should be open now.</strong>
+            Hit send in your mail app and it's with us. If nothing opened,
+            write to
+            <a href="mailto:hello@legacylinkstudio.com" class="link">hello@legacylinkstudio.com</a>
+            and we'll pick it up from there.
+          </div>
+
+          <h2 style="font-size: 1.5rem; margin-top: 0;">What happens next</h2>
+          <div class="steps steps-stacked" style="margin-bottom: 2.5rem;">
+            <div class="step">
+              <div>
+                <h3 style="font-size: 1.0625rem;">We reply with a straight answer</h3>
+                <p>Cost, timing, and whether we're honestly a good fit — usually within one business day.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h3 style="font-size: 1.0625rem;">You confirm the brief</h3>
+                <p>A short back-and-forth to pin down the offer and the angle. No lengthy discovery process.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h3 style="font-size: 1.0625rem;">Production starts</h3>
+                <p>Deposit in, concepts out, and your first ads follow.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size: 1.125rem;">Rather just talk?</h3>
+            <p class="muted" style="font-size: 0.9375rem;">
+              Email is the fastest way to reach us, and we read every one.
+            </p>
+            <p style="margin-top: 1rem;">
+              <a href="mailto:hello@legacylinkstudio.com" class="link">hello@legacylinkstudio.com</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="brand">
+            <img src="image/mark.svg" alt="" width="32" height="32" />
+            <span>LegacyLink <em>Studio</em></span>
+          </a>
+          <p class="footer-blurb">
+            A small production studio making video ads for roofers,
+            contractors, and other local service businesses.
+          </p>
+          <a href="mailto:hello@legacylinkstudio.com" class="footer-email">hello@legacylinkstudio.com</a>
+        </div>
+        <div>
+          <h4>Studio</h4>
+          <ul>
+            <li><a href="work.html">Our Work</a></li>
+            <li><a href="pricing.html">Services &amp; Pricing</a></li>
+            <li><a href="how-it-works.html">How It Works</a></li>
+            <li><a href="about.html">About</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Get started</h4>
+          <ul>
+            <li><a href="quote.html">Get a Quote</a></li>
+            <li><a href="quote.html">Request a spec ad</a></li>
+            <li><a href="pricing.html#faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="terms.html">Terms of Service</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html#usage-rights">Usage rights</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span data-year></span> LegacyLink Studio. All rights reserved.</span>
+        <span>Video ad production for local service businesses.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

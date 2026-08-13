@@ -3,129 +3,248 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>LegacyLink Studio — AI-produced memorial experiences</title>
-  <meta name="description" content="LegacyLink Studio is an AI production studio that turns personal memories into lasting, produced tributes. Home of Loyal Tale." />
-  <link rel="icon" href="image/legacy_link_logo.png" />
+  <title>LegacyLink Studio — Video ads for roofers &amp; contractors</title>
+  <meta name="description" content="We make the video ads that get your phone ringing. Short, ready-to-run video ads produced for roofers, contractors, and local service businesses. From $400." />
+  <link rel="icon" href="image/mark.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
   <header class="site-header" data-site-header>
     <div class="container">
       <a href="index.html" class="brand">
-        <img src="image/legacy_link_logo.png" alt="LegacyLink Studio" />
-        LegacyLink Studio
+        <img src="image/mark.svg" alt="" width="32" height="32" />
+        <span>LegacyLink <em>Studio</em></span>
       </a>
       <div class="nav-panel">
         <nav class="nav-links" aria-label="Primary">
-          <a href="index.html" aria-current="page">Home</a>
+          <a href="work.html">Work</a>
+          <a href="pricing.html">Services &amp; Pricing</a>
+          <a href="how-it-works.html">How It Works</a>
           <a href="about.html">About</a>
-          <a href="partners.html">Partners</a>
-          <a href="press.html">Press</a>
         </nav>
         <div class="nav-cta-wrap">
-          <a href="contact.html" class="nav-cta">Contact</a>
+          <a href="quote.html" class="nav-cta">Get a Quote</a>
         </div>
       </div>
       <button class="nav-toggle" data-nav-toggle aria-label="Toggle menu" aria-expanded="false">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
     </div>
   </header>
 
-  <main>
+  <main id="main">
+    <!-- 1. Hero — §8.6: dark, one headline, one CTA -->
     <section class="hero">
-      <div class="container">
-        <p class="eyebrow">LegacyLink Studio</p>
-        <h1>We build AI-produced memorial experiences.</h1>
-        <p class="lede">
-          LegacyLink Studio turns personal photos, video, and stories into
-          produced, narrated tributes — and the lasting, living pages that
-          hold them. Our first product, Loyal Tale, does this for pets.
-        </p>
-        <div class="hero-actions">
-          <a href="https://loyaltale.com" class="btn btn-primary">See Loyal Tale</a>
-          <a href="partners.html" class="btn btn-secondary">Partner with us</a>
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">Video ads for roofers &amp; contractors</p>
+          <h1>We make the video ads that get your phone ringing.</h1>
+          <p class="lede">
+            Short, scroll-stopping video ads produced for local service
+            businesses — finished, ready to run, and priced so a two-video
+            test costs less than a week of ad spend.
+          </p>
+          <div class="btn-row">
+            <a href="quote.html" class="btn btn-primary">Get a Quote</a>
+            <a href="work.html" class="btn btn-secondary">See our work</a>
+          </div>
+          <p class="hero-note">
+            Video creative only — we hand you the files. You run them
+            wherever your customers already are: Facebook, Instagram,
+            TikTok, YouTube, or your own website.
+          </p>
+        </div>
+
+        <!--
+          Reel slot. When a real sample reel exists, drop it straight in
+          and delete the placeholder markup below:
+
+          <video src="video/reel.mp4" poster="image/reel-poster.jpg"
+                 autoplay muted loop playsinline></video>
+        -->
+        <div class="reel">
+          <span class="reel-format">9:16</span>
+          <span class="reel-play" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </span>
+          <p class="reel-label">
+            Sample reel in production.<br />
+            Want to see one for <em>your</em> business?<br />
+            <a href="quote.html" class="link">Ask for a free spec ad</a>
+          </p>
         </div>
       </div>
     </section>
 
+    <!-- 2. Proof — honest placeholder until real client work exists (§6) -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">What you actually get</p>
+          <h2>No retainer to find out if this works for you.</h2>
+          <p>
+            We're a new studio, so we won't pad this page with logos we
+            haven't earned. Here's the honest version of what you're buying.
+          </p>
+        </div>
+
+        <div class="facts">
+          <div class="fact">
+            <p class="fact-value">2<small> videos</small></p>
+            <p>
+              The smallest way in is a $400 two-video batch. Finished files,
+              no contract, no commitment past that batch.
+            </p>
+          </div>
+          <div class="fact">
+            <p class="fact-value">3<small> formats</small></p>
+            <p>
+              Every ad is delivered vertical (9:16), square (1:1), and
+              widescreen (16:9) on request — cut to fit wherever you post it.
+            </p>
+          </div>
+          <div class="fact">
+            <p class="fact-value">1<small> revision round</small></p>
+            <p>
+              Per video, included in every package. You see the ad before
+              it's final, and you get a pass at changing it.
+            </p>
+          </div>
+        </div>
+
+        <div class="notice" style="margin-top: 3rem;">
+          <strong>Not sure yet? Ask for a spec ad.</strong>
+          For a small number of businesses we'll produce one sample ad for
+          <em>your</em> company, free, before you've agreed to anything —
+          so you're reacting to a real video instead of a sales pitch.
+          <a href="quote.html" class="link">Request one</a>.
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. How it works — three clean steps (§8.6) -->
+    <section class="section section-dark">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">How it works</p>
+          <h2>Three steps. Roughly a week.</h2>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <h3>Tell us about your business</h3>
+            <p>
+              One short brief: what you do, who you want calling, and the one
+              offer worth leading with. Ten minutes, not a discovery workshop.
+            </p>
+          </div>
+          <div class="step">
+            <h3>We produce your ads</h3>
+            <p>
+              We write the concept, produce it, and check it ourselves before
+              it reaches you. You review, ask for changes, we cut the final.
+            </p>
+          </div>
+          <div class="step">
+            <h3>You get videos that convert</h3>
+            <p>
+              Finished files in the formats you need, delivered by download
+              link. Post them, boost them, or hand them to whoever runs
+              your ads.
+            </p>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <a href="how-it-works.html" class="btn btn-secondary">See the full process</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Pricing preview — both packages at a glance (§8.6) -->
     <section class="section section-alt">
       <div class="container">
-        <p class="eyebrow">Our products</p>
-        <h2>One studio, produced tributes across every kind of memory.</h2>
-        <div class="grid grid-2" style="margin-top: 2.5rem;">
-          <div class="card card-elevated product-card">
-            <span class="tag live">Live product</span>
-            <h3>Loyal Tale</h3>
-            <p class="ink-light">
-              Produced memorial films and permanent living memorial pages for
-              pets — plus optional keepsakes with an embedded QR code that
-              plays the film.
-            </p>
-            <a href="https://loyaltale.com" class="btn btn-secondary" style="margin-top: 0.5rem; width: fit-content;">
-              Visit loyaltale.com →
-            </a>
+        <div class="section-head">
+          <p class="eyebrow">Pricing</p>
+          <h2>Two ways to work with us.</h2>
+          <p>
+            Straightforward pricing, published on the site. Subscribing is
+            simply the cheaper option per video — there's no upsell logic
+            to decode.
+          </p>
+        </div>
+
+        <div class="pricing">
+          <div class="plan">
+            <h3 class="plan-name">Starter</h3>
+            <p class="plan-kicker">One-off batch. No commitment.</p>
+            <p class="plan-price">$400</p>
+            <p class="plan-unit">$200 per video · 2 videos</p>
+            <ul>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>2 finished video ads from one intake brief</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>Delivered in the formats you need</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>One revision round per video</span>
+              </li>
+            </ul>
+            <a href="quote.html" class="btn btn-secondary btn-block">Start with 2 videos</a>
+            <p class="plan-terms">50% deposit up front, balance on delivery.</p>
           </div>
-          <div class="card product-card">
-            <span class="tag">In development</span>
-            <h3>More coming soon</h3>
-            <p class="ink-light">
-              We're exploring additional verticals for AI-produced tribute
-              experiences, including a future product for human memorial
-              stories. Details to come.
-            </p>
+
+          <div class="plan plan-featured">
+            <span class="plan-badge">Best value</span>
+            <h3 class="plan-name">Growth</h3>
+            <p class="plan-kicker">Your ad creative pipeline, handled.</p>
+            <p class="plan-price">$1,500 <span>/ month</span></p>
+            <p class="plan-unit">$187.50 per video · 8 videos monthly</p>
+            <ul>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>8 new videos a month, in biweekly batches of 4</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>A reserved production slot — never queued behind one-offs</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>Notes each batch on which angles are working, so the next one builds on it</span>
+              </li>
+            </ul>
+            <a href="quote.html" class="btn btn-primary btn-block">Talk about Growth</a>
+            <p class="plan-terms">Cheaper per video than the one-off. Cancel anytime.</p>
           </div>
+        </div>
+
+        <div class="btn-row" style="justify-content: center;">
+          <a href="pricing.html" class="btn btn-secondary">Full pricing &amp; FAQ</a>
         </div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="container grid grid-2" style="align-items: center;">
-        <div>
-          <p class="eyebrow">Why this matters</p>
-          <h2>Memory is becoming a digital-first medium — memorialization hasn't caught up.</h2>
-        </div>
-        <div>
-          <p class="ink-light">
-            Most of what we keep of the ones we love now lives on a phone or
-            in a cloud account, not in a physical place we can return to.
-            At the same time, our relationships with pets and family are
-            more central to how people define their lives than ever before.
-          </p>
-          <p class="ink-light">
-            LegacyLink Studio sits at that intersection: we use AI production
-            — writing, narration, scoring, and editing — to turn scattered
-            personal media into something as considered as a produced short
-            film, paired with a permanent, ownable page built to last well
-            beyond any one device.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-navy">
-      <div class="container grid grid-2" style="align-items: center;">
-        <div>
-          <p class="eyebrow">For partners</p>
-          <h2>Working with veterinary clinics and pet loss providers.</h2>
-          <p class="ink-light">
-            Loyal Tale was built to sit naturally alongside the care
-            clinics, crematoria, and end-of-life providers already offer
-            families. If you're evaluating a referral partnership — or want
-            to understand how LegacyLink Studio fits into your client
-            experience — we'd like to talk.
-          </p>
-        </div>
-        <div class="card" style="background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.16);">
-          <h3 style="color:#fff;">Let's talk partnership</h3>
-          <p class="ink-light">
-            Tell us a bit about your practice and how you'd like to work
-            together. We typically respond within one business day.
-          </p>
-          <a href="partners.html" class="btn btn-secondary">Partner inquiries →</a>
+    <!-- 5. Final CTA before the footer (§8.6) -->
+    <section class="cta-band">
+      <div class="container">
+        <h2>Let's get your phone ringing.</h2>
+        <p>
+          Tell us what you do and who you want calling. We'll come back with
+          a straight answer on cost and timing — usually within one business day.
+        </p>
+        <div class="btn-row">
+          <a href="quote.html" class="btn btn-primary">Get a Quote</a>
+          <a href="mailto:hello@legacylinkstudio.com" class="btn btn-secondary">Email us directly</a>
         </div>
       </div>
     </section>
@@ -135,45 +254,49 @@
     <div class="container">
       <div class="footer-grid">
         <div>
-          <a href="index.html" class="brand" style="margin-bottom: 0.75rem;">
-            <img src="image/legacy_link_logo.png" alt="LegacyLink Studio" />
-            LegacyLink Studio
+          <a href="index.html" class="brand">
+            <img src="image/mark.svg" alt="" width="32" height="32" />
+            <span>LegacyLink <em>Studio</em></span>
           </a>
-          <p class="ink-light" style="max-width: 22rem;">
-            An AI production studio building lasting, produced tributes to
-            the people and pets we love.
+          <p class="footer-blurb">
+            A small production studio making video ads for roofers,
+            contractors, and other local service businesses.
           </p>
+          <a href="mailto:hello@legacylinkstudio.com" class="footer-email">hello@legacylinkstudio.com</a>
         </div>
         <div>
-          <h4>Company</h4>
+          <h4>Studio</h4>
           <ul>
+            <li><a href="work.html">Our Work</a></li>
+            <li><a href="pricing.html">Services &amp; Pricing</a></li>
+            <li><a href="how-it-works.html">How It Works</a></li>
             <li><a href="about.html">About</a></li>
-            <li><a href="partners.html">Partners</a></li>
-            <li><a href="press.html">Press</a></li>
-            <li><a href="contact.html">Contact</a></li>
           </ul>
         </div>
         <div>
-          <h4>Products</h4>
+          <h4>Get started</h4>
           <ul>
-            <li><a href="https://loyaltale.com">Loyal Tale</a></li>
+            <li><a href="quote.html">Get a Quote</a></li>
+            <li><a href="quote.html">Request a spec ad</a></li>
+            <li><a href="pricing.html#faq">FAQ</a></li>
           </ul>
         </div>
         <div>
           <h4>Legal</h4>
           <ul>
-            <li><a href="privacy.html">Privacy Policy</a></li>
             <li><a href="terms.html">Terms of Service</a></li>
+            <li><a href="privacy.html">Privacy Policy</a></li>
+            <li><a href="terms.html#usage-rights">Usage rights</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
-        <span>© <span id="year"></span> LegacyLink Studio. All rights reserved.</span>
+        <span>© <span data-year></span> LegacyLink Studio. All rights reserved.</span>
+        <span>Video ad production for local service businesses.</span>
       </div>
     </div>
   </footer>
 
   <script src="script.js"></script>
-  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
 </body>
 </html>
