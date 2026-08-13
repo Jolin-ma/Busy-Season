@@ -131,16 +131,87 @@ responsive-mode pass before the next production deploy.
 
 ---
 
+## 2026-08-13 — Shipped to production, plus post-launch fixes
+
+The rebuild went live at `legacylinkstudio.com`. `main` was fast-forwarded
+to the rebuild branch and pushed; Vercel deployed it. Verified over HTTP
+that all 8 pages return 200 and the page titles/copy/email are the new
+ones. The old memorial site is off the domain.
+
+Rollback, if ever needed: deployment `dpl_2ZDLVcM…` (commit `c4a34d1`,
+the old site) is still flagged as a rollback candidate in Vercel.
+
+Follow-up changes made after launch, each deployed and verified live:
+
+| Change | Commit |
+|---|---|
+| `hello@` → `info@legacylinkstudio.com` everywhere (16 spots incl. the form's `data-inbox`) | `4becca9` |
+| Deleted the unused root-level `image/legacy_link_logo.png` | `9a2d32d` |
+| Removed the logo mark from the nav bar — header is the wordmark alone (footer mark and favicon unchanged) | `fcc08d0` |
+| Dropped the city name from the quote-form placeholder | `fe656e1` |
+| Redirects for the three deleted pages | `7171e81`, `6ab2fe7`, `908dd9b` |
+
+Live redirect behaviour, all 308 and all confirmed to land on a 200:
+
+```
+/contact.html   → /quote.html
+/partners.html  → /
+/press.html     → /
+```
+
+### ⚠ The Vercel config trap that cost the most time here
+
+**The marketing site's Vercel config lives at `website/vercel.json`, not
+the repo root.** The project's Root Directory is `website`, and Vercel
+reads `vercel.json` from the Root Directory — so the repo-root
+`vercel.json` is never consulted by this project.
+
+This is nasty because the symptom is silent. `outputDirectory: website`
+in the root file *looks* like it's working, since Root Directory
+`website` serves exactly the same files anyway. Only routing config
+(`redirects`, `headers`, `rewrites`) quietly does nothing, and the deploy
+still goes green. The first `/contact.html` redirect was added to the
+root file, deployed successfully, and kept returning 404 with
+`X-Vercel-Error: NOT_FOUND`.
+
+CLAUDE.md's deployment table had this wrong and has been corrected. The
+root `vercel.json` was left in place rather than deleted — `admin/` and
+`ops-dashboard/` were configured around it, so removing it is not a
+verified no-op.
+
+### Brief update received (§3, §4, §10)
+
+The founder is in Oshawa, operating out of Durham Region / East GTA. The
+brief's decision is that this stays **out of the website** — positioning
+is vertical-led, and location is an outreach/conversation lever only.
+Checked: the site contains no geographic claim of any kind, so it already
+complies and needed no change. This also retroactively justifies dropping
+"Tampa area" from the quote-form placeholder — a US city on a
+deliberately geography-agnostic site, for an Ontario studio.
+
+---
+
 ## Open items for the founder
 
 Content decisions, not build gaps:
 
-1. **Logo.** The old `image/legacy_link_logo.png` — an ornate gold Celtic
-   tree crest set in a serif — conflicts with §8.3 ("no serif anywhere on
-   this site") and reads memorial rather than B2B. The site now uses a
-   simple amber play-mark (`image/mark.svg`) plus a Space Grotesk wordmark.
-   The old PNG is still in the repo, unused. Replace the mark with a real
-   designed logo when there's budget for one.
+0. **Currency is unmarked — decide this one first.** Every price on the
+   site is a bare `$` (`$400`, `$200`, `$1,500`, `$187.50`); the brief
+   doesn't specify a currency either. This mattered less while the site
+   read as generically North American, but with the founder confirmed in
+   Ontario and the first prospects being Durham Region contractors,
+   they'll read those as CAD. If USD is meant, that's roughly a third
+   more than the prospect thinks they agreed to — the kind of gap that
+   surfaces at invoice time. Decide, add it to brief §2, and mark it on
+   the pricing page.
+
+1. **Logo.** The old gold Celtic-tree crest set in a serif conflicted with
+   §8.3 ("no serif anywhere on this site") and read memorial rather than
+   B2B. The root-level copy is deleted; `website/image/legacy_link_logo.png`
+   remains in the repo, unused by any page. The nav is now a plain Space
+   Grotesk wordmark — `image/mark.svg` was removed from the header on
+   2026-08-13 and survives only in the footer and as the favicon. Commission
+   a real logo when there's budget for one.
 2. **Turnaround time.** The site says a Starter batch typically lands
    "within about a week." The brief doesn't specify a turnaround — this was
    inferred from Growth's biweekly-batch-of-4 cadence. Confirm it's a
@@ -156,12 +227,38 @@ Content decisions, not build gaps:
 5. **Phone number** — none is published anywhere; none was supplied. Roofers
    and contractors often prefer to call. Worth adding one.
 
-## Next steps
+## Next steps — picking up 2026-08-14
 
-1. Produce 1–2 spec videos (brief §9 item 2) and drop them into the hero
+Blocked on a founder decision (quick, do these first):
+
+1. **Decide CAD vs USD** (open item 0) and mark it on the pricing page.
+2. **Confirm `info@legacylinkstudio.com` receives mail.** Every conversion
+   path on the site funnels there and there is no form backend to catch a
+   bounce — a dead mailbox means leads vanish silently.
+3. **Check the live site on a real phone.** Still the one thing never
+   verified directly: the viewport could not be shrunk in the build
+   environment, so the media queries were only tested by re-applying their
+   rule bodies at 390px, never observed firing. This is also the exact
+   area where a bug shipped once before (see the 2026-08-10 entry).
+
+Ready to do, no decision needed:
+
+4. Produce 1–2 spec videos (brief §9 item 2) and drop them into the hero
    reel slot and the `work.html` grid — both are already wired for it.
-2. Get the legal pages reviewed before taking on a paying client.
-3. Wire the quote form to a real backend when one is chosen, and update
-   `privacy.html` §9 accordingly (it currently states no form backend
-   exists, which is accurate today).
-4. Do the DevTools responsive-mode pass noted above.
+   `index.html` carries a commented `<video>` snippet, and `work.html` a
+   commented card template.
+5. Get the legal pages reviewed before taking on a paying client. The
+   jurisdiction is now known (Ontario / PIPEDA), which is worth telling
+   whoever reviews them.
+6. Fix "finalised" → "finalized" in `terms.html` for Canadian house style.
+   ("licence" on the same page is already correct — Canadian keeps the
+   -ce noun form.)
+7. Wire the quote form to a real backend when one is chosen, and update
+   `privacy.html` §2 and §9 accordingly — both currently state that no
+   form backend exists, which is accurate today and would become false.
+8. Add a phone number if you want one (open item 5).
+
+Worth knowing before touching deployment config: read the Vercel trap in
+the 2026-08-13 entry above. Redirects, headers, and rewrites for this site
+go in `website/vercel.json`; the repo-root file is not read by this
+project, and putting them there fails silently with a green deploy.
