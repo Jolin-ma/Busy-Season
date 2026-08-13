@@ -4,6 +4,16 @@
       "source": "/contact.html",
       "destination": "/quote.html",
       "permanent": true
+    },
+    {
+      "source": "/partners.html",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/press.html",
+      "destination": "/",
+      "permanent": true
     }
   ]
 }
