@@ -2,12 +2,5 @@
   "framework": null,
   "buildCommand": null,
   "outputDirectory": "website",
-  "installCommand": null,
-  "redirects": [
-    {
-      "source": "/contact.html",
-      "destination": "/quote.html",
-      "permanent": true
-    }
-  ]
+  "installCommand": null
 }

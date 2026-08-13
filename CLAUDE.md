@@ -152,13 +152,15 @@ Four independent deployments from this one repo, each its own host/project:
 
 | App | Root Directory | Host | Domain |
 |---|---|---|---|
-| Marketing site (`website/`) | `.` (repo root `vercel.json`, `outputDirectory: website`) | Vercel | `legacylinkstudio.com` |
+| Marketing site (`website/`) | `website` (own `website/vercel.json` — **not** the repo-root one, see below) | Vercel | `legacylinkstudio.com` |
 | Admin UI (`admin/`) | `admin` (own `admin/vercel.json`) | Vercel (separate project) | `app.legacylinkstudio.com` |
 | Fastify API (`src/`) | `.` (repo root) | Railway | `api.legacylinkstudio.com` |
 | Ops dashboard (`ops-dashboard/`) | `ops-dashboard` (own `ops-dashboard/vercel.json`) | Vercel (separate project) | `ops.legacylinkstudio.com` |
 
 - **DNS** is managed at Namecheap (not delegated to Vercel), so every subdomain needs a manual CNAME record added there, even though the apex domain is a Vercel project.
 - **Database**: Neon project `legacylink`, branch `prod-railway`. Root `.env`/local dev points at a separate branch — never at prod.
+- **The marketing site's Vercel config lives at `website/vercel.json`, not the repo root.** Its Vercel project has Root Directory `website`, and Vercel reads `vercel.json` from the Root Directory — so the repo-root `vercel.json` is never consulted by that project. This is easy to get wrong because the *symptom* is silent: the site keeps serving `website/` correctly either way, and only routing config (`redirects`, `headers`, `rewrites`) quietly does nothing. A `/contact.html` → `/quote.html` redirect was added to the repo-root file first and 404'd in production despite a green deploy. Put any redirect/header/rewrite for the marketing site in `website/vercel.json`.
+- **The repo-root `vercel.json`** (`outputDirectory: website`) is not used by the marketing site. It's left in place because the subprojects below were configured around it — don't assume deleting it is a no-op without checking their builds.
 - **`admin/vercel.json`** and **`ops-dashboard/vercel.json`** each exist specifically so those projects don't inherit the repo-root `vercel.json`'s `outputDirectory: website` setting (that bit the admin project once, then would have bitten ops-dashboard too — Next.js builds into `.next`, not `website`, so the wrong setting causes a 404 on every route despite a successful build). Any future subproject deployed to Vercel from this repo needs the same override.
 - **Vercel blocks deploys of pinned-vulnerable Next.js versions** ("Vulnerable version of Next.js detected") — this isn't a build error, it shows up as a deployment-level failure above the build log, easy to miss while scrolling build output looking for the actual error. Check `npm view next versions` for the latest patch on the same major before bumping.
 - **`ADMIN_URL`** (Railway env var) and **`NEXT_PUBLIC_API_URL`** (Vercel admin project env var) must point at each other's production domain, or CORS/signup breaks. `NEXT_PUBLIC_API_URL` is baked in at build time — changing it requires a fresh deploy, not just a dashboard save.
