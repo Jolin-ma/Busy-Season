@@ -364,11 +364,16 @@ Content decisions, not build gaps:
    "within about a week." The brief doesn't specify a turnaround — this was
    inferred from Growth's biweekly-batch-of-4 cadence. Confirm it's a
    promise you want to make, or change the wording.
-3. ~~**Contact email.**~~ Settled 2026-08-13: `info@legacylinkstudio.com`
-   is the address, used throughout the site and as the `data-inbox` the
-   quote form composes to. It replaced `hello@`, which was carried over
-   from the old site. Just confirm the mailbox is live and monitored —
-   every conversion path on the site lands there.
+3. **Contact email — the address is settled, the mailbox is not.**
+   `info@legacylinkstudio.com` is the address, used throughout the site and
+   as the quote form's `data-inbox`. It replaced `hello@`, carried over from
+   the old site.
+
+   ⚠ **The mailbox does not exist yet** (founder, 2026-08-14), so the site
+   is currently advertising a dead address on every page. This is the
+   highest-priority open item on the whole list — see next-steps item 2 for
+   the DNS diagnosis and the fix. Nothing else here loses money while broken;
+   this does.
 4. **Usage rights** (brief §10) — `terms.html#usage-rights` states a
    reasonable default position and carries a visible note that it's still
    an open founder decision. Settle it before the first paying client.
@@ -383,9 +388,37 @@ Blocked on a founder decision (quick, do these first):
    2026-08-14: CAD, no tax charged, stated site-wide. What remains is not a
    task but a **watch item** — see the $30k registration trigger in open
    item 0, which will force the "no tax is added" copy off the site.
-2. **Confirm `info@legacylinkstudio.com` receives mail.** Every conversion
-   path on the site funnels there and there is no form backend to catch a
-   bounce — a dead mailbox means leads vanish silently.
+2. **`info@legacylinkstudio.com` does not receive mail yet — confirmed by
+   the founder 2026-08-14.** This is the top blocker: all 29 contact
+   references on the site, the quote form's fallback, and the Resend
+   endpoint's delivery target all point at a mailbox that doesn't exist.
+
+   Diagnosed from live DNS, so the fix is smaller than it sounds:
+
+   ```
+   MX → eforward1–5.registrar-servers.com   (Namecheap free forwarding,
+                                             already configured)
+   TXT/SPF → none at all
+   ```
+
+   Mail already routes to Namecheap's forwarding servers; what's missing is
+   almost certainly just the forwarding *rule* in the dashboard. Namecheap →
+   Domain List → `legacylinkstudio.com` → **Redirect Email** → `info@` →
+   the founder's Gmail. Then send a test from an outside account.
+
+   **Do this before the Resend setup**, not after — both write DNS records,
+   and verifying receive-only first avoids debugging two things at once.
+
+   ⚠ **Forwarding is receive-only.** Replies would come from a personal
+   Gmail address after the prospect wrote to `info@` — a real credibility
+   cost when asking a contractor for $1,500/mo. Sending *as* `info@` needs
+   a real mailbox: Zoho Mail's free tier or Namecheap Private Email
+   (~$12–15/yr). Both replace the MX records above.
+
+   ⚠ **Only one SPF record is allowed per domain.** A mailbox provider will
+   want one and Resend will want one — they must be **merged into a single
+   TXT record**, never added as two. Two SPF records fail both. There is no
+   SPF record today, so this is clean as long as it's merged going forward.
 3. **Open the live site on a real phone.** Now the *only* unverified piece
    of the responsive work, and a much smaller one than it was: the
    2026-08-14 entry rules out the structural causes statically (viewport
