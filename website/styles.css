@@ -955,6 +955,17 @@ strong { font-weight: 600; }
   margin-bottom: 1.5rem;
 }
 
+/* Honeypot. Positioned off-screen rather than display:none — the field has to
+   look real enough to a form-filling bot to be worth filling in. Paired with
+   aria-hidden and tabindex="-1" on the markup so no real visitor reaches it. */
+.hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
 .form-field label {
   display: block;
   font-size: 0.9375rem;

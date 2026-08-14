@@ -27,44 +27,111 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ---- Quote form --------------------------------------------------
-     There is no form backend for this site (it deploys as static files
-     to Vercel — see repo CLAUDE.md). Rather than fake a success state
-     that silently drops a lead, submitting composes a pre-filled email
-     in the visitor's mail client and tells them plainly that it did.
-     Swap this for a real endpoint (Formspree, a Vercel function, etc.)
-     when one exists — the field names below are already the payload. */
+     Posts to /api/quote (a Vercel serverless function in website/api/),
+     which emails the lead via Resend. On success the form is replaced by
+     the inline success notice; the page never navigates.
+
+     If the endpoint fails for any reason, the error path falls back to the
+     old mailto behaviour rather than dropping the lead — a visitor who
+     bothered to fill this in should never leave with nothing. */
   const form = document.querySelector("[data-quote-form]");
 
   if (form) {
     const status = document.querySelector("[data-quote-status]");
+    const errorBox = document.querySelector("[data-quote-error]");
+    const mailtoLink = document.querySelector("[data-quote-mailto]");
+    const submit = form.querySelector('button[type="submit"]');
     const inbox = form.dataset.inbox || "info@legacylinkstudio.com";
 
-    form.addEventListener("submit", (event) => {
-      event.preventDefault();
-
+    const readFields = () => {
       const data = new FormData(form);
       const get = (key) => String(data.get(key) || "").trim();
+      return {
+        business: get("business"),
+        name: get("name"),
+        email: get("email"),
+        phone: get("phone"),
+        location: get("location"),
+        package: get("package"),
+        details: get("details"),
+        company_website: get("company_website"), // honeypot
+      };
+    };
 
-      const subject = `Quote request — ${get("business") || "new enquiry"}`;
+    const composeMailto = (f) => {
+      const subject = `Quote request — ${f.business || "new enquiry"}`;
       const body = [
-        `Business: ${get("business")}`,
-        `Contact name: ${get("name")}`,
-        `Email: ${get("email")}`,
-        `Phone: ${get("phone") || "—"}`,
-        `Location: ${get("location") || "—"}`,
-        `Interested in: ${get("package") || "not sure yet"}`,
+        `Business: ${f.business}`,
+        `Contact name: ${f.name}`,
+        `Email: ${f.email}`,
+        `Phone: ${f.phone || "—"}`,
+        `Location: ${f.location || "—"}`,
+        `Interested in: ${f.package || "not sure yet"}`,
         "",
         "What they need:",
-        get("details") || "—",
+        f.details || "—",
       ].join("\n");
 
-      window.location.href =
+      return (
         `mailto:${inbox}?subject=${encodeURIComponent(subject)}` +
-        `&body=${encodeURIComponent(body)}`;
+        `&body=${encodeURIComponent(body)}`
+      );
+    };
 
-      if (status) {
-        status.hidden = false;
-        status.focus();
+    const showError = (message, fields) => {
+      if (mailtoLink) mailtoLink.href = composeMailto(fields);
+      if (errorBox) {
+        const slot = errorBox.querySelector("[data-quote-error-message]");
+        if (slot && message) slot.textContent = message;
+        errorBox.hidden = false;
+        errorBox.focus();
+      }
+    };
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      /* No explicit validation here: the browser gates the submit event on the
+         required fields already (the form isn't novalidate), so reaching this
+         line means business/name/email are filled and the email parses. The
+         endpoint re-checks anyway, since it's reachable directly. */
+      const fields = readFields();
+
+      if (errorBox) errorBox.hidden = true;
+      if (submit) {
+        submit.disabled = true;
+        submit.dataset.label = submit.textContent;
+        submit.textContent = "Sending…";
+      }
+
+      try {
+        const response = await fetch("/api/quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(fields),
+        });
+
+        if (!response.ok) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload.error === "server" ? "" : payload.error || "");
+        }
+
+        form.hidden = true;
+        if (status) {
+          status.hidden = false;
+          status.focus();
+        }
+        return;
+      } catch (err) {
+        showError(
+          err && err.message && err.message !== "server" ? err.message : "",
+          fields,
+        );
+      } finally {
+        if (submit) {
+          submit.disabled = false;
+          if (submit.dataset.label) submit.textContent = submit.dataset.label;
+        }
       }
     });
   }

@@ -106,22 +106,37 @@
             <textarea id="details" name="details" rows="4" placeholder="e.g. Roof replacements. Storm damage season. We offer free inspections."></textarea>
           </div>
 
+          <!-- Honeypot. Hidden from sight and from screen readers, and skipped
+               in the tab order, so no real visitor ever fills it in; the
+               endpoint discards any submission that has it set. -->
+          <div class="hp" aria-hidden="true">
+            <label for="company_website">Company website</label>
+            <input id="company_website" name="company_website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
           <button type="submit" class="btn btn-primary btn-block">Send my request</button>
 
           <p class="muted" style="font-size: 0.8125rem; margin-top: 1rem; text-align: center;">
-            This opens a pre-filled email in your mail app so you can see
-            exactly what's being sent. Prefer to write it yourself?
+            Goes straight to our inbox — we'll reply to the email address you
+            gave us. Prefer to write it yourself?
             <a href="mailto:info@legacylinkstudio.com" class="link">Email us</a>.
           </p>
         </form>
 
         <div>
           <div class="notice notice-success" data-quote-status hidden tabindex="-1" role="status">
-            <strong>Your email should be open now.</strong>
-            Hit send in your mail app and it's with us. If nothing opened,
-            write to
-            <a href="mailto:info@legacylinkstudio.com" class="link">info@legacylinkstudio.com</a>
-            and we'll pick it up from there.
+            <strong>Got it — your request is in.</strong>
+            We'll come back to you at the email address you gave us, usually
+            within one business day. Nothing else for you to do.
+          </div>
+
+          <!-- Shown only if the endpoint fails. Keeps the old mailto path
+               alive so a filled-in form is never a wasted trip. -->
+          <div class="notice" data-quote-error hidden tabindex="-1" role="alert">
+            <strong data-quote-error-message>That didn't go through.</strong>
+            Sorry — something broke on our end, not yours.
+            <a href="mailto:info@legacylinkstudio.com" class="link" data-quote-mailto>Send it as an email instead</a>
+            and we'll pick it up from there. Your answers are already filled in.
           </div>
 
           <h2 style="font-size: 1.5rem; margin-top: 0;">What happens next</h2>

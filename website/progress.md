@@ -244,6 +244,59 @@ font-loading shifts, iOS-specific behaviour, and whether the hamburger
 actually opens under a real touch event. Static analysis rules out the
 structural causes; it can't confirm the thing renders.
 
+### Quote form now posts to a real backend
+
+Next-steps item 7, built the same day. The form no longer opens a mailto —
+it POSTs to `/api/quote`, a Vercel serverless function that emails the lead
+via Resend. Decision was Vercel function + Resend over Formspree: no
+third-party branding on the confirmation path of a B2B credibility site,
+and the payload stays in our own code.
+
+**`website/api/quote.js`** — CommonJS, global `fetch`, zero dependencies.
+That's deliberate: `website/` has no `package.json`, and pulling in the
+Resend SDK would give the static site an install step for one HTTP call.
+
+Behaviour, all covered by a throwaway harness with a stubbed `fetch`
+(13/13 branches, not kept in the repo — there's no test runner here):
+
+| Case | Result |
+|---|---|
+| non-POST | 405 with `Allow: POST` |
+| missing business/name/email | 400, message shown inline |
+| unparseable email | 400 |
+| honeypot filled | silent 200, **nothing sent** |
+| happy path | 200, Resend called with `reply_to` = prospect |
+| Resend rejects / network throws | 502 |
+| `RESEND_API_KEY` unset | 500 |
+
+Details worth not undoing later:
+
+- **`reply_to` is the prospect's address**, so hitting reply in the mail
+  client goes to them, not to the no-reply sender.
+- **Every failure path logs the full lead payload** before returning 502.
+  This is the recovery mechanism — if Resend is down or the domain drops
+  out of verification, the lead is still in the Vercel function log rather
+  than gone. Don't trim those logs to just the error.
+- **HTML in the email body is escaped**; the text part is what matters but
+  a pasted `<img onerror=...>` shouldn't render in the inbox.
+- **Field lengths are capped** (details at 5000 chars) so a junk payload
+  can't become a huge email.
+- **Honeypot** is `company_website`, off-screen via `.hp` rather than
+  `display:none`, plus `aria-hidden` and `tabindex="-1"`. Off-screen so a
+  form-filling bot still considers it real.
+
+Client side (`script.js`): submit is disabled and relabelled "Sending…"
+during the request; success hides the form and reveals the existing
+`.notice-success` block; **failure falls back to the old mailto path** with
+the answers already composed, so a visitor who filled the form in never
+leaves with nothing.
+
+`privacy.html` §2, §5, and §9 were rewritten to match — §2 described the
+mailto behaviour, and §9 promised to update the page "if we add ... a
+hosted form backend," which this is. §5 now names Vercel and Resend.
+
+**Not live until three things happen outside this repo** — see next steps.
+
 ---
 
 ## Open items for the founder
@@ -310,9 +363,19 @@ Ready to do, no decision needed:
    jurisdiction is now known (Ontario / PIPEDA), which is worth telling
    whoever reviews them.
 6. ~~Fix "finalised" → "finalized" in `terms.html`.~~ Done 2026-08-14.
-7. Wire the quote form to a real backend when one is chosen, and update
-   `privacy.html` §2 and §9 accordingly — both currently state that no
-   form backend exists, which is accurate today and would become false.
+7. ~~Wire the quote form to a real backend.~~ Built 2026-08-14. **But it is
+   not working until the founder does these three, in order:**
+   1. Create a Resend account and add `legacylinkstudio.com` as a domain.
+      (Free tier is 100 emails/day — far past this site's volume.)
+   2. Add the DKIM/SPF records Resend gives you **at Namecheap**, since DNS
+      is not delegated to Vercel (see CLAUDE.md). Wait for verification.
+   3. Set `RESEND_API_KEY` on the **marketing site's** Vercel project, then
+      redeploy. Optional: `LEAD_INBOX`, `LEAD_FROM`.
+
+   Until step 3, the form shows the failure notice and falls back to
+   mailto — degraded, but not lead-dropping. **Submit one real test lead
+   after deploying** and confirm it arrives; this is the one path where a
+   silent failure costs actual money.
 8. Add a phone number if you want one (open item 5). Also asked on
    2026-08-14 and left unanswered.
 
