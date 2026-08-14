@@ -244,6 +244,11 @@ font-loading shifts, iOS-specific behaviour, and whether the hamburger
 actually opens under a real touch event. Static analysis rules out the
 structural causes; it can't confirm the thing renders.
 
+### Currency settled: CAD
+
+Open item 0, marked site-wide. See that item below for exactly where it's
+marked and what was deliberately left alone. Brief §2 carries the decision.
+
 ### Quote form now posts to a real backend
 
 Next-steps item 7, built the same day. The form no longer opens a mailto —
@@ -303,15 +308,22 @@ hosted form backend," which this is. §5 now names Vercel and Resend.
 
 Content decisions, not build gaps:
 
-0. **Currency is unmarked — decide this one first.** Every price on the
-   site is a bare `$` (`$400`, `$200`, `$1,500`, `$187.50`); the brief
-   doesn't specify a currency either. This mattered less while the site
-   read as generically North American, but with the founder confirmed in
-   Ontario and the first prospects being Durham Region contractors,
-   they'll read those as CAD. If USD is meant, that's roughly a third
-   more than the prospect thinks they agreed to — the kind of gap that
-   surfaces at invoice time. Decide, add it to brief §2, and mark it on
-   the pricing page.
+0. ~~**Currency is unmarked.**~~ Settled 2026-08-14: **CAD**. Marked on the
+   plan prices, on both quote-form package options (so it's in the lead
+   email too), in the homepage and pricing-page meta descriptions, and as
+   an explicit "All prices are in Canadian dollars (CAD)" line under the
+   pricing grid on `index.html` and `pricing.html`. Brief §2 records it.
+
+   Two deliberate non-changes: the `.plan-unit` per-video figures sit
+   directly under a price already marked CAD, and `about.html`'s `$5,000`
+   is the agency-comparison figure, not our price.
+
+   **New open item, not invented here:** whether HST is *included in* or
+   *added to* these prices. The site says nothing about tax. It doesn't
+   matter until the studio passes the $30k registration threshold, but the
+   first client agreement should say which it is, because "$400 CAD" with
+   no tax line reads as tax-inclusive to a customer and as pre-tax to an
+   accountant.
 
 1. **Logo.** The old gold Celtic-tree crest set in a serif conflicted with
    §8.3 ("no serif anywhere on this site") and read memorial rather than
@@ -339,8 +351,9 @@ Content decisions, not build gaps:
 
 Blocked on a founder decision (quick, do these first):
 
-1. **Decide CAD vs USD** (open item 0) and mark it on the pricing page.
-   Asked on 2026-08-14 and left unanswered, so the site is still unmarked.
+1. ~~**Decide CAD vs USD.**~~ Settled 2026-08-14: CAD, marked site-wide.
+   Replaced by a smaller question — decide whether HST is included in or
+   added to the price before the first client agreement (open item 0).
 2. **Confirm `info@legacylinkstudio.com` receives mail.** Every conversion
    path on the site funnels there and there is no form backend to catch a
    bounce — a dead mailbox means leads vanish silently.

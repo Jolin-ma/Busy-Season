@@ -22,17 +22,19 @@
 
 ## 2. Business Model & Pricing
 
+**Currency — CAD (decided 2026-08-14):** every client-facing price in this section and on the website is in **Canadian dollars**. The founder is in Ontario and the first prospects are Durham Region contractors, so CAD is what they'd assume from a bare `$` anyway — this makes it explicit rather than leaving a ~30% gap to surface at invoice time. The website marks it on the plan prices and carries an "All prices are in Canadian dollars (CAD)" line on the homepage and pricing page. Note this does **not** apply to the tool-cost figures below (Higgsfield credits, the $129/mo Ultra plan) — those are vendor list prices as billed, not CAD conversions. Still open: whether HST is included in or added to these prices, which matters once the studio passes the $30k registration threshold.
+
 **Final structure (2026-08-13):** simplified to two standing offers after testing a three-tier version that added complexity without a clean enough value story. The retainer is deliberately priced *below* the one-off's per-video rate — that resolves the obvious client objection ("why would I pay more to subscribe?") by not requiring an answer: subscribing is simply the cheaper option per video, on top of everything else it includes.
 
 ### 2.1 Starter Package — one-off, no commitment
-- **Price:** $400 for 2 produced video ads ($200/video).
+- **Price:** $400 CAD for 2 produced video ads ($200 CAD/video).
 - **Purpose:** the small, low-risk trial. A brand-new client sees real, finished work for a small total spend before ever considering a recurring relationship — an easy first yes, especially paired with the spec-ad outreach tactic (Section 4). Priced higher per video than Growth on purpose: a 2-video batch carries relatively more of the fixed cost of onboarding a new client (intake, first-time brief, first-time revisions) than an 8-video batch does, and that higher per-unit price is exactly what makes Growth's rate read as the better deal. Stays available afterward to anyone who wants an occasional one-off batch rather than an ongoing subscription.
 - **Includes:** 2 finished video ads based on a single intake brief (business, service offered, target customer, key selling point — see Section 5.1), delivered in the platform-appropriate formats the client needs (vertical for TikTok/Reels, square for feed, widescreen for YouTube/Facebook if requested).
 - **Revisions:** one round of revisions per video.
 - **Deposit:** 50% upfront before production starts, balance on delivery.
 
 ### 2.2 Growth — monthly retainer, $1,500/mo for 8 new videos
-- **Price:** $1,500/month for 8 new videos every month ($187.50/video — cheaper per video than Starter's $200).
+- **Price:** $1,500 CAD/month for 8 new videos every month ($187.50 CAD/video — cheaper per video than Starter's $200).
 - **Delivery cadence:** biweekly batches of 4 videos, not one lump delivery at month's end. This keeps the client's ad creative genuinely fresh through the month — addressing real ad fatigue — without committing to a full weekly production cycle, which earlier math showed would be operational overkill for this client size and would strain the shared Higgsfield credit pool (Section 4).
 - **What's included:** one revision round per video, a reserved production slot (Growth clients aren't queued behind one-off Starter orders), and a short note with each batch on which ad angles/hooks are performing best, so the next batch builds on what's working instead of repeating the same format blind.
 - **The pitch:** cheaper per video than the one-off, delivered on a reliable biweekly schedule, with a growing testing loop a client can't replicate by just repeat-buying Starter. Sell it as "we handle your ad creative pipeline," not "here are some files."
@@ -222,6 +224,7 @@ This palette is intentionally cooler, higher-contrast, and more saturated in its
 - [ ] Decide whether to eventually offer media buying/ad management as a premium upsell (Section 2.3) — explicitly deferred until the video-only offer is proven
 - [x] Decide outreach channel/volume plan — resolved 2026-08-13: cold email, phone, and in-person, with the founder's Oshawa/Durham Region base used as a relationship-building angle in outreach conversations specifically (Section 4); realistic weekly outreach targets still to be set, since early sales are expected to be slow
 - [ ] Confirm deposit/invoicing tooling (Stripe invoicing, PayPal, or similar) — keep it simple at this scale
+- [ ] Decide whether HST is included in or added to the listed prices (Section 2), and say so in the first client agreement. Not urgent until the studio nears the $30k registration threshold, but "$400 CAD" with no tax line reads as tax-inclusive to a customer and pre-tax to an accountant — worth settling once rather than renegotiating with a signed client
 - [ ] Decide how to handle a client who wants a second revision round beyond the one included — same open question as Loyal Tale's policy, worth deciding once for both businesses' shared philosophy even though the sites don't reference each other
 - [ ] Monitor shared Higgsfield credit usage against Loyal Tale (Section 4) and set a concrete trigger point (e.g., "if either business is regularly hitting the monthly credit ceiling") for funding a second seat or upgrading the plan
 - [ ] Legal review of Terms of Service and Privacy Policy before taking on paying clients
