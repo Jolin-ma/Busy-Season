@@ -388,37 +388,52 @@ Blocked on a founder decision (quick, do these first):
    2026-08-14: CAD, no tax charged, stated site-wide. What remains is not a
    task but a **watch item** — see the $30k registration trigger in open
    item 0, which will force the "no tax is added" copy off the site.
-2. **`info@legacylinkstudio.com` does not receive mail yet — confirmed by
-   the founder 2026-08-14.** This is the top blocker: all 29 contact
-   references on the site, the quote form's fallback, and the Resend
-   endpoint's delivery target all point at a mailbox that doesn't exist.
+2. **`info@legacylinkstudio.com` doesn't receive mail yet — setup is in
+   progress (2026-08-14).** All 29 contact references on the site, the
+   quote form's fallback, and the Resend endpoint's delivery target all
+   point at this address, so it's still the top blocker until it's live.
 
-   Diagnosed from live DNS, so the fix is smaller than it sounds:
+   **Decision made:** a real mailbox (send + receive as `info@`), not
+   forwarding — forwarding only receives, and replying from a personal
+   Gmail after a prospect writes to `info@` undercuts the studio framing
+   right when it matters most. Chose **Zoho Mail Lite** (~$1.25/mo/user)
+   over free-tier Zoho specifically because Loyal Tale needs a mailbox too
+   and Lite allows multiple domains under one organization — free Zoho
+   would mean two separate accounts. Two users total, ~$2.50/mo combined.
 
-   ```
-   MX → eforward1–5.registrar-servers.com   (Namecheap free forwarding,
-                                             already configured)
-   TXT/SPF → none at all
-   ```
+   **Where it stands right now:**
+   - Zoho's domain-verification TXT (`host → zoho-verification=...`) is
+     added at Namecheap and matches what Zoho's page asks for. Verification
+     was attempted once and failed — almost certainly just DNS propagation
+     lag (Zoho's own page warns 30 min–1 day), not a wrong value. Re-run
+     "Verify TXT Record" after waiting.
+   - Namecheap's Mail Settings is already switched to **Custom MX**, which
+     silently removed the old `eforward*` forwarding records — no manual
+     deletion was needed there.
+   - **Not yet added:** the actual Zoho MX records (values unknown until
+     verification passes — the verification TXT uses `zmverify.zohocloud.ca`,
+     which hints this account may be on Zoho's Canada-region infrastructure
+     rather than the usual `mx.zoho.com` set, so get the exact hostnames
+     from Zoho's own dashboard once verified, don't assume the generic
+     ones), and Zoho's DKIM record (Zoho admin → Email Authentication →
+     DKIM).
+   - Once MX + DKIM are in and Zoho confirms delivery, send a real test
+     both directions (external → `info@`, and reply from `info@` out) before
+     calling this closed.
 
-   Mail already routes to Namecheap's forwarding servers; what's missing is
-   almost certainly just the forwarding *rule* in the dashboard. Namecheap →
-   Domain List → `legacylinkstudio.com` → **Redirect Email** → `info@` →
-   the founder's Gmail. Then send a test from an outside account.
+   **Resend's records stay, deliberately.** Zoho (human inbox) and Resend
+   (the quote-form backend's automated send) are two separate systems doing
+   different jobs, and Resend's DKIM/SPF already sit on Namecheap:
+   `resend._domain...` (DKIM) and `send → v=spf1 include:amazonses.com ~all`
+   (SPF, on the **`send` subdomain**, not `@`). Confirmed with the founder
+   2026-08-14 not to delete these. Deleting them would break the quote
+   form's outbound mail once `RESEND_API_KEY` is set — a separate,
+   already-built pipeline, not something Zoho replaces.
 
-   **Do this before the Resend setup**, not after — both write DNS records,
-   and verifying receive-only first avoids debugging two things at once.
-
-   ⚠ **Forwarding is receive-only.** Replies would come from a personal
-   Gmail address after the prospect wrote to `info@` — a real credibility
-   cost when asking a contractor for $1,500/mo. Sending *as* `info@` needs
-   a real mailbox: Zoho Mail's free tier or Namecheap Private Email
-   (~$12–15/yr). Both replace the MX records above.
-
-   ⚠ **Only one SPF record is allowed per domain.** A mailbox provider will
-   want one and Resend will want one — they must be **merged into a single
-   TXT record**, never added as two. Two SPF records fail both. There is no
-   SPF record today, so this is clean as long as it's merged going forward.
+   The subdomain placement also means the SPF-merge warning from earlier
+   didn't end up applying: Zoho's SPF will sit on `@`, Resend's is on
+   `send` — different hostnames, so they don't collide and don't need
+   merging into one record after all.
 3. **Open the live site on a real phone.** Now the *only* unverified piece
    of the responsive work, and a much smaller one than it was: the
    2026-08-14 entry rules out the structural causes statically (viewport
