@@ -191,6 +191,61 @@ deliberately geography-agnostic site, for an Ontario studio.
 
 ---
 
+## 2026-08-14 — Responsive audit narrowed; copy fix
+
+**`terms.html`: "finalised" → "finalized"** (next-steps item 6). "licence"
+on the same page stays as-is — Canadian English keeps the -ce noun form.
+
+### The mobile caveat, narrowed but not closed
+
+The standing caveat from 2026-08-10 and 2026-08-12 was that the media
+queries had never been observed *firing* — only their rule bodies were
+tested by re-applying them unconditionally. A real-device pass still
+hasn't happened (the browser extension wasn't connected this session), but
+the caveat splits into two questions and the first is now settled
+statically:
+
+**1. Do the queries fire at 390px? Yes — verified.**
+
+- All 8 pages carry `<meta name="viewport" content="width=device-width,
+  initial-scale=1" />`. This was the actual risk: a missing or malformed
+  viewport meta makes a phone render at ~980px CSS width, and *no*
+  `max-width` query fires no matter how correct its body is. That would
+  have reproduced exactly the "rule bodies fine, mobile still broken"
+  symptom the old caveat feared.
+- The three breakpoints are plain `max-width` queries (1000 / 860 / 760px),
+  so all three match at 390px.
+
+**2. Does anything overflow horizontally at 390px? No static cause found.**
+
+- Zero fixed `width`/`min-width` values ≥100px anywhere in `styles.css`.
+- No `minmax()` tracks, no tables, no `<pre>` — the usual overflow sources
+  are simply absent.
+- Every multi-column grid collapses to one column at or above 760px:
+
+  | Grid | Collapses at |
+  |---|---|
+  | `.hero-grid`, `.grid-split` | 1000px |
+  | `.facts`, `.steps`, `.pricing`, `.grid-2/3/4`, `.steps-stacked .step` | 860px |
+  | `.work-grid` (3→2→1), `.footer-grid` (4→2→1) | 1000px, then 760px |
+
+  The two that stay multi-column are `.plan li` (`1.25rem 1fr`) and
+  `.steps-stacked .step`'s icon column — both icon-plus-text bullets, not
+  layout containers.
+- `img, svg, video { max-width: 100% }` is in the reset, so no media
+  element can push the viewport wide.
+- One `white-space: nowrap`, on `.brand` — the wordmark, ~150px at 17px.
+  Harmless at 390px, but it's the one rule that *would* overflow if the
+  studio name ever gets longer.
+
+**What this does not cover, and why the device pass is still on the list:**
+rendered text overflow from a long unbroken word, real touch-target sizes,
+font-loading shifts, iOS-specific behaviour, and whether the hamburger
+actually opens under a real touch event. Static analysis rules out the
+structural causes; it can't confirm the thing renders.
+
+---
+
 ## Open items for the founder
 
 Content decisions, not build gaps:
@@ -227,19 +282,23 @@ Content decisions, not build gaps:
 5. **Phone number** — none is published anywhere; none was supplied. Roofers
    and contractors often prefer to call. Worth adding one.
 
-## Next steps — picking up 2026-08-14
+## Next steps — picking up 2026-08-15
 
 Blocked on a founder decision (quick, do these first):
 
 1. **Decide CAD vs USD** (open item 0) and mark it on the pricing page.
+   Asked on 2026-08-14 and left unanswered, so the site is still unmarked.
 2. **Confirm `info@legacylinkstudio.com` receives mail.** Every conversion
    path on the site funnels there and there is no form backend to catch a
    bounce — a dead mailbox means leads vanish silently.
-3. **Check the live site on a real phone.** Still the one thing never
-   verified directly: the viewport could not be shrunk in the build
-   environment, so the media queries were only tested by re-applying their
-   rule bodies at 390px, never observed firing. This is also the exact
-   area where a bug shipped once before (see the 2026-08-10 entry).
+3. **Open the live site on a real phone.** Now the *only* unverified piece
+   of the responsive work, and a much smaller one than it was: the
+   2026-08-14 entry rules out the structural causes statically (viewport
+   meta present on all 8 pages, all three breakpoints fire at 390px, no
+   fixed widths, every column grid collapses by 760px). What's left is
+   purely visual — does the hamburger open under a real touch, does any
+   text overflow, do the tap targets feel right. One pass on an actual
+   handset closes it.
 
 Ready to do, no decision needed:
 
@@ -250,13 +309,12 @@ Ready to do, no decision needed:
 5. Get the legal pages reviewed before taking on a paying client. The
    jurisdiction is now known (Ontario / PIPEDA), which is worth telling
    whoever reviews them.
-6. Fix "finalised" → "finalized" in `terms.html` for Canadian house style.
-   ("licence" on the same page is already correct — Canadian keeps the
-   -ce noun form.)
+6. ~~Fix "finalised" → "finalized" in `terms.html`.~~ Done 2026-08-14.
 7. Wire the quote form to a real backend when one is chosen, and update
    `privacy.html` §2 and §9 accordingly — both currently state that no
    form backend exists, which is accurate today and would become false.
-8. Add a phone number if you want one (open item 5).
+8. Add a phone number if you want one (open item 5). Also asked on
+   2026-08-14 and left unanswered.
 
 Worth knowing before touching deployment config: read the Vercel trap in
 the 2026-08-13 entry above. Redirects, headers, and rewrites for this site
