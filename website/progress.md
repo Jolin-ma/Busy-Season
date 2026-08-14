@@ -318,12 +318,19 @@ Content decisions, not build gaps:
    directly under a price already marked CAD, and `about.html`'s `$5,000`
    is the agency-comparison figure, not our price.
 
-   **New open item, not invented here:** whether HST is *included in* or
-   *added to* these prices. The site says nothing about tax. It doesn't
-   matter until the studio passes the $30k registration threshold, but the
-   first client agreement should say which it is, because "$400 CAD" with
-   no tax line reads as tax-inclusive to a customer and as pre-tax to an
-   accountant.
+   **Tax, settled the same day:** the studio isn't GST/HST-registered, so
+   no tax is charged and the listed price is the total. Rather than just
+   dropping the ambiguity, the site now says so outright — "No tax is added
+   — what you see is what you pay" on the homepage and pricing page, and a
+   line in the payment FAQ. For a contractor comparing quotes that reads as
+   a selling point, not a disclaimer.
+
+   ⚠ **This copy has an expiry date.** Registration becomes mandatory past
+   $30,000 in taxable revenue over four consecutive quarters — roughly 19
+   Starter batches, or under two Growth clients running a year. That's a
+   plausible year-one outcome, and the day it happens the "no tax is added"
+   line is false and has to come off the site. Brief §2 carries the trigger
+   and the decision it forces (raise list prices ~13%, or absorb it).
 
 1. **Logo.** The old gold Celtic-tree crest set in a serif conflicted with
    §8.3 ("no serif anywhere on this site") and read memorial rather than
@@ -351,9 +358,10 @@ Content decisions, not build gaps:
 
 Blocked on a founder decision (quick, do these first):
 
-1. ~~**Decide CAD vs USD.**~~ Settled 2026-08-14: CAD, marked site-wide.
-   Replaced by a smaller question — decide whether HST is included in or
-   added to the price before the first client agreement (open item 0).
+1. ~~**Decide CAD vs USD**, and whether tax is added.~~ Both settled
+   2026-08-14: CAD, no tax charged, stated site-wide. What remains is not a
+   task but a **watch item** — see the $30k registration trigger in open
+   item 0, which will force the "no tax is added" copy off the site.
 2. **Confirm `info@legacylinkstudio.com` receives mail.** Every conversion
    path on the site funnels there and there is no form backend to catch a
    bounce — a dead mailbox means leads vanish silently.
