@@ -319,18 +319,39 @@ Content decisions, not build gaps:
    is the agency-comparison figure, not our price.
 
    **Tax, settled the same day:** the studio isn't GST/HST-registered, so
-   no tax is charged and the listed price is the total. Rather than just
-   dropping the ambiguity, the site now says so outright — "No tax is added
-   — what you see is what you pay" on the homepage and pricing page, and a
-   line in the payment FAQ. For a contractor comparing quotes that reads as
-   a selling point, not a disclaimer.
+   no tax is charged and the listed price is the total. The site says so
+   outright — "No tax is added — what you see is what you pay" — because for
+   a contractor comparing quotes that reads as a selling point, not a
+   disclaimer.
 
-   ⚠ **This copy has an expiry date.** Registration becomes mandatory past
-   $30,000 in taxable revenue over four consecutive quarters — roughly 19
-   Starter batches, or under two Growth clients running a year. That's a
-   plausible year-one outcome, and the day it happens the "no tax is added"
-   line is false and has to come off the site. Brief §2 carries the trigger
-   and the decision it forces (raise list prices ~13%, or absorb it).
+   **Framed as launch pricing (also 2026-08-14).** $400 and $1,500 are now
+   presented as launch rates that will rise as the portfolio builds, so a
+   later increase reads as planned rather than opportunistic.
+
+   Deliberately **no public deadline and no client-count cap** — the real
+   trigger is GST/HST registration, which can't go on the site (it would be
+   odd to prospects and would expose revenue), and a fake deadline that gets
+   extended is worse than no deadline at all.
+
+   What replaces the deadline is the **rate lock**: a Growth client who
+   signs at $1,500/mo keeps it for as long as the retainer runs
+   uninterrupted. That's honest urgency — the benefit is real and permanent
+   for whoever signs early — and it costs little while the client count is
+   low. Starter locks nothing; each one-off batch is priced when ordered.
+
+   ⚠ **The rate lock and the tax are two separate promises, on purpose.**
+   The locked *fee* stays $1,500; tax would sit on top of it, not be
+   absorbed into it. `terms.html` §2 and the pricing FAQ both say this
+   explicitly. Collapsing it into a friendlier "your price never changes"
+   would commit the studio to eating ~13% on every grandfathered retainer —
+   don't let a copy edit do that quietly.
+
+   ⚠ **The "no tax" half expires on its own.** Registration is mandatory
+   past $30,000 in taxable revenue over four consecutive quarters — roughly
+   19 Starter batches, or under two Growth clients running a year. The day
+   it happens, "No tax is added" is false and comes off the site. Brief §2
+   carries the trigger; §10 adds the matching open decision of when launch
+   pricing actually ends, since nothing now forces that on its own.
 
 1. **Logo.** The old gold Celtic-tree crest set in a serif conflicted with
    §8.3 ("no serif anywhere on this site") and read memorial rather than
