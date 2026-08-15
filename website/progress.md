@@ -419,12 +419,12 @@ Blocked on a founder decision (quick, do these first):
      ADD NEW RECORD rather than continuing to retry the same stuck row —
      never got a root cause, treat as a Namecheap UI flake if it recurs.
 
-   **Tested end to end:** an external email to `info@` landed in the Zoho
-   inbox — in the primary inbox, not junk, confirming SPF/DKIM/DMARC are
-   all doing their job. Reply-side branding (recipient sees `LegacyLink
-   Studio <info@legacylinkstudio.com>`) not yet independently confirmed —
-   worth one more check next time the inbox is open, low risk either way
-   since the alias was configured with that display name from the start.
+   **Tested end to end, both directions, confirmed 2026-08-14:** an
+   external email to `info@` landed in the Zoho inbox — in the primary
+   inbox, not junk, confirming SPF/DKIM/DMARC are all doing their job. A
+   reply sent from `info@` was confirmed to display as `LegacyLink Studio
+   <info@legacylinkstudio.com>` on the recipient's end, not the founder's
+   personal name. Nothing left to verify on this item.
 
    **Resend's records were kept, deliberately, throughout.** Zoho (human
    inbox) and Resend (the quote-form backend's automated send) are separate
