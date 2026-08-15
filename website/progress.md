@@ -364,16 +364,10 @@ Content decisions, not build gaps:
    "within about a week." The brief doesn't specify a turnaround — this was
    inferred from Growth's biweekly-batch-of-4 cadence. Confirm it's a
    promise you want to make, or change the wording.
-3. **Contact email — the address is settled, the mailbox is not.**
-   `info@legacylinkstudio.com` is the address, used throughout the site and
-   as the quote form's `data-inbox`. It replaced `hello@`, carried over from
-   the old site.
-
-   ⚠ **The mailbox does not exist yet** (founder, 2026-08-14), so the site
-   is currently advertising a dead address on every page. This is the
-   highest-priority open item on the whole list — see next-steps item 2 for
-   the DNS diagnosis and the fix. Nothing else here loses money while broken;
-   this does.
+3. ~~**Contact email.**~~ Settled 2026-08-13, and now actually working as
+   of 2026-08-14: `info@legacylinkstudio.com` is live on Zoho Mail, tested
+   receiving a real external email straight to the inbox (not junk). See
+   next-steps item 2 for the full setup record.
 4. **Usage rights** (brief §10) — `terms.html#usage-rights` states a
    reasonable default position and carries a visible note that it's still
    an open founder decision. Settle it before the first paying client.
@@ -388,52 +382,65 @@ Blocked on a founder decision (quick, do these first):
    2026-08-14: CAD, no tax charged, stated site-wide. What remains is not a
    task but a **watch item** — see the $30k registration trigger in open
    item 0, which will force the "no tax is added" copy off the site.
-2. **`info@legacylinkstudio.com` doesn't receive mail yet — setup is in
-   progress (2026-08-14).** All 29 contact references on the site, the
-   quote form's fallback, and the Resend endpoint's delivery target all
-   point at this address, so it's still the top blocker until it's live.
+2. ~~**`info@legacylinkstudio.com` doesn't receive mail.**~~ **Closed
+   2026-08-14.** Real mailbox, not forwarding — chose Zoho Mail Lite
+   (~$1.25/mo/user) over free-tier Zoho so Loyal Tale's domain can share
+   the same paid organization (free Zoho caps at one domain per org).
+   `info@` is set up as an alias on the mailbox (display name "LegacyLink
+   Studio"), not a second license, so it's ~$1.25/mo for this domain.
 
-   **Decision made:** a real mailbox (send + receive as `info@`), not
-   forwarding — forwarding only receives, and replying from a personal
-   Gmail after a prospect writes to `info@` undercuts the studio framing
-   right when it matters most. Chose **Zoho Mail Lite** (~$1.25/mo/user)
-   over free-tier Zoho specifically because Loyal Tale needs a mailbox too
-   and Lite allows multiple domains under one organization — free Zoho
-   would mean two separate accounts. Two users total, ~$2.50/mo combined.
+   Full DNS stack confirmed live from Namecheap's own authoritative
+   nameserver (not just public resolvers) before calling this done:
 
-   **Where it stands right now:**
-   - Zoho's domain-verification TXT (`host → zoho-verification=...`) is
-     added at Namecheap and matches what Zoho's page asks for. Verification
-     was attempted once and failed — almost certainly just DNS propagation
-     lag (Zoho's own page warns 30 min–1 day), not a wrong value. Re-run
-     "Verify TXT Record" after waiting.
-   - Namecheap's Mail Settings is already switched to **Custom MX**, which
-     silently removed the old `eforward*` forwarding records — no manual
-     deletion was needed there.
-   - **Not yet added:** the actual Zoho MX records (values unknown until
-     verification passes — the verification TXT uses `zmverify.zohocloud.ca`,
-     which hints this account may be on Zoho's Canada-region infrastructure
-     rather than the usual `mx.zoho.com` set, so get the exact hostnames
-     from Zoho's own dashboard once verified, don't assume the generic
-     ones), and Zoho's DKIM record (Zoho admin → Email Authentication →
-     DKIM).
-   - Once MX + DKIM are in and Zoho confirms delivery, send a real test
-     both directions (external → `info@`, and reply from `info@` out) before
-     calling this closed.
+   | Record | Value | Host |
+   |---|---|---|
+   | MX ×3 | `mx.zohocloud.ca` (10), `mx2.zohocloud.ca` (20), `mx3.zohocloud.ca` (50) | `@` |
+   | SPF | `v=spf1 include:zohocloud.ca ~all` | `@` |
+   | DKIM | selector `zmail._domainkey`, RSA key from Zoho | `zmail._domainkey` |
+   | DMARC | `v=DMARC1 p=none; rua=mailto:info@legacylinkstudio.com` | `_dmarc` |
 
-   **Resend's records stay, deliberately.** Zoho (human inbox) and Resend
-   (the quote-form backend's automated send) are two separate systems doing
-   different jobs, and Resend's DKIM/SPF already sit on Namecheap:
-   `resend._domain...` (DKIM) and `send → v=spf1 include:amazonses.com ~all`
-   (SPF, on the **`send` subdomain**, not `@`). Confirmed with the founder
-   2026-08-14 not to delete these. Deleting them would break the quote
-   form's outbound mail once `RESEND_API_KEY` is set — a separate,
-   already-built pipeline, not something Zoho replaces.
+   Account turned out to be on Zoho's **Canada-region infrastructure**
+   (`zohocloud.ca`, not the generic `mx.zoho.com`/`zoho.com` most guides
+   assume) — worth remembering if this ever needs touching again, since
+   the generic values are wrong for this account specifically.
 
-   The subdomain placement also means the SPF-merge warning from earlier
-   didn't end up applying: Zoho's SPF will sit on `@`, Resend's is on
-   `send` — different hostnames, so they don't collide and don't need
-   merging into one record after all.
+   Two real snags along the way, both resolved, worth knowing if similar
+   symptoms show up on the Loyal Tale domain later:
+   - The verification TXT was first entered with **Host = `host`** (typing
+     the literal word instead of `@`), which created a real but wrong
+     record at `host.legacylinkstudio.com`. Verification will never pass
+     against the wrong hostname no matter how long you wait — this isn't a
+     propagation issue, it's a wrong-host issue, and looks identical to one
+     from the UI.
+   - The DKIM TXT record failed to save in Namecheap's UI multiple times
+     with a generic "Failed to save record" error, no explanation, despite
+     a near-identical-length key (Resend's) already saving fine elsewhere
+     on the same domain. Resolved by a full page reload + re-adding via
+     ADD NEW RECORD rather than continuing to retry the same stuck row —
+     never got a root cause, treat as a Namecheap UI flake if it recurs.
+
+   **Tested end to end:** an external email to `info@` landed in the Zoho
+   inbox — in the primary inbox, not junk, confirming SPF/DKIM/DMARC are
+   all doing their job. Reply-side branding (recipient sees `LegacyLink
+   Studio <info@legacylinkstudio.com>`) not yet independently confirmed —
+   worth one more check next time the inbox is open, low risk either way
+   since the alias was configured with that display name from the start.
+
+   **Resend's records were kept, deliberately, throughout.** Zoho (human
+   inbox) and Resend (the quote-form backend's automated send) are separate
+   systems doing different jobs. Resend's DKIM/SPF stayed on Namecheap the
+   whole time: `resend._domain...` (DKIM) and `send → v=spf1
+   include:amazonses.com ~all` (SPF, on the **`send` subdomain**, not `@`).
+   That subdomain placement is also why the SPF-merge concern raised
+   earlier never actually applied — Zoho's SPF sits on `@`, Resend's on
+   `send`, different hostnames, no collision.
+
+   **What's left is the separate, already-flagged item:** `RESEND_API_KEY`
+   still isn't set on the marketing site's Vercel project, so the quote
+   form itself still shows the failure notice and falls back to mailto in
+   production. Fixing today's mailbox problem didn't fix that one — they're
+   independent, and this is now the only remaining piece before the quote
+   form works end to end. See "Not live yet" a few sections up.
 3. **Open the live site on a real phone.** Now the *only* unverified piece
    of the responsive work, and a much smaller one than it was: the
    2026-08-14 entry rules out the structural causes statically (viewport
