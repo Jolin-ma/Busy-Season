@@ -370,6 +370,72 @@ steps item 7.
 
 ---
 
+## 2026-08-15 — Payment terms settled and put on the site
+
+Two founder decisions landed in brief §2.2/§2.4 and were carried into the
+site copy. Both close open item 6 below.
+
+**Payment method: Interac e-Transfer is the default for everything** —
+deposits, balances, invoices, and the recurring monthly charge alike. No
+fee, and it matches how contractor clients already pay their own suppliers
+and subs. Stripe (card) is a secondary option on any *individual* payment,
+offered only when a client specifically asks to pay that one by card.
+
+The "only on request" half is the load-bearing part and the copy is written
+to hold it: the site never proactively offers card. The pricing FAQ names
+e-Transfer as *the* method and adds "if you'd rather put a particular
+payment on a card, say so" — an answer to a question, not a menu. If that
+ever gets rewritten into "we accept e-Transfer or credit card," the ~2.9%
++ $0.30 fee starts showing up on payments that would otherwise have come in
+free. Keep it phrased as an exception.
+
+**Growth first month is now $750 + $750, and this is a labeling change
+only** — not a price cut. Month one still totals $1,500, the same as every
+month after it. What changed is that the two halves now have names and
+timings a prospect can follow: a **$750 setup deposit** at signing (covers
+onboarding and the first batch of 4, ~2 weeks later) and a **$750 first
+invoice** when the second batch of 4 lands, ~day 30. The old copy said
+"50% deposit on the first month, standard invoicing after that," which left
+a prospect to work out what the other 50% was and when it hit.
+
+Changed:
+
+- `pricing.html` — Starter plan terms now "$200 deposit before production,
+  $200 on delivery. Pay by e-Transfer."; Growth plan terms now "$750 setup
+  deposit, $750 with your second batch. $1,500/month after that." The "How
+  does payment work?" FAQ was rewritten to cover both plans, the two named
+  first-month payments, and the e-Transfer default. The CAD/no-tax line at
+  the end of that answer is unchanged.
+- `index.html` — the two `.plan-terms` lines under the pricing preview,
+  matched to the pricing page.
+- `terms.html` §2 — the Growth bullet now describes the two-part first
+  month, and a new **Payment method** bullet names e-Transfer with card on
+  request. Deliberately written in percentages ("50% of the first month's
+  fee") rather than dollar figures, matching how the rest of §2 avoids
+  hard-coding prices into the legal text.
+
+**"Cancel anytime" softened to "Cancel with notice" (same day).**
+`index.html`'s Growth plan-terms line used to read "Cheaper per video than
+the one-off. Cancel anytime." The payment structure took its place, and the
+cancellation half came back reworded. The "cheaper per video" half wasn't
+restored and isn't missed — the section intro and the $187.50-vs-$200
+`.plan-unit` figures both still make that point.
+
+The reword was the founder's call on a real conflict: "Cancel anytime" was a
+stronger claim than `terms.html` §5, which says a retainer is cancellable
+"with notice as set out in the written agreement," with work already
+produced or in production in the current cycle still payable. Marketing copy
+promising no-notice cancellation while the terms require notice is the kind
+of gap a client points at during exactly the conversation you don't want to
+be having. Both pricing grids now say **"Cancel with notice."** — keep any
+future rewrite on that side of the line.
+
+Not changed: `quote.html`'s "Deposit in, concepts out" step reads correctly
+under both structures, and the package radio labels quote plan prices, not
+payment terms.
+
+---
+
 ## Open items for the founder
 
 Content decisions, not build gaps:
@@ -439,6 +505,19 @@ Content decisions, not build gaps:
    an open founder decision. Settle it before the first paying client.
 5. **Phone number** — none is published anywhere; none was supplied. Roofers
    and contractors often prefer to call. Worth adding one.
+6. ~~**Payment method.**~~ Settled 2026-08-15: **Interac e-Transfer is the
+   default for every payment**, with Stripe (card) available on an
+   individual payment only when a client asks for it. Named on the site in
+   `terms.html` §2 and the pricing FAQ, and on the Starter plan-terms line.
+   The Growth first month was relabeled the same day as a $750 setup
+   deposit + $750 first invoice (same $1,500 total). See the 2026-08-15
+   entry above for the full record and for the "Cancel anytime" wording
+   question it surfaced.
+
+   Still a content decision, not a build: nothing is wired up in the repo,
+   and nothing needs to be — e-Transfer is sent from a client's own bank,
+   and a Stripe card link would be created ad hoc for the rare payment that
+   asks for one.
 
 ## Next steps — picking up 2026-08-15
 
