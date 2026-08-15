@@ -300,7 +300,73 @@ leaves with nothing.
 mailto behaviour, and §9 promised to update the page "if we add ... a
 hosted form backend," which this is. §5 now names Vercel and Resend.
 
-**Not live until three things happen outside this repo** — see next steps.
+~~**Not live until three things happen outside this repo**~~ — done, same
+day. See the entry directly below.
+
+---
+
+## 2026-08-14 — Resend wired up, domain verified, first live lead delivered
+
+Closed the last piece of next-steps item 7: the three founder-side steps
+that were blocking the quote-form backend built earlier today from actually
+working in production.
+
+**Resend account already existed** (`jolinma81`), but `legacylinkstudio.com`
+had never been added as a domain in it — the dashboard showed "No domains
+yet." Added it.
+
+**DKIM and the `send`-subdomain SPF TXT record were already sitting in
+Namecheap** from the mailbox-setup session earlier today (`resend._domainkey`,
+`send` → `v=spf1 include:amazonses.com ~all`) and matched Resend's
+newly-generated values exactly, character for character — confirmed via the
+page's `aria-label` attributes rather than trusting the UI's `[…]`-truncated
+display, since a single wrong character in a DKIM key fails silently rather
+than erroring. Only one record was actually missing: the **MX record on
+`send`** (`feedback-smtp.us-east-1.amazonses.com`, priority 10), which
+Resend needs for bounce/feedback handling under "Enable Sending."
+
+⚠ **Namecheap doesn't expose MX as a record type in the general Host
+Records "Add New Record" dropdown** — only A, AAAA, ALIAS, CAA, CNAME, NS,
+SRV, TXT, URL Redirect. MX has to go through the separate **Mail Settings**
+section's own "Add New Record," which — despite living under a section
+that otherwise looks `@`-only — does accept an arbitrary `Host` field.
+Worth remembering if another MX record is ever needed on a subdomain here.
+
+Deliberately left **"Enable Receiving" off** in Resend, and did not add its
+`@` → `inbound-smtp.us-east-1.amazonaws.com` MX record. That record targets
+the domain apex, which already carries Zoho's three MX records for the
+`info@` mailbox — adding Resend's would conflict with mail actually meant
+for a human. Resend only needs to send from this domain, not receive on it.
+
+Verification passed within about a minute of adding the MX record
+(`Status: Verified` — "Domain verified: Your domain is ready to send
+emails"), fast because the DKIM/SPF pieces were already propagated from
+earlier today.
+
+**API key**: created `legacylinkstudio-website`, scoped to **Sending
+access** + **this domain only** (not Full access / All domains) — least
+privilege, since this key's only job is the one `resend.emails.send()` call
+in `website/api/quote.js`. Copied via Resend's clipboard button and pasted
+directly into Vercel's env var field; the plaintext value was never
+displayed, typed, or logged anywhere in the session.
+
+**Vercel**: `RESEND_API_KEY` added to the `legacy-link` project
+(Production + Preview, marked Sensitive), then redeployed. Confirmed
+`legacy-link` is the right project by checking its domain
+(`legacylinkstudio.com`) — Vercel's dashboard names the project
+`legacy-link`, not `website` or `marketing-site`, which doesn't match the
+repo folder name and is worth remembering if this needs touching again.
+
+**End-to-end test, live production, real send:** submitted the quote form
+at `legacylinkstudio.com/quote.html` with an obviously-marked test payload
+("Test Roofing Co (DNS test)", a note in the optional field explaining it's
+an internal test). Got the real success state ("Got it — your request is
+in"), not the mailto fallback — confirming the POST to `/api/quote`
+succeeded rather than erroring. Resend's Emails log confirms delivery:
+`info@legacylinkstudio.com`, status **Delivered**.
+
+The quote form now works end to end in production. Nothing left on next-
+steps item 7.
 
 ---
 
@@ -435,12 +501,9 @@ Blocked on a founder decision (quick, do these first):
    earlier never actually applied — Zoho's SPF sits on `@`, Resend's on
    `send`, different hostnames, no collision.
 
-   **What's left is the separate, already-flagged item:** `RESEND_API_KEY`
-   still isn't set on the marketing site's Vercel project, so the quote
-   form itself still shows the failure notice and falls back to mailto in
-   production. Fixing today's mailbox problem didn't fix that one — they're
-   independent, and this is now the only remaining piece before the quote
-   form works end to end. See "Not live yet" a few sections up.
+   ~~**What's left is the separate, already-flagged item:** `RESEND_API_KEY`
+   still isn't set on the marketing site's Vercel project~~ — done, same
+   day. See the 2026-08-14 "Resend wired up" entry above.
 3. **Open the live site on a real phone.** Now the *only* unverified piece
    of the responsive work, and a much smaller one than it was: the
    2026-08-14 entry rules out the structural causes statically (viewport
@@ -460,19 +523,21 @@ Ready to do, no decision needed:
    jurisdiction is now known (Ontario / PIPEDA), which is worth telling
    whoever reviews them.
 6. ~~Fix "finalised" → "finalized" in `terms.html`.~~ Done 2026-08-14.
-7. ~~Wire the quote form to a real backend.~~ Built 2026-08-14. **But it is
-   not working until the founder does these three, in order:**
-   1. Create a Resend account and add `legacylinkstudio.com` as a domain.
-      (Free tier is 100 emails/day — far past this site's volume.)
-   2. Add the DKIM/SPF records Resend gives you **at Namecheap**, since DNS
-      is not delegated to Vercel (see CLAUDE.md). Wait for verification.
-   3. Set `RESEND_API_KEY` on the **marketing site's** Vercel project, then
-      redeploy. Optional: `LEAD_INBOX`, `LEAD_FROM`.
+7. ~~Wire the quote form to a real backend.~~ Built 2026-08-14, and fully
+   working the same day:
+   1. ~~Create a Resend account and add `legacylinkstudio.com` as a domain.~~
+      Done — account already existed, domain added.
+   2. ~~Add the DKIM/SPF records Resend gives you **at Namecheap**~~ — DKIM
+      and SPF already existed from the mailbox setup; added the one missing
+      piece (an MX record on `send`). Domain shows Verified.
+   3. ~~Set `RESEND_API_KEY` on the **marketing site's** Vercel project, then
+      redeploy.~~ Done — set on `legacy-link` (Production + Preview),
+      redeployed. `LEAD_INBOX`/`LEAD_FROM` left at their defaults.
 
-   Until step 3, the form shows the failure notice and falls back to
-   mailto — degraded, but not lead-dropping. **Submit one real test lead
-   after deploying** and confirm it arrives; this is the one path where a
-   silent failure costs actual money.
+   ~~**Submit one real test lead after deploying**~~ — done: a marked test
+   submission through the live form returned the real success state and
+   shows **Delivered** in Resend's log. See the 2026-08-14 "Resend wired up"
+   entry above for the full record.
 8. Add a phone number if you want one (open item 5). Also asked on
    2026-08-14 and left unanswered.
 
