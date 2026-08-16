@@ -72,7 +72,7 @@ Next.js App Router + Prisma 7 against a Neon Postgres database (`legacylink-stud
 `website/api/quote.js` emails a lead to `info@` and **then** posts a copy to studio's `/api/leads/ingest`. The order is load-bearing and easy to break:
 
 - **The email is the system of record.** The ingest post happens only after a successful send, and every failure of it — 401, 500, timeout, network down — is logged and swallowed so the visitor still sees success. Their lead did arrive; it just arrived by email only.
-- **Unset `LEAD_INGEST_URL`/`LEAD_INGEST_KEY` skips the post entirely**, which is the state until the back office is deployed. The quote form is unaffected.
+- **Unset `LEAD_INGEST_URL`/`LEAD_INGEST_KEY` skips the post entirely**, and the quote form is unaffected either way. **Both are now set** on the marketing site (since 2026-08-16), pointing at `https://legacylink-studio.vercel.app/api/leads/ingest`, so leads land in both places.
 - Therefore **a lead missing from the `leads` table is never proof nobody enquired.** Check the inbox. Don't make the table authoritative without first making the write reliable.
 - The same `LEAD_INGEST_KEY` value goes on **two** Vercel projects: the marketing site (which sends it) and studio (which checks it).
 

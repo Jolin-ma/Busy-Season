@@ -1,6 +1,12 @@
 node_modules/
 .idea/workspace.xml
 .idea/*.iml
+
+# Vercel CLI project links (created by `vercel link`)
+.vercel
+
+# Local secrets. .env.example files are documentation and stay committed.
 *.env
 .env
 .env.local
+!.env.example
