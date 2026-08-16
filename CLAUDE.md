@@ -13,7 +13,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Two independent projects. `studio/` has its own `package.json`; `website/` has none at all. There is no build step and no `node_modules` at the repo root, and nothing needs to be running for the marketing site to work.
 
-> **A separate QR-memorial product used to live here** (`src/`, `client/`, `prisma/`, `lambda/`, `infra/`, plus two Next.js front-ends in `admin/` and `ops-dashboard/`). The founder retired that concept; all of it was deleted on 2026-08-16, along with its Vercel projects and its Railway API. Recover from git history if ever needed — but treat it as gone, not dormant. Anything in an old commit referencing `short_id`, plaques, profiles, guestbooks, or `OPS_API_KEY` belongs to that product and not to this business.
+> **A separate QR-memorial product used to live here** (`src/`, `client/`, `prisma/`, `lambda/`, `infra/`, plus two Next.js front-ends in `admin/` and `ops-dashboard/`). The founder retired that concept. All of its code was deleted on 2026-08-16, and its two Vercel projects (`legacy-link-admin`, `legacy-link-dashboard`) were deleted the same day. Recover from git history if ever needed — but treat it as gone, not dormant. Anything in an old commit referencing `short_id`, plaques, profiles, guestbooks, or `OPS_API_KEY` belongs to that product and not to this business.
+>
+> **Still outstanding, outside this repo:** the Fastify API is believed to be still deployed on Railway at `api.legacylinkstudio.com` with no source left here, and it exposes unauthenticated `/admin/*` routes to anyone who knows a `shortId`. The `app.` and `ops.` CNAME records at Namecheap also still point at the now-deleted Vercel projects. Both need doing by hand.
 
 ## Commands
 
