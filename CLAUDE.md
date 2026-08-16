@@ -2,55 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## What this repo currently holds
+## What this repo is
 
-Two unrelated things live here. Know which one you're in before changing anything.
-
-| | What it is | Status |
-|---|---|---|
-| **LegacyLink Studio** (`website/`, `studio/`) | AI-produced video ads sold to roofing and home-service companies. The live business. Spec: `LegacyLink_Studio_Master_Build_Brief.md`. | Active — marketing site in production, back office built but not yet deployed |
-| **QR memorial product** (`src/`, `client/`, `prisma/`, `lambda/`, `infra/`) | An earlier, separate product: QR plaques → memorial profiles. Predates the domain's repurposing. | Dormant — API code only, no UI in this repo |
-
-The two share a repo and a domain for historical reasons, not by design. They are **not** the same business and must not reference each other in anything a visitor can see (brief §5).
-
-**Both Next.js front-ends of the QR product were deleted on 2026-08-16** — `admin/` (customer UI, was `app.legacylinkstudio.com`) and `ops-dashboard/` (internal back office, was `ops.legacylinkstudio.com`). The founder retired that concept as not well planned. The back office for the ad business is being built fresh; it is not a fork of either. Recover the old code from git history if ever needed (commit before their deletion).
-
-Consequences of that deletion, all live:
-
-- The Fastify API still serves every `/admin/*` and `/ops/*` route those apps called. **Nothing calls them now.** Treat them as dead code, not as an interface to preserve.
-- `OPS_API_KEY` still guards routes on the API, but the only client that ever sent `x-ops-key` is gone.
-- `ADMIN_URL` (Railway) pointed at the deleted admin app for CORS; `NEXT_PUBLIC_API_URL` was set on its Vercel project.
-- **The Vercel projects for both still exist and still serve their last build.** Deleting the source does not undeploy them — see "Outstanding cleanup" below.
-
-## Three processes, three package.json files
-
-Each project has its own `package.json` and never shares `node_modules` — run `npm install` separately in each.
+**LegacyLink Studio** — a small studio selling AI-produced video ads to roofing and home-service companies. Spec: `LegacyLink_Studio_Master_Build_Brief.md`.
 
 | Project | Root | Port | Start command |
 |---|---|---|---|
-| Fastify QR engine | `/` (repo root) | 3000 | `npm run dev` |
-| Studio back office | `studio/` | 3001 | `npm run dev` (from inside `studio/`) |
 | Marketing site | `website/` | — | static HTML; open the files, no build step |
+| Studio back office | `studio/` | 3001 | `npm run dev` (from inside `studio/`) |
 
-Nothing needs to run for the marketing site. The back office is standalone — it does **not** talk to the Fastify API.
+Two independent projects. `studio/` has its own `package.json`; `website/` has none at all. There is no build step and no `node_modules` at the repo root, and nothing needs to be running for the marketing site to work.
+
+> **A separate QR-memorial product used to live here** (`src/`, `client/`, `prisma/`, `lambda/`, `infra/`, plus two Next.js front-ends in `admin/` and `ops-dashboard/`). The founder retired that concept; all of it was deleted on 2026-08-16, along with its Vercel projects and its Railway API. Recover from git history if ever needed — but treat it as gone, not dormant. Anything in an old commit referencing `short_id`, plaques, profiles, guestbooks, or `OPS_API_KEY` belongs to that product and not to this business.
 
 ## Commands
-
-**Fastify (repo root)**
-```bash
-npm run dev          # ts-node, hot-ish reload (does NOT watch client/ — see below)
-npm run build        # tsc → dist/, then bundles client/ via build:client
-npm run start        # node dist/index.js
-
-npm run build:client # esbuild client/background-entry.tsx → public/static/background-paths.js
-npm run dev:client   # same, with --watch — run in a second terminal while editing client/*.tsx
-
-npm run db:generate  # regenerate Prisma client after schema changes
-npm run db:migrate   # create + apply a new migration (needs DATABASE_URL)
-npm run db:push      # push schema without migration history (dev shortcut)
-npm run db:studio    # open Prisma Studio GUI
-npm run db:reset     # wipe and re-apply all migrations
-```
 
 **Studio back office (`studio/`)**
 ```bash
@@ -58,123 +23,57 @@ npm run dev          # Next.js dev server on port 3001
 npm run build        # prisma generate && next build
 npm run db:migrate   # create + apply a migration (needs DIRECT_URL)
 npm run db:studio    # Prisma Studio GUI
+npm run db:generate  # regenerate the client after schema edits
 ```
 Full setup and deploy steps: `studio/README.md`.
 
-**Marketing site (`website/`)** — plain static HTML/CSS/JS, no build step and no `package.json`. Open a file directly or serve the folder. See `website/progress.md` for the running build log and founder decisions.
+**Marketing site (`website/`)** — plain static HTML/CSS/JS. Open a file directly or serve the folder. See `website/progress.md` for the running build log and the founder decisions behind the copy.
 
 ## Architecture
-
-### Studio back office (`studio/`)
-
-Next.js App Router + Prisma 7 + its own Neon database. Tracks clients and where each job sits in the six production stages from brief §5. **Its database is separate from the QR product's** and shares no tables — do not point them at the same one.
-
-- **`studio/proxy.ts`** — the auth gate, Next 16's rename of `middleware`. **Default-deny**: the matcher excludes only `/login`, the login endpoint, and static assets, so any page added later is protected without anyone remembering to protect it. This is deliberately the opposite of the deleted ops dashboard, which had no login at all.
-- **Auth is a single shared password** (`STUDIO_PASSWORD`) plus an HMAC-signed cookie (`STUDIO_SESSION_SECRET`). It **fails closed** — if either env var is unset nobody can sign in. There is no per-user identity, so it cannot tell two people apart; replace it rather than sharing the password if a second person needs access.
-- **`studio/lib/db.ts` constructs Prisma lazily**, behind a proxy. `next build` evaluates page modules to collect config, so an eager client (or an eager throw on a missing `DATABASE_URL`) would make the build require a live database. Keep it lazy.
-- **`studio/lib/domain.ts` holds the pricing figures**, which must agree with the marketing site and the brief. Change the brief first, then the site, then here.
-- All mutations are **form actions** (`studio/app/actions.ts`) — the tool works with client-side JS disabled.
-- Deleting a client is a **hard** delete that cascades to its jobs, deliberately unlike the QR product's soft-delete invariant.
-- **`/api/leads/ingest` is the one route exempt from the session gate**, because the marketing site calls it server-to-server with no cookie. It checks a shared secret (`LEAD_INGEST_KEY`) itself and fails closed. If you add another exemption to the matcher, it must do its own auth too.
-
-### The leads path crosses both projects
-
-`website/api/quote.js` (marketing site) emails a lead to `info@` and **then** posts a copy to `studio`'s `/api/leads/ingest`. The order is load-bearing and easy to break:
-
-- **The email is the system of record.** The ingest post happens only after a successful send, and every failure of it — 401, 500, timeout, network down — is logged and swallowed so the visitor still sees success. Their lead did arrive; it just arrived by email only.
-- **Unset `LEAD_INGEST_URL`/`LEAD_INGEST_KEY` skips the post entirely.** That's the normal state until the back office is deployed, and the quote form is unaffected by it.
-- Therefore **a lead missing from the `leads` table is never proof nobody enquired.** Check the inbox. Don't make the table authoritative without first making the write reliable.
-- The same `LEAD_INGEST_KEY` value goes on **two** Vercel projects: the marketing site (which sends it) and studio (which checks it).
 
 ### Marketing site (`website/`)
 
 Static HTML, one page per route, sharing `styles.css` and `script.js`. The design system is brief §8; the copy tracks the pricing and positioning decisions in brief §2 — when those change, the figures on `index.html`, `pricing.html`, and `quote.html` all move together, and `website/progress.md` records why.
 
-The one dynamic piece is **`website/api/quote.js`**, the serverless function behind the quote form — see "Production deployment" for its constraints.
+`terms.html` deliberately states money in **percentages, never dollar figures** ("50% of the first month's fee"), so repricing the packages never touches the legal text. Keep it that way — it has already paid off through one reprice.
 
-`terms.html` deliberately states money in **percentages, never dollar figures** ("50% of the first month's fee"), so repricing the packages never touches the legal text. Keep it that way.
+The one dynamic piece is **`website/api/quote.js`**, the serverless function behind the quote form.
 
-### Request flow for a QR scan (dormant product)
+### Studio back office (`studio/`)
 
-```
-Physical plaque QR  →  Fastify /p/:shortId
-                           │
-                    lookup Profile by short_id (Prisma)
-                           │
-              ┌────────────┴────────────┐
-           private?                  public
-              │                         │
-       render PIN gate HTML      302 → /profile/:profileId
-       POST /p/:shortId/unlock          │
-              │                  render profile HTML
-       verify PIN                 render profile HTML (real DB — Prisma query in router.ts:/profile/:profileId)
-```
+Next.js App Router + Prisma 7 against a Neon Postgres database (`legacylink-studio`, branch `production`, AWS us-east-1 — chosen to match Vercel's default `iad1` function region, since every page render is a DB round trip).
 
-### Fastify data layer (`src/`)
+- **`studio/proxy.ts`** — the auth gate, Next 16's rename of `middleware`. **Default-deny**: the matcher excludes only `/login`, the login endpoint, `/api/leads/ingest`, and static assets, so any page added later is protected without anyone remembering to protect it. **Every exemption must do its own auth.**
+- **Auth is a single shared password** (`STUDIO_PASSWORD`) plus an HMAC-signed cookie (`STUDIO_SESSION_SECRET`). It **fails closed** — if either env var is unset nobody can sign in. There is no per-user identity, so it cannot tell two people apart; replace it rather than sharing the password if a second person needs access.
+- **`studio/lib/db.ts` constructs Prisma lazily**, behind a proxy. `next build` evaluates page modules to collect config, so an eager client (or an eager throw on a missing `DATABASE_URL`) makes the build require a live database. Keep it lazy.
+- **`studio/lib/domain.ts` holds the pricing figures**, which must agree with the marketing site and the brief. Change the brief first, then the site, then here.
+- All mutations are **form actions** (`studio/app/actions.ts`) — the tool works with client-side JS disabled.
+- Deleting a client is a **hard** delete that cascades to its jobs.
 
-- **`src/lib/db.ts`** — exports two Prisma clients:
-  - `db` — has a `$extends` soft-delete filter; every Profile read automatically appends `deleted_at: null`
-  - `rawPrisma` — unfiltered; use for writes and admin operations
-- **`src/db.ts`** — the interface the router uses. Wraps Prisma in domain functions (`lookupLink`, `setPrivacy`, `createLink`, `incrementScanCount`). Scan history stays in-memory here (designed for a queue in production).
-- **`src/analytics.ts`** — fire-and-forget scan recording via `setImmediate`. Never awaited by routes.
-- **`src/router.ts`** — all Fastify routes. All db calls are async/await.
-- **`src/index.ts`** — entry point. Seeds demo user + Margaret's profile via Prisma upsert at startup; stores `SEED_USER_ID` in `process.env` for unauthenticated profile creation.
+**Data model.** A `Client` is a business; a `Job` is one batch of work (a Starter order of 2 videos, or one Growth biweekly batch of 3), moving through the six stages from brief §5; a `Lead` is an enquiry from the quote form, before it's a client. Video count is stored per job rather than derived from the package, because spec ads and one-offs break the standard sizes.
 
-### Client-side bundle (`client/`)
+### The leads path crosses both projects
 
-The only React/JSX in this repo now. Isolated on purpose from the server's TypeScript build:
-- **`client/tsconfig.client.json`** — separate `jsx`-enabled tsconfig, `include: ["**/*"]` scoped to `client/`. The root `tsconfig.json` (`include: ["src/**/*"]`) never touches these files, so `npm run build`'s `tsc` step is unaffected.
-- **`client/BackgroundPaths.tsx`** + **`client/background-entry.tsx`** — the animated line background behind the profile hero (framer-motion), mounted into `#bg-paths-root` in `src/profileTemplate.ts`.
-- Bundled by **esbuild** (`npm run build:client` / `dev:client`, see Commands above) into `public/static/background-paths.js`, served by a second `@fastify/static` registration in `src/router.ts` (`prefix: '/static/'`, deliberately no sandbox CSP — unlike `/uploads/`, this directory only ever holds the server's own build output and must execute as JS).
+`website/api/quote.js` emails a lead to `info@` and **then** posts a copy to studio's `/api/leads/ingest`. The order is load-bearing and easy to break:
 
-### Prisma (Prisma 7)
-
-Prisma 7 is a breaking change from earlier versions:
-- **No `url` in `schema.prisma`** — connection is configured in `prisma.config.ts` via the `@prisma/adapter-pg` driver adapter pattern
-- **`prisma.config.ts`** at repo root is the CLI entry point for migrate/studio
-- Schema lives at `prisma/schema.prisma`
-
-When modifying the schema, always run `npm run db:generate` before TypeScript compilation.
-
-### Key invariants (QR product)
-
-- **`short_id` is immutable.** Once written to a plaque and engraved, it can never change. The Prisma schema marks it `@unique @db.VarChar(8)`. Never update this field.
-- **Soft delete only.** Deleting a profile sets `deleted_at = now()`. The `db` client extension makes this invisible to all standard reads. Hard deletion is a separate admin-only operation. Use `rawPrisma` to see tombstoned records.
-- **Guestbook entries are unapproved by default** (`is_approved: false`). Public profile queries must always filter on `is_approved: true`.
-- **The demo `short_id` `a5trneuj`** is hardcoded in `src/index.ts` (Fastify seed). It used to also live in `admin/app/page.tsx`; that file is gone, so the sync requirement no longer applies.
-- **The demo profile is pinned to `plan: 'BASIC'`** in the seed upsert (`src/index.ts`). If it's ever `PREMIUM` with no `GraveCoordinates` row, scanning its QR redirects to the one-time GPS `/activate/:shortId` flow instead of the profile — this bit the demo once already.
-
-## Pending / stub areas
-
-- **PIN gate is currently disabled** — the `if (link.isPrivate)` checks in both `/r/:shortId` and `/p/:shortId` (`src/router.ts`) are commented out (not deleted), so every profile scan goes straight through regardless of `is_private`. Re-enable by uncommenting those two blocks before treating private profiles as actually gated.
-- **Scan history** — in-memory only, lost on restart. Designed to be replaced with a message queue (SQS/Kafka).
-- **`/admin/*` and `/ops/*` on the Fastify API have no caller.** Both front-ends were deleted. The pre-existing gaps there (no per-user ownership check on `/api/v1/premium/*`, `/admin/link/:shortId/privacy`, `/admin/plan`, `/admin/profile`, `/admin/upload*`; `/ops/ws` exempt from the ops guard) are unreachable from any UI now, but the routes are still live on the deployed API. If that API stays up, they remain publicly hittable by anyone who knows a `shortId`.
+- **The email is the system of record.** The ingest post happens only after a successful send, and every failure of it — 401, 500, timeout, network down — is logged and swallowed so the visitor still sees success. Their lead did arrive; it just arrived by email only.
+- **Unset `LEAD_INGEST_URL`/`LEAD_INGEST_KEY` skips the post entirely**, which is the state until the back office is deployed. The quote form is unaffected.
+- Therefore **a lead missing from the `leads` table is never proof nobody enquired.** Check the inbox. Don't make the table authoritative without first making the write reliable.
+- The same `LEAD_INGEST_KEY` value goes on **two** Vercel projects: the marketing site (which sends it) and studio (which checks it).
 
 ## Production deployment
 
 | App | Root Directory | Host | Domain |
 |---|---|---|---|
-| Marketing site (`website/`) | `website` (own `website/vercel.json` — **not** the repo-root one, see below) | Vercel | `legacylinkstudio.com` |
-| Fastify API (`src/`) | `.` (repo root) | Railway | `api.legacylinkstudio.com` |
-| Studio back office (`studio/`) | `studio` (own `studio/vercel.json`) | Vercel (separate project) | not yet deployed |
+| Marketing site (`website/`) | `website` | Vercel project `legacy-link` | `legacylinkstudio.com` |
+| Studio back office (`studio/`) | `studio` (own `studio/vercel.json`) | Vercel | not yet deployed |
 
 - **DNS** is managed at Namecheap (not delegated to Vercel), so every subdomain needs a manual CNAME record added there, even though the apex domain is a Vercel project.
-- **Database**: Neon project `legacylink`, branch `prod-railway`. Root `.env`/local dev points at a separate branch — never at prod.
-- **The marketing site's Vercel config lives at `website/vercel.json`, not the repo root.** Its Vercel project has Root Directory `website`, and Vercel reads `vercel.json` from the Root Directory — so the repo-root `vercel.json` is never consulted by that project. This is easy to get wrong because the *symptom* is silent: the site keeps serving `website/` correctly either way, and only routing config (`redirects`, `headers`, `rewrites`) quietly does nothing. A `/contact.html` → `/quote.html` redirect was added to the repo-root file first and 404'd in production despite a green deploy. Put any redirect/header/rewrite for the marketing site in `website/vercel.json`.
-- **The marketing site is static except for one serverless function: `website/api/quote.js`**, which backs the quote form. Vercel zero-config picks up the `api/` directory under the project's Root Directory (`website`) and builds it as a Node function — nothing in `website/vercel.json` declares it. It's deliberately **CommonJS with global `fetch` and no dependencies**, because `website/` has no `package.json` and adding one to pull in the Resend SDK would give the static site an install step for a single HTTP call. If you add a dependency here, you're also adding a build step — reconsider first.
-  - Env vars on the **marketing site's** Vercel project: **`RESEND_API_KEY`** is required — the function logs and 500s without it. **`LEAD_INBOX`** (default `info@legacylinkstudio.com`) and **`LEAD_FROM`** (default `leads@legacylinkstudio.com`) are optional overrides. `LEAD_FROM` must be on a Resend-verified domain or every send 422s. **`LEAD_INGEST_URL`** and **`LEAD_INGEST_KEY`** are optional and enable the back-office copy — see "The leads path crosses both projects" above.
-  - **Failure paths log the full lead payload** to the Vercel function log before returning 502. That's deliberate and load-bearing: it's the recovery path if Resend is down or the domain falls out of verification, so a lead is never silently lost. Don't "clean up" those `console.error` calls to drop the payload.
-- **The repo-root `vercel.json`** (`outputDirectory: website`) is not used by the marketing site, and the two subprojects that were configured around it are deleted. It is now almost certainly vestigial — but confirm nothing else reads it before removing it.
-- **Any new Vercel subproject from this repo needs its own `vercel.json`** overriding the repo-root `outputDirectory: website`. That setting bit the deleted admin project once — Next.js builds into `.next`, not `website`, so inheriting it causes a 404 on every route despite a successful build. The back office will need this.
-- **Vercel blocks deploys of pinned-vulnerable Next.js versions** ("Vulnerable version of Next.js detected") — this isn't a build error, it shows up as a deployment-level failure above the build log, easy to miss while scrolling build output looking for the actual error. Check `npm view next versions` for the latest patch on the same major before bumping.
-- **`JWT_SECRET`** (Railway env var, Fastify API) is mandatory in production — the server refuses to start without it rather than falling back to the dev secret.
-- **Session cookie is `sameSite: 'strict'`** (`src/router.ts`), so anything authenticating against the API must share the `legacylinkstudio.com` root domain. Applies to the new back office too.
-- **`OPS_API_KEY`** gates internal-only routes on the Fastify API (`/ops/*` except `/ops/ws`, `/admin/fulfillment*`, `/admin/directory`, `/admin/media*`, `/admin/analytics/*`, `/admin/support/*`, `/admin/billing/*`, plus the media-cleanup and Lambda-webhook endpoints). Callers send `x-ops-key: <key>`. **When unset the guard is disabled** so local dev works with zero config. Still set on Railway, but the dashboard that sent it is deleted, so nothing exercises it.
-  - The pattern is worth reusing if the new back office needs a shared internal secret: the key is read **server-side only** and attached by a proxy route, never shipped to the browser in a `NEXT_PUBLIC_*` var.
-
-## Outstanding cleanup (not code — someone has to do these in a dashboard)
-
-1. **Delete or disconnect the two Vercel projects** for `admin/` and `ops-dashboard/`. Removing the source does not take down the deployment: `app.legacylinkstudio.com` and `ops.legacylinkstudio.com` still serve their last successful build. Until that's done, a pet-memorial admin UI is publicly reachable on the ad studio's domain — the exact cross-business visibility brief §5 forbids.
-2. **Remove their CNAME records** at Namecheap once the projects are gone.
-3. **`info@legacylinkstudio.com` was published as the contact address by the deleted admin app** (`admin/app/contact/page.tsx`, `admin/app/terms/page.tsx`, `admin/app/api/contact/route.ts`). It is also the destination for marketing-site quote-form leads. Mail sent from the old UI may still arrive in that inbox.
-4. **Decide the fate of the QR product's API.** `api.legacylinkstudio.com` is still up on Railway with no front-end. Its unauthenticated `/admin/*` routes are reachable by anyone who knows a `shortId`.
+- **Vercel reads `vercel.json` from the project's Root Directory.** The marketing site's Root Directory is `website`, so its config is **`website/vercel.json`** — a redirect or header put anywhere else silently does nothing. This is easy to get wrong because the symptom is invisible: the site keeps serving correctly and only the routing config is ignored. A `/contact.html` → `/quote.html` redirect was once added to a repo-root file and 404'd in production despite a green deploy.
+  - The repo-root `vercel.json` was deleted on 2026-08-16 after confirming Root Directory is `website`. Note the marketing project also has an **Output Directory override set to `website` in the Vercel dashboard**, independent of any file — don't be confused by it, and don't "fix" it while the site is working.
+- **Any new Vercel subproject from this repo needs its own `vercel.json`.** `studio/vercel.json` exists for this reason. Historically the repo-root config's `outputDirectory` was inherited by subprojects and 404'd every route despite a successful build, because Next.js builds into `.next`.
+- **The marketing site is static except for `website/api/quote.js`.** Vercel zero-config picks up the `api/` directory under the Root Directory and builds it as a Node function — nothing in `website/vercel.json` declares it. It's deliberately **CommonJS with global `fetch` and no dependencies**, because `website/` has no `package.json` and adding one to pull in the Resend SDK would give the static site an install step for a single HTTP call. Adding a dependency here means adding a build step — reconsider first.
+  - Env vars on the **marketing site's** Vercel project: **`RESEND_API_KEY`** is required — the function logs and 500s without it. **`LEAD_INBOX`** (default `info@legacylinkstudio.com`) and **`LEAD_FROM`** (default `leads@legacylinkstudio.com`) are optional overrides; `LEAD_FROM` must be on a Resend-verified domain or every send 422s. **`LEAD_INGEST_URL`** / **`LEAD_INGEST_KEY`** are optional and enable the back-office copy.
+  - **Failure paths log the full lead payload** before returning 502. That's deliberate and load-bearing: it's the recovery path if Resend is down or the domain falls out of verification, so a lead is never silently lost. Don't "clean up" those `console.error` calls to drop the payload.
+- **Vercel blocks deploys of pinned-vulnerable Next.js versions** ("Vulnerable version of Next.js detected") — not a build error; it appears as a deployment-level failure *above* the build log, easy to miss while scrolling. Check `npm view next versions` for the latest patch on the same major before bumping.
+- **`pg` deprecation to know about:** the driver warns that `sslmode=require` is currently treated as `verify-full`, and will adopt weaker libpq semantics in `pg` v9. Neon's connection strings use `sslmode=require`. On any major `pg` bump, make it `sslmode=verify-full` explicitly or the check silently weakens.
