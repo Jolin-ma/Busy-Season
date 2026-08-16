@@ -498,6 +498,42 @@ Starter is untouched: still $400 for 2 videos at $200 each, $200 + $200.
 
 ---
 
+## 2026-08-16 — Quote-form leads now also land in a back office
+
+`website/api/quote.js` gained one thing: after a successful Resend send, it
+posts a copy of the lead to a new back-office app (`studio/` in this repo,
+deployed separately at `legacylink-studio.vercel.app`). Leads used to exist
+only as an email in `info@`; now they're also a row you can work through.
+
+**The email is still the system of record, and the ordering is load-bearing:**
+
+- The copy is posted only *after* the email succeeds.
+- Every failure of that post — 401, 500, timeout, network down — is logged
+  and swallowed. The visitor still sees success, because their lead *did*
+  arrive.
+- With `LEAD_INGEST_URL`/`LEAD_INGEST_KEY` unset, the post is skipped
+  entirely and the form behaves exactly as it did before.
+
+The consequence to remember: **a lead missing from the back office is never
+proof nobody enquired.** Check the inbox. And a misconfiguration here cannot
+show up as a broken quote form — it looks like leads arriving by email and
+silently never appearing in the tool, with the reason only in the Vercel
+function log. Don't reorder this to make the database authoritative without
+first making the write reliable.
+
+Env vars added to **this** Vercel project (`legacy-link`), both Sensitive:
+`LEAD_INGEST_URL` and `LEAD_INGEST_KEY`. The key must match the same-named
+variable on the back office's project — if they drift, ingest 401s silently.
+Vercel only applies env vars to new builds, so a change needs a redeploy.
+
+**Tested end to end on production, 2026-08-16.** A marked test lead
+submitted to the live endpoint returned 200, arrived in the `info@` Zoho
+inbox (founder-confirmed), and appeared as a `NEW` lead in the back office
+with every field intact. Both halves verified by observation, not inference —
+which matters here precisely because the failure mode is silent.
+
+---
+
 ## Open items for the founder
 
 Content decisions, not build gaps:
