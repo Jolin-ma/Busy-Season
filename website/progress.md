@@ -4,8 +4,10 @@ Tracks build status for the marketing site in this `website/` folder against
 `LegacyLink_Studio_Master_Build_Brief.md`.
 
 Per `CLAUDE.md`, this folder deploys as its own Vercel project to
-`legacylinkstudio.com` (repo-root `vercel.json`, `outputDirectory: website`)
-— separate from the Fastify API, admin app, and ops dashboard, which deploy
+`legacylinkstudio.com` (Root Directory `website`, config in
+`website/vercel.json` — **not** the repo-root file; see the deployment trap
+at the end of this log) — separate from the Fastify API, admin app, and ops
+dashboard, which deploy
 to their own subdomains from other folders in this repo. It is plain static
 HTML/CSS/JS with no build step.
 
@@ -29,7 +31,7 @@ business selling **AI-produced video ads to local service businesses**
 | Page | File | Brief ref | Status |
 |---|---|---|---|
 | Homepage | `index.html` | §6, §8.6 | ✅ Dark hero + honest proof band + 3-step how-it-works + pricing preview + closing CTA |
-| Services & Pricing | `pricing.html` | §2, §6 | ✅ Starter/Growth comparison, explicit "creative only" scope block, 8-question FAQ accordion |
+| Services & Pricing | `pricing.html` | §2, §6 | ✅ Starter/Growth comparison, explicit "creative only" scope block, 9-question FAQ accordion |
 | Get a Quote | `quote.html` | §6, §8.5 | ✅ Six-field single-column form, "what happens next", direct email |
 | Our Work | `work.html` | §6, §8.6 | ✅ Honest empty portfolio (see below), delivery formats, verticals |
 | How It Works | `how-it-works.html` | §5 | ✅ Six-step workflow written client-facing, intake-brief preview, timing |
@@ -436,6 +438,66 @@ payment terms.
 
 ---
 
+## 2026-08-16 — Growth repriced to $1,000/6, and ad length fixed at ~15s
+
+Two founder decisions in brief §2.2 and §10, both carried into the site.
+
+**Growth is now $1,000/mo for 6 videos, down from $1,500/mo for 8.** This is
+not a discount — it's a smaller commitment. The 8-video pace had never
+actually been produced, so selling it to the first retainer client meant
+finding out on a paying client whether 8 good videos a month is sustainable.
+6/month is a pace worth promising cleanly. $1,000 is also an easier recurring
+number for a first-time prospect to agree to.
+
+The per-video story the whole pricing page rests on still holds, which is
+the thing to check if this ever moves again: **$166.67 on Growth vs. $200 on
+Starter**. Growth has to stay under Starter's per-video rate or the "why
+would I pay more to subscribe?" objection comes back and the FAQ answer
+stops being true.
+
+⚠ **$1,500/mo for 8 is deferred, not cancelled** (brief §10). It comes back
+as a *higher* tier once there's real production experience to say 8/month
+holds quality — don't treat the old numbers as retired copy if that day
+comes.
+
+Everything downstream scaled with it: biweekly batches of 4 → **3**, and the
+first month's two named payments from $750 + $750 → **$500 + $500**. The
+first-month structure itself is unchanged — still a setup deposit at signing
+and a first invoice when the second batch lands, still totalling one full
+month.
+
+**Ads are ~15 seconds, and the site now says so.** Previously unstated
+anywhere. It's on both plans' first bullet, in the How It Works "Concept"
+step, and as a new pricing FAQ. Written throughout as the length that
+performs on Reels/TikTok/Shorts — not as a cap on what you get, which is how
+it would read if it appeared only as a spec line. Brief §10 is explicit about
+that framing.
+
+Changed:
+
+- `pricing.html` — Growth price, `.plan-unit`, the 6-videos/batches-of-3
+  bullet, plan terms; "an eight-video month" → "a six-video month" in the
+  cheaper-per-video FAQ; batches of 4 → 3 in the turnaround FAQ; the payment
+  FAQ's $750/$1,500 figures and both batch sizes. Meta description too — it
+  quoted the old price. New **"How long are the ads?"** FAQ, making it nine.
+- `index.html` — pricing preview: price, `.plan-unit`, the videos bullet, and
+  the plan-terms line.
+- `quote.html` — the Growth radio's label *and* its `value`. The value is
+  what lands in the lead email, so a stale one would misquote the price to
+  the founder reading it, not just the visitor.
+- `how-it-works.html` — the timing section (four videos every two weeks →
+  three; eight a month → six), plus the 15-second paragraph in "Concept".
+
+Not changed: **`terms.html`** — §2 was deliberately written in percentages
+("50% of the first month's fee") rather than dollar figures back on
+2026-08-15, so a reprice doesn't touch the legal text at all. That choice
+paid for itself the first time it was tested. Keep prices out of that file.
+The rate-lock bullet is also rate-agnostic and still correct.
+
+Starter is untouched: still $400 for 2 videos at $200 each, $200 + $200.
+
+---
+
 ## Open items for the founder
 
 Content decisions, not build gaps:
@@ -456,9 +518,10 @@ Content decisions, not build gaps:
    a contractor comparing quotes that reads as a selling point, not a
    disclaimer.
 
-   **Framed as launch pricing (also 2026-08-14).** $400 and $1,500 are now
-   presented as launch rates that will rise as the portfolio builds, so a
-   later increase reads as planned rather than opportunistic.
+   **Framed as launch pricing (also 2026-08-14).** $400 and $1,000 (the
+   Growth figure was $1,500 until 2026-08-16) are presented as launch rates
+   that will rise as the portfolio builds, so a later increase reads as
+   planned rather than opportunistic.
 
    Deliberately **no public deadline and no client-count cap** — the real
    trigger is GST/HST registration, which can't go on the site (it would be
@@ -466,21 +529,25 @@ Content decisions, not build gaps:
    extended is worse than no deadline at all.
 
    What replaces the deadline is the **rate lock**: a Growth client who
-   signs at $1,500/mo keeps it for as long as the retainer runs
-   uninterrupted. That's honest urgency — the benefit is real and permanent
+   signs at the current rate ($1,000/mo) keeps it for as long as the retainer
+   runs uninterrupted. That's honest urgency — the benefit is real and permanent
    for whoever signs early — and it costs little while the client count is
    low. Starter locks nothing; each one-off batch is priced when ordered.
 
    ⚠ **The rate lock and the tax are two separate promises, on purpose.**
-   The locked *fee* stays $1,500; tax would sit on top of it, not be
-   absorbed into it. `terms.html` §2 and the pricing FAQ both say this
+   The locked *fee* stays whatever was signed; tax would sit on top of it,
+   not be absorbed into it. `terms.html` §2 and the pricing FAQ both say this
    explicitly. Collapsing it into a friendlier "your price never changes"
    would commit the studio to eating ~13% on every grandfathered retainer —
    don't let a copy edit do that quietly.
 
    ⚠ **The "no tax" half expires on its own.** Registration is mandatory
-   past $30,000 in taxable revenue over four consecutive quarters — roughly
-   19 Starter batches, or under two Growth clients running a year. The day
+   past $30,000 in taxable revenue over four consecutive quarters — at
+   current rates, roughly 75 Starter batches in a year, or about 2.5 Growth
+   clients running the full year. (This previously read "roughly 19 Starter
+   batches," which was simply wrong arithmetic — 19 batches is $7,600. The
+   threshold is further off than that line implied, but two or three running
+   retainers still reach it inside a year.) The day
    it happens, "No tax is added" is false and comes off the site. Brief §2
    carries the trigger; §10 adds the matching open decision of when launch
    pricing actually ends, since nothing now forces that on its own.
@@ -494,7 +561,8 @@ Content decisions, not build gaps:
    a real logo when there's budget for one.
 2. **Turnaround time.** The site says a Starter batch typically lands
    "within about a week." The brief doesn't specify a turnaround — this was
-   inferred from Growth's biweekly-batch-of-4 cadence. Confirm it's a
+   inferred from Growth's biweekly batch cadence (batches of 4 at the time;
+   3 since 2026-08-16, which if anything makes a week more comfortable). Confirm it's a
    promise you want to make, or change the wording.
 3. ~~**Contact email.**~~ Settled 2026-08-13, and now actually working as
    of 2026-08-14: `info@legacylinkstudio.com` is live on Zoho Mail, tested
@@ -509,8 +577,9 @@ Content decisions, not build gaps:
    default for every payment**, with Stripe (card) available on an
    individual payment only when a client asks for it. Named on the site in
    `terms.html` §2 and the pricing FAQ, and on the Starter plan-terms line.
-   The Growth first month was relabeled the same day as a $750 setup
-   deposit + $750 first invoice (same $1,500 total). See the 2026-08-15
+   The Growth first month was relabeled the same day as a setup deposit +
+   first invoice split ($750 + $750 then; $500 + $500 since the 2026-08-16
+   reprice, still one full month's fee either way). See the 2026-08-15
    entry above for the full record and for the "Cancel anytime" wording
    question it surfaced.
 
