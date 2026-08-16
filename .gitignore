@@ -1,6 +1,4 @@
 node_modules/
-dist/
-public/static/
 .idea/workspace.xml
 .idea/*.iml
 *.env
