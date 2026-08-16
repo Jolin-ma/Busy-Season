@@ -17,7 +17,18 @@ Two independent projects. `studio/` has its own `package.json`; `website/` has n
 >
 > **Railway is gone too** — the trial ended, so the Fastify API is no longer served. `api.legacylinkstudio.com` and the underlying `*.up.railway.app` host both answer 404 as of 2026-08-16, which closes the unauthenticated `/admin/*` exposure that API used to carry.
 >
-> **Still outstanding, outside this repo:** four dead DNS records at Namecheap on `legacylinkstudio.com` — `CNAME app` and `CNAME ops` (pointing at the deleted Vercel projects), plus `CNAME api` and `TXT _railway-verify.api` (pointing at the dead Railway service). Harmless day to day, but a CNAME aimed at a platform hostname nobody owns any more is the classic subdomain-takeover setup, so they're worth removing. **Leave every other record alone** — `resend._domainkey`, `send` (TXT + MX), the three `@` MX records and `zmail._domainkey` carry `info@` and the quote form's lead delivery.
+> **DNS is cleaned up too.** The four dead records (`CNAME app`, `CNAME ops`, `CNAME api`, `TXT _railway-verify.api`) were removed from Namecheap on 2026-08-16 and confirmed gone against the authoritative nameserver. Nothing from the retired product is left running anywhere.
+
+**The DNS zone for `legacylinkstudio.com` now holds only records that matter — do not remove any of them:**
+
+| Record | Why it exists |
+|---|---|
+| `A @` → `216.198.79.1`, `CNAME www` | the marketing site on Vercel |
+| `MX @` ×3 → `*.zohocloud.ca` | the `info@` inbox |
+| `TXT @` (zoho-verification + `v=spf1 include:zohocloud.ca`), `TXT zmail._domainkey`, `TXT _dmarc` | Zoho mail auth |
+| `TXT resend._domainkey`, `TXT send` (`v=spf1 include:amazonses.com`), `MX send` | **Resend — this is what delivers quote-form leads.** Breaking these silently kills the lead path. |
+
+Note Zoho is on **Canada-region** infrastructure (`zohocloud.ca`, not the generic `mx.zoho.com`), which most setup guides get wrong for this account.
 
 ## Commands
 
