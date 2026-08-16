@@ -8,7 +8,7 @@ Two unrelated things live here. Know which one you're in before changing anythin
 
 | | What it is | Status |
 |---|---|---|
-| **LegacyLink Studio** (`website/`, back office) | AI-produced video ads sold to roofing and home-service companies. The live business. Spec: `LegacyLink_Studio_Master_Build_Brief.md`. | Active — marketing site is in production |
+| **LegacyLink Studio** (`website/`, `studio/`) | AI-produced video ads sold to roofing and home-service companies. The live business. Spec: `LegacyLink_Studio_Master_Build_Brief.md`. | Active — marketing site in production, back office built but not yet deployed |
 | **QR memorial product** (`src/`, `client/`, `prisma/`, `lambda/`, `infra/`) | An earlier, separate product: QR plaques → memorial profiles. Predates the domain's repurposing. | Dormant — API code only, no UI in this repo |
 
 The two share a repo and a domain for historical reasons, not by design. They are **not** the same business and must not reference each other in anything a visitor can see (brief §5).
@@ -24,12 +24,15 @@ Consequences of that deletion, all live:
 
 ## Three processes, three package.json files
 
-Historically three; **currently one** (`/`), plus the static marketing site and whatever the back office becomes. Each project has its own `package.json` and never shares `node_modules` — run `npm install` separately in each.
+Each project has its own `package.json` and never shares `node_modules` — run `npm install` separately in each.
 
 | Project | Root | Port | Start command |
 |---|---|---|---|
 | Fastify QR engine | `/` (repo root) | 3000 | `npm run dev` |
+| Studio back office | `studio/` | 3001 | `npm run dev` (from inside `studio/`) |
 | Marketing site | `website/` | — | static HTML; open the files, no build step |
+
+Nothing needs to run for the marketing site. The back office is standalone — it does **not** talk to the Fastify API.
 
 ## Commands
 
@@ -49,9 +52,29 @@ npm run db:studio    # open Prisma Studio GUI
 npm run db:reset     # wipe and re-apply all migrations
 ```
 
+**Studio back office (`studio/`)**
+```bash
+npm run dev          # Next.js dev server on port 3001
+npm run build        # prisma generate && next build
+npm run db:migrate   # create + apply a migration (needs DIRECT_URL)
+npm run db:studio    # Prisma Studio GUI
+```
+Full setup and deploy steps: `studio/README.md`.
+
 **Marketing site (`website/`)** — plain static HTML/CSS/JS, no build step and no `package.json`. Open a file directly or serve the folder. See `website/progress.md` for the running build log and founder decisions.
 
 ## Architecture
+
+### Studio back office (`studio/`)
+
+Next.js App Router + Prisma 7 + its own Neon database. Tracks clients and where each job sits in the six production stages from brief §5. **Its database is separate from the QR product's** and shares no tables — do not point them at the same one.
+
+- **`studio/proxy.ts`** — the auth gate, Next 16's rename of `middleware`. **Default-deny**: the matcher excludes only `/login`, the login endpoint, and static assets, so any page added later is protected without anyone remembering to protect it. This is deliberately the opposite of the deleted ops dashboard, which had no login at all.
+- **Auth is a single shared password** (`STUDIO_PASSWORD`) plus an HMAC-signed cookie (`STUDIO_SESSION_SECRET`). It **fails closed** — if either env var is unset nobody can sign in. There is no per-user identity, so it cannot tell two people apart; replace it rather than sharing the password if a second person needs access.
+- **`studio/lib/db.ts` constructs Prisma lazily**, behind a proxy. `next build` evaluates page modules to collect config, so an eager client (or an eager throw on a missing `DATABASE_URL`) would make the build require a live database. Keep it lazy.
+- **`studio/lib/domain.ts` holds the pricing figures**, which must agree with the marketing site and the brief. Change the brief first, then the site, then here.
+- All mutations are **form actions** (`studio/app/actions.ts`) — the tool works with client-side JS disabled.
+- Deleting a client is a **hard** delete that cascades to its jobs, deliberately unlike the QR product's soft-delete invariant.
 
 ### Marketing site (`website/`)
 
@@ -123,6 +146,7 @@ When modifying the schema, always run `npm run db:generate` before TypeScript co
 |---|---|---|---|
 | Marketing site (`website/`) | `website` (own `website/vercel.json` — **not** the repo-root one, see below) | Vercel | `legacylinkstudio.com` |
 | Fastify API (`src/`) | `.` (repo root) | Railway | `api.legacylinkstudio.com` |
+| Studio back office (`studio/`) | `studio` (own `studio/vercel.json`) | Vercel (separate project) | not yet deployed |
 
 - **DNS** is managed at Namecheap (not delegated to Vercel), so every subdomain needs a manual CNAME record added there, even though the apex domain is a Vercel project.
 - **Database**: Neon project `legacylink`, branch `prod-railway`. Root `.env`/local dev points at a separate branch — never at prod.

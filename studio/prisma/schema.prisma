@@ -1,0 +1,108 @@
+// =============================================================================
+// LegacyLink Studio — back-office schema
+//
+// Scope: the video-ad business only. This is a SEPARATE database from the QR
+// memorial product's (prisma/schema.prisma at the repo root) and shares no
+// tables with it. Spec: LegacyLink_Studio_Master_Build_Brief.md §7.
+//
+// Stage 1 covers clients and the production pipeline. Leads, payments, and
+// Growth batch scheduling are staged after this — see studio/README.md.
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// -----------------------------------------------------------------------------
+// ENUMS
+// -----------------------------------------------------------------------------
+
+// The two standing offers (brief §2.1, §2.2). Deliberately only two — a third
+// tier was tested and dropped for muddying the value story. $1,500/mo for 8
+// videos is deferred, not cancelled, so expect a third member here one day.
+enum Plan {
+  STARTER // $400 CAD, 2 videos, one-off
+  GROWTH  // $1,000 CAD/mo, 6 videos, biweekly batches of 3
+}
+
+// Where the relationship stands, independent of any single job's progress.
+enum ClientStatus {
+  PROSPECT  // Talking, nothing signed
+  ACTIVE    // Live client with work in flight or a running retainer
+  PAUSED    // Retainer on hold; rate lock survives only if it hasn't lapsed
+  COMPLETED // Finished, no ongoing commitment (normal end state for Starter)
+  LOST      // Went elsewhere or went quiet
+}
+
+// The six production steps from brief §5, in order. `order` in the UI comes
+// from STAGES in lib/domain.ts — keep the two in sync if you add a step.
+enum JobStage {
+  INTAKE        // Brief received, not yet scripted
+  CONCEPT       // Script/shot concept written, with the client for sign-off
+  PRODUCTION    // Generating in Higgsfield
+  QA            // Internal self-review pass, before the client sees anything
+  CLIENT_REVIEW // Client watching; one revision round included per video
+  DELIVERED     // Final files handed over
+}
+
+// -----------------------------------------------------------------------------
+// MODELS
+// -----------------------------------------------------------------------------
+
+model Client {
+  id String @id @default(uuid()) @db.Uuid
+
+  businessName String  @map("business_name")
+  contactName  String? @map("contact_name")
+  email        String?
+  phone        String?
+  // Free text, not a dropdown: the site is deliberately geography-agnostic
+  // (brief §3) and outreach is Durham Region by relationship, not by rule.
+  location     String?
+
+  plan   Plan?
+  status ClientStatus @default(PROSPECT)
+
+  notes String?
+
+  jobs Job[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@map("clients")
+}
+
+model Job {
+  id String @id @default(uuid()) @db.Uuid
+
+  client   Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  clientId String @map("client_id") @db.Uuid
+
+  // What this batch is, in the founder's own words — "March batch 1",
+  // "storm-damage spec ad". Free text on purpose.
+  title String
+
+  stage JobStage @default(INTAKE)
+
+  // Videos in this job: 2 for a Starter batch, 3 for one Growth biweekly
+  // batch. Not derived from the plan, because spec ads and one-offs exist.
+  videoCount Int @default(2) @map("video_count")
+
+  dueDate     DateTime? @map("due_date")
+  deliveredAt DateTime? @map("delivered_at")
+
+  notes String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([clientId])
+  @@index([stage])
+  @@map("jobs")
+}
