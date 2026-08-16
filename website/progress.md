@@ -3,17 +3,22 @@
 Tracks build status for the marketing site in this `website/` folder against
 `LegacyLink_Studio_Master_Build_Brief.md`.
 
-Per `CLAUDE.md`, this folder deploys as its own Vercel project to
-`legacylinkstudio.com` (Root Directory `website`, config in
-`website/vercel.json` — **not** the repo-root file; see the deployment trap
-at the end of this log) — separate from the Fastify API, admin app, and ops
-dashboard, which deploy
-to their own subdomains from other folders in this repo. It is plain static
-HTML/CSS/JS with no build step.
+Per `CLAUDE.md`, this folder deploys as its own Vercel project (`legacy-link`)
+to `legacylinkstudio.com`, Root Directory `website`, config in
+`website/vercel.json`. It is plain static HTML/CSS/JS with no build step,
+apart from the one serverless function behind the quote form.
 
-**Scope note:** the rest of this repo (`src/`, `admin/`, `ops-dashboard/`,
-`lambda/`, `prisma/`) is a separate, larger QR-memorial product that predates
-this site's current purpose and is not tracked here.
+**Scope note (updated 2026-08-16):** this repo now holds exactly two things —
+`website/` (this site) and `studio/` (the back office: clients, production
+pipeline, leads inbox; Next.js + Prisma + Neon, deployed separately to
+`legacylink-studio.vercel.app`). The back office documents itself in
+`studio/README.md`; this file stays about the marketing site.
+
+The QR-memorial product that used to occupy most of this repo (`src/`,
+`admin/`, `ops-dashboard/`, `lambda/`, `prisma/`, `infra/`) was retired and
+deleted on 2026-08-16, along with its two Vercel projects, its Railway API,
+and its DNS records. It is gone, not dormant — recover from git history if
+it is ever wanted again.
 
 ---
 
@@ -624,7 +629,40 @@ Content decisions, not build gaps:
    and a Stripe card link would be created ad hoc for the rare payment that
    asks for one.
 
-## Next steps — picking up 2026-08-15
+## Where things stand — end of 2026-08-16
+
+Everything below is live and verified on production unless it says otherwise.
+
+| Piece | State |
+|---|---|
+| Marketing site | Live at `legacylinkstudio.com`. Growth repriced to $1,000/mo for 6 videos; ad length (~15s) now stated. |
+| Quote form | Live. Emails `info@` **and** copies the lead into the back office. Whole path tested end to end 2026-08-16. |
+| Back office (`studio/`) | Live at `legacylink-studio.vercel.app`. Stages 1–2 done (clients + pipeline, leads inbox). Git-connected — pushes deploy it. |
+| Database | Neon `legacylink-studio`, us-east-1. Tables created. **Empty** — test rows deleted. |
+| Retired QR product | Gone everywhere: code, both Vercel projects, Railway, DNS. |
+
+**The one real gap:** the back office's *rendered UI* has barely been looked
+at. Its data layer is well tested — every auth gate, the ingest endpoint, a
+live production write — but the leads inbox, client detail page, and the
+six-stage pipeline have only ever rendered empty states. Nobody has clicked
+through them with real records. Worth a slow pass (seed a client and a job,
+walk the stages, then wipe) before a paying client's work depends on it.
+
+### Next up
+
+**Back office** (details in `studio/README.md`):
+- Stage 3 — payments: Starter's deposit/balance split, Growth's $500 + $500 +
+  recurring $1,000, and what's outstanding.
+- Stage 4 — Growth batch scheduling: biweekly batches of 3 with due dates, so
+  a retainer can't silently slip.
+- Optional: put it on a `legacylinkstudio.com` subdomain. Needs a CNAME added
+  manually at Namecheap — DNS is not delegated to Vercel.
+
+**Marketing site** — the four items below, unchanged from before.
+
+---
+
+## Older next steps — carried over from 2026-08-15
 
 Blocked on a founder decision (quick, do these first):
 
@@ -725,7 +763,15 @@ Ready to do, no decision needed:
 8. Add a phone number if you want one (open item 5). Also asked on
    2026-08-14 and left unanswered.
 
-Worth knowing before touching deployment config: read the Vercel trap in
-the 2026-08-13 entry above. Redirects, headers, and rewrites for this site
-go in `website/vercel.json`; the repo-root file is not read by this
-project, and putting them there fails silently with a green deploy.
+Worth knowing before touching deployment config: read the Vercel trap in the
+2026-08-13 entry above. Redirects, headers, and rewrites for this site go in
+**`website/vercel.json`**, because Vercel reads config from the project's Root
+Directory (`website`). Put them anywhere else and they fail silently — green
+deploy, config ignored.
+
+The repo-root `vercel.json` those older entries warn about was **deleted on
+2026-08-16**, once it was confirmed this project never read it. So the trap is
+now only about *where you add* config, not about an existing file fighting you.
+Note the marketing project also carries an Output Directory override set in the
+Vercel dashboard itself, independent of any file — leave it alone while the
+site works.
