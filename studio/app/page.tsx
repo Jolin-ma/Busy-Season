@@ -21,10 +21,13 @@ function DueBadge({ due }: { due: Date | null }) {
 }
 
 export default async function DashboardPage() {
-  const clients = await db.client.findMany({
-    include: { jobs: { orderBy: [{ dueDate: 'asc' }, { createdAt: 'asc' }] } },
-    orderBy: [{ status: 'asc' }, { businessName: 'asc' }],
-  });
+  const [clients, newLeads] = await Promise.all([
+    db.client.findMany({
+      include: { jobs: { orderBy: [{ dueDate: 'asc' }, { createdAt: 'asc' }] } },
+      orderBy: [{ status: 'asc' }, { businessName: 'asc' }],
+    }),
+    db.lead.count({ where: { status: 'NEW' } }),
+  ]);
 
   const openJobs = clients
     .flatMap((client) => client.jobs.map((job) => ({ job, client })))
@@ -55,6 +58,15 @@ export default async function DashboardPage() {
           Add client
         </a>
       </div>
+
+      {newLeads > 0 && (
+        <div className="notice notice-warn" style={{ marginBottom: '1.5rem' }}>
+          <strong>
+            {newLeads} new {newLeads === 1 ? 'lead' : 'leads'}
+          </strong>{' '}
+          waiting on a first reply. <a href="/leads">Open the inbox →</a>
+        </div>
+      )}
 
       <div className="stats">
         <div className="stat">

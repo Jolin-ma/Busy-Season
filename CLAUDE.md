@@ -75,6 +75,16 @@ Next.js App Router + Prisma 7 + its own Neon database. Tracks clients and where 
 - **`studio/lib/domain.ts` holds the pricing figures**, which must agree with the marketing site and the brief. Change the brief first, then the site, then here.
 - All mutations are **form actions** (`studio/app/actions.ts`) — the tool works with client-side JS disabled.
 - Deleting a client is a **hard** delete that cascades to its jobs, deliberately unlike the QR product's soft-delete invariant.
+- **`/api/leads/ingest` is the one route exempt from the session gate**, because the marketing site calls it server-to-server with no cookie. It checks a shared secret (`LEAD_INGEST_KEY`) itself and fails closed. If you add another exemption to the matcher, it must do its own auth too.
+
+### The leads path crosses both projects
+
+`website/api/quote.js` (marketing site) emails a lead to `info@` and **then** posts a copy to `studio`'s `/api/leads/ingest`. The order is load-bearing and easy to break:
+
+- **The email is the system of record.** The ingest post happens only after a successful send, and every failure of it — 401, 500, timeout, network down — is logged and swallowed so the visitor still sees success. Their lead did arrive; it just arrived by email only.
+- **Unset `LEAD_INGEST_URL`/`LEAD_INGEST_KEY` skips the post entirely.** That's the normal state until the back office is deployed, and the quote form is unaffected by it.
+- Therefore **a lead missing from the `leads` table is never proof nobody enquired.** Check the inbox. Don't make the table authoritative without first making the write reliable.
+- The same `LEAD_INGEST_KEY` value goes on **two** Vercel projects: the marketing site (which sends it) and studio (which checks it).
 
 ### Marketing site (`website/`)
 
@@ -152,7 +162,7 @@ When modifying the schema, always run `npm run db:generate` before TypeScript co
 - **Database**: Neon project `legacylink`, branch `prod-railway`. Root `.env`/local dev points at a separate branch — never at prod.
 - **The marketing site's Vercel config lives at `website/vercel.json`, not the repo root.** Its Vercel project has Root Directory `website`, and Vercel reads `vercel.json` from the Root Directory — so the repo-root `vercel.json` is never consulted by that project. This is easy to get wrong because the *symptom* is silent: the site keeps serving `website/` correctly either way, and only routing config (`redirects`, `headers`, `rewrites`) quietly does nothing. A `/contact.html` → `/quote.html` redirect was added to the repo-root file first and 404'd in production despite a green deploy. Put any redirect/header/rewrite for the marketing site in `website/vercel.json`.
 - **The marketing site is static except for one serverless function: `website/api/quote.js`**, which backs the quote form. Vercel zero-config picks up the `api/` directory under the project's Root Directory (`website`) and builds it as a Node function — nothing in `website/vercel.json` declares it. It's deliberately **CommonJS with global `fetch` and no dependencies**, because `website/` has no `package.json` and adding one to pull in the Resend SDK would give the static site an install step for a single HTTP call. If you add a dependency here, you're also adding a build step — reconsider first.
-  - Env vars on the **marketing site's** Vercel project: **`RESEND_API_KEY`** is required — the function logs and 500s without it. **`LEAD_INBOX`** (default `info@legacylinkstudio.com`) and **`LEAD_FROM`** (default `leads@legacylinkstudio.com`) are optional overrides. `LEAD_FROM` must be on a Resend-verified domain or every send 422s.
+  - Env vars on the **marketing site's** Vercel project: **`RESEND_API_KEY`** is required — the function logs and 500s without it. **`LEAD_INBOX`** (default `info@legacylinkstudio.com`) and **`LEAD_FROM`** (default `leads@legacylinkstudio.com`) are optional overrides. `LEAD_FROM` must be on a Resend-verified domain or every send 422s. **`LEAD_INGEST_URL`** and **`LEAD_INGEST_KEY`** are optional and enable the back-office copy — see "The leads path crosses both projects" above.
   - **Failure paths log the full lead payload** to the Vercel function log before returning 502. That's deliberate and load-bearing: it's the recovery path if Resend is down or the domain falls out of verification, so a lead is never silently lost. Don't "clean up" those `console.error` calls to drop the payload.
 - **The repo-root `vercel.json`** (`outputDirectory: website`) is not used by the marketing site, and the two subprojects that were configured around it are deleted. It is now almost certainly vestigial — but confirm nothing else reads it before removing it.
 - **Any new Vercel subproject from this repo needs its own `vercel.json`** overriding the repo-root `outputDirectory: website`. That setting bit the deleted admin project once — Next.js builds into `.next`, not `website`, so inheriting it causes a 404 on every route despite a successful build. The back office will need this.

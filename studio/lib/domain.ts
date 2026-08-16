@@ -1,4 +1,4 @@
-import type { ClientStatus, JobStage, Plan } from '@prisma/client';
+import type { ClientStatus, JobStage, LeadStatus, Plan } from '@prisma/client';
 
 // -----------------------------------------------------------------------------
 // Labels and business facts, in one place.
@@ -27,6 +27,13 @@ export const CLIENT_STATUSES: Record<ClientStatus, { label: string; tone: string
   PAUSED: { label: 'Paused', tone: 'warn' },
   COMPLETED: { label: 'Completed', tone: 'neutral' },
   LOST: { label: 'Lost', tone: 'bad' },
+};
+
+export const LEAD_STATUSES: Record<LeadStatus, { label: string; tone: string }> = {
+  NEW: { label: 'New', tone: 'warn' },
+  CONTACTED: { label: 'Contacted', tone: 'steel' },
+  CONVERTED: { label: 'Converted', tone: 'good' },
+  ARCHIVED: { label: 'Archived', tone: 'neutral' },
 };
 
 /**

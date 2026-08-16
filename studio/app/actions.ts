@@ -21,6 +21,7 @@ const JOB_STAGES = [
   'CLIENT_REVIEW',
   'DELIVERED',
 ] as const;
+const LEAD_STATUSES = ['NEW', 'CONTACTED', 'CONVERTED', 'ARCHIVED'] as const;
 
 /** Trimmed string, or null for anything blank — never store empty strings. */
 function text(form: FormData, key: string): string | null {
@@ -163,4 +164,86 @@ export async function deleteJob(form: FormData) {
 
   revalidatePath('/');
   revalidatePath(`/clients/${clientId}`);
+}
+
+// --- leads -------------------------------------------------------------------
+
+/**
+ * Best-effort read of which package a lead picked on the quote form. The stored
+ * value is whatever the form offered that day ("Growth — $1,000 CAD/mo for 6
+ * videos"), so this matches loosely and gives up rather than guessing wrong —
+ * an unset package on a new client is harmless; a wrong one is misleading.
+ */
+function inferPlan(packageInterest: string | null): Plan | null {
+  if (!packageInterest) return null;
+  const value = packageInterest.toLowerCase();
+  if (value.includes('growth')) return 'GROWTH';
+  if (value.includes('starter')) return 'STARTER';
+  return null;
+}
+
+export async function setLeadStatus(form: FormData) {
+  const id = required(form, 'id', 'Lead id');
+  const status = oneOf(form, 'status', LEAD_STATUSES);
+  if (!status) throw new Error('Unknown lead status.');
+
+  await db.lead.update({ where: { id }, data: { status } });
+
+  revalidatePath('/leads');
+  revalidatePath(`/leads/${id}`);
+  revalidatePath('/');
+}
+
+export async function updateLeadNotes(form: FormData) {
+  const id = required(form, 'id', 'Lead id');
+
+  await db.lead.update({ where: { id }, data: { notes: text(form, 'notes') } });
+
+  revalidatePath(`/leads/${id}`);
+}
+
+/**
+ * Turns a lead into a client and links the two. The lead is kept, not deleted,
+ * so the original enquiry text stays readable next to the client record.
+ */
+export async function convertLeadToClient(form: FormData) {
+  const id = required(form, 'id', 'Lead id');
+
+  const lead = await db.lead.findUnique({ where: { id } });
+  if (!lead) throw new Error('Lead not found.');
+  if (lead.clientId) redirect(`/clients/${lead.clientId}`); // already converted
+
+  const created = await db.client.create({
+    data: {
+      businessName: lead.business,
+      contactName: lead.name,
+      email: lead.email,
+      phone: lead.phone,
+      location: lead.location,
+      plan: inferPlan(lead.packageInterest),
+      status: 'PROSPECT',
+      // Carry the enquiry across so the first thing on the client record is
+      // what they actually asked for, in their words.
+      notes: [lead.details, lead.notes].filter(Boolean).join('\n\n') || null,
+    },
+  });
+
+  await db.lead.update({
+    where: { id },
+    data: { status: 'CONVERTED', clientId: created.id },
+  });
+
+  revalidatePath('/leads');
+  revalidatePath('/');
+  redirect(`/clients/${created.id}`);
+}
+
+export async function deleteLead(form: FormData) {
+  const id = required(form, 'id', 'Lead id');
+
+  await db.lead.delete({ where: { id } });
+
+  revalidatePath('/leads');
+  revalidatePath('/');
+  redirect('/leads');
 }

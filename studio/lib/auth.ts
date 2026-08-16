@@ -89,6 +89,22 @@ export async function verifySessionToken(token: string | undefined): Promise<boo
   return Number.isFinite(expiresAt) && expiresAt > Date.now();
 }
 
+/**
+ * Guards POST /api/leads/ingest, which the marketing site calls server-to-server
+ * and which therefore has no session cookie to check.
+ *
+ * Fails CLOSED when LEAD_INGEST_KEY is unset — an unconfigured deploy accepts
+ * nothing rather than letting anyone write rows into the leads table. That's
+ * why the marketing site treats a rejection as non-fatal: the visitor's quote
+ * still succeeds because the email already went out.
+ */
+export async function checkIngestKey(provided: string | null): Promise<boolean> {
+  const expected = process.env.LEAD_INGEST_KEY;
+  if (!expected || expected.length === 0) return false;
+  if (!provided) return false;
+  return timingSafeEqual(provided, expected);
+}
+
 /** Reports which env vars are missing, for the login page's setup warning. */
 export function missingAuthConfig(): string[] {
   const missing: string[] = [];

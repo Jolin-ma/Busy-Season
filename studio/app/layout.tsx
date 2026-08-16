@@ -25,6 +25,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </a>
               <nav>
                 <a href="/">Clients</a>
+                <a href="/leads">Leads</a>
                 <form action="/api/auth/logout" method="post">
                   <button
                     type="submit"

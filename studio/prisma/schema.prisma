@@ -49,6 +49,14 @@ enum JobStage {
   DELIVERED     // Final files handed over
 }
 
+// An inbound enquiry, before it's a client.
+enum LeadStatus {
+  NEW       // Just arrived, not yet replied to
+  CONTACTED // Replied; waiting on them
+  CONVERTED // Became a Client — see Lead.clientId
+  ARCHIVED  // Dead, spam, or not a fit
+}
+
 // -----------------------------------------------------------------------------
 // MODELS
 // -----------------------------------------------------------------------------
@@ -69,13 +77,53 @@ model Client {
 
   notes String?
 
-  jobs Job[]
+  jobs  Job[]
+  leads Lead[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@index([status])
   @@map("clients")
+}
+
+/// An enquiry from the marketing site's quote form.
+///
+/// Fed by POST /api/leads/ingest, which website/api/quote.js calls after it has
+/// emailed the lead to info@. That email is the system of record and this table
+/// is a convenience — the ingest call is best-effort and the quote form still
+/// returns success to the visitor if it fails. So treat a missing lead here as
+/// possible, and never as proof nobody enquired.
+model Lead {
+  id String @id @default(uuid()) @db.Uuid
+
+  business String
+  name     String
+  email    String
+  phone    String?
+  location String?
+
+  // Which package they picked on the form ("Growth — $1,000 CAD/mo for 6
+  // videos", "Not sure yet", ...). Free text, not an enum: it's whatever the
+  // form offered on the day, and old leads shouldn't break when that changes.
+  packageInterest String? @map("package_interest")
+
+  details String?
+
+  status LeadStatus @default(NEW)
+  notes  String?
+
+  // Set when the lead is converted. Kept (rather than deleting the lead) so
+  // the original enquiry text survives alongside the client record.
+  client   Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  clientId String? @map("client_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("leads")
 }
 
 model Job {

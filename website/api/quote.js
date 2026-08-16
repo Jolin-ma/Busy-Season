@@ -6,9 +6,16 @@
  * install step for one HTTP call.
  *
  * Env vars (Vercel project: marketing site):
- *   RESEND_API_KEY  required — the function 500s without it
- *   LEAD_INBOX      optional — defaults to info@legacylinkstudio.com
- *   LEAD_FROM       optional — must be on a Resend-verified domain
+ *   RESEND_API_KEY   required — the function 500s without it
+ *   LEAD_INBOX       optional — defaults to info@legacylinkstudio.com
+ *   LEAD_FROM        optional — must be on a Resend-verified domain
+ *   LEAD_INGEST_URL  optional — back-office /api/leads/ingest endpoint
+ *   LEAD_INGEST_KEY  optional — shared secret for that endpoint
+ *
+ * The email is the system of record. The back-office copy is best-effort and
+ * strictly secondary: it happens after a successful send, it cannot fail the
+ * visitor's submission, and both ingest vars unset simply skips it. Don't
+ * reorder those — a lead reaching the inbox is what "delivered" means here.
  */
 
 const DEFAULT_INBOX = "info@legacylinkstudio.com";
@@ -157,6 +164,47 @@ module.exports = async (req, res) => {
   } catch (err) {
     console.error(`[quote] Send failed: ${err && err.message}\n${text}`);
     return res.status(502).json({ error: "send" });
+  }
+
+  /* Best-effort copy into the back office. The lead is already in the inbox by
+     this point, so nothing below is allowed to fail the visitor's submission —
+     every path logs and carries on to the 200. Skipped entirely when
+     unconfigured, which is the normal state until the back office is deployed. */
+  const ingestUrl = process.env.LEAD_INGEST_URL;
+  const ingestKey = process.env.LEAD_INGEST_KEY;
+
+  if (ingestUrl && ingestKey) {
+    try {
+      const ingest = await fetch(ingestUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-lead-key": ingestKey,
+        },
+        body: JSON.stringify({
+          business: fields.business,
+          name: fields.name,
+          email: fields.email,
+          phone: fields.phone,
+          location: fields.location,
+          packageInterest: fields.package,
+          details: fields.details,
+        }),
+        /* Cap the wait. A hanging back office must not hold a real visitor on a
+           spinner for a copy they don't know exists. */
+        signal: AbortSignal.timeout(3000),
+      });
+
+      if (!ingest.ok) {
+        console.error(
+          `[quote] lead ingest returned ${ingest.status}; lead delivered by email only`,
+        );
+      }
+    } catch (err) {
+      console.error(
+        `[quote] lead ingest failed: ${err && err.message}; lead delivered by email only`,
+      );
+    }
   }
 
   return res.status(200).json({ ok: true });

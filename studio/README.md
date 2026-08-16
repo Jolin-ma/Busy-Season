@@ -68,12 +68,13 @@ npm run db:generate  # regenerate the client after schema edits
 
 | Path | What it does |
 |---|---|
-| `proxy.ts` | Auth gate on every route. **Default-deny** — the matcher excludes only the login page, the login endpoint, and static assets, so a new page is protected without anyone remembering to protect it. |
-| `lib/auth.ts` | Password check and HMAC-signed session cookie. Web Crypto throughout so the same code runs in the Edge proxy and in Node route handlers. |
+| `proxy.ts` | Auth gate on every route. **Default-deny** — the matcher excludes only the login page, the login endpoint, the lead ingest, and static assets, so a new page is protected without anyone remembering to protect it. Every exemption does its own auth. |
+| `lib/auth.ts` | Password check, HMAC-signed session cookie, and the ingest-key check. Web Crypto throughout so the same code runs in the Edge proxy and in Node route handlers. |
 | `lib/db.ts` | Prisma 7 driver adapter. Client construction is **lazy** so `next build` doesn't need a live database. |
 | `lib/domain.ts` | Stage order, plan pricing, date helpers. The pricing here must match the marketing site. |
 | `app/actions.ts` | Every mutation, as form actions — the whole tool works without client-side JS. |
-| `prisma/schema.prisma` | `Client` and `Job`. |
+| `app/api/leads/ingest` | Where the marketing site posts quote-form submissions. |
+| `prisma/schema.prisma` | `Client`, `Job`, `Lead`. |
 
 ### Data model
 
@@ -88,6 +89,36 @@ and one-off batches don't follow the standard sizes.
 Deleting a client is a **hard** delete and cascades to its jobs — deliberately
 unlike the QR product's soft-delete rule, since nothing here is engraved on a
 physical object.
+
+A **Lead** is an enquiry from the quote form, before it's a client. Converting
+one creates a Client and links the two; the lead is kept so the original
+enquiry text survives next to the client record.
+
+## Leads: the email is still the system of record
+
+`website/api/quote.js` emails every lead to `info@` and *then* posts a copy
+here. That order is load-bearing:
+
+- The post happens only after a successful send.
+- Every failure of the post — 401, 500, timeout, network down — is logged and
+  swallowed. The visitor still sees success, because their lead did arrive.
+- With `LEAD_INGEST_URL` / `LEAD_INGEST_KEY` unset, the post is skipped
+  entirely. That is the normal state until this app is deployed.
+
+So **a lead missing from this table is possible, and is never proof nobody
+enquired** — check the inbox. Don't invert the order to make the table
+authoritative without also making the write reliable.
+
+To turn it on, set the same secret in two places:
+
+| Where | Variable |
+|---|---|
+| This app's Vercel project | `LEAD_INGEST_KEY` |
+| **Marketing site's** Vercel project | `LEAD_INGEST_KEY`, plus `LEAD_INGEST_URL` pointing at `https://<this-app>/api/leads/ingest` |
+
+`/api/leads/ingest` is exempt from the session gate — its caller is a
+serverless function with no cookie — so it checks that shared secret itself,
+and **fails closed**: unset key means every request is rejected.
 
 ## Deploying
 
@@ -109,11 +140,9 @@ manually at Namecheap — DNS is not delegated to Vercel.
 
 Agreed scope, in order:
 
-1. **Clients + pipeline status** — this stage.
-2. **Leads inbox** — quote-form submissions land here instead of only reaching
-   `info@`. Means editing `website/api/quote.js` to POST alongside the Resend
-   send, keeping the email as a fallback so a lead is never lost if the write
-   fails.
+1. ~~**Clients + pipeline status**~~ — done.
+2. ~~**Leads inbox**~~ — done. Needs the two env vars above to actually receive
+   anything.
 3. **Payments** — the deposit/balance split on Starter, and $500 + $500 + the
    recurring $1,000 on Growth, with what's outstanding.
 4. **Growth batch scheduling** — biweekly batches of 3 with due dates, so a
