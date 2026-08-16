@@ -15,7 +15,9 @@ Two independent projects. `studio/` has its own `package.json`; `website/` has n
 
 > **A separate QR-memorial product used to live here** (`src/`, `client/`, `prisma/`, `lambda/`, `infra/`, plus two Next.js front-ends in `admin/` and `ops-dashboard/`). The founder retired that concept. All of its code was deleted on 2026-08-16, and its two Vercel projects (`legacy-link-admin`, `legacy-link-dashboard`) were deleted the same day. Recover from git history if ever needed — but treat it as gone, not dormant. Anything in an old commit referencing `short_id`, plaques, profiles, guestbooks, or `OPS_API_KEY` belongs to that product and not to this business.
 >
-> **Still outstanding, outside this repo:** the Fastify API is believed to be still deployed on Railway at `api.legacylinkstudio.com` with no source left here, and it exposes unauthenticated `/admin/*` routes to anyone who knows a `shortId`. The `app.` and `ops.` CNAME records at Namecheap also still point at the now-deleted Vercel projects. Both need doing by hand.
+> **Railway is gone too** — the trial ended, so the Fastify API is no longer served. `api.legacylinkstudio.com` and the underlying `*.up.railway.app` host both answer 404 as of 2026-08-16, which closes the unauthenticated `/admin/*` exposure that API used to carry.
+>
+> **Still outstanding, outside this repo:** four dead DNS records at Namecheap on `legacylinkstudio.com` — `CNAME app` and `CNAME ops` (pointing at the deleted Vercel projects), plus `CNAME api` and `TXT _railway-verify.api` (pointing at the dead Railway service). Harmless day to day, but a CNAME aimed at a platform hostname nobody owns any more is the classic subdomain-takeover setup, so they're worth removing. **Leave every other record alone** — `resend._domainkey`, `send` (TXT + MX), the three `@` MX records and `zmail._domainkey` carry `info@` and the quote form's lead delivery.
 
 ## Commands
 
