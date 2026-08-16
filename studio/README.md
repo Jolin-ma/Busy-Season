@@ -122,19 +122,28 @@ and **fails closed**: unset key means every request is rejected.
 
 ## Deploying
 
-A separate Vercel project, Root Directory `studio`.
+**Live at https://legacylink-studio.vercel.app** — Vercel project
+`legacylink-studio`, Root Directory `studio`, git-connected to this repo.
 
-`studio/vercel.json` exists specifically to override the repo-root
-`vercel.json`'s `outputDirectory: website`. Without it every route 404s despite
-a green build, because Next.js builds into `.next`, not `website`. This has
-already bitten two previous subprojects in this repo — don't remove it.
+**Push to `main` and it deploys.** That's the only supported route.
 
-Set `DATABASE_URL`, `DIRECT_URL`, `STUDIO_PASSWORD`, and
-`STUDIO_SESSION_SECRET` on the Vercel project. Changing the session secret
-invalidates existing sessions, which is the way to force a sign-out everywhere.
+> ⚠️ `vercel --prod` run from inside `studio/` **fails** with *"The specified
+> Root Directory 'studio' does not exist"*. Nothing is broken: the CLI uploads
+> `studio/` **as** the deployment root, so Vercel then looks for
+> `studio/studio`. Root Directory and CLI-from-subdirectory are mutually
+> exclusive. If you must deploy from the CLI, do it from the **repo root**.
 
-If it goes on a `legacylinkstudio.com` subdomain, the CNAME has to be added
-manually at Namecheap — DNS is not delegated to Vercel.
+All five env vars are set on the project as **Sensitive** (write-only):
+`DATABASE_URL`, `DIRECT_URL`, `STUDIO_PASSWORD`, `STUDIO_SESSION_SECRET`,
+`LEAD_INGEST_KEY`. Changing the session secret invalidates existing sessions,
+which is how you force a sign-out everywhere.
+
+`studio/vercel.json` is kept even though the repo-root `vercel.json` is gone —
+any Vercel project built from this repo should pin its own framework/output
+settings rather than inherit whatever lands at the root later.
+
+To put it on a `legacylinkstudio.com` subdomain, add the CNAME manually at
+Namecheap — DNS is not delegated to Vercel.
 
 ## Staged after this
 

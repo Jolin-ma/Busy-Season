@@ -81,7 +81,10 @@ Next.js App Router + Prisma 7 against a Neon Postgres database (`legacylink-stud
 | App | Root Directory | Host | Domain |
 |---|---|---|---|
 | Marketing site (`website/`) | `website` | Vercel project `legacy-link` | `legacylinkstudio.com` |
-| Studio back office (`studio/`) | `studio` (own `studio/vercel.json`) | Vercel | not yet deployed |
+| Studio back office (`studio/`) | `studio` (own `studio/vercel.json`) | Vercel project `legacylink-studio` | `legacylink-studio.vercel.app` |
+
+- **Deploy the back office by pushing to `main`.** The project is git-connected with Root Directory `studio`, so a push builds it automatically — same as the marketing site.
+- ⚠️ **`vercel --prod` from inside `studio/` now FAILS**, with *"The specified Root Directory 'studio' does not exist"*. That's not a broken project: the CLI uploads `studio/` **as** the deployment root, so Vercel then looks for `studio/studio`. The two ways to deploy are mutually exclusive, and git-connected is the one this project uses. If you ever need a CLI deploy, run it from the **repo root**, not from `studio/`.
 
 - **DNS** is managed at Namecheap (not delegated to Vercel), so every subdomain needs a manual CNAME record added there, even though the apex domain is a Vercel project.
 - **Vercel reads `vercel.json` from the project's Root Directory.** The marketing site's Root Directory is `website`, so its config is **`website/vercel.json`** — a redirect or header put anywhere else silently does nothing. This is easy to get wrong because the symptom is invisible: the site keeps serving correctly and only the routing config is ignored. A `/contact.html` → `/quote.html` redirect was once added to a repo-root file and 404'd in production despite a green deploy.
