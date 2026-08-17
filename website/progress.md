@@ -185,15 +185,27 @@ without reading the brief first.
 
 ### Still to do — this is the resume point
 
-1. ⏳ **Render the v2 site in a browser.** Nothing from either 2026-08-17
-   session has been looked at on a screen. The three new §8.5 components
-   (guarantee block, before/after showcase, all-in cost callout) have never
-   been seen at all. **The browser extension was not connected this session**,
-   so this could not be attempted — same blocker as 2026-08-14. Do this
-   before deploying.
-2. ⏳ **Then deploy.** The v2 rebuild is unpushed and unreleased; production
-   is still serving v1 copy, which now contradicts the brief on price,
-   packages, and what the studio actually sells.
+1. ✅ **Deployed.** Merged to `main` and pushed; Vercel swapped production
+   over in about 30 seconds. Verified by HTTP: all 8 pages 200, the three
+   legacy redirects still 308, `/api/quote` answers 405 to GET and 400 to an
+   empty POST (so the function redeployed with the new field set), and none
+   of the v1 strings — "Get a Quote", `$400`, "No tax is added", "only sell
+   creative" — survive anywhere on the live site.
+
+   ⚠ Note this went out **before** anyone had looked at it, which is the
+   reverse of the intended order — the browser extension was not connected,
+   so the render check could not be run first. It came out fine (see below),
+   but the risk was real: the three new components were live and unseen.
+
+2. ✅ **Rendered and checked** — by the founder, directly, after deploy. The
+   v2 site looks right, including the three new §8.5 components (guarantee
+   block, before/after showcase, all-in cost callout), which until then had
+   never been seen by anyone. **This closes the "never been rendered" gap
+   that had been carried since 2026-08-13.**
+
+   Scope of that check, so it isn't over-claimed later: it was a founder
+   eyeball over the live site, not a systematic pass. The **real-device
+   mobile item below is still open** — it was not part of this.
 3. ✅ **The back office is gone everywhere** (done 2026-08-17). The
    `legacylink-studio` Vercel project and the Neon `legacylink-studio`
    database were both deleted by hand. Verified for the Vercel side:
@@ -824,30 +836,39 @@ Content decisions, not build gaps:
 
 ## Where things stand — end of 2026-08-17
 
-⚠ **The v2 rebuild is finished in the repo but has not been deployed.**
-Production still serves v1 copy. Where a row below says "live", that means
-*v1 is live* unless it says otherwise.
+**v2 is live.** The rebuild shipped on 2026-08-17 and production now matches
+brief v2 — same copy, same prices, same offer. Everything below is live and
+verified unless it says otherwise.
 
 | Piece | State |
 |---|---|
-| Marketing site — production | Live at `legacylinkstudio.com`, still **v1 copy**: Starter $400 / Growth $1,000, "creative only". Contradicts brief v2. |
-| Marketing site — repo | **v2 complete**, all 8 pages. Never rendered in a browser. Unpushed. |
-| Quote form | Live and working (v1 field set). The back-office copy step was removed; it emails `info@` and nothing else. |
+| Marketing site | **v2 live** at `legacylinkstudio.com`, all 8 pages. Rendered and checked by the founder. No v1 copy left anywhere on the site. |
+| Quote form | Live on the v2 field set (`service` replaced `location` + `package`). Function verified deployed; **no real lead has been submitted through the new fields yet** — see below. |
 | Back office (`studio/`) | **Gone everywhere 2026-08-17** — code, Vercel project, Neon database. Code recoverable from git (`8c16ec0^`); its credentials are not, and no longer matter. |
 | Database | Neon `legacylink-studio` — **deleted.** |
 | Retired QR product | Gone everywhere: code, both Vercel projects, Railway, DNS. |
 
-**The one real gap** is no longer the back office — it's that an entire copy
-rebuild is sitting unrendered and unshipped. Nothing about v2 has been seen
-on a screen, and the three new CSS components are the specific risk.
+**The one real gap** is the lead path on the new form. `api/quote.js` was
+rewritten for v2's field set — `location` and `package` are gone, `service`
+is new — and the endpoint is verified deployed (405 to GET, 400 to an empty
+POST), but **no actual lead has gone through it since the change.** The last
+real end-to-end test was on 2026-08-16, against the old fields and with the
+back-office copy step still in place. Both of those are now different.
+
+Nothing about that is expected to be broken. It's just untested where it
+previously wasn't, and the failure mode is the expensive kind — a prospect
+fills the form in and the studio never learns. One marked test submission
+through the live form closes it.
 
 ### Next up
 
-1. Render the v2 site in a browser, fix what that turns up, deploy.
-2. The three manual jobs listed in the 2026-08-17 entry above (delete the
-   `legacylink-studio` Vercel project, remove the two dead `LEAD_INGEST_*`
-   env vars, delete the Neon database).
-3. **Marketing site** — the four items below, unchanged from before.
+1. **Submit one marked test lead** through the live form and confirm it
+   lands in the `info@` Zoho inbox with the new `service` field intact.
+2. Remove the two dead `LEAD_INGEST_*` env vars from the `legacy-link`
+   Vercel project — they now name an endpoint that returns 404.
+3. **Marketing site** — the four items below, unchanged from before. Note
+   item 3 there (open the live site on a real phone) is **not** closed by
+   the founder's desktop check on 2026-08-17.
 
 ---
 
