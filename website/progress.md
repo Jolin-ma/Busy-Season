@@ -158,10 +158,11 @@ backed up first, on the founder's call, to:
 C:\Users\jolin\Documents\Legacy Link\studio-env-backup-2026-08-17.txt
 ```
 
-That path is **outside the repo** on purpose — it can't be committed by
-accident. Delete it once the Neon database and the Vercel project are gone,
-since it's a plaintext credentials file. (`.env.local` held only a
-short-lived `VERCEL_OIDC_TOKEN` and wasn't worth keeping.)
+That path was **outside the repo** on purpose — it couldn't be committed by
+accident. **It was deleted later the same day**, once the Vercel project and
+the Neon database were both gone and the credentials it held were dead. Every
+value in it pointed at infrastructure that no longer exists. (`.env.local`
+held only a short-lived `VERCEL_OIDC_TOKEN` and wasn't worth keeping.)
 
 `CLAUDE.md` and `README.md` were rewritten to match: the back-office
 architecture section, its commands, its deploy row, and the two-project
@@ -193,12 +194,24 @@ without reading the brief first.
 2. ⏳ **Then deploy.** The v2 rebuild is unpushed and unreleased; production
    is still serving v1 copy, which now contradicts the brief on price,
    packages, and what the studio actually sells.
-3. ⚠ **Two manual jobs outside this repo**, unchanged and still not done:
-   delete the `legacylink-studio` Vercel project, and remove
-   `LEAD_INGEST_URL` / `LEAD_INGEST_KEY` from the marketing site's Vercel
-   project (the function no longer reads them). Add a third now that the app
-   is gone: **delete the Neon `legacylink-studio` database** — it's empty,
-   and it's the last live piece of the back office.
+3. ✅ **The back office is gone everywhere** (done 2026-08-17). The
+   `legacylink-studio` Vercel project and the Neon `legacylink-studio`
+   database were both deleted by hand. Verified for the Vercel side:
+   `legacylink-studio.vercel.app` now returns 404 with
+   `X-Vercel-Error: DEPLOYMENT_NOT_FOUND` on every path, where before it
+   served a live 307 to `/login`.
+
+   ⚠ **A DNS/TCP probe cannot verify a Neon deletion** — worth knowing if
+   this ever comes up again. Neon endpoint hostnames sit under a shared
+   regional pooler (`*-pooler.c-11.us-east-1.aws.neon.tech`), which resolves
+   and accepts TCP on 5432 for every project in the region; the endpoint is
+   distinguished later, at the auth layer. So "the host still resolves"
+   proves nothing either way. Check the Neon console.
+
+4. ⏳ **Still to do, outside this repo:** remove `LEAD_INGEST_URL` /
+   `LEAD_INGEST_KEY` from the marketing site's Vercel project. Harmless —
+   `api/quote.js` no longer reads them — but they now describe an endpoint
+   that doesn't exist, which is worse than useless to whoever reads them next.
 
 ---
 
@@ -820,8 +833,8 @@ Production still serves v1 copy. Where a row below says "live", that means
 | Marketing site — production | Live at `legacylinkstudio.com`, still **v1 copy**: Starter $400 / Growth $1,000, "creative only". Contradicts brief v2. |
 | Marketing site — repo | **v2 complete**, all 8 pages. Never rendered in a browser. Unpushed. |
 | Quote form | Live and working (v1 field set). The back-office copy step was removed; it emails `info@` and nothing else. |
-| Back office (`studio/`) | **Deleted 2026-08-17** per brief v2 §7. Recoverable from git history; `.env` backed up outside the repo. |
-| Database | Neon `legacylink-studio` — **still exists, empty, and should be deleted.** |
+| Back office (`studio/`) | **Gone everywhere 2026-08-17** — code, Vercel project, Neon database. Code recoverable from git (`8c16ec0^`); its credentials are not, and no longer matter. |
+| Database | Neon `legacylink-studio` — **deleted.** |
 | Retired QR product | Gone everywhere: code, both Vercel projects, Railway, DNS. |
 
 **The one real gap** is no longer the back office — it's that an entire copy
