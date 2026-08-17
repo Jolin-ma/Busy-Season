@@ -874,8 +874,14 @@ through the live form closes it.
 
 1. **Submit one marked test lead** through the live form and confirm it
    lands in the `info@` Zoho inbox with the new `service` field intact.
-2. Remove the two dead `LEAD_INGEST_*` env vars from the `legacy-link`
-   Vercel project — they now name an endpoint that returns 404.
+   This is the only outstanding item where a silent failure costs a
+   customer, so it's the one worth doing first.
+2. ✅ ~~Remove the two dead `LEAD_INGEST_*` env vars from the `legacy-link`
+   Vercel project.~~ Done 2026-08-17, as reported by the founder — Vercel
+   env state can't be read from here, so this is recorded rather than
+   verified. No redeploy was needed: `api/quote.js` had already stopped
+   reading them, so the running function was behaving as if they were
+   absent regardless.
 3. **Marketing site** — the four items below, unchanged from before. Note
    item 3 there (open the live site on a real phone) is **not** closed by
    the founder's desktop check on 2026-08-17.
