@@ -1,254 +1,495 @@
-# LegacyLink Studio — Master Build Brief
+# LegacyLink Studio — Master Build Brief (v2)
 
-**Purpose of this document:** A single handoff file for LegacyLink Studio — a separate business from Loyal Tale, sharing an owner but nothing else public-facing. Give this to Claude (or another builder) as the starting spec for development work.
+**Version:** 2.0 — rewritten 2026-08-17. Supersedes v1 (2026-08-16) entirely.
+**Purpose:** The single handoff spec for LegacyLink Studio. Give this to Claude (or another builder) as the starting point for the website build.
 
-**Relationship to Loyal Tale (important, read first):** LegacyLink Studio and Loyal Tale are built and marketed as two fully independent businesses. Neither site links to, credits, or references the other anywhere a visitor can see. This is deliberate, not an oversight — see the Loyal Tale brief's opening note for the full reasoning (short version: the two audiences have nothing in common, and each site is stronger when it doesn't have to vouch for the other). If the founder ever wants to surface the shared-ownership relationship — to investors, press, or partners — that belongs in private materials (a pitch deck, a conversation), not on either public website.
+**Name and domain are unchanged.** A rename was considered on 2026-08-17 and declined — the domain is bought and the site is built, and the name is not what wins or loses deals. Section 0 covers what that means for the copy, which now has to carry all the explaining.
 
-**Origin note:** `legacylinkstudio.com` was originally planned as the small "parent studio" credibility site behind Loyal Tale. That plan is retired. The domain is being put to better use as the sales site for a real, independent second business: AI-produced video ads sold to local service businesses.
+**What changed in v2 and why:** v1 sold video creative only, while promising an outcome ("we get your phone ringing") that depends on distribution the studio wasn't touching. v2 closes that gap: the studio now produces **and runs** the ads. Pricing, offers, site copy, and workflow are all restructured around that. The full reasoning is in the companion doc `claude/LegacyLink_Critical_Review_2026-08-16.md` — read it if you want to know why a given decision was made rather than just what it is.
+
+**How to use this document if you're building the website:** Sections 0, 6, 7 and 8 are the build spec. Sections 1–5 and 9–11 are business context that determines what the copy has to say and what it must not claim. Read the context before writing a single line of copy — most of the failure modes on this site are copy accuracy problems, not design problems.
+
+---
+
+**Relationship to Loyal Tale (important, read first):** LegacyLink Studio and Loyal Tale are built and marketed as two fully independent businesses. Neither site links to, credits, or references the other anywhere a visitor can see. This is deliberate, not an oversight: the two audiences have nothing in common, and each site is stronger when it doesn't have to vouch for the other. If the founder ever wants to surface the shared-ownership relationship — to investors, press, or partners — that belongs in private materials, not on either public website.
+
+---
+
+## 0. Brand & Naming
+
+**Name:** LegacyLink Studio
+**Primary domain:** `legacylinkstudio.com` — already owned and in use. **No change.**
+
+A rename was considered and deliberately declined on 2026-08-17 (see Open Items for the shortlist, kept in case it's ever revisited). The reasoning: the domain is bought, the site is built, and the name is not what closes or loses a deal. Switching now would spend a week of momentum on the eighth most important variable in the business. Revisit only if a prospect ever actually reacts to it.
+
+**The design implication — this matters for the build.** "LegacyLink Studio" carries no meaning a contractor can decode. It doesn't say video, ads, marketing, or home services, and "legacy" leans faintly toward estate or memorial. That is survivable, but it means **the name will do none of the explaining — the copy has to do all of it.** Consequences for the site:
+
+- The **hero headline must state what the studio does in plain words**, not riff on the name. A visitor arriving from a cold email has zero context and the logo won't give them any.
+- The **positioning statement doubles as the tagline** — *"We make the video ads that get your phone ringing — and we run them for you."* There is no separate clever tagline, and there shouldn't be; a second abstract line stacked under an abstract name is two things to decode before anything is understood.
+- In the nav and the browser tab, pair the wordmark with a short descriptor where there's room (e.g. "LegacyLink Studio — Video Ads for Home Services"). Set the page `<title>` this way; the bare name in a tab tells a returning visitor nothing.
+- On the phone, the script always follows the name immediately with the clause that explains it: *"I'm with LegacyLink Studio — we make video ads for contractors."* Never let the name stand alone.
+
+**Email:** use the domain (`hello@legacylinkstudio.com` or the founder's first name). Never send outreach from a Gmail address; for a business asking a contractor to hand over ad account access, a free email domain undercuts the pitch more than the design of the site helps it. This is worth doing this week — it costs a few dollars a month and it's one of the few credibility signals available before there's a portfolio.
+
+**Naming constraints for anything downstream** (sub-brands, product names, campaign names): no "AI" in any public-facing name. It invites the "is this fake?" objection before the pitch has started, and Section 2 already handles that question on the studio's own terms. Avoid generic agency vocabulary — Apex, Elevate, Summit, Peak, Digital, Solutions — which contractors pattern-match to cold-call spam.
 
 ---
 
 ## 1. Project Overview
 
-**What LegacyLink Studio is:** a small AI-powered video ad production studio. It produces short, high-quality video ads for local service businesses — roofers and contractors are the flagship vertical, with room to expand into adjacent local trades once there's a working sales motion (Section 4).
+**What LegacyLink Studio is:** a small AI-assisted video ad studio for home service businesses that **produces the ads and gets them running**. The client receives finished video creative *and* a live, managed ad campaign. Roofing and contracting are the flagship examples; the offer serves home services broadly (Section 3).
 
-**Why this business exists (context for whoever builds this):** it's a deliberate parallel revenue stream to Loyal Tale, chosen for three reasons: it reuses the same production tool and skill set already being paid for (Higgsfield AI), it can generate real cash on a per-client basis in weeks rather than the months-to-years it takes a consumer product or an organic content channel to pay off, and it gives the founder income while Loyal Tale is still unproven. It is intentionally the smaller, leaner of the two businesses — see Section 7 on why it should **not** get a full custom admin build the way Loyal Tale does.
+**What's being sold — the v2 definition:**
 
-**What's being sold:** video creative only. Not media buying, not ad account management, not campaign strategy — the founder made this decision explicitly to keep scope tight at launch. A client receives finished, ready-to-run video files; what they do with them (post organically, run as paid ads themselves, hand to their own marketing person) is up to them. See Section 2.3 for how this could expand later, and Section 9 for why it's flagged as a later decision, not a launch feature.
+| Step | Who does it |
+|---|---|
+| Creative concept and script | **Studio** |
+| Video production | **Studio** |
+| Campaign build and launch on Meta | **Studio** |
+| Targeting, budget setup, optimization | **Studio** |
+| Ad spend (paid directly to Meta) | Client |
+| Answering the leads that come in | Client |
 
-**Positioning:** confident, results-oriented, unapologetically commercial. This is the opposite tone from Loyal Tale on purpose — Loyal Tale is warm and emotional because its customers are making a personal purchase about a pet they love; LegacyLink Studio's customers are business owners making a practical decision about what gets them more phone calls. The site should read like a studio that understands small-business marketing, not like a creative agency selling art.
+The studio does not take custody of client ad spend at any point — the client's own payment method sits on their own ad account. This is non-negotiable and must be stated plainly on the site (Section 6, FAQ).
+
+**Explicitly still out of scope:** Google Ads (different skill set, higher complexity — Meta only at launch), landing page and website builds, CRM setup, answering or qualifying leads, SEO, organic social management.
+
+**Why this business exists:** it's a deliberate parallel revenue stream to Loyal Tale. It reuses the production tool and skill set already being paid for (Higgsfield AI), it generates cash per-client in weeks rather than the months a consumer product takes, and it funds the founder while Loyal Tale is unproven. It is intentionally the leaner of the two businesses — see Section 9 on why it should **not** get a custom admin build.
+
+**Positioning:** confident, results-oriented, unapologetically commercial. The opposite tone from Loyal Tale on purpose. Loyal Tale is warm because its customers are making an emotional purchase; LegacyLink Studio's customers are business owners making a practical decision about what gets them more booked jobs. The site should read like a studio that understands small-business marketing, not like a creative agency selling art.
 
 ---
 
-## 2. Business Model & Pricing
+## 2. The Product — and the thing that makes it different
 
-**Currency — CAD (decided 2026-08-14):** every client-facing price in this section and on the website is in **Canadian dollars**. The founder is in Ontario and the first prospects are Durham Region contractors, so CAD is what they'd assume from a bare `$` anyway — this makes it explicit rather than leaving a ~30% gap to surface at invoice time. The website marks it on the plan prices and carries an "All prices are in Canadian dollars (CAD)" line on the homepage and pricing page. Note this does **not** apply to the tool-cost figures below (Higgsfield credits, the $129/mo Ultra plan) — those are vendor list prices as billed, not CAD conversions.
+**The ads are built around the client's real work.** This is the core product decision in v2 and it drives both the intake process and the website copy.
 
-**Tax — none charged (decided 2026-08-14):** the studio is not GST/HST-registered, so no tax is added and the listed price is the total the client pays. The site states this plainly ("No tax is added — what you see is what you pay") on the homepage, the pricing page, and in the payment FAQ, because for a contractor comparing quotes it's a genuine selling point, not just a disclaimer.
+Purely AI-generated footage is a poor fit for home services. A homeowner choosing a $15,000 roof is making a trust decision, and generic AI imagery of a house that doesn't exist, a crew that doesn't exist, and a truck with no logo on it is trust-negative. Audiences in 2026 are also good at spotting AI output, and "this is fake" in the comments of a contractor's ad is worse than no ad.
 
-**Launch pricing + rate lock (decided 2026-08-14, pricing revised 2026-08-16):** $400 and $1,000 are presented as **launch rates**, not permanent ones — the site says the studio is new, that the price reflects that, and that it will rise as the portfolio builds. Deliberately **no public deadline or client-count cap**: the real trigger is GST/HST registration, which can't be stated publicly (it would be strange to prospects and would expose revenue), and a fake deadline that gets extended is worse than none.
+**So the product is a hybrid:**
 
-What replaces the deadline as the reason to act now is the **rate lock**: a Growth client who signs at $1,000/mo keeps that rate for as long as the retainer runs uninterrupted, whatever the studio charges later. This is honest urgency — the benefit is real and permanent for whoever signs early — and it costs almost nothing while the client count is low, while working as a strong retention hook later. Starter is a one-off, so nothing is locked; each batch is priced at the rate current when ordered. If a retainer lapses or is cancelled, re-engagement is at then-current rates. Recorded in `terms.html` §2 and answered directly in the pricing FAQ.
+- **The client's real assets carry the trust** — job site photos, before/afters, drone shots, phone footage of completed work, the crew, the trucks, the logo. Every contractor has hundreds of these on their phone and considers them worthless.
+- **AI carries the production value** — the hook, motion and camera moves, transitions, b-roll, atmosphere, text treatment, and the overall polish that makes phone footage look like it cost money.
 
-> **Trigger to watch — the "no tax" half of this expires on its own.** Registration becomes mandatory once taxable revenue passes **$30,000 over four consecutive calendar quarters**. At current rates that's roughly 75 Starter batches in a year, or about 2.5 Growth clients running the full year — still a plausible year-one outcome once even a couple of retainers are running, not a distant hypothetical. When it happens the "No tax is added" copy becomes false and must come off the site the same week.
->
-> Note the rate lock and the tax are deliberately **separate promises**, and the site and terms both say so: the locked *fee* stays $1,000, and tax would sit on top of it rather than being absorbed into it. That's what makes the lock safe to offer — it doesn't commit the studio to eating a 13% tax bill on every grandfathered retainer. Keep that distinction if this copy is ever rewritten; collapsing "your price never changes" into one sentence would quietly give away the margin. Confirm the tax specifics with an accountant rather than relying on this note.
+This solves three problems at once: it defeats the biggest objection ("is this AI?"), it makes the work meaningfully better than a generic AI render, and it's a moat against anyone else who has a Higgsfield login.
 
-**Final structure (2026-08-13):** simplified to two standing offers after testing a three-tier version that added complexity without a clean enough value story. The retainer is deliberately priced *below* the one-off's per-video rate — that resolves the obvious client objection ("why would I pay more to subscribe?") by not requiring an answer: subscribing is simply the cheaper option per video, on top of everything else it includes.
+**Consequence for intake:** client job photos are a **required** intake item, not an optional one (Section 5.1). A client who can't supply 20–30 recent job photos is a client whose ads will underperform. This should be framed to them as a feature, not a chore: "send us 30 photos off your phone and we'll turn them into something that looks like a national brand shot it."
 
-### 2.1 Starter Package — one-off, no commitment
-- **Price:** $400 CAD for 2 produced video ads ($200 CAD/video).
-- **Purpose:** the small, low-risk trial. A brand-new client sees real, finished work for a small total spend before ever considering a recurring relationship — an easy first yes, especially paired with the spec-ad outreach tactic (Section 4). Priced higher per video than Growth on purpose: a 2-video batch carries relatively more of the fixed cost of onboarding a new client (intake, first-time brief, first-time revisions) than a 6-video batch does, and that higher per-unit price is exactly what makes Growth's rate read as the better deal. Stays available afterward to anyone who wants an occasional one-off batch rather than an ongoing subscription.
-- **Includes:** 2 finished video ads, each roughly **15 seconds** (the length that performs best on Reels/TikTok/Shorts, not a shortened cut), based on a single intake brief (business, service offered, target customer, key selling point — see Section 5.1), delivered in the platform-appropriate formats the client needs (vertical for TikTok/Reels, square for feed, widescreen for YouTube/Facebook if requested).
-- **Revisions:** one round of revisions per video.
-- **Deposit:** 50% upfront ($200) before production starts, $200 balance on delivery — both default to Interac e-Transfer; Stripe (card) is available on either payment only if the client specifically asks to pay that way (Section 2.4).
+**Consequence for the website:** "built around your real jobs" is a headline-level feature on the homepage and a step in How It Works — not a line buried in a spec sheet. Section 6 covers placement.
 
-### 2.2 Growth — monthly retainer, $1,000/mo for 6 new videos
-
-**Launched at 6/month instead of 8 (revised 2026-08-16):** the original plan called for 8 videos/month at $1,500, but that commits to a production pace that's never actually been run yet — the real open question is whether 8 good videos/month is sustainable without quality slipping or the workload becoming a grind, and that's unproven. Rather than promise a number and find out the hard way with a paying retainer client, Growth launches at 6/month for $1,000, a pace confident enough to commit to cleanly. The **$1,500/mo, 8-video tier is deferred, not cancelled** — reintroduce it as a higher tier once real production experience (and a portfolio) confirms 8/month holds quality at pace (see Section 10). $1,000/mo is also a psychologically easier recurring number for a first-time prospect to say yes to than $1,500/mo.
-
-- **Price:** $1,000 CAD/month for 6 new videos every month ($166.67 CAD/video — cheaper per video than Starter's $200).
-- **Video length:** each ad is roughly **15 seconds**, same as Starter — matches the length that performs best on Reels/TikTok/Shorts and keeps production per-video consistent. A 30-second premium ad is a possible future upsell (Section 10), not offered at launch.
-- **Delivery cadence:** biweekly batches of 3 videos, not one lump delivery at month's end. This keeps the client's ad creative genuinely fresh through the month — addressing real ad fatigue — without committing to a full weekly production cycle, which earlier math showed would be operational overkill for this client size and would strain the shared Higgsfield credit pool (Section 4).
-- **First-month structure (decided 2026-08-15, rescaled 2026-08-16):** billed as a **$500 setup deposit** due at signing (covers onboarding + the first biweekly batch of 3 videos, delivered within ~2 weeks) and a **$500 first invoice** due when the second batch of 3 is delivered (~day 30). Together these still total $1,000 for month 1 — identical to every month after — this is a labeling change only, not a price cut: it replaces a confusing "half deposit, then another half later in the same month" framing with two clearly-named, clearly-timed payments. Both first-month payments default to Interac e-Transfer; Stripe is available on either one only if the client specifically asks to pay by card (Section 2.4). From month 2 onward, the full $1,000 auto-bills each month, by e-transfer by default or Stripe if the client requests card (Section 2.4).
-- **What's included:** one revision round per video, a reserved production slot (Growth clients aren't queued behind one-off Starter orders), and a short note with each batch on which ad angles/hooks are performing best, so the next batch builds on what's working instead of repeating the same format blind.
-- **The pitch:** cheaper per video than the one-off, delivered on a reliable biweekly schedule, with a growing testing loop a client can't replicate by just repeat-buying Starter. Sell it as "we handle your ad creative pipeline," not "here are some files."
-- **Sequencing:** pitch this after a client has seen a Starter batch or a free spec ad — lead with proof, not a cold price.
-
-**Margin check:** Higgsfield tool cost per video runs roughly $1–5 in credits depending on clip count, so a 6-video month costs somewhere around $10–30 in tool spend — the real cost is time, not credits, at either tier. Capacity is the actual constraint to watch: 6 videos/month for a single Growth client could use something like a third to 40% of the Plus plan's 1,000 monthly credits, shared with Loyal Tale's own production — more headroom than the original 8-video plan left, which is part of why 6 is the safer number to launch on. Still budget for upgrading to Ultra ($129/mo, 3,000 credits) once 2+ Growth clients are running, not as a someday-later concern — the retainer revenue covers that cost many times over.
-
-### 2.3 What's explicitly out of scope at launch
-- Media buying / running the client's ad account.
-- Ongoing performance/analytics reporting tied to ad spend (the studio isn't touching the ad account, so it can't report on spend performance directly — a client-shared screenshot of results is a different, lighter thing and fine to ask for as a testimonial/case-study source).
-- Full campaign strategy consulting.
-
-These are all reasonable future upsells once the video-only business is proven (see Section 9), but adding them at launch would turn a lean, fast-to-execute service into a heavier agency model before there's any evidence the core offer even sells.
-
-### 2.4 Payment & terms
-- 50% deposit on the Starter Package and on the first month of a new Growth retainer (see Section 2.2 for the Growth first-month labeling); standard invoicing thereafter once a client relationship is established and trusted.
-- **Payment method (decided 2026-08-15, last refined 2026-08-15):** Interac e-Transfer is the default, primary method for every payment in the business — deposits, balances, invoices, and the recurring monthly charge alike — no fee, and it matches how contractor clients already pay their own suppliers/subs. Stripe (card) is available as a secondary option on any individual payment — the Starter deposit, the Starter balance, either of Growth's two first-month payments, or a Growth month's recurring charge — but only if a client specifically asks to pay that particular payment by card. Nothing is proactively offered on card; e-transfer stays the assumed default throughout, so Stripe's ~2.9%+$0.30 fee only ever shows up on the specific payment a client opts into.
-- Simple written agreement per client (Section 9 open item) — scope, revision limits, usage rights (does the client get exclusive use of the footage/edit, or can LegacyLink Studio reuse elements in its own portfolio? decide and put it in writing before the first client, not after).
+**Ad length:** roughly 15 seconds, the best-performing length on Reels/TikTok/Shorts. Consistent across both offers. Now that the studio manages the campaigns, real performance data will eventually inform whether to vary this — revisit after ~3 months of live campaigns.
 
 ---
 
 ## 3. Target Clients & Positioning
 
-**Flagship vertical: roofing and contracting / home services.** Chosen deliberately: these businesses have high customer lifetime value (a single roofing job can be worth thousands of dollars), so they're accustomed to paying real money for creative that generates even one or two extra leads, and they typically don't have in-house marketing or video capability — a clear gap this studio fills.
+**Vertical framing: home service businesses, roofing-led.** The site speaks to home service contractors generally; portfolio pieces and examples lean roofing. This is deliberate — a roofing-only site would contradict the outreach plan every August through October, when roofers are booked solid and other trades are the live opportunity (Section 4).
 
-**Expansion verticals to consider once the first vertical has traction (not at launch):** HVAC, plumbing, landscaping, real estate agents, dentists, and similar local-trust-based local businesses. Same underlying pitch (video ads that get the phone ringing), different intake specifics.
+**Core verticals:** roofing, HVAC, windows and doors, plumbing, landscaping, snow removal, gutters, garage doors, interior renovation and basement finishing.
 
-**Positioning statement:** "We make the video ads that get your phone ringing." Direct, outcome-focused, no creative-agency abstraction. Every piece of copy on the site should be legible to a business owner who has five minutes and wants to know exactly what they get and what it costs.
+**Why home services:** high customer lifetime value (a single roofing or HVAC job is worth thousands), so a client can justify real money for creative that generates even one or two extra jobs. They typically have no in-house marketing or video capability. And they are used to paying for lead generation, which is now what this studio actually sells.
 
-**Geographic scope — website vs. outreach (decided 2026-08-13):** the founder is based in Oshawa, operating out of the Durham Region / East GTA. The public website stays geography-agnostic — positioning is vertical-led (roofing/contracting), not location-led, since the work is AI-produced and can serve a client anywhere, and a hard-coded local claim on the site would cap the pitch without adding much once a prospect is already looking at the portfolio. Location is used instead as a relationship-building lever in outreach itself (Section 4) — it's a founder/sales-conversation asset, not a site positioning element. Revisit if the client base ever consolidates enough locally to make a "proudly serving Durham Region" trust line worth adding to the About page.
+**Positioning statement:** *"We make the video ads that get your phone ringing — and we run them for you."*
 
----
+Every piece of copy should be legible to a business owner who has five minutes and wants to know exactly what they get, what it costs, and what it costs *all in*.
 
-## 4. Go-to-Market / Sales Motion
-
-**This is an outbound business at launch, not an inbound one.** The site's job is to close deals that outreach opens, not to generate its own traffic yet. Don't over-invest in SEO or organic content before the outbound motion is proven — that's a Phase 2 consideration (Section 9).
-
-- **Cold outreach:** direct contact with local roofers/contractors — email, phone, in-person, whatever channel the founder has access to. Portfolio site (Section 6) is the credibility-close tool once a conversation has started, not the discovery mechanism.
-- **Local angle in outreach (decided 2026-08-13):** the founder operates out of Oshawa / Durham Region, and cold email/phone/in-person outreach should lean into that directly — it's a real rapport-builder with a first-time local prospect ("I'm just up the road, working with contractors across Durham/East GTA...") in a way a generic pitch isn't. This stays an outreach-and-conversation tactic, not a website positioning claim (see Section 3) — the site itself doesn't need to say it.
-- **Spec ad tactic:** for early prospects, producing one unsolicited sample ad specifically for their business before they've agreed to anything is a proven way to convert a cold pitch with no track record — it costs one video's worth of time and Higgsfield credits, and gives the prospect something concrete to react to instead of an abstract pitch.
-- **Portfolio as proof:** once 2–3 real client ads exist (with permission to display), the site's Work/Portfolio page becomes the primary trust-builder for every subsequent pitch.
-- **Shared tool budget — a real constraint to plan around:** Higgsfield AI production is shared with Loyal Tale on the same Plus plan (1,000 credits/month). Track credit usage across both businesses. If retainer clients start consuming a meaningful share of the monthly pool, and it's ever at the expense of a Loyal Tale customer's order being delayed, that's a signal to fund a second Higgsfield seat or upgrade the plan out of the ad business's own revenue — not to let the two compete silently for the same limited pool.
+**Geographic scope — website vs. outreach:** the founder is based in Oshawa, operating out of Durham Region / East GTA. The public website stays geography-agnostic — positioning is vertical-led, not location-led, since the work can serve a client anywhere and a hard-coded local claim would cap the pitch. Location is used instead as a rapport lever in outreach conversations (Section 4). Revisit if the client base ever consolidates locally enough to make a "proudly serving Durham Region" trust line worth adding to the About page.
 
 ---
 
-## 5. Production Workflow
+## 4. Business Model & Pricing
 
-A lighter-weight version of Loyal Tale's pipeline, adapted for ad clients rather than consumer orders.
+**Currency — CAD.** Every client-facing price is in Canadian dollars. The founder is in Ontario and the first prospects are Durham Region contractors, so CAD is what they'd assume from a bare `$` anyway. Prices are marked CAD on the plan cards and an "All prices are in Canadian dollars (CAD)" line appears on the homepage and pricing page. This does not apply to tool-cost figures below (Higgsfield credits, the $129/mo Ultra plan) — those are vendor list prices as billed.
 
-1. **Intake** — client brief: business name, service offered, target customer, one key selling point or offer, any brand assets (logo, existing photos/video) they can provide, and which platforms/formats they need.
-2. **Concept/script** — a short script or shot concept per video, ideally sharable with the client for a quick sanity check before production burns credits.
-3. **Production** — Higgsfield AI generation.
-4. **Internal QA** — a self-check pass before the client ever sees it (same discipline as Loyal Tale's Internal QA gate, scaled down — this is a solo operation, so this is a deliberate pause-and-review step, not a separate person).
-5. **Client review** — one included revision round per video.
-6. **Delivery** — final files in the formats the client needs (9:16 vertical for TikTok/Reels/Shorts, 1:1 for feed, 16:9 for YouTube/Facebook if requested), delivered via a simple shared folder or download link — no need for a bespoke delivery portal at this scale.
+**Tax — changed in v2.** v1 stated "no tax is added" as a selling point across three pages. **Remove this from the site.** Two reasons: any HST-registered contractor recovers HST as an input tax credit, so it's cost-neutral to a business buyer and not a selling point at all; and at v2 pricing, two Growth clients running a full year is $36,000, which crosses the $30,000 four-quarter registration threshold inside year one. Putting copy on the site that must come down within months is not worth the zero benefit it provides.
 
-### 5.1 Intake brief template (starting point)
-- Business name & location
+> **Open item:** confirm with an accountant whether to register for GST/HST voluntarily now. Voluntary registration lets the studio recover HST on Higgsfield, software, and hardware, and an HST line on the invoice reads as more established to a contractor, not less. Registration becomes mandatory once taxable revenue passes $30,000 over four consecutive calendar quarters.
+
+### 4.1 The offer ladder
+
+Three rungs, each with a clear job:
+
+| | What it is | Price | Job |
+|---|---|---|---|
+| **Spec ad** | One free sample ad, built for their business | Free | Proof. Converts a cold pitch with no track record. |
+| **Launch Pack** | 3 videos + campaign setup | $750 CAD one-off | The easy first yes. |
+| **Growth** | 4 videos/mo + managed campaign + monthly readout | $1,500 CAD/mo | The business. |
+
+The spec ad is the trial. Launch Pack is not a second trial — it's the first real transaction, and it exists so a prospect who isn't ready to commit monthly has somewhere to go.
+
+### 4.2 Launch Pack — $750 CAD, one-off
+
+- **3 finished video ads**, ~15 seconds each, built from the client's real job photos and footage.
+- **Delivered in the formats they need:** 9:16 vertical for Reels/TikTok/Shorts, 1:1 for feed, 16:9 for YouTube/Facebook on request.
+- **One-time campaign setup:** the studio builds and launches one Meta campaign on the client's own ad account — radius targeting, audience, lead form or click-to-call, budget configured to the client's number. After launch it's theirs to run.
+- **One revision round** across the batch.
+- **Turnaround:** ~2 weeks from receiving assets.
+- **Guarantee:** if the client isn't happy with the first drafts, the deposit is refunded in full. See 4.4.
+- **Ad spend is separate** and paid by the client directly to Meta. Recommended minimum $500 for a meaningful first test.
+
+**Per-video rate:** $250 CAD. Deliberately higher than Growth's — a 3-video batch carries relatively more of the fixed cost of onboarding a new client (intake, first brief, first-time revisions) than an ongoing retainer does, and that higher unit price is exactly what makes Growth read as the better deal.
+
+### 4.3 Growth — $1,500 CAD/month
+
+- **4 new videos every month** ($375/video... but never sell it this way, see below), delivered as **biweekly batches of 2** so the creative in market stays fresh through the month rather than landing in one lump.
+- **Managed Meta campaign** — the studio runs it: creative rotation, audience and budget adjustments, turning off what's losing, scaling what's working.
+- **Monthly performance readout** — a short plain-language summary of what ran, what it cost, and what's working. This is a real deliverable now, not a guess. (In v1 this was promised while the studio had no ad account access, which made it unfulfillable. Fixed.)
+- **One revision round per batch** (not per video — six separate revision threads a month was an operational mistake in v1).
+- **Month-to-month. Cancel any time with 30 days notice. No long-term contract.**
+- **Ad spend is separate** and paid by the client directly to Meta. **Recommended minimum $1,000/month** — below that there isn't enough data to optimize on and the engagement will fail for reasons unrelated to the creative.
+
+**Never sell Growth on the video count.** Nobody wakes up wanting four videos. The pitch is: *"We keep fresh ads running in front of homeowners in your area every month, and we tell you what's working."* The video count is an implementation detail that appears on the pricing page, not in the pitch.
+
+**Why 4 and not 6 or 8:** v1 proposed 6/month (revised down from 8), on a pace that had never been production-tested. At 4/month plus campaign management, the studio spends its hours on the part the client actually values — ads that are live and working — instead of manufacturing creative volume a small local advertiser can't consume. A contractor spending $1,000–2,000/month does not exhaust three creatives in a month; six would have piled up unused and looked like padding by month three.
+
+### 4.4 Risk reversal — lead with this
+
+The studio has no track record. The cheapest and most effective thing it can offer a skeptical contractor is **removing the risk of going first.**
+
+- **Launch Pack:** 50% deposit ($375) to start. **If the client isn't happy with the first drafts, the deposit is refunded in full.** Exposure is capped at production time on three videos.
+- **Growth:** month-to-month, cancel any time with 30 days notice, no contract.
+
+This appears prominently on the homepage and pricing page — not as fine print. It should be more visually prominent than the rate lock.
+
+### 4.5 Launch pricing + rate lock
+
+$750 and $1,500 are presented as **launch rates**, not permanent ones. The site says the studio is new, that the price reflects that, and that it will rise as the portfolio builds.
+
+**No public deadline or client-count cap.** A fake deadline that gets extended is worse than none.
+
+What replaces the deadline is the **rate lock**: a Growth client who signs at $1,500/mo keeps that rate for as long as the retainer runs uninterrupted, whatever the studio charges later. It's honest urgency, it costs almost nothing while client count is low, and it works as a retention hook later. Launch Pack is a one-off, so nothing is locked; each batch is priced at the rate current when ordered. If a retainer lapses or is cancelled, re-engagement is at then-current rates.
+
+**Demote this below the guarantee in the copy hierarchy.** It's a real benefit but it is not why anyone signs — nobody commits $18,000 a year to an unproven vendor because the price might rise later. The guarantee is the conversion lever; the rate lock is a supporting reason.
+
+> **Open item:** decide when launch pricing ends and what standard rates become. There's deliberately no public deadline, so this won't force itself. Every client signed before it ends holds their rate permanently, so the longer it runs the larger the grandfathered book. Revisit once there are 2–3 real case studies with numbers.
+
+### 4.6 Total investment — state it upfront
+
+A contractor will mentally add the fee and the ad spend and arrive at a number bigger than the one on the pricing card. If he discovers that himself, mid-call, it feels like a bait and switch.
+
+**So the site states it plainly:**
+
+> **Growth — $1,500/mo studio fee.** Ad spend is separate and paid directly to Meta on your own account — we recommend starting at $1,000/month. **Most clients are investing $2,500/month all in.**
+
+For context, a full-service roofing marketing agency typically charges $2,500–$8,000/month in fees *alone*, before ad spend. Against that, $2,500 all-in is genuinely competitive, and saying so plainly converts better than hiding the second number.
+
+### 4.7 Payment & terms
+
+- **Launch Pack:** $375 deposit to start (refundable under the guarantee), $375 on delivery.
+- **Growth, month 1:** $750 setup deposit at signing (covers onboarding, campaign build, and the first batch of 2, delivered within ~2 weeks) + $750 when the second batch lands (~day 30). **Total $1,500 — identical to every month after.** The split is a labeling change that makes the first month easy for a prospect to follow, not a discount.
+- **Growth, month 2 onward:** $1,500/month.
+- **Method:** Interac e-Transfer is the default for one-off payments and deposits — no fee, and it matches how contractor clients already pay their suppliers and subs. Stripe (card) is available on any individual payment if a client asks.
+- **Changed in v2 — the recurring charge:** collecting a $1,500/month retainer by manual e-transfer means the client actively re-decides to pay every month. That's twelve chances a year to churn plus the founder chasing invoices. **Push for pre-authorized debit or card on file for the retainer specifically**, framed as "so it's off your plate." E-transfer remains available if a client insists, but it should not be the default for recurring.
+- **Ad spend never flows through the studio.** The client's own card sits on their own Meta ad account. The studio holds partner/admin access only.
+- **Simple written agreement per client** — scope, revision limits, cancellation notice, ad account access, and usage rights.
+
+> **Open item, decide before client one:** usage rights. Recommended default — the client owns the delivered videos outright; the studio retains the right to display the work in its own portfolio and marketing. That second half is non-negotiable for a studio that currently has no portfolio. Put it in writing before the first client, not after.
+
+### 4.8 Margin and capacity
+
+**Tool cost is negligible.** Higgsfield runs roughly $1–5 in credits per video, so a 4-video month costs $5–20 per client. Credits are not the constraint.
+
+**Hours are the constraint.** Realistic time per finished 15-second hybrid video — scripting, generation with rerolls, selection, assembly, QA, export to three aspect ratios, plus a revision round — is 3–5 hours. Campaign management after setup is another 2–4 hours a month.
+
+| | Videos | Campaign mgmt | Total hrs/mo | Revenue | Effective rate |
+|---|---|---|---|---|---|
+| **Growth client** | 12–20 hrs | 2–4 hrs | **~15–25 hrs** | $1,500 | **~$60–100/hr CAD** |
+
+**Practical ceiling: 5–6 Growth clients**, or roughly **$90,000–108,000 CAD/year**, before sales and admin time crowds out delivery — and that's alongside Loyal Tale. Worth knowing before optimizing anything else.
+
+*(For comparison, v1's structure — 6 videos, no campaign management, $1,000/mo — worked out to roughly $30–50/hr and capped around $48k. The restructure roughly doubles the effective rate and the ceiling. That is the main argument for it.)*
+
+**Higgsfield plan:** the Plus plan's 1,000 monthly credits are shared with Loyal Tale. Budget for upgrading to Ultra ($129/mo, 3,000 credits) once 2+ Growth clients are running — retainer revenue covers that many times over. Track usage across both businesses; if ad clients ever delay a Loyal Tale order, that's the trigger to upgrade or fund a second seat, not to let the two compete silently for one pool.
+
+---
+
+## 5. Production & Campaign Workflow
+
+1. **Intake** — brief plus asset collection (5.1). Asset collection is the step that most determines output quality; chase it actively rather than waiting.
+2. **Ad account access** — client grants partner access to their Meta ad account and page, or the studio helps them create one. Do this at intake, not at launch — it's the most common place a project stalls.
+3. **Concept / script** — a short script or shot concept per video, shared with the client for a quick sanity check *before* production burns credits.
+4. **Production** — hybrid build: client footage and photos as the spine, Higgsfield AI for hook, motion, b-roll and polish.
+5. **Internal QA** — a deliberate pause-and-review pass before the client sees anything. Solo operation, so this is a discipline, not a second person.
+6. **Client review** — one revision round per batch.
+7. **Campaign build & launch** — radius targeting, audience, placements, lead form or click-to-call, budget set to the client's number. Client's payment method, client's account.
+8. **Optimization** — ongoing for Growth clients: rotate creative, kill losers, scale winners.
+9. **Monthly readout** — plain-language summary: what ran, what it cost, what's working, what's next.
+
+### 5.1 Intake brief template
+
+**Business basics**
+- Business name & service area
 - Core service being advertised
-- Who's the ideal customer (age range, homeowner vs. renter, urgency signals like storm damage, etc.)
-- One clear selling point or current offer (e.g., "free inspection," "financing available")
-- Any existing photos/video/logo assets
-- Platforms/formats needed
-- Anything they explicitly don't want (competitor comparisons, certain music styles, etc.)
+- Ideal customer (homeowner vs. renter, age range, urgency signals like storm damage or a dead furnace)
+- One clear selling point or current offer ("free inspection," "financing available")
+- Anything they explicitly don't want (competitor comparisons, certain music styles)
+
+**Assets — required, not optional**
+- **20–30 recent job photos** (before/afters especially valuable)
+- Any video off their phone — job sites, drone shots, crew, trucks
+- Logo, in the highest quality they have
+- Photos of the owner and crew if they're willing to appear
+
+**Campaign setup**
+- Meta ad account and Facebook page access (or help creating them)
+- Where leads should go — email, text, phone
+- Monthly ad budget
+- Service radius / postal codes to target
 
 ---
 
-## 6. Site Structure / Pages
+## 6. Site Structure & Pages
 
-- **Homepage** — hero: what LegacyLink Studio does and for whom, in one sentence ("We make the video ads that get your phone ringing"), with a clear "Get a Quote" or "See Our Work" CTA. Brief proof section (client logos or results once they exist — placeholder initially). Short "how it works" (3 steps: tell us about your business → we produce your ads → you get videos that convert). Pricing preview linking to full pricing. Footer with contact CTA.
-- **Our Work / Portfolio** — case studies / sample ads, organized by vertical (roofing, contracting, etc. as they're added). Before/after or results framing where the client has shared numbers and given permission; otherwise just the work itself. This page carries the most weight in closing deals — give it real space and quality over the rest of the site.
-- **Services & Pricing** — both offers (Starter, Growth) laid out side by side, plain-language description of what's included in each (Section 2), clear statement that this is video creative only (not ad management), FAQ addressing "do you run the ads for us?", "what if we don't like the first draft?", "how fast do we get our videos?", "why is Growth cheaper per video than Starter?"
-- **How It Works** — the production workflow from Section 5, written for a client audience (less internal detail, more "here's what working with us looks like week to week").
-- **About** — brief studio credibility page: who's behind it, why AI-produced video makes sense for small-business budgets, nothing about Loyal Tale or any other product.
-- **Get a Quote / Contact** — simple lead form (business name, contact info, what they're looking for) plus direct contact info. This is the site's single most important conversion point — keep it short and frictionless.
-- **Legal** — Terms of Service, Privacy Policy (placeholder, flag "NEEDS LEGAL REVIEW"), and ideally a plain-language note on usage rights for delivered video (Section 2.4).
+Six pages. The site's job is to **close deals that outreach opens**, not to generate its own traffic — don't over-invest in SEO or content before the outbound motion is proven.
+
+### Homepage
+
+1. **Hero** — dark charcoal background for drama. **Headline states plainly that the studio makes the ads *and runs them*** — no wordplay, no riffing on the company name. A prospect landing here from a cold email has no idea what LegacyLink Studio is, and the name won't tell them (Section 0). The positioning statement serves as the supporting line beneath the headline; there is no separate tagline. One CTA: "Get a Free Sample Ad." A looping muted reel of sample work in the background or immediately below the fold — "show, don't tell" is the entire pitch for this business.
+2. **The real-footage section** — the differentiator, high on the page. Ideally a visual: a few raw client job photos on one side, the finished ad on the other. Headline along the lines of "Your real jobs. Ads that look like a national brand made them." This is the most important non-hero block on the site.
+3. **What you actually get** — three items, not a feature list: finished video ads, a live campaign, and a monthly report on what's working. Make the "we run them" part unmissable; it's the thing that separates this from every freelancer who ever cold-emailed them.
+4. **How it works** — three steps: *send us photos off your phone → we build your ads and launch them → you get the calls.* Generous horizontal spacing on desktop.
+5. **The guarantee** — its own block, visually prominent. "Don't like the first drafts? You don't pay." Not fine print.
+6. **Proof** — client results once they exist. Before then, a spec reel and an honest "new studio, here's what we can do" framing. Do not fake testimonials or invent logos.
+7. **Pricing preview** — both offers at a glance with the all-in investment stated, linking to the full pricing page.
+8. **Closing CTA** — a final "Get a Free Sample Ad" before the footer. Don't make anyone scroll back up to convert.
+
+### Our Work / Portfolio
+
+Grid of video cards. Each piece gets real space — resist cramming small thumbnails into a dense grid; a smaller number of prominently displayed pieces reads as more premium than a crowded wall. Results framing (spend, cost per lead, calls generated) wherever the client has shared numbers and given permission; otherwise just the work. Filterable by vertical only once there are enough pieces to warrant it — not at launch. **This page carries the most weight in closing deals; give it more space and polish than the rest of the site.**
+
+### Services & Pricing
+
+- Two-column comparison: Launch Pack / Growth. Growth visually emphasized as "Best Value" using the steel-blue accent.
+- **Ad spend stated clearly on both cards** as separate, paid directly to Meta, with the recommended minimum and the all-in figure.
+- Guarantee restated.
+- What's *not* included, stated plainly: Google Ads, website builds, SEO, answering leads.
+- FAQ accordion (below).
+- One final CTA at the bottom.
+
+**FAQ — must cover, in roughly this order:**
+
+- **Do you run the ads for us?** — Yes. We build the campaign, launch it on your account, and manage it monthly. *(In v1 this question existed to explain a "no." It's now the strongest answer on the page — give it top position.)*
+- **Who pays for the ads?** — You do, directly to Meta, on your own account with your own card. We never touch your ad budget.
+- **How much should I spend on ads?** — Recommended minimum, plus the honest reason: below that there isn't enough data to optimize.
+- **What's it cost all in?** — Fee plus recommended spend, stated as one number.
+- **Do I need a Facebook page or ad account already?** — No, we'll help you set one up.
+- **Is this AI?** — Answer honestly and confidently. We use AI for production polish; the ads are built around your real jobs, your real photos, your crew, your trucks. Don't dodge this question — a straight answer beats a defensive one, and prospects will ask regardless.
+- **What if I don't like the first drafts?** — The guarantee.
+- **How long am I locked in?** — Month to month, cancel any time with 30 days notice.
+- **How fast do I get my ads?** — ~2 weeks from receiving your photos.
+- **What if I already run my own ads?** — We can work with your existing account and just supply fresh creative.
+- **Why is Growth cheaper per video?** — Straight answer about onboarding cost being spread across an ongoing relationship.
+
+### How It Works
+
+The workflow from Section 5, written for a client audience — less internal detail, more "here's what working with us looks like week to week." Emphasize how little work it is for them: send photos, approve a draft, answer the phone.
+
+### About
+
+Brief studio credibility page: who's behind it, why AI-assisted video makes sense for small-business budgets, why real job footage matters. Nothing about Loyal Tale or any other product.
+
+### Get a Quote / Contact
+
+The site's single most important conversion point. Short, single-column form: name, business, phone/email, what they do, and one optional free-text field. Every extra field is a reason to abandon it. Direct phone and email listed alongside — contractors often prefer to just call.
+
+**CTA wording across the site:** "Get a Free Sample Ad" outperforms "Get a Quote" for this business — it offers something concrete instead of asking for a commitment. Use it as the primary CTA everywhere.
+
+### Legal
+
+Terms of Service and Privacy Policy — **flag both "NEEDS LEGAL REVIEW"**. Plus a plain-language note on usage rights for delivered video, and a clear statement that the client owns and funds their own ad account.
 
 ---
 
 ## 7. Operations (deliberately lightweight)
 
-**Do not build a custom admin tool for this business at launch.** Loyal Tale's admin site (multi-role, order pipeline, fulfillment tracking) exists because Loyal Tale has real operational complexity — many customers, physical fulfillment, recurring billing, staff roles. LegacyLink Studio at launch is one person managing a handful of clients; a full bespoke admin build would be solving a problem that doesn't exist yet and would eat time better spent on outreach and production.
+**Do not build a custom admin tool for this business at launch.** Loyal Tale's admin site exists because Loyal Tale has real operational complexity. LegacyLink Studio at launch is one person with a handful of clients; a bespoke admin build would solve a problem that doesn't exist and eat time better spent on outreach and production.
 
-**Recommended instead:** a simple shared tracker — a spreadsheet or a lightweight tool (Notion, Airtable, or similar) with one row per client covering: business name, contact info, package (Starter / Growth), status (intake / in production / delivered / awaiting payment), deposit received, delivery date, revision status, and notes. This can be rebuilt as real software later if and when client volume actually justifies it (Section 9).
+**Use instead:** one simple tracker (spreadsheet, Notion, or Airtable) covering **both pipeline and delivery** — v1's version only tracked delivery, which misses where the actual risk is.
+
+- *Pipeline columns:* business name, vertical, contact, source, stage (contacted / spec ad sent / call booked / proposal / won / lost), last touch date, next touch date, notes.
+- *Client columns:* package, status (intake / awaiting assets / production / review / delivered / campaign live), deposit received, ad account access granted, ad budget, next batch due, revision status.
+
+Set this up **before** the first outreach call, not before the first client.
+
+Rebuild as real software only if and when volume makes the spreadsheet genuinely painful.
 
 ---
 
-## 8. Detailed Website Design System
+## 8. Website Design System
 
-Same founder directive as Loyal Tale — **lots of white space, high-end, clean, easy to navigate** — but a different visual language, because this is a confident B2B service site, not a warm emotional consumer brand. The DNA (restraint, generous spacing, one clear action per page) is shared; the palette, type, and tone are deliberately distinct so nothing about this site feels like it belongs to the same brand family as Loyal Tale.
+Same founder directive as Loyal Tale — **lots of white space, high-end, clean, easy to navigate** — but a different visual language, because this is a confident B2B service site, not a warm consumer brand. The DNA (restraint, generous spacing, one clear action per page) is shared; palette, type and tone are deliberately distinct so nothing about this site feels like it belongs to the same brand family.
 
 ### 8.1 Design principles
-1. **Confidence over warmth.** Bold, clear statements about outcomes ("videos that get your phone ringing") rather than soft, feeling-forward language.
+
+1. **Confidence over warmth.** Bold, clear statements about outcomes rather than soft, feeling-forward language.
 2. **White space signals quality here too**, but reads as "premium studio" rather than "gentle and unhurried" — sharper edges, more contrast, still generously spaced.
-3. **Proof over promises.** Every page should be built to showcase actual work (once it exists) — the design should make it easy to feature a portfolio piece prominently, not bury it.
-4. **One CTA, always "Get a Quote" or equivalent** — never split attention between multiple competing actions.
+3. **Proof over promises.** Every page should be built to showcase actual work. Design so a portfolio piece can be featured prominently, never buried.
+4. **One CTA, always "Get a Free Sample Ad."** Never split attention between competing actions.
+5. **New in v2 — clarity about money.** Prices, ad spend, and all-in cost are design elements, not disclaimers. Give them real typographic weight. A contractor who has to hunt for the real number assumes he's being handled.
 
 ### 8.2 Color palette
 
 | Role | Color | Notes |
 |---|---|---|
-| Background (primary) | Near-white, cool-neutral — `#FAFAF9` | Cleaner and cooler than Loyal Tale's warm off-white — deliberate contrast |
-| Background (dark section) | Deep charcoal-black — `#16181C` | Used for a bold hero or portfolio-highlight section — this site can support more contrast/drama than Loyal Tale |
+| Background (primary) | Near-white, cool-neutral — `#FAFAF9` | Cleaner and cooler than Loyal Tale's warm off-white |
+| Background (dark section) | Deep charcoal-black — `#16181C` | Hero and portfolio-highlight sections; this site supports more drama than Loyal Tale |
 | Primary text | Near-black — `#1A1B1E` | |
 | Text on dark background | Off-white — `#F2F2F0` | |
-| Accent (primary/CTA) | Confident amber/orange — `#E8862E` | Energetic, action-oriented — distinct from Loyal Tale's muted gold |
-| Accent (secondary) | Steel blue — `#3E5C76` | Supporting accent for icons, secondary highlights |
-| Borders/dividers | Neutral gray — `#E2E2E0` | |
-| Success/confirmation | Clean green — `#3F8F5F` | |
+| Accent (primary / CTA) | Confident amber-orange — `#E8862E` | Energetic, action-oriented |
+| Accent (secondary) | Steel blue — `#3E5C76` | Icons, secondary highlights, the "Best Value" emphasis on Growth |
+| Borders / dividers | Neutral gray — `#E2E2E0` | |
+| Success / confirmation | Clean green — `#3F8F5F` | Also used for the guarantee block |
 
-This palette is intentionally cooler, higher-contrast, and more saturated in its accent than Loyal Tale's — a visitor should never mistake one site for the other.
+Intentionally cooler, higher-contrast, and more saturated in its accent than Loyal Tale — a visitor should never mistake one site for the other.
 
 ### 8.3 Typography
-- **Headlines:** a clean, confident grotesque/sans-serif (e.g., General Sans, Neue Montreal, or similar geometric-leaning sans) — no serif anywhere on this site; serif is reserved for Loyal Tale's emotional register.
-- **Body & UI text:** a highly legible sans-serif, can be the same family as headlines at a lighter weight, or a companion sans (e.g., Inter).
+
+- **Headlines:** clean, confident grotesque / geometric-leaning sans (General Sans, Neue Montreal, or similar). **No serif anywhere** — serif is reserved for Loyal Tale's emotional register.
+- **Body & UI:** highly legible sans — same family at lighter weight, or a companion sans such as Inter.
 - **Type scale (desktop):**
   - H1 (hero): 60–72px, bold/semibold, tight leading
   - H2 (section headers): 36–42px, semibold
-  - H3 (card/subsection titles): 20–24px, medium
+  - H3 (card/subsection): 20–24px, medium
   - Body: 16–18px, regular, 1.5–1.6 line height
   - Small/meta: 13–14px
-- **Mobile scale:** H1 drops to 36–40px, H2 to 26–28px, body stays 16px minimum.
-- Numbers/results (e.g., a stat in a case study) can use a slightly larger, bolder treatment than body text — this site is allowed to make data feel prominent in a way Loyal Tale deliberately avoids.
+- **Mobile:** H1 drops to 36–40px, H2 to 26–28px, body stays 16px minimum.
+- **Numbers get emphasis.** Prices, results, cost-per-lead figures use a larger, bolder treatment than body text. This site is allowed to make data feel prominent in a way Loyal Tale deliberately avoids.
 
 ### 8.4 Spacing & grid
-- Same 8px base grid discipline as Loyal Tale.
-- Max content width: 1280px, up to full-bleed for portfolio/video-showcase sections.
-- Section vertical padding: 96–120px desktop, 64px mobile — if anything, slightly more generous than Loyal Tale in portfolio-heavy sections, to let individual pieces of work stand out rather than compete.
+
+- 8px base grid.
+- Max content width 1280px; full-bleed permitted for portfolio and video showcase sections.
+- Section vertical padding: 96–120px desktop, 64px mobile — slightly more generous in portfolio-heavy sections so individual pieces stand out rather than compete.
 - 12-column desktop grid, 4-column mobile, 24px gutters.
 
 ### 8.5 Components
-- **Buttons:** solid amber CTA button, sharp or minimally-rounded corners (4–8px radius — crisper than Loyal Tale's softer rounding), high contrast. One secondary outline style.
-- **Portfolio cards:** large video thumbnail as the dominant element, minimal text overlay (client vertical/type only), generous gutter between items, hover state reveals a subtle "watch" affordance.
-- **Pricing table:** side-by-side two-column comparison (Starter / Growth), clear bullet breakdown of inclusions, the Growth column visually emphasized (e.g. "Best Value") using the steel-blue accent, with its lower per-video price ($166.67 vs. Starter's $200) called out explicitly as the reason to subscribe.
-- **Navigation:** logo left, minimal links (Work, Services & Pricing, How It Works, About), single prominent "Get a Quote" button right, styled with high contrast so it's unmissable.
-- **Lead form (Get a Quote):** short, single-column, large touch targets, minimal required fields (name, business, contact, what they need) — every extra field is a reason someone abandons it.
-- **Footer:** simple, dark background (using the charcoal from the palette) for contrast against the rest of the site, contact info prominent, legal links, no social sprawl — this business doesn't need a heavy social presence to function.
 
-### 8.6 Page-by-page layout notes
+- **Buttons:** solid amber CTA, 4–8px radius (crisper than Loyal Tale's softer rounding), high contrast. One secondary outline style.
+- **Portfolio cards:** large video thumbnail dominant, minimal text overlay (vertical/type only), generous gutters, hover reveals a subtle "watch" affordance.
+- **Pricing table:** two-column comparison. Growth emphasized with the steel-blue accent and a "Best Value" marker. **Each card carries three tiers of information in descending weight:** the monthly fee (largest), what's included (bullets), and the ad spend note plus all-in figure (smaller but clearly legible, never grey-on-grey).
+- **NEW — Guarantee block:** its own full-width component, green accent, sized to be seen on a phone without scrolling past it. Short: headline, one sentence, no legalese.
+- **NEW — Before/after asset showcase:** the real-footage differentiator. Raw client photos on one side, finished ad frame or video on the other. Should work on mobile as a stacked pair or a simple slider.
+- **NEW — All-in cost callout:** a small, reusable component pairing the studio fee with recommended ad spend and a total. Appears on homepage pricing preview and the pricing page.
+- **Navigation:** logo left; minimal links (Work, Services & Pricing, How It Works, About); single prominent "Get a Free Sample Ad" button right, high contrast, unmissable.
+- **Lead form:** short, single-column, large touch targets, minimal required fields.
+- **Footer:** simple, dark charcoal background, contact info prominent, legal links, no social sprawl.
 
-**Homepage:**
-1. Hero — bold, high-contrast (can use the dark charcoal background here for drama), single confident headline, one CTA. A looping muted video reel of sample work in the background or immediately below the fold works well for this business specifically, since "show, don't tell" is the whole pitch.
-2. Proof section — client logos/results once available; a simple, honest "new studio, here's what we can do" placeholder (e.g., a spec reel) if not.
-3. How it works — three clean steps, generous horizontal spacing on desktop.
-4. Pricing preview — both packages visible at a glance, link to full pricing page.
-5. Footer/CTA repeat — a final "Get a Quote" prompt before the footer; don't make someone scroll back up to convert.
+### 8.6 Imagery & video direction
 
-**Our Work / Portfolio:** grid of video cards, filterable by vertical once there are enough pieces to warrant it (not needed at launch with only a handful of pieces). Each piece gets real space — resist the urge to cram many small thumbnails into a dense grid; a smaller number of prominently-displayed pieces reads as more premium than a crowded wall.
+- **Real footage from produced ads wherever possible.** This site showcases actual output, not stock imagery pretending to be output.
+- Confident, high-production-value framing even on spec pieces — the portfolio is the product demo.
+- **No stock photography of generic "business people in an office."** Every image traceable to real client work or an honest sample.
+- **New in v2:** raw, unpolished client job photos are welcome as a design element in the before/after showcase. The contrast between the phone snapshot and the finished ad *is* the sales argument — don't prettify the "before."
 
-**Services & Pricing:** two-column pricing comparison at the top, FAQ accordion below, one final CTA at the bottom of the page.
+### 8.7 Motion & interaction
 
-**Get a Quote:** short form, minimal distraction around it — this page's only job is to capture the lead.
+- More energy than Loyal Tale is appropriate — quicker transitions (100–150ms), subtle scale-on-hover for portfolio thumbnails.
+- Muted video autoplay for portfolio previews on hover and in the hero is appropriate and expected.
+- Tasteful, energetic, not gimmicky. No confetti, no cursor trails.
 
-### 8.7 Imagery & video direction
-- Real footage/stills from produced ads wherever possible — this site should showcase actual output, not stock imagery pretending to be output.
-- Confident, high-production-value framing even for a spec/sample piece — the portfolio is the product demo.
-- No stock photography of generic "business people in an office" — every image should be traceable to real client work or an honest sample.
+### 8.8 Responsive & accessibility
 
-### 8.8 Motion & interaction
-- More energy than Loyal Tale is appropriate here — quicker transitions (100–150ms), subtle scale-on-hover for portfolio thumbnails is fine (unlike Loyal Tale, where restraint is closer to absolute).
-- Video autoplay (muted) for portfolio previews on hover or in the hero is appropriate and expected for this kind of site.
-- Keep it tasteful — energetic, not gimmicky. No confetti, no cursor trails.
-
-### 8.9 Responsive & accessibility
-- Mobile-first — many prospects will first see a link to this site from a text or email on their phone.
-- WCAG AA contrast minimum — verify the amber accent against both the light and dark backgrounds specifically.
+- **Mobile-first** — most prospects will first see this site from a text or email on their phone, often standing on a job site.
+- WCAG AA contrast minimum; verify the amber accent specifically against both light and dark backgrounds.
 - Full keyboard navigability, visible focus states matching the design system.
-- Touch targets minimum 44x44px on mobile, especially on the Get a Quote form.
+- Touch targets minimum 44×44px, especially on the lead form.
+- Video must not autoplay with sound, and must degrade gracefully on slow mobile connections.
 
 ---
 
-## 9. Build Priority Order
+## 9. Go-to-Market
 
-1. Homepage + Services & Pricing + Get a Quote (the minimum needed to start closing deals from outreach — this is the priority, ahead of a full portfolio, since there's no client work yet to show)
-2. Spec/sample video production (1–2 pieces) to seed the portfolio and give outreach something concrete to point to
-3. Our Work / Portfolio page (populate as real and spec pieces exist)
-4. How It Works, About, Legal
-5. Simple client tracker (Section 7) — set this up before or alongside the first real client, not after
-6. Revisit: is a lightweight bespoke admin/CRM ever worth building? Only once client volume makes the spreadsheet genuinely painful (Section 7)
+**This is an outbound business at launch.** The site closes deals that outreach opens; it is not the discovery mechanism.
+
+### 9.1 Seasonality — plan around it
+
+Home services are sharply seasonal in Ontario, and v1 ignored this entirely. Roofers in August are on roofs, booked out, hardest to reach, and least interested in more leads — "we'll get your phone ringing" lands worst at the moment the phone is already ringing.
+
+| Window | Lead with | Why |
+|---|---|---|
+| **Aug–Oct** | Snow removal, HVAC, windows & doors, gutters, garage doors | Snow removal is selling seasonal contracts *right now* with a hard deadline — the single best current target. HVAC hits heating season. Windows/doors sell on pre-winter urgency. |
+| **Nov–Feb** | Roofing, interior renovation, basement finishing | Roofers are slow, planning spring, and having budget conversations. Interior work peaks. |
+| **Mar–May** | Roofing, landscaping, paving | Spring booking season; demand-gen matters most. |
+| **Any time** | Storm response | A hail or wind event is the one thing that makes a roofer buy in-season. Keep a fast-turnaround storm play ready. |
+
+### 9.2 The sales system
+
+v1 specified type scales to the pixel and said almost nothing about how deals get made. **The website will not determine whether this works — several hundred contacted contractors will.** Build this with the same rigour as the design system.
+
+- **A named list of 100+ Durham / East GTA home service businesses** — owner name, phone, vertical, source. Build it from Google Maps, Facebook, and local trade directories.
+- **A cold call opener and a voicemail script.** Lead with the local angle: *"I'm just up the road in Oshawa, working with contractors across Durham."*
+- **A three-email follow-up sequence.**
+- **A weekly contact target** — something like 25 new contacts and 15 follow-ups. This is the single highest-leverage variable in the business.
+- **A follow-up cadence.** Most trades sales close on touch 5–8, not touch 1. The polite "send me something and I'll take a look" is where most of the pipeline will die; never end a call without a specific next contact time.
+- **Objection prep** — see the companion critique doc for the ten objections that will actually come up and how to answer each.
+
+### 9.3 The spec ad — the best tactic in the plan
+
+Producing one unsolicited sample ad for a specific prospect before they've agreed to anything converts a cold pitch better than anything else available to a studio with no track record. Two rules:
+
+1. **Build it from their real assets** — pull job photos from their website, Google Business Profile, and Facebook. A spec ad using their actual work is dramatically more persuasive than a generic render, and it demonstrates the product's whole premise in one shot.
+2. **Make it genuinely good.** A mediocre spec ad kills a pitch harder than no spec ad. One excellent one beats five rushed ones.
+
+### 9.4 Manufacture a proof point
+
+The hardest question in months 1–3 is "who else have you done this for?" Don't wait for a client to answer it.
+
+**Spend $200–300 of your own money running one of your videos as a real Meta ad for a friendly local business.** Whatever the numbers come back as, you now have numbers. *"This ad got 41 clicks at $1.10 each targeting homeowners in Whitby"* outperforms any portfolio page you can build — and it's the only way to practise campaign management before a paying client is depending on it.
 
 ---
 
-## 10. Open Items / Needs Founder Input
+## 10. Build Priority Order
 
-- [ ] Validate Starter ($400/2) and Growth ($1,000/mo/6, biweekly) with real clients — confirm the "cheaper per video to subscribe" pitch actually converts Starter buyers into Growth retainers, and revisit both prices upward once there are case studies to point to
-- [ ] Decide the written client agreement: scope, revision limits, usage/ownership rights for delivered video and any right to reuse in LegacyLink's own portfolio
-- [ ] Confirm domain/branding: keep `legacylinkstudio.com` as-is, or consider whether "LegacyLink Studio" (which reads more "legacy/memorial-adjacent" than "local business marketing") is worth revisiting once there's budget to think about it — not urgent, the name still functions fine as a studio name
-- [ ] Decide whether to eventually offer media buying/ad management as a premium upsell (Section 2.3) — explicitly deferred until the video-only offer is proven
-- [x] Decide outreach channel/volume plan — resolved 2026-08-13: cold email, phone, and in-person, with the founder's Oshawa/Durham Region base used as a relationship-building angle in outreach conversations specifically (Section 4); realistic weekly outreach targets still to be set, since early sales are expected to be slow
-- [x] Confirm deposit/invoicing tooling — resolved 2026-08-15, last refined 2026-08-15: Interac e-Transfer is the default, primary method for every payment (deposits, balances, invoices, and the recurring charge). Stripe is available as a secondary option on any individual payment, only if a client specifically asks to pay that payment by card — nothing is proactively offered on card (Section 2.4)
-- [x] Decide Growth retainer first-month payment structure — resolved 2026-08-15, rescaled 2026-08-16: kept at 50%/50% split for month 1 (no revenue given up), relabeled as a setup deposit + first invoice rather than "deposit, balance," to make the pricing easier for a prospect to follow while still delivering the first batch within ~2 weeks (Section 2.2)
-- [x] Decide whether HST is included in or added to the listed prices — resolved 2026-08-14: the studio isn't GST/HST-registered, so no tax is charged and the listed price is what the client pays. Stated on the site (Section 2)
-- [x] Decide Growth's monthly video count and price — resolved 2026-08-16: launched at $1,000/mo for 6 videos (down from an earlier $1,500/mo, 8-video concept). 8/month was never actually production-tested, so committing to it on the first retainer client risked quality slipping or the workload becoming unsustainable; 6/month is a pace confident enough to promise cleanly. $1,500/mo, 8-video is deferred as a future higher tier once real production experience proves 8/month holds quality at pace — not cancelled, just not sold at launch (Section 2.2)
-- [x] Decide standard ad length — resolved 2026-08-16: ads are roughly 15 seconds each on both Starter and Growth, matching the best-performing short-form length on Reels/TikTok/Shorts and keeping per-video production consistent. State this in the intake conversation and written agreement, not in the cold-outreach opener, and frame it as the format that performs, not a limitation (Section 2.1, 2.2)
-- [ ] **Monitor revenue against the $30,000 four-quarter GST/HST registration threshold** (Section 2). Crossing it forces registration and makes the site's "No tax is added" line false — that copy comes off the same week, and clients on a locked rate get notice before tax appears on an invoice
-- [ ] **Decide when launch pricing ends and what the standard rates become** (Section 2). There's deliberately no public deadline, so this won't force itself — it needs a decision. Every client signed before it ends holds their rate permanently, so the longer it runs the larger the grandfathered book. Revisit once there are 2–3 real portfolio pieces, since that's the stated reason the rate is low
-- [ ] Design and price a 30-second premium ad as an upsell once there's a portfolio and a known per-video production time — a way to raise average client value without adding a third pricing tier to the core Starter/Growth decision (Section 2.2)
-- [ ] Reintroduce the $1,500/mo, 8-video Growth tier once production experience confirms that pace holds quality without the workload becoming unsustainable (Section 2.2)
-- [ ] Decide how to handle a client who wants a second revision round beyond the one included — same open question as Loyal Tale's policy, worth deciding once for both businesses' shared philosophy even though the sites don't reference each other
-- [ ] Monitor shared Higgsfield credit usage against Loyal Tale (Section 4) and set a concrete trigger point (e.g., "if either business is regularly hitting the monthly credit ceiling") for funding a second seat or upgrading the plan
-- [ ] Legal review of Terms of Service and Privacy Policy before taking on paying clients
-- [ ] Decide whether to expand beyond roofing/contracting to other local-trade verticals, and when (Section 3)
+1. **Homepage + Services & Pricing + Get a Quote** — the minimum needed to close deals from outreach. Ahead of the portfolio, since there's no client work to show yet.
+2. **Meta Ads competence** — set up Business Manager, run the self-funded test campaign (9.4). This is now a core deliverable and it can't be learned on a paying client.
+3. **Spec / sample video production** (2–3 pieces) to seed the portfolio and give outreach something concrete.
+4. **Prospect list + tracker + scripts** (Sections 7 and 9.2) — before the first outreach call.
+5. **Our Work / Portfolio page** — populate as real and spec pieces exist.
+6. **How It Works, About, Legal.**
+7. **Revisit:** is a bespoke admin/CRM ever worth building? Only once the spreadsheet is genuinely painful.
+
+---
+
+## 11. Open Items
+
+**Before the first paying client**
+
+- [ ] **Client agreement** — scope, revision limits, cancellation notice, ad account access terms, and usage/ownership rights. Recommended default: client owns delivered videos, studio retains portfolio display rights.
+- [ ] **Legal review** of Terms of Service and Privacy Policy.
+- [ ] **Accountant conversation** — voluntary GST/HST registration now vs. waiting for the $30,000 threshold (Section 4).
+- [ ] **Meta ad account access process** — document exactly what to ask a client for and how to walk them through granting it. This is where projects stall.
+- [ ] **Recurring payment method** — set up pre-authorized debit or Stripe subscription for retainers (Section 4.7).
+- [ ] **Second revision round policy** — what happens when a client wants more than the included round. Worth deciding once for both businesses.
+
+**Ongoing / revisit**
+
+- [ ] **Validate the ladder with real clients** — does the free spec ad convert to Launch Pack, and Launch Pack to Growth? Revise pricing upward once there are case studies with numbers.
+- [ ] **Decide when launch pricing ends** and what standard rates become (Section 4.5). This won't force itself; it needs a decision. Revisit at 2–3 real case studies.
+- [ ] **Monitor revenue against the $30,000 four-quarter threshold.**
+- [ ] **Monitor Higgsfield credit usage** against Loyal Tale; upgrade to Ultra at 2+ Growth clients.
+- [ ] **Revisit ad length** after ~3 months of live campaign data — 15s is the starting assumption, not a finding.
+- [ ] **Higher tier** — a $2,500/mo tier (more videos, or multi-platform once TikTok/Google are in scope) once Growth is proven and capacity is understood.
+- [ ] **30-second premium ad** as an upsell once there's a portfolio and known per-video production time.
+- [ ] **Set up email on the domain** (Section 0) — `hello@legacylinkstudio.com` or similar. Do this before any outreach goes out.
+- [ ] **Logo and wordmark.** Not specified here — the design system (Section 8) defines the environment it lives in. Keep it simple and typographic; a wordmark in the headline sans at semibold, no icon, is entirely sufficient for a studio at this stage and ages better than a logo mark drawn before the business has a personality.
+- [ ] **Google Ads** as a future add-on, once Meta is genuinely competent.
+- [ ] **Agency / white-label channel** — selling creative volume to marketing agencies already serving contractors is a viable second channel with a much better structural fit for a solo operator (one sales conversation replaces four). Worth testing once the direct motion is running.
+
+**Resolved**
+
+- [x] **The name — decided 2026-08-17: keep LegacyLink Studio.** A rename was priced out and declined. The domain is owned, the site is built, and the name ranks roughly eighth among the variables that determine whether this works — well behind outreach volume, ad management, real-footage creative, the guarantee, and proof. Renaming now would spend momentum on the wrong thing. The mitigation is in Section 0: the copy carries all the explaining, and the name never appears without the clause that decodes it.
+
+> **If it's ever revisited** — the switching cost only rises from here, but it stays low until there are clients, printed material, or search equity. Shortlist from the 2026-08-17 exercise, all confirmed available at the time: **Busy Season** (`busyseason.ca`, tagline "Make busy season last all year" — the strongest of the four; names the outcome a contractor organizes their year around), **Jobsite Studio** (`jobsitestudio.ca`), **Foreman Media** (`foremanmedia.ca`), **Dispatch Ads** (`dispatchads.ca`). Re-check availability before acting; these were not registered. The trigger to revisit is a prospect actually reacting to the name — not a slow month.
+- [x] **Ad management** — resolved 2026-08-17: the studio produces *and* runs the ads. Meta only at launch; client funds their own account. This is the central change from v1.
+- [x] **Offer structure** — resolved 2026-08-17: free spec ad → $750 Launch Pack (3 videos + setup) → $1,500/mo Growth (4 videos + managed campaign + readout).
+- [x] **Vertical framing** — resolved 2026-08-17: home services broadly, roofing-led, so the site doesn't contradict off-season outreach.
+- [x] **Risk reversal** — resolved 2026-08-17: deposit refunded if the client dislikes the first drafts; Growth is month-to-month with 30 days notice. Leads the copy hierarchy, above the rate lock.
+- [x] **Real footage requirement** — resolved 2026-08-17: client job photos are a required intake item and a headline product feature.
+- [x] **Tax copy** — resolved 2026-08-17: "no tax is added" comes off the site. Cost-neutral to a business buyer, and the threshold is crossed inside year one at v2 pricing.
+- [x] **Currency** — CAD, marked explicitly.
+- [x] **Payment methods** — e-transfer default for one-offs and deposits; PAD or card preferred for the recurring retainer; Stripe available on request; ad spend never through the studio.
+- [x] **Ad length** — ~15 seconds on both offers.
+- [x] **Revisions** — one round per batch, not per video.
+- [x] **Outreach channel** — cold email, phone and in-person, with the Oshawa/Durham base used as a rapport lever in conversation, not as a website claim.
+- [x] **No custom admin build** at launch — a shared tracker covering pipeline and delivery instead.
+- [x] **Geographic scope** — site stays geography-agnostic; location is a sales-conversation asset.
