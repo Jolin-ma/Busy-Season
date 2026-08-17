@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Get a Quote — LegacyLink Studio</title>
-  <meta name="description" content="Tell us about your business and we'll come back with a straight answer on cost and timing, usually within one business day." />
+  <title>Get a Free Sample Ad — LegacyLink Studio | Video Ads for Home Services</title>
+  <meta name="description" content="Tell us about your business and we'll build one real video ad from your own job photos — free, before you've committed to anything. Usually a reply within one business day." />
   <link rel="icon" href="image/mark.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,7 +27,7 @@
           <a href="about.html">About</a>
         </nav>
         <div class="nav-cta-wrap">
-          <a href="quote.html" class="nav-cta" aria-current="page">Get a Quote</a>
+          <a href="quote.html" class="nav-cta" aria-current="page">Get a Free Sample Ad</a>
         </div>
       </div>
       <button class="nav-toggle" data-nav-toggle aria-label="Toggle menu" aria-expanded="false">
@@ -39,20 +39,24 @@
   <main id="main">
     <section class="page-head">
       <div class="container">
-        <p class="eyebrow">Get a Quote</p>
-        <h1>Tell us about your business.</h1>
+        <p class="eyebrow">Get a free sample ad</p>
+        <h1>See one for your business first.</h1>
         <p class="lede">
-          Six fields. We'll come back with a straight answer on cost and
-          timing — usually within one business day.
+          Five fields. We'll come back with a straight answer on cost, timing
+          and fit — usually within one business day — and for a small number
+          of businesses we'll build a real sample ad before you've committed
+          to anything.
         </p>
       </div>
     </section>
 
     <section class="section-tight">
       <div class="container grid grid-split" style="align-items: start;">
-        <!-- Native validation is left on: the submit handler only runs once
-             the required fields are filled, so a half-empty lead can't be
-             sent. -->
+        <!-- §6: every extra field is a reason to abandon the form, so this is
+             deliberately short — name, business, how to reach you, what you
+             do, and one optional free-text box. Native validation is left on:
+             the submit handler only runs once the required fields are filled,
+             so a half-empty lead can't be sent. -->
         <form class="card" data-quote-form data-inbox="info@legacylinkstudio.com">
           <div class="form-field">
             <label for="business">Business name</label>
@@ -70,40 +74,18 @@
           </div>
 
           <div class="form-field">
-            <label for="phone">Phone <span class="hint">(optional)</span></label>
+            <label for="phone">Phone <span class="hint">(optional — often the fastest)</span></label>
             <input id="phone" name="phone" type="tel" autocomplete="tel" />
           </div>
 
           <div class="form-field">
-            <label for="location">Where you operate <span class="hint">(city / service area)</span></label>
-            <input id="location" name="location" type="text" />
+            <label for="service">What you do <span class="hint">(trade and the area you cover)</span></label>
+            <input id="service" name="service" type="text" placeholder="e.g. Roofing — Durham Region and east Toronto" required />
           </div>
 
-          <fieldset class="form-field" style="border: 0; padding: 0; margin-inline: 0;">
-            <legend style="font-size: 0.9375rem; font-weight: 600; margin-bottom: 0.5rem; padding: 0;">What are you after?</legend>
-            <div class="radio-row">
-              <label class="radio-card">
-                <input type="radio" name="package" value="Starter — $400 CAD for 2 videos" />
-                <span><strong>Starter</strong> — $400 CAD for 2 videos<small>One-off batch, no commitment</small></span>
-              </label>
-              <label class="radio-card">
-                <input type="radio" name="package" value="Growth — $1,000 CAD/mo for 6 videos" />
-                <span><strong>Growth</strong> — $1,000 CAD/mo for 6 videos<small>Biweekly batches, reserved slot</small></span>
-              </label>
-              <label class="radio-card">
-                <input type="radio" name="package" value="Free spec ad" />
-                <span><strong>A free spec ad</strong><small>One sample ad for my business, before I commit to anything</small></span>
-              </label>
-              <label class="radio-card">
-                <input type="radio" name="package" value="Not sure yet" checked />
-                <span><strong>Not sure yet</strong><small>Tell me what makes sense</small></span>
-              </label>
-            </div>
-          </fieldset>
-
           <div class="form-field">
-            <label for="details">What do you want the ads to do? <span class="hint">(optional)</span></label>
-            <textarea id="details" name="details" rows="4" placeholder="e.g. Roof replacements. Storm damage season. We offer free inspections."></textarea>
+            <label for="details">Anything else we should know? <span class="hint">(optional)</span></label>
+            <textarea id="details" name="details" rows="4" placeholder="e.g. Storm damage season, we offer free inspections. Already running our own ads."></textarea>
           </div>
 
           <!-- Honeypot. Hidden from sight and from screen readers, and skipped
@@ -149,22 +131,35 @@
             </div>
             <div class="step">
               <div>
-                <h3 style="font-size: 1.0625rem;">You confirm the brief</h3>
-                <p>A short back-and-forth to pin down the offer and the angle. No lengthy discovery process.</p>
+                <h3 style="font-size: 1.0625rem;">You send us photos off your phone</h3>
+                <p>20–30 recent job photos. That's what we build the sample ad from, and it's the only real homework in the process.</p>
               </div>
             </div>
             <div class="step">
               <div>
-                <h3 style="font-size: 1.0625rem;">Production starts</h3>
-                <p>Deposit in, concepts out, and your first ads follow.</p>
+                <h3 style="font-size: 1.0625rem;">You watch a real ad for your business</h3>
+                <p>Then decide. Nothing is owed for the sample, and nothing starts until you say so.</p>
               </div>
             </div>
           </div>
 
-          <div class="card">
+          <div class="card" style="border-left: 4px solid var(--green);">
+            <h3 style="font-size: 1.125rem;">No risk in going first</h3>
+            <p class="muted" style="font-size: 0.9375rem;">
+              The sample ad is free. If you go ahead with a Launch Pack and
+              don't like the first drafts, your deposit is refunded in full.
+              Growth is month to month, cancel with 30 days notice.
+            </p>
+          </div>
+
+          <!-- Add a direct phone number here when there is one (brief §6 asks
+               for phone and email side by side — contractors often just
+               call). Until then, don't invent one. -->
+          <div class="card" style="margin-top: 1.5rem;">
             <h3 style="font-size: 1.125rem;">Rather just talk?</h3>
             <p class="muted" style="font-size: 0.9375rem;">
-              Email is the fastest way to reach us, and we read every one.
+              Email is the fastest way to reach us right now, and we read
+              every one. Leave your number above and we'll call you back.
             </p>
             <p style="margin-top: 1rem;">
               <a href="mailto:info@legacylinkstudio.com" class="link">info@legacylinkstudio.com</a>
@@ -184,8 +179,8 @@
             <span>LegacyLink <em>Studio</em></span>
           </a>
           <p class="footer-blurb">
-            A small production studio making video ads for roofing and
-            home-service companies.
+            We make video ads for home service businesses — and we run them
+            for you.
           </p>
           <a href="mailto:info@legacylinkstudio.com" class="footer-email">info@legacylinkstudio.com</a>
         </div>
@@ -201,8 +196,8 @@
         <div>
           <h4>Get started</h4>
           <ul>
-            <li><a href="quote.html">Get a Quote</a></li>
-            <li><a href="quote.html">Request a spec ad</a></li>
+            <li><a href="quote.html">Get a free sample ad</a></li>
+            <li><a href="pricing.html">Pricing</a></li>
             <li><a href="pricing.html#faq">FAQ</a></li>
           </ul>
         </div>
@@ -217,7 +212,7 @@
       </div>
       <div class="footer-bottom">
         <span>© <span data-year></span> LegacyLink Studio. All rights reserved.</span>
-        <span>Video ad production for local service businesses.</span>
+        <span>Video ads for home service businesses, made and managed.</span>
       </div>
     </div>
   </footer>

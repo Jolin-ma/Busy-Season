@@ -203,6 +203,7 @@ strong { font-weight: 600; }
   font-weight: 600;
   font-size: 0.9375rem;
   text-decoration: none;
+  white-space: nowrap;          /* "Get a Free Sample Ad" must never wrap */
   transition: background var(--t), transform var(--t);
 }
 
@@ -784,11 +785,314 @@ strong { font-weight: 600; }
   margin-top: auto;
 }
 
+/* When a card carries the ad-spend note, that block absorbs the slack so the
+   two cards' buttons still line up on desktop. */
+.plan .allin-inline {
+  margin-top: auto;
+}
+
+.plan .allin-inline + .btn {
+  margin-top: 1.75rem;
+}
+
 .plan-terms {
   margin-top: 1rem;
   font-size: 0.8125rem;
   color: var(--ink-light);
   text-align: center;
+}
+
+/* All-in cost callout — §8.5. The fee alone is never the number a contractor
+   pays, so fee + spend + total travel together everywhere the price appears.
+   Deliberately not muted: §8.1.5 makes the money a design element, and
+   grey-on-grey here reads as something being hidden. */
+.allin {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: #fff;
+}
+
+.allin-op {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink-light);
+}
+
+.allin-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--ink-light);
+  margin-bottom: 0.375rem;
+}
+
+.allin-value {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--ink);
+  margin: 0;
+}
+
+.allin-value small {
+  display: block;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: var(--ink-light);
+  margin-top: 0.25rem;
+}
+
+.allin-total .allin-value {
+  color: var(--steel);
+}
+
+.section-dark .allin,
+.hero .allin,
+.cta-band .allin {
+  background: var(--char-soft);
+  border-color: var(--line-dark);
+}
+
+.section-dark .allin-value,
+.hero .allin-value,
+.cta-band .allin-value {
+  color: var(--on-dark);
+}
+
+.section-dark .allin-label,
+.section-dark .allin-value small,
+.section-dark .allin-op,
+.hero .allin-label,
+.hero .allin-value small,
+.hero .allin-op,
+.cta-band .allin-label,
+.cta-band .allin-value small,
+.cta-band .allin-op {
+  color: var(--on-dark-dim);
+}
+
+.section-dark .allin-total .allin-value,
+.hero .allin-total .allin-value,
+.cta-band .allin-total .allin-value {
+  color: var(--amber);          /* steel fails on charcoal; amber is 6.4:1 */
+}
+
+/* Compact variant for inside a pricing card */
+.allin-inline {
+  display: block;
+  border: 0;
+  border-top: 1px dashed var(--line);
+  border-radius: 0;
+  padding: 1.25rem 0 0;
+  margin-top: 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--ink-light);
+}
+
+.allin-inline strong {
+  color: var(--ink);
+}
+
+.allin-inline .allin-sum {
+  display: block;
+  margin-top: 0.5rem;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+/* ==========================================================================
+   Guarantee block — §8.5. Its own full-width component, green accent, short
+   enough to be read on a phone without scrolling past it.
+
+   CONTRAST: --green is 3.9:1 on --paper. That clears AA for large text and
+   for non-text UI, and fails it for body copy — so green sets the headline
+   and the borders here, never the paragraph.
+   ========================================================================== */
+
+.guarantee {
+  background: rgba(63, 143, 95, 0.07);
+  border-top: 1px solid rgba(63, 143, 95, 0.28);
+  border-bottom: 1px solid rgba(63, 143, 95, 0.28);
+  padding: 4.5rem 0;
+}
+
+.guarantee-inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 2rem;
+}
+
+.guarantee-mark {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--green);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.guarantee-mark svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: #fff;
+}
+
+.guarantee h2 {
+  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  color: var(--green);
+  margin-bottom: 0.5rem;
+}
+
+.guarantee p {
+  color: var(--ink);
+  max-width: 46rem;
+  margin: 0;
+}
+
+.guarantee .btn-row {
+  margin-top: 0;
+}
+
+/* ==========================================================================
+   Before/after showcase — §8.5, the real-footage differentiator.
+   The "before" is deliberately unpolished (§8.6): the contrast between a
+   phone snapshot and the finished ad is the sales argument, so don't
+   prettify the left-hand side.
+   ========================================================================== */
+
+.showcase {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.showcase-arrow {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  color: var(--amber);
+  flex: none;
+}
+
+.section-dark .showcase-arrow,
+.hero .showcase-arrow {
+  border-color: var(--line-dark);
+}
+
+.showcase-arrow svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.showcase-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  margin-bottom: 1rem;
+  color: var(--steel);
+}
+
+.section-dark .showcase-label,
+.hero .showcase-label {
+  color: var(--on-dark-dim);
+}
+
+.section-dark .showcase-after .showcase-label,
+.hero .showcase-after .showcase-label {
+  color: var(--amber);
+}
+
+/* Raw phone photos — a loose, slightly untidy tile grid on purpose. */
+.showcase-raw {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.625rem;
+}
+
+.showcase-raw span {
+  aspect-ratio: 4 / 3;
+  border-radius: 4px;
+  background: #eceae6;
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-light);
+  text-align: center;
+  padding: 0.25rem;
+}
+
+.section-dark .showcase-raw span,
+.hero .showcase-raw span {
+  background: linear-gradient(150deg, #2b2f36, #1c1f25);
+  border-color: var(--line-dark);
+  color: rgba(242, 242, 240, 0.45);
+}
+
+.showcase-raw span:nth-child(3n + 2) {
+  transform: rotate(-1.2deg);
+}
+
+.showcase-raw span:nth-child(4n) {
+  transform: rotate(0.9deg);
+}
+
+/* Finished ad frame, 9:16 like the delivered file */
+.showcase-frame {
+  position: relative;
+  aspect-ratio: 9 / 16;
+  max-width: 14rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line-dark);
+  overflow: hidden;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(232, 134, 46, 0.24), transparent 62%),
+    linear-gradient(165deg, #262a31, #16181c 72%);
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.showcase-frame video,
+.showcase-frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.showcase-frame p {
+  font-size: 0.8125rem;
+  color: var(--on-dark-dim);
+  margin: 0;
 }
 
 /* ==========================================================================
@@ -1269,6 +1573,61 @@ strong { font-weight: 600; }
   .steps,
   .pricing {
     grid-template-columns: 1fr;
+  }
+
+  /* The all-in callout reads as fee / spend / total stacked, so the "+" and
+     "=" become row separators rather than columns. */
+  .allin {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    text-align: left;
+  }
+
+  .allin-op {
+    display: none;
+  }
+
+  .allin > div + div {
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .section-dark .allin > div + div,
+  .hero .allin > div + div,
+  .cta-band .allin > div + div {
+    border-top-color: var(--line-dark);
+  }
+
+  .guarantee {
+    padding: 3.5rem 0;
+  }
+
+  .guarantee-inner {
+    grid-template-columns: auto 1fr;
+    gap: 1.25rem 1.5rem;
+  }
+
+  .guarantee-inner .btn {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .showcase {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    justify-items: center;
+  }
+
+  .showcase > div {
+    width: 100%;
+  }
+
+  .showcase-arrow {
+    transform: rotate(90deg);
+  }
+
+  .showcase-frame {
+    margin: 0 auto;
   }
 
   .plan {

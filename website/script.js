@@ -51,24 +51,22 @@ document.addEventListener("DOMContentLoaded", () => {
         name: get("name"),
         email: get("email"),
         phone: get("phone"),
-        location: get("location"),
-        package: get("package"),
+        service: get("service"),
         details: get("details"),
         company_website: get("company_website"), // honeypot
       };
     };
 
     const composeMailto = (f) => {
-      const subject = `Quote request — ${f.business || "new enquiry"}`;
+      const subject = `Sample ad request — ${f.business || "new enquiry"}`;
       const body = [
         `Business: ${f.business}`,
         `Contact name: ${f.name}`,
         `Email: ${f.email}`,
         `Phone: ${f.phone || "—"}`,
-        `Location: ${f.location || "—"}`,
-        `Interested in: ${f.package || "not sure yet"}`,
+        `What they do: ${f.service || "—"}`,
         "",
-        "What they need:",
+        "Anything else:",
         f.details || "—",
       ].join("\n");
 

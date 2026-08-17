@@ -9,13 +9,14 @@
  *   RESEND_API_KEY   required — the function 500s without it
  *   LEAD_INBOX       optional — defaults to info@legacylinkstudio.com
  *   LEAD_FROM        optional — must be on a Resend-verified domain
- *   LEAD_INGEST_URL  optional — back-office /api/leads/ingest endpoint
- *   LEAD_INGEST_KEY  optional — shared secret for that endpoint
  *
- * The email is the system of record. The back-office copy is best-effort and
- * strictly secondary: it happens after a successful send, it cannot fail the
- * visitor's submission, and both ingest vars unset simply skips it. Don't
- * reorder those — a lead reaching the inbox is what "delivered" means here.
+ * The email is the system of record, and now the only record: the back-office
+ * copy this used to POST to (LEAD_INGEST_URL / LEAD_INGEST_KEY) went away with
+ * the studio admin app on 2026-08-17 (brief v2 §7 — no custom admin at launch;
+ * pipeline and delivery live in one shared tracker instead). Leads are worked
+ * from the inbox and copied into that tracker by hand. If a back office is
+ * ever rebuilt, add the secondary post back *after* a successful send and keep
+ * it unable to fail the visitor's submission.
  */
 
 const DEFAULT_INBOX = "info@legacylinkstudio.com";
@@ -28,8 +29,7 @@ const LIMITS = {
   name: 200,
   email: 320, // practical maximum length of an email address
   phone: 50,
-  location: 200,
-  package: 100,
+  service: 300, // trade + service area, in the visitor's own words
   details: 5000,
 };
 
@@ -82,8 +82,7 @@ module.exports = async (req, res) => {
     name: clean(body.name, LIMITS.name),
     email: clean(body.email, LIMITS.email),
     phone: clean(body.phone, LIMITS.phone),
-    location: clean(body.location, LIMITS.location),
-    package: clean(body.package, LIMITS.package),
+    service: clean(body.service, LIMITS.service),
     details: clean(body.details, LIMITS.details),
   };
 
@@ -110,14 +109,13 @@ module.exports = async (req, res) => {
     ["Contact name", fields.name],
     ["Email", fields.email],
     ["Phone", fields.phone || "—"],
-    ["Location", fields.location || "—"],
-    ["Interested in", fields.package || "Not sure yet"],
+    ["What they do", fields.service || "—"],
   ];
 
   const text = [
     ...rows.map(([label, value]) => `${label}: ${value}`),
     "",
-    "What they need:",
+    "Anything else:",
     fields.details || "—",
   ].join("\n");
 
@@ -127,7 +125,7 @@ module.exports = async (req, res) => {
       ([label, value]) =>
         `<p style="margin:0 0 4px"><strong>${label}:</strong> ${escapeHtml(value)}</p>`,
     ),
-    '<p style="margin:16px 0 4px"><strong>What they need:</strong></p>',
+    '<p style="margin:16px 0 4px"><strong>Anything else:</strong></p>',
     `<p style="margin:0;white-space:pre-wrap">${escapeHtml(fields.details || "—")}</p>`,
     "</div>",
   ].join("");
@@ -145,7 +143,7 @@ module.exports = async (req, res) => {
         /* So hitting reply in the mail client goes straight to the prospect
            rather than to the no-reply sending address. */
         reply_to: fields.email,
-        subject: `Quote request — ${fields.business}`,
+        subject: `Sample ad request — ${fields.business}`,
         text,
         html,
       }),
@@ -164,47 +162,6 @@ module.exports = async (req, res) => {
   } catch (err) {
     console.error(`[quote] Send failed: ${err && err.message}\n${text}`);
     return res.status(502).json({ error: "send" });
-  }
-
-  /* Best-effort copy into the back office. The lead is already in the inbox by
-     this point, so nothing below is allowed to fail the visitor's submission —
-     every path logs and carries on to the 200. Skipped entirely when
-     unconfigured, which is the normal state until the back office is deployed. */
-  const ingestUrl = process.env.LEAD_INGEST_URL;
-  const ingestKey = process.env.LEAD_INGEST_KEY;
-
-  if (ingestUrl && ingestKey) {
-    try {
-      const ingest = await fetch(ingestUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-lead-key": ingestKey,
-        },
-        body: JSON.stringify({
-          business: fields.business,
-          name: fields.name,
-          email: fields.email,
-          phone: fields.phone,
-          location: fields.location,
-          packageInterest: fields.package,
-          details: fields.details,
-        }),
-        /* Cap the wait. A hanging back office must not hold a real visitor on a
-           spinner for a copy they don't know exists. */
-        signal: AbortSignal.timeout(3000),
-      });
-
-      if (!ingest.ok) {
-        console.error(
-          `[quote] lead ingest returned ${ingest.status}; lead delivered by email only`,
-        );
-      }
-    } catch (err) {
-      console.error(
-        `[quote] lead ingest failed: ${err && err.message}; lead delivered by email only`,
-      );
-    }
   }
 
   return res.status(200).json({ ok: true });
