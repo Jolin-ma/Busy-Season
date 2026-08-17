@@ -206,11 +206,19 @@ without reading the brief first.
    Scope of that check, so it isn't over-claimed later: it was a founder
    eyeball over the live site, not a systematic pass. The **real-device
    mobile item below is still open** — it was not part of this.
-3. **The back office is gone from Vercel; the Neon database is still there.**
-   The `legacylink-studio` Vercel project was deleted by hand on 2026-08-17.
-   The database was reported deleted at the same time and **that turned out
-   not to be the case** — it was still live afterwards. Verified for the
-   Vercel side:
+3. ✅ **The back office is gone everywhere** (2026-08-17) — code, Vercel
+   project, and Neon database.
+
+   The two halves have different evidence behind them, which is worth
+   keeping straight. **Vercel: confirmed by observation.** **Neon: reported
+   by the founder, never independently verified** — nothing in this
+   toolchain can read Neon state, and the one probe available (DNS/TCP) is
+   incapable of answering the question, for the reason below. Note the
+   database was also *first* reported deleted while it was in fact still
+   live, so this entry is deliberately recorded as a report rather than a
+   fact. It was empty and nothing connected to it either way.
+
+   The Vercel evidence:
    `legacylink-studio.vercel.app` now returns 404 with
    `X-Vercel-Error: DEPLOYMENT_NOT_FOUND` on every path, where before it
    served a live 307 to `/login`.
@@ -846,8 +854,8 @@ verified unless it says otherwise.
 |---|---|
 | Marketing site | **v2 live** at `legacylinkstudio.com`, all 8 pages. Rendered and checked by the founder. No v1 copy left anywhere on the site. |
 | Quote form | Live on the v2 field set (`service` replaced `location` + `package`). Function verified deployed; **no real lead has been submitted through the new fields yet** — see below. |
-| Back office (`studio/`) | Code and Vercel project **gone 2026-08-17**. Code recoverable from git (`8c16ec0^`); its credentials are not. |
-| Database | Neon project `polished-sea-32397117` (endpoint `ep-red-salad-avqhvica`, database `neondb`) — ⏳ **still exists, empty, still to delete.** |
+| Back office (`studio/`) | **Gone 2026-08-17** — code, Vercel project, Neon database. Code recoverable from git (`8c16ec0^`); its credentials are not. |
+| Database | Neon project `polished-sea-32397117` (endpoint `ep-red-salad-avqhvica`, database `neondb`) — **deleted, as reported by the founder; not independently verified.** |
 | Retired QR product | Gone everywhere: code, both Vercel projects, Railway, DNS. |
 
 **The one real gap** is the lead path on the new form. `api/quote.js` was
