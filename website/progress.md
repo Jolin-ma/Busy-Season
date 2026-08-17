@@ -8,17 +8,197 @@ to `legacylinkstudio.com`, Root Directory `website`, config in
 `website/vercel.json`. It is plain static HTML/CSS/JS with no build step,
 apart from the one serverless function behind the quote form.
 
-**Scope note (updated 2026-08-16):** this repo now holds exactly two things —
-`website/` (this site) and `studio/` (the back office: clients, production
-pipeline, leads inbox; Next.js + Prisma + Neon, deployed separately to
-`legacylink-studio.vercel.app`). The back office documents itself in
-`studio/README.md`; this file stays about the marketing site.
+**Scope note (updated 2026-08-17):** this repo now holds exactly one thing —
+`website/`, this site. The `studio/` back office was deleted on 2026-08-17
+per brief v2 §7 (no custom admin build at launch); pipeline and delivery live
+in one shared tracker instead. It is recoverable from git history.
 
 The QR-memorial product that used to occupy most of this repo (`src/`,
 `admin/`, `ops-dashboard/`, `lambda/`, `prisma/`, `infra/`) was retired and
 deleted on 2026-08-16, along with its two Vercel projects, its Railway API,
 and its DNS records. It is gone, not dormant — recover from git history if
 it is ever wanted again.
+
+---
+
+## 2026-08-17 — Rebuilt for brief v2: the studio now runs the ads
+
+`LegacyLink_Studio_Master_Build_Brief.md` was rewritten as **v2**, which
+supersedes v1 entirely. The change that drives everything else: v1 sold
+video creative only while promising an outcome ("we get your phone
+ringing") that depends on distribution the studio wasn't touching. **v2
+closes that gap — the studio produces *and* runs the ads.** Every page on
+this site had copy that is now false, so this is a copy rebuild, not a
+tweak.
+
+Also decided in v2, and reflected here: the **name stays** (a rename was
+priced out and declined), so §0 makes the copy carry all the explaining —
+the name never appears without the clause that decodes it, and page
+`<title>`s pair the wordmark with "Video Ads for Home Services".
+
+### What changed, page by page
+
+| File | Status | What it now says |
+|---|---|---|
+| `styles.css` | ✅ | Three new §8.5 components — **guarantee block**, **before/after showcase**, **all-in cost callout** — plus their responsive rules. Palette and type untouched: §8.2/§8.3 didn't change in v2. |
+| `index.html` | ✅ | Rebuilt to the v2 §6 section order: hero → real-footage showcase → what you get → 3 steps → guarantee → proof → pricing preview → closing CTA. |
+| `pricing.html` | ✅ | Launch Pack $750 / Growth $1,500, ad spend on both cards, all-in block, new not-included list, the 11-question FAQ in brief order. |
+| `how-it-works.html` | ✅ | Nine steps (was six) — adds ad account access, campaign build/launch, optimization, monthly readout. Intake list now covers assets and campaign setup. |
+| `work.html` | ✅ | Real-footage showcase added, verticals widened to home services, results-framing rules written into the card template comment. |
+| `about.html` | ✅ | "We only sell creative" is gone — it's now "we run the ads, we don't hold the budget". Adds why-your-photos-matter. |
+| `quote.html` | ✅ | Reframed as *Get a Free Sample Ad*. Trimmed to the §6 field list; `location` + `package` replaced by one "what you do" field. |
+| `script.js`, `api/quote.js` | ✅ | Same field change end-to-end; subject line is now "Sample ad request". |
+| `terms.html` | ✅ | Rescoped to production **and** campaign management; new §3 guarantee and §5 ad-account/ad-spend sections; sections renumbered 1–11. |
+| `privacy.html` | ✅ | Rewritten (see the section below). New §5 on ad accounts and campaign data; §2 matches the new form fields; sections renumbered 1–11. |
+
+### Pricing and copy facts that moved (v1 → v2)
+
+- Starter $400 / 2 videos → **Launch Pack $750 / 3 videos + campaign setup**.
+- Growth $1,000/mo / 6 videos → **$1,500/mo / 4 videos + managed campaign +
+  monthly readout**, biweekly batches of **2** (was 3).
+- Revisions: one round **per batch**, not per video.
+- **"No tax is added" is gone from the site** (v2 §4). It was on three
+  pages. It's cost-neutral to an HST-registered buyer, and v2 pricing
+  crosses the $30k registration threshold inside year one — copy that has
+  to come down in months isn't worth the zero benefit. `terms.html` now
+  says prices are exclusive of any applicable taxes.
+- **The guarantee leads the copy hierarchy**, above the rate lock (§4.4):
+  deposit refunded in full if the first drafts miss. The rate lock is
+  demoted to a small notice below it.
+- **The all-in number is stated everywhere the fee is** (§4.6) — fee +
+  recommended spend + total, as a real component, never grey-on-grey.
+- Primary CTA is **"Get a Free Sample Ad"** site-wide, replacing "Get a
+  Quote". `quote.html` kept its filename so no redirect is needed.
+
+### The back office is gone
+
+Brief v2 §7 is explicit: **no custom admin build at launch** — pipeline and
+delivery go in one shared tracker instead. So the `studio/` app is being
+removed from the repo (it stays recoverable in git history; all 29 files
+were tracked).
+
+Already done here: `api/quote.js` no longer posts a copy of each lead to
+the back office. `LEAD_INGEST_URL` / `LEAD_INGEST_KEY` are now dead
+variables — the endpoint doesn't read them. **The email is the only record
+of a lead**, which was always true in practice (the ingest was best-effort
+and swallowed every failure); the difference is that leads now get copied
+into the tracker by hand.
+
+⚠ **Still to do by hand, outside this repo** — deliberately not touched:
+delete the `legacylink-studio` Vercel project, and remove
+`LEAD_INGEST_URL` / `LEAD_INGEST_KEY` from the marketing site's Vercel
+project. Both are live infrastructure and neither is reversible from here.
+
+---
+
+## 2026-08-17 (later) — v2 rebuild finished: privacy, legal-page chrome, `studio/` deleted
+
+Picked up the four items the entry above stopped on. Three are closed; the
+fourth (render it in a browser) is still open and is now the only thing
+between this rebuild and a deploy.
+
+### `privacy.html` rewritten
+
+The last page still carrying v1 copy. What changed:
+
+- **§2 is now "The sample-ad form"** and lists the fields the form actually
+  has. The old text promised we collect "service area" and "which package
+  you're interested in" — both fields were deleted in the v2 form, so the
+  policy was describing collection that no longer happens. It now reads:
+  business name, name, email, what you do and the area you cover, plus
+  optional phone and free text.
+- **New §5, "Your advertising account and campaign data"** — the substantive
+  gap, and the reason this page couldn't just be a find-and-replace. v2 has
+  the studio working inside a client's Meta ad account, which the privacy
+  policy said nothing about. It now states: the account is the client's, we
+  hold partner/admin access and it can be withdrawn, we can see campaign,
+  billing and performance data and use it only to run and report on
+  campaigns. Mirrors `terms.html` §5 rather than inventing a second position.
+- **Lead data gets its own paragraph in that section, deliberately.** When a
+  campaign uses a lead form, homeowners' contact details land in the
+  *client's* account. The page says plainly that those leads are the
+  client's and the client is responsible for them, that we may see them
+  incidentally while managing the account, and that we don't use them for
+  anything else. This is the one place the studio touches consumer personal
+  data at any scale, so it should not be left to inference.
+- **§4** now warns that job photos may identify people and asks clients to
+  send only material they have the right to use in advertising.
+- **§6** adds Meta as a service provider alongside Vercel and Resend.
+- **§3** no longer says we keep records in a back office — it says a tracker.
+- Sections renumbered 1–11; "Last updated" moved to 17 August 2026. The
+  NEEDS LEGAL REVIEW banner and `noindex` stay.
+
+Checked and left alone: §2's paragraph about the mailto fallback is still
+accurate — `script.js` still falls back to a pre-filled mail client when the
+POST fails.
+
+### Both legal pages were still wearing v1 chrome
+
+The nav CTA was the known item, but it wasn't the only one — `terms.html`
+and `privacy.html` had never had *any* of the v2 shell applied, because the
+rebuild worked page-body by page-body. Fixed on both: nav CTA → **Get a Free
+Sample Ad**, `<title>` now pairs the wordmark with "Video Ads for Home
+Services" per §0, footer blurb → the v2 "we run them for you" line, footer
+"Get started" list (was "Get a Quote" / "Request a spec ad" — the latter is
+retired v1 vocabulary), and the footer-bottom tagline. All eight pages now
+carry identical chrome; verified by grep that **"Get a Quote" appears
+nowhere in the site's HTML.**
+
+### `studio/` is gone
+
+Deleted per brief v2 §7 (no custom admin build at launch). All 29 tracked
+files were committed, so the app is fully recoverable from git history.
+
+⚠ **`studio/.env` was not.** It was gitignored, so deleting the folder would
+have destroyed the only copy of the Neon `DATABASE_URL`/`DIRECT_URL`,
+`STUDIO_PASSWORD`, `STUDIO_SESSION_SECRET` and `LEAD_INGEST_KEY`. It was
+backed up first, on the founder's call, to:
+
+```
+C:\Users\jolin\Documents\Legacy Link\studio-env-backup-2026-08-17.txt
+```
+
+That path is **outside the repo** on purpose — it can't be committed by
+accident. Delete it once the Neon database and the Vercel project are gone,
+since it's a plaintext credentials file. (`.env.local` held only a
+short-lived `VERCEL_OIDC_TOKEN` and wasn't worth keeping.)
+
+`CLAUDE.md` and `README.md` were rewritten to match: the back-office
+architecture section, its commands, its deploy row, and the two-project
+framing are all out, and the leads path is now described as what it is —
+email only, copied into the tracker by hand. Both files keep a short note
+saying the app existed, when it went, and *why* (§7), so nobody rebuilds it
+without reading the brief first.
+
+### Verification done (static — the browser still hasn't seen this)
+
+- **Every class used in the HTML has a rule in `styles.css`**, checked
+  programmatically. This was aimed at the three new §8.5 components, since a
+  typo'd class name on a never-rendered component fails silently. One
+  apparent hit, `.showcase-before`, is a false alarm: it's a semantic grid
+  child whose styling comes from `.showcase`'s grid and its own children.
+- **Every internal link resolves**, and every `#fragment` has a matching
+  `id`. The only unresolved `src`s are `video/reel.mp4` and
+  `video/roofing-storm-damage.mp4`, both inside HTML comments — the
+  drop-in templates for when spec footage exists.
+
+### Still to do — this is the resume point
+
+1. ⏳ **Render the v2 site in a browser.** Nothing from either 2026-08-17
+   session has been looked at on a screen. The three new §8.5 components
+   (guarantee block, before/after showcase, all-in cost callout) have never
+   been seen at all. **The browser extension was not connected this session**,
+   so this could not be attempted — same blocker as 2026-08-14. Do this
+   before deploying.
+2. ⏳ **Then deploy.** The v2 rebuild is unpushed and unreleased; production
+   is still serving v1 copy, which now contradicts the brief on price,
+   packages, and what the studio actually sells.
+3. ⚠ **Two manual jobs outside this repo**, unchanged and still not done:
+   delete the `legacylink-studio` Vercel project, and remove
+   `LEAD_INGEST_URL` / `LEAD_INGEST_KEY` from the marketing site's Vercel
+   project (the function no longer reads them). Add a third now that the app
+   is gone: **delete the Neon `legacylink-studio` database** — it's empty,
+   and it's the last live piece of the back office.
 
 ---
 
@@ -629,36 +809,32 @@ Content decisions, not build gaps:
    and a Stripe card link would be created ad hoc for the rare payment that
    asks for one.
 
-## Where things stand — end of 2026-08-16
+## Where things stand — end of 2026-08-17
 
-Everything below is live and verified on production unless it says otherwise.
+⚠ **The v2 rebuild is finished in the repo but has not been deployed.**
+Production still serves v1 copy. Where a row below says "live", that means
+*v1 is live* unless it says otherwise.
 
 | Piece | State |
 |---|---|
-| Marketing site | Live at `legacylinkstudio.com`. Growth repriced to $1,000/mo for 6 videos; ad length (~15s) now stated. |
-| Quote form | Live. Emails `info@` **and** copies the lead into the back office. Whole path tested end to end 2026-08-16. |
-| Back office (`studio/`) | Live at `legacylink-studio.vercel.app`. Stages 1–2 done (clients + pipeline, leads inbox). Git-connected — pushes deploy it. |
-| Database | Neon `legacylink-studio`, us-east-1. Tables created. **Empty** — test rows deleted. |
+| Marketing site — production | Live at `legacylinkstudio.com`, still **v1 copy**: Starter $400 / Growth $1,000, "creative only". Contradicts brief v2. |
+| Marketing site — repo | **v2 complete**, all 8 pages. Never rendered in a browser. Unpushed. |
+| Quote form | Live and working (v1 field set). The back-office copy step was removed; it emails `info@` and nothing else. |
+| Back office (`studio/`) | **Deleted 2026-08-17** per brief v2 §7. Recoverable from git history; `.env` backed up outside the repo. |
+| Database | Neon `legacylink-studio` — **still exists, empty, and should be deleted.** |
 | Retired QR product | Gone everywhere: code, both Vercel projects, Railway, DNS. |
 
-**The one real gap:** the back office's *rendered UI* has barely been looked
-at. Its data layer is well tested — every auth gate, the ingest endpoint, a
-live production write — but the leads inbox, client detail page, and the
-six-stage pipeline have only ever rendered empty states. Nobody has clicked
-through them with real records. Worth a slow pass (seed a client and a job,
-walk the stages, then wipe) before a paying client's work depends on it.
+**The one real gap** is no longer the back office — it's that an entire copy
+rebuild is sitting unrendered and unshipped. Nothing about v2 has been seen
+on a screen, and the three new CSS components are the specific risk.
 
 ### Next up
 
-**Back office** (details in `studio/README.md`):
-- Stage 3 — payments: Starter's deposit/balance split, Growth's $500 + $500 +
-  recurring $1,000, and what's outstanding.
-- Stage 4 — Growth batch scheduling: biweekly batches of 3 with due dates, so
-  a retainer can't silently slip.
-- Optional: put it on a `legacylinkstudio.com` subdomain. Needs a CNAME added
-  manually at Namecheap — DNS is not delegated to Vercel.
-
-**Marketing site** — the four items below, unchanged from before.
+1. Render the v2 site in a browser, fix what that turns up, deploy.
+2. The three manual jobs listed in the 2026-08-17 entry above (delete the
+   `legacylink-studio` Vercel project, remove the two dead `LEAD_INGEST_*`
+   env vars, delete the Neon database).
+3. **Marketing site** — the four items below, unchanged from before.
 
 ---
 
