@@ -1,7 +1,8 @@
 # LegacyLink Studio
 
-A small AI-powered video ad studio. It produces short, ready-to-run video ads
-for roofing and home-service companies.
+A small AI-powered video ad studio. It produces short video ads for home
+service businesses — and runs them as Meta campaigns on the client's own ad
+account.
 
 The full spec — pricing, positioning, production workflow, design system — is
 `LegacyLink_Studio_Master_Build_Brief.md`. Read that before changing anything
@@ -12,31 +13,27 @@ customer-facing.
 | Directory | What it is | Runs on |
 |---|---|---|
 | `website/` | The marketing site. Static HTML/CSS/JS, plus one serverless function for the quote form. | Vercel → `legacylinkstudio.com` |
-| `studio/` | The back office: clients, production pipeline, leads inbox. Next.js + Prisma + Neon Postgres. | Vercel (not yet deployed) |
 
-Each is self-contained with its own dependencies. There is no build step at the
-repo root and no shared `node_modules`.
+That's the whole repo. There is no build step and no `node_modules` anywhere.
 
 ## Getting started
 
-**Marketing site** — no install, no build. Open `website/index.html`, or serve
-the folder. Copy and pricing decisions are logged in `website/progress.md`.
-
-**Back office** — see `studio/README.md`. Short version:
-
-```bash
-cd studio
-npm install
-cp .env.example .env    # then fill in the Neon connection strings
-npm run db:migrate
-npm run dev             # http://localhost:3001
-```
+No install, no build. Open `website/index.html`, or serve the folder. Copy and
+pricing decisions are logged in `website/progress.md`.
 
 ## Notes
 
 `CLAUDE.md` carries the operational detail worth knowing before touching
 deployment config — including a Vercel root-directory trap that has bitten this
-repo more than once, and how the quote form's lead path spans both projects.
+repo more than once, and what the quote form needs in order to deliver a lead.
 
-This repository previously held a separate QR-memorial product. It was retired
-on 2026-08-16 and its code removed; recover it from git history if ever needed.
+Two things used to live here and no longer do. Recover either from git history
+if it's ever wanted again, but treat both as gone rather than dormant:
+
+- **A QR-memorial product**, retired 2026-08-16 along with its Vercel projects,
+  its Railway API, and its DNS records.
+- **A custom back office** (`studio/` — clients, production pipeline, leads
+  inbox; Next.js + Prisma + Neon), removed 2026-08-17. Brief v2 §7 is explicit
+  that there is **no custom admin build at launch**: pipeline and delivery go in
+  one shared tracker (spreadsheet, Notion, or Airtable) instead. Rebuild as real
+  software only if volume makes the tracker genuinely painful.
