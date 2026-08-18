@@ -883,6 +883,63 @@ Next.js, despite the Vercel "vulnerable Next.js blocks the deploy" note
 elsewhere in this log. `npm audit fix --force` downgrades Prisma to 6.12.0 and
 breaks the Prisma 7 driver adapter in `lib/db.ts`. Leave it.
 
+## 2026-08-18 (later still) — Back office live end to end, and the leads path is whole again
+
+The restored app is deployed, the database is real, and a lead submitted through
+the live quote form now lands in **both** the `info@` inbox and the back office.
+That is the check the first back office never got.
+
+**Infrastructure, all created today:**
+
+| Thing | Value |
+|---|---|
+| Neon project | `legacylink-studio`, id `late-voice-91531833`, **Postgres 17**, AWS US East 2, branch `production` |
+| Vercel project | `legacylink-studio`, Root Directory `studio`, git-connected |
+| URL | `legacylink-studio.vercel.app` — Vercel reissued the *same* hostname the deleted project had |
+
+Postgres 17 was chosen over the default 18 deliberately: nothing in the schema
+needs 18, and 17 is better trodden with Prisma 7, which removes a variable if a
+migration ever misbehaves.
+
+**Verified against production, by observation:** migrations applied (both, via
+`DIRECT_URL`); schema correct (`leads` 14 cols including `service`, all four
+enums); auth gate redirects `/`, `/leads`, `/clients/new`; wrong password
+rejected and correct password issues a session; ingest returns 401 with no key
+and with a wrong key; a real form submission created a row carrying the `service`
+field intact. Test rows were deleted afterwards — the database is empty.
+
+**The Neon deletion claim is finally settled.** Opening the account showed
+**zero projects**, so the 2026-08-17 report that the old database was deleted was
+true. It had been carried as "reported but unverifiable" since then. Its sibling
+claim about the env vars was false — see the correction entry above. Same
+provenance, opposite outcomes, which is the whole argument for recording
+*how* something is known.
+
+**What cost the most time, and is worth reading before touching Vercel again:**
+
+1. **The New Project form silently fails to submit.** Three attempts produced no
+   project at all — no error, no deployment, nothing in the project list. It
+   only went through on an attempt made with the Environment Variables section
+   left empty. Best guess is the `.env` import step blocking submission, possibly
+   on the comment lines. **If a Vercel import appears to do nothing, deploy with
+   no env vars first, then add them in Settings and redeploy.** That separates
+   "can it deploy" from "did the env import work", which otherwise fail
+   identically.
+2. **A "Redeploy" that is never confirmed looks exactly like a redeploy that
+   worked.** Two rounds of debugging were spent on a stale build because the
+   confirmation dialog had not been clicked. **Check the deployment id in the
+   runtime log (`dep=dpl_...`) — if it has not changed, nothing was redeployed.**
+   That one field is the fastest way to tell.
+3. **A Sensitive env var cannot be read back, so the only visible evidence that
+   an edit saved is the "Added ‹time›" label.** It read "Added 3d ago" through
+   five failed tests. When it finally read "Added 2m ago", the next test passed
+   first time. **Trust that label, not the intention to have changed it.**
+
+The ingest key ended up matching `studio/.env` on both projects, so that file is
+the single source of truth for it. `LEAD_INGEST_URL` was never touched and never
+needed to be — the reissued hostname made the three-day-old value correct by
+accident.
+
 ---
 
 ## Open items for the founder

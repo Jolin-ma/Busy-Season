@@ -124,14 +124,12 @@ and **fails closed**: unset key means every request is rejected.
 
 ## Deploying
 
-> ⚠️ **Not deployed right now.** The Vercel project `legacylink-studio` and the
-> Neon database behind it were both deleted on 2026-08-17. The code below is
-> restored and builds, but nothing is hosting it and no database exists. See
-> **Redeploying from scratch** at the bottom before trusting anything in this
-> section.
+**Live at https://legacylink-studio.vercel.app** — Vercel project
+`legacylink-studio`, Root Directory `studio`, git-connected to this repo.
+Redeployed from scratch on 2026-08-18 against a new Neon project
+(`legacylink-studio`, id `late-voice-91531833`, Postgres 17, AWS US East 2).
 
-Once a project exists again: Root Directory `studio`, git-connected to this
-repo, and **push to `main` to deploy** — that's the only supported route.
+**Push to `main` and it deploys.** That's the only supported route.
 
 > ⚠️ `vercel --prod` run from inside `studio/` **fails** with *"The specified
 > Root Directory 'studio' does not exist"*. Nothing is broken: the CLI uploads

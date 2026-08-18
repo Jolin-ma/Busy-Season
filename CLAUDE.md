@@ -15,18 +15,27 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 > **The v1 → v2 change that drives everything:** v1 sold video creative only while promising an outcome ("we get your phone ringing") that depended on distribution the studio wasn't touching. v2 closes that gap — the studio produces *and* runs the ads. Copy claiming "we only sell creative" is v1 and is wrong.
 
-> **The custom back office (`studio/`) is back in the repo as of 2026-08-18 — but it is not deployed and has no database.** Clients, production pipeline, leads inbox; Next.js + Prisma. It was deleted on 2026-08-17 under **brief v2 §7, which is explicit that there is no custom admin build at launch** (pipeline and delivery go in one shared tracker instead), and the founder overruled that on 2026-08-18 and had the code restored from `8c16ec0^`. **§7's argument was never refuted — it was overruled**, so don't "fix" the repo back into agreement with the brief; the founder's call is the newer decision. The same disagreement already happened once, on 2026-08-16.
+> **The custom back office (`studio/`) is restored, deployed, and live as of 2026-08-18.** Clients, production pipeline, leads inbox; Next.js + Prisma. It was deleted on 2026-08-17 under **brief v2 §7, which is explicit that there is no custom admin build at launch** (pipeline and delivery go in one shared tracker instead), and the founder overruled that on 2026-08-18 and had the code restored from `8c16ec0^`. **§7's argument was never refuted — it was overruled**, so don't "fix" the repo back into agreement with the brief; the founder's call is the newer decision. The same disagreement already happened once, on 2026-08-16.
 >
 > **What exists vs. what doesn't**, because this is the easy thing to get wrong:
 >
 > | | State |
 > |---|---|
-> | `studio/` code | **restored**, installs, builds, typechecks clean |
-> | Vercel project `legacylink-studio` | **gone** — deleted 2026-08-17, `legacylink-studio.vercel.app` 404s |
-> | Neon database | **gone** — project `polished-sea-32397117`, endpoint `ep-red-salad-avqhvica`, reported deleted by the founder and never independently verifiable from this toolchain |
-> | `LEAD_INGEST_URL` / `LEAD_INGEST_KEY` on the marketing project | **not set** — so the ingest post is skipped and leads arrive by email only |
+> | `studio/` code | restored, builds, typechecks clean |
+> | Vercel project `legacylink-studio` | **live** — Root Directory `studio`, git-connected, at `legacylink-studio.vercel.app` (Vercel reissued the deleted project's hostname) |
+> | Neon database | **live** — project `legacylink-studio`, id `late-voice-91531833`, **Postgres 17**, AWS US East 2 |
+> | `LEAD_INGEST_URL` / `LEAD_INGEST_KEY` on the marketing project | **both set and working** — the quote form feeds the back office |
 >
-> So the back office is code-only right now: nothing hosts it, nothing stores its data, and the quote form does not feed it. `studio/README.md` has a step-by-step **"Redeploying from scratch"** checklist covering the Neon project, the five Sensitive env vars, `prisma migrate deploy` (not `migrate dev` — there are already two migrations), and the two env vars that switch ingest on. Anything referencing `STUDIO_PASSWORD`, `STUDIO_SESSION_SECRET`, `LEAD_INGEST_URL`, `LEAD_INGEST_KEY`, Prisma, or Neon belongs to this app.
+> The old Neon project (`polished-sea-32397117`) really was deleted — confirmed on 2026-08-18 by opening the account and finding zero projects, which finally settles a claim carried as unverified since 2026-08-17.
+>
+> **The leads path now has two destinations, and the email is still the system of record.** A submission emails `info@` first, then posts a best-effort copy to the back office; the copy cannot fail the visitor's submission. So a lead missing from `/leads` is never proof nobody enquired — check the inbox. Verified end to end on production on 2026-08-18: a form submission landed in both.
+>
+> `studio/README.md` carries the full setup detail. Anything referencing `STUDIO_PASSWORD`, `STUDIO_SESSION_SECRET`, `LEAD_INGEST_URL`, `LEAD_INGEST_KEY`, Prisma, or Neon belongs to this app.
+>
+> **Three Vercel traps cost real time on 2026-08-18 and will again:**
+> 1. **The New Project import form can silently fail to submit** — no error, no project, nothing in the list. It succeeded only once the Environment Variables section was left empty. If an import appears to do nothing, **deploy with no env vars, then add them in Settings and redeploy.**
+> 2. **An unconfirmed "Redeploy" dialog is indistinguishable from a redeploy that worked.** Check `dep=dpl_...` in the runtime log — if the deployment id has not changed, nothing was redeployed.
+> 3. **A Sensitive env var cannot be read back**, so its "Added ‹time›" label is the only evidence an edit saved. Five end-to-end tests failed while it read "Added 3d ago"; the first test after it read "Added 2m ago" passed.
 
 > **A separate QR-memorial product used to live here** (`src/`, `client/`, `prisma/`, `lambda/`, `infra/`, plus two Next.js front-ends in `admin/` and `ops-dashboard/`). The founder retired that concept. All of its code was deleted on 2026-08-16, and its two Vercel projects (`legacy-link-admin`, `legacy-link-dashboard`) were deleted the same day. Recover from git history if ever needed — but treat it as gone, not dormant. Anything in an old commit referencing `short_id`, plaques, profiles, guestbooks, or `OPS_API_KEY` belongs to that product and not to this business.
 >
@@ -72,7 +81,7 @@ The one dynamic piece is **`website/api/quote.js`**, the serverless function beh
 
 ### The leads path
 
-`website/api/quote.js` emails each lead to `info@` via Resend. **That email is the only record of a lead** — there is no database and no back office behind it. Leads get copied into the shared tracker by hand.
+`website/api/quote.js` emails each lead to `info@` via Resend, then posts a best-effort copy to the back office at `legacylink-studio.vercel.app/api/leads/ingest`. **The email is still the system of record** — the copy happens only after a successful send, every failure is logged and swallowed, and it has a 3s timeout, so a lead missing from `/leads` is never proof nobody enquired. Check the inbox.
 
 - The endpoint POSTs a best-effort copy to the back office's ingest API after a successful send. That code was removed on 2026-08-17 with the app and **restored on 2026-08-18**. It is inert until **both** `LEAD_INGEST_URL` and `LEAD_INGEST_KEY` are set on the marketing project, which they currently are not — so today the email really is the only record. The post is strictly secondary: it happens only after the email succeeds, every failure is logged and swallowed, and it has a 3s timeout so a hanging back office can't leave a visitor on a spinner. **Don't reorder that to make the database authoritative without first making the write reliable.**
 - **Failure paths log the full lead payload** before returning 502. That is deliberate and load-bearing: with the email being the only record, the Vercel function log is the sole recovery path if Resend is down or the domain falls out of verification. Don't "clean up" those `console.error` calls to drop the payload.
@@ -82,7 +91,7 @@ The one dynamic piece is **`website/api/quote.js`**, the serverless function beh
 | App | Root Directory | Host | Domain |
 |---|---|---|---|
 | Marketing site (`website/`) | `website` | Vercel project `legacy-link` | `legacylinkstudio.com` |
-| Back office (`studio/`) | `studio` | **no project — deleted 2026-08-17** | — |
+| Back office (`studio/`) | `studio` | Vercel project `legacylink-studio` | `legacylink-studio.vercel.app` |
 
 - **Deploy by pushing to `main`.** The project is git-connected with Root Directory `website`, so a push builds it automatically.
 
