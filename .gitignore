@@ -10,3 +10,8 @@ node_modules/
 .env
 .env.local
 !.env.example
+
+# Uncompressed photo/video masters. Kept locally as the source for the
+# optimised WebP/MP4 under website/, but too heavy to carry in the repo —
+# re-export from these rather than upscaling what the site serves.
+assets-source/
