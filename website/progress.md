@@ -940,6 +940,50 @@ the single source of truth for it. `LEAD_INGEST_URL` was never touched and never
 needed to be — the reissued hostname made the three-day-old value correct by
 accident.
 
+## 2026-08-18 (end of day) — The site's own media, labelled honestly
+
+The founder spotted the contradiction: `about.html` argues that **"fully
+AI-generated footage is a bad fit for this business"** — a house nobody lives
+in, a crew nobody has met — while every image and clip on the site is exactly
+that.
+
+**Three statements were false and are gone.** These were the real problem, and
+they would have needed fixing whatever tone was chosen:
+
+1. `work.html` opened with *"Rather than fill this page with stock footage and
+   invented case studies"*, sitting directly above two invented ads.
+2. The before/after showcase labels its grid **"Off your phone"** with copy
+   about *"the photos already sitting on your phone"*. That framed generated
+   images as a specific customer's camera roll — the sharpest issue, because
+   that grid is presented as **evidence for the argument**, not as decoration.
+3. The hero video's `aria-label` claimed it was *"built from real job footage"*.
+
+**The tone was then dialled back on the founder's call.** A first pass
+over-explained — *"there is no real house and no real crew in either of
+these"* — which read as self-deprecating. A demo reel does not owe anyone a
+disclaimer; the line that matters is only *don't claim it is real client work*.
+What ships is short and unapologetic: the reel is **"Two demonstration ads"**,
+spec pieces shown for production quality with no client having run them, and
+the showcase carries one line, *"Illustration, not a client's job."*
+
+**`about.html` was deliberately left untouched.** That claim is the
+differentiator and brief v2's core positioning. Weakening it to match the media
+would have been solving the problem backwards.
+
+**Why this was worth doing at all**, if it ever comes up for reversal: the
+failure mode is asymmetric. A prospect who works out for themselves that the
+portfolio houses are generated concludes the whole trust argument is hollow,
+and this business sells trust. Saying it first costs nothing and cannot
+backfire. It also gives a good answer to *"did you make these with AI?"* —
+yes, and here is why yours will not be.
+
+Separately, the showcase **"after"** tile now uses `image/drone.webp` instead of
+the ground-level `image/after.webp`, on the founder's call. The aerial is the
+stronger finishing shot; the trade-off is that the ground-level version was
+framed from the same driveway angle as the "before" tile, so the two read as one
+house photographed twice. Both files are on disk — switching back is one line
+on each page.
+
 ---
 
 ## Open items for the founder
@@ -1032,6 +1076,72 @@ Content decisions, not build gaps:
    and nothing needs to be — e-Transfer is sent from a client's own bank,
    and a Stripe card link would be created ad hoc for the rare payment that
    asks for one.
+
+## Where things stand — end of 2026-08-18
+
+Everything below is live and verified by observation unless it says otherwise.
+The section for 2026-08-17 that follows this one is **superseded** — keep it for
+the reasoning, not for the state.
+
+| Piece | State |
+|---|---|
+| Marketing site | Live at `legacylinkstudio.com`, all 8 pages. New winter hero cut, new showcase photos, two HVAC demo ads on `work.html`. |
+| Quote form | Live, and **verified end to end on 2026-08-18** — a real submission reached both the `info@` inbox and the back office, carrying the v2 `service` field intact. |
+| Back office (`studio/`) | **Live** at `legacylink-studio.vercel.app`. Restored from `8c16ec0^`, plus a `Lead.service` column the v2 form needed. |
+| Database | **Live** — Neon project `legacylink-studio`, id `late-voice-91531833`, Postgres 17, AWS US East 2. Currently empty; all test rows deleted. |
+| Old Neon project | `polished-sea-32397117` — **confirmed deleted**, by opening the account and finding zero projects. Settles a claim carried as unverified since 2026-08-17. |
+| Retired QR product | Gone everywhere: code, both Vercel projects, Railway, DNS. |
+
+**The lead path now has two destinations and the email is still the system of
+record.** A submission emails `info@` first, then posts a best-effort copy to
+the back office. A lead missing from `/leads` is never proof nobody enquired —
+check the inbox.
+
+### Pick up here tomorrow
+
+1. **`hvac1.mp4` has a typo burnt into it: the end card reads "FREE FURNANCE
+   CHECK".** It is live on `work.html` right now. `hvac2.mp4` spells it
+   correctly. It cannot be patched in the browser — it needs a re-export from
+   the editor. Drop the new file anywhere and the encode is one step: the recipe
+   and the 540x960 profile are in the 2026-08-18 media entry above. **This is
+   the first thing to do** — the page now explicitly invites people to judge the
+   production quality, which makes a spelling error more exposed than it was.
+2. **Nobody has ever seen the `work.html` card grid render its video frames.**
+   Copy, markup, and asset delivery are all verified, and the identical pattern
+   was seen working in the showcase, but the two HVAC clips stayed dark in every
+   automated browser attempt (background-tab media throttling, no error). One
+   look on a real screen closes it — ideally a phone, which also closes the
+   separate real-device responsive item that has been open since 2026-08-14.
+3. **The back office UI has still barely been looked at.** Every check run
+   against it was an HTTP status code or a database row. Its pages have only
+   ever shown empty states. Log in at `legacylink-studio.vercel.app` — the
+   password is `STUDIO_PASSWORD` in `studio/.env` — and see whether the
+   dashboard, leads inbox, and client/job flow actually read well.
+4. **`studio/.env` now holds live credentials**, not placeholders: the Neon
+   connection strings, the back-office password, the session secret, and the
+   ingest key. Gitignored and confirmed untracked. Worth knowing before that
+   folder gets copied anywhere.
+5. `image/after.webp` is unused — the ground-level "after" shot, replaced by
+   the drone shot on the founder's call. Kept on disk; switching back is a
+   one-line change on `index.html` and `work.html`.
+
+### What today actually taught, worth not relearning
+
+- **A reported infrastructure change is not a fact until someone opens the
+  dashboard.** Two claims from 2026-08-17 had identical provenance — founder
+  reported, unverifiable from this toolchain. The Neon deletion was true. The
+  env-var removal was false, and cost an hour of debugging a 401 whose cause was
+  a variable everyone believed had been deleted.
+- **Vercel gives three different silent failures**, all of which look like
+  success: an import form that does not submit, a Redeploy dialog that is never
+  confirmed, and a Sensitive env var whose edit did not save. The tells, in
+  order: the project list, `dep=dpl_...` in the runtime log, and the
+  "Added ‹time›" label.
+- **The `console.error` calls in `api/quote.js` earned their keep.** Every failed
+  attempt was diagnosable only because the failure path logs. Do not clean them
+  up.
+
+---
 
 ## Where things stand — end of 2026-08-17
 
