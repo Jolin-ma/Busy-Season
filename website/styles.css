@@ -496,6 +496,10 @@ strong { font-weight: 600; }
 .reel {
   position: relative;
   aspect-ratio: 9 / 16;
+  /* margin-left:auto suppresses grid stretch, so the width has to be
+     stated explicitly — the frame holds only absolutely-positioned
+     children and would otherwise collapse to nothing. */
+  width: 100%;
   max-width: 17.5rem;
   margin-left: auto;
   border-radius: var(--radius-lg);
@@ -519,6 +523,58 @@ strong { font-weight: 600; }
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Sound toggle — the clips have to autoplay muted (every browser requires it),
+   so this button is the only way a visitor ever hears one. Bottom-right, clear
+   of the 9:16 badge. The scrim keeps the icon legible over a bright frame;
+   on hover it takes the amber fill with near-black type, per the §8.9 contrast
+   rule that amber never sets type on a light ground. */
+.video-sound {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 2;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(242, 242, 240, 0.28);
+  background: rgba(22, 24, 28, 0.62);
+  color: var(--on-dark);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    background var(--t),
+    color var(--t),
+    border-color var(--t);
+}
+
+.video-sound:hover {
+  background: var(--amber);
+  border-color: transparent;
+  color: var(--ink);
+}
+
+.video-sound:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.video-sound svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+/* Icon follows the button state: crossed-out speaker while muted. */
+.video-sound .icon-unmuted,
+.video-sound[aria-pressed="true"] .icon-muted {
+  display: none;
+}
+
+.video-sound[aria-pressed="true"] .icon-unmuted {
+  display: block;
 }
 
 .reel-play {
@@ -1034,7 +1090,10 @@ strong { font-weight: 600; }
 }
 
 .showcase-raw span {
-  aspect-ratio: 4 / 3;
+  /* Portrait, because that is how the source material actually arrives —
+     these are photos off a phone, not landscape stills. */
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
   border-radius: 4px;
   background: #eceae6;
   border: 1px solid var(--line);
@@ -1053,6 +1112,19 @@ strong { font-weight: 600; }
   background: linear-gradient(150deg, #2b2f36, #1c1f25);
   border-color: var(--line-dark);
   color: rgba(242, 242, 240, 0.45);
+}
+
+/* A tile holding a real photo drops the placeholder caption padding and
+   lets the image bleed to the edges. */
+.showcase-raw span:has(img) {
+  padding: 0;
+}
+
+.showcase-raw img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .showcase-raw span:nth-child(3n + 2) {

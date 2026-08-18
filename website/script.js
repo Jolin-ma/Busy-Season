@@ -21,6 +21,45 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* ---- Video sound toggles -----------------------------------------
+     The clips autoplay muted because no browser allows anything else, so
+     this button is the only route to sound. Only one clip is ever audible:
+     unmuting one mutes the other, otherwise the hero and the sample ad talk
+     over each other on the way down the page. */
+  const soundToggles = document.querySelectorAll("[data-sound-toggle]");
+
+  soundToggles.forEach((button) => {
+    const video = button.parentElement.querySelector("video");
+    if (!video) return;
+
+    const setMuted = (muted) => {
+      video.muted = muted;
+      button.setAttribute("aria-pressed", String(!muted));
+      button.setAttribute("aria-label", muted ? "Turn sound on" : "Turn sound off");
+    };
+
+    setMuted(true);
+
+    button.addEventListener("click", () => {
+      const turningOn = video.muted;
+
+      if (turningOn) {
+        soundToggles.forEach((other) => {
+          if (other !== button) other.dispatchEvent(new CustomEvent("sound:mute"));
+        });
+      }
+
+      setMuted(!turningOn);
+
+      /* A tab-switch or an offscreen scroll can leave the clip paused; the
+         click is a user gesture, so this is the one moment we can reliably
+         start it again. */
+      if (turningOn && video.paused) video.play().catch(() => {});
+    });
+
+    button.addEventListener("sound:mute", () => setMuted(true));
+  });
+
   /* ---- Current year in the footer ---------------------------------- */
   document.querySelectorAll("[data-year]").forEach((el) => {
     el.textContent = String(new Date().getFullYear());

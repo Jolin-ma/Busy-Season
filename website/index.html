@@ -61,23 +61,24 @@
           </p>
         </div>
 
-        <!--
-          Reel slot. When a real sample reel exists, drop it straight in
-          and delete the placeholder markup below:
-
-          <video src="video/reel.mp4" poster="image/reel-poster.jpg"
-                 autoplay muted loop playsinline></video>
-        -->
+        <!-- Hero reel — the real 9:16 cut. Muted + looping so it autoplays
+             on every browser; controls stay off so it reads as a poster
+             that moves, not a player asking to be operated. -->
         <div class="reel">
+          <video
+            src="video/hero-video.mp4"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            aria-label="Sample 9:16 video ad built from real job footage"
+          ></video>
           <span class="reel-format">9:16</span>
-          <span class="reel-play" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          </span>
-          <p class="reel-label">
-            Sample reel in production.<br />
-            Want to see one for <em>your</em> business?<br />
-            <a href="quote.html" class="link">Ask for a free sample ad</a>
-          </p>
+          <button type="button" class="video-sound" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
+            <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+            <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </button>
         </div>
       </div>
     </section>
@@ -98,22 +99,18 @@
           </p>
         </div>
 
-        <!--
-          Swap either side for real media when the first pieces exist:
-          left = actual client phone photos, right = the finished cut.
-          Don't prettify the "before" (§8.6) — the gap between the two is
-          the whole argument.
-        -->
+        <!-- Both sides are real now: left is the untouched phone roll from a
+             single roof job, right is the ad cut from it. Per §8.6 the left
+             stays unprettified — the gap between the two is the argument. -->
         <div class="showcase">
           <div class="showcase-before">
             <span class="showcase-label">Off your phone</span>
             <div class="showcase-raw">
-              <span>Job site</span>
-              <span>Before</span>
-              <span>After</span>
-              <span>Crew</span>
-              <span>Truck</span>
-              <span>Drone</span>
+              <span><img src="image/worksite.webp" alt="Tear-off underway: old shingles stripped to the deck, debris in the driveway dumpster" loading="lazy" width="420" height="753" /></span>
+              <span><img src="image/before.webp" alt="Before: curling, moss-covered shingles on the original roof" loading="lazy" width="420" height="753" /></span>
+              <span><img src="image/drone.webp" alt="After: drone shot of the finished roof in new grey shingles" loading="lazy" width="420" height="753" /></span>
+              <span><img src="image/crew.webp" alt="The crew on the roof, nail gun in hand, laying new shingles" loading="lazy" width="420" height="753" /></span>
+              <span><img src="image/truck.webp" alt="The work truck and dump trailer parked in the customer’s driveway" loading="lazy" width="420" height="753" /></span>
             </div>
             <p class="muted" style="margin-top: 1.25rem; font-size: 0.9375rem;">
               Twenty or thirty snapshots you already have and think are
@@ -129,10 +126,19 @@
           <div class="showcase-after">
             <span class="showcase-label">Finished ad</span>
             <div class="showcase-frame">
-              <p>
-                Sample in production.<br />
-                Your photos, cut into a 15-second ad.
-              </p>
+              <video
+                src="video/final-ad.mp4"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="none"
+                aria-label="The finished 15-second ad cut from the photos on the left"
+              ></video>
+              <button type="button" class="video-sound" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
+                <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+                <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              </button>
             </div>
             <p class="muted" style="margin-top: 1.25rem; font-size: 0.9375rem;">
               AI does the production polish — the hook, the motion, the
