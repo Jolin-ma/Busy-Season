@@ -855,7 +855,18 @@ but that's a marketing-copy decision, not a back-office one.
 | `studio/` code | restored, builds, typechecks |
 | Vercel project `legacylink-studio` | gone since 2026-08-17 |
 | Neon database | gone since 2026-08-17 |
-| `LEAD_INGEST_URL` / `LEAD_INGEST_KEY` on `legacy-link` | not set |
+| `LEAD_INGEST_URL` / `LEAD_INGEST_KEY` on `legacy-link` | **both set, both stale** — see the correction below |
+
+**Correction, 2026-08-18, after actually looking at the Vercel dashboard:**
+both `LEAD_INGEST_URL` and `LEAD_INGEST_KEY` are still on the `legacy-link`
+project, added around 2026-08-15 and never removed. The 2026-08-17 "removed"
+note below was founder-reported and is simply wrong. Consequence: `quote.js`
+gates on `if (ingestUrl && ingestKey)`, so since today's restore the ingest post
+**fires on every submission and fails** against the deleted
+`legacylink-studio.vercel.app` — logged, swallowed, lead still emailed, but
+failing rather than skipped. Both values need replacing on redeploy: the URL
+with the new hostname, and the key with the freshly generated one in
+`studio/.env`, which does **not** match what Vercel currently holds.
 
 So **leads still arrive by email only** — the ingest post in `quote.js` is
 restored but skips itself unless both vars are set, which is a supported state
@@ -997,12 +1008,21 @@ through the live form closes it.
    lands in the `info@` Zoho inbox with the new `service` field intact.
    This is the only outstanding item where a silent failure costs a
    customer, so it's the one worth doing first.
-2. ✅ ~~Remove the two dead `LEAD_INGEST_*` env vars from the `legacy-link`
-   Vercel project.~~ Done 2026-08-17, as reported by the founder — Vercel
-   env state can't be read from here, so this is recorded rather than
-   verified. No redeploy was needed: `api/quote.js` had already stopped
-   reading them, so the running function was behaving as if they were
-   absent regardless.
+2. ❌ **Remove the two dead `LEAD_INGEST_*` env vars from the `legacy-link`
+   Vercel project — this was marked done on 2026-08-17 and was NOT done.**
+   The dashboard was opened on 2026-08-18 and both are still there, added
+   around 2026-08-15. The old entry was founder-reported and flagged at the
+   time as "recorded rather than verified"; that caveat turned out to be the
+   important part. **Lesson worth keeping: a reported infrastructure change
+   that nothing in this toolchain can read is not a fact until someone opens
+   the dashboard.** The same caveat still stands, unresolved, against the
+   claim that the Neon database was deleted — though that one has since been
+   confirmed true, because the Neon account was opened on 2026-08-18 and had
+   zero projects.
+
+   The task itself has now changed shape: the vars should no longer be
+   deleted, they should be **updated**, because the back office is being
+   redeployed. See the 2026-08-18 entry.
 3. **Marketing site** — the four items below, unchanged from before. Note
    item 3 there (open the live site on a real phone) is **not** closed by
    the founder's desktop check on 2026-08-17.
