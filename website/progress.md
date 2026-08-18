@@ -752,6 +752,63 @@ inbox (founder-confirmed), and appeared as a `NEW` lead in the back office
 with every field intact. Both halves verified by observation, not inference —
 which matters here precisely because the failure mode is silent.
 
+## 2026-08-18 — New hero cut, two HVAC spec ads, and a media pipeline that holds
+
+Founder dropped in replacement media. What changed on the pages:
+
+- **Homepage showcase**, the `after` tile: the drone shot was replaced by a
+  ground-level shot of the finished job. It now matches the `before` tile's
+  angle exactly — same driveway, same framing — so the 2x2 grid reads as one
+  house before and after rather than four loosely related photos. The old
+  drone shot survives as `image/drone.webp`, currently **unused by any page**.
+- **Hero reel**: `hero-video.mp4` replaced by `hero.mp4`, a winter cut (ice
+  dams, roof raking, a gutter crew). Sits fine with the hero note listing
+  "gutters, snow removal".
+- **`work.html` "How these get made"**: the six grey caption tiles are gone,
+  replaced by the same four real photos the homepage uses, and the "Sample in
+  production" card in the *What runs* frame is now the real `finished-ad.mp4`.
+  Both halves of that showcase are real on both pages now.
+- **`work.html` sample reel**: the "Roofing — storm damage" and
+  "HVAC — heating season" *Coming soon* placeholders were replaced by two
+  finished HVAC spec ads. The section head no longer says the pieces are
+  still in production, because they are visibly not — it now says they are
+  spec, that no client has run them, and that there are therefore no campaign
+  numbers. **That last clause is the honest bit and should survive edits.**
+- `image/legacy_link_logo.png` deleted — nothing referenced it.
+
+**The pipeline is the part worth remembering.** Masters arrived as raw editor
+exports and cannot ship as they are:
+
+| file | as delivered | as served |
+|---|---|---|
+| `hvac1.mp4` | 1080x1920, 36.8 Mbps, 66.2 MB | 540x960, 2.81 MB |
+| `hvac2.mp4` | 1080x1920, 24.7 Mbps, 44.6 MB | 540x960, 1.64 MB |
+| `hero.mp4` | 720x1280, 3.4 Mbps, 6.70 MB | 540x960, 2.06 MB |
+
+Unfixed, `work.html` would have autoplayed **114 MB** on open. Every master
+now lives in the gitignored `assets-source/video/` as `*-master.mp4`; only
+the encoded copies are committed.
+
+**Every video the site serves is one profile — match it or the page gets
+heavier for no visible gain:** H.264 High, 540x960, yuv420p, 24 fps, AAC-LC
+44.1 kHz stereo ~128 kbps, and `+faststart` so `moov` precedes `mdat` and the
+clip streams instead of waiting on a full download. The re-encode command:
+
+```
+ffmpeg -i assets-source/video/NAME-master.mp4   -vf "scale=540:960:flags=lanczos"   -c:v libx264 -profile:v high -pix_fmt yuv420p -preset slow -crf 23   -c:a aac -b:a 128k -ar 44100 -ac 2   -movflags +faststart website/video/NAME.mp4
+```
+
+540x960 is not arbitrary: the hero renders at `max-width: 17.5rem` and the
+showcase frame at `14rem`, so 540 wide already covers a 2x display. Shipping
+1080 wide buys nothing a visitor can see. ffmpeg was not installed on the
+build machine when this was done — `winget install Gyan.FFmpeg`.
+
+**Known defect, not fixed here:** the on-screen text in `hvac1.mp4` reads
+**"FREE FURNANCE CHECK"** — *furnance*, not *furnace*. `hvac2.mp4` spells it
+correctly. It is burnt into the video and cannot be patched in the browser;
+it needs a re-export from the editor. A spelling error on the portfolio page
+of a studio selling production polish is worth more than it looks.
+
 ---
 
 ## Open items for the founder
@@ -810,9 +867,10 @@ Content decisions, not build gaps:
 
 1. **Logo.** The old gold Celtic-tree crest set in a serif conflicted with
    §8.3 ("no serif anywhere on this site") and read memorial rather than
-   B2B. The root-level copy is deleted; `website/image/legacy_link_logo.png`
-   remains in the repo, unused by any page. The nav is now a plain Space
-   Grotesk wordmark — `image/mark.svg` was removed from the header on
+   B2B. Both copies are now deleted — the root-level one earlier, and
+   `website/image/legacy_link_logo.png` on 2026-08-18, since no page ever
+   referenced it. Recover from git history if ever wanted. The nav is now
+   a plain Space Grotesk wordmark — `image/mark.svg` was removed from the header on
    2026-08-13 and survives only in the footer and as the favicon. Commission
    a real logo when there's budget for one.
 2. **Turnaround time.** The site says a Starter batch typically lands
