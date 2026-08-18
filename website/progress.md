@@ -809,6 +809,69 @@ correctly. It is burnt into the video and cannot be patched in the browser;
 it needs a re-export from the editor. A spelling error on the portfolio page
 of a studio selling production polish is worth more than it looks.
 
+## 2026-08-18 (later) — The back office is restored, as code only
+
+Founder overruled brief v2 §7 and asked for the back office back. This is the
+second time that call has been made — §7 lost on 2026-08-16, won on 2026-08-17
+when the app was deleted, and lost again today. **§7's argument was never
+refuted, it was overruled**, so don't treat the repo disagreeing with the brief
+as drift to be tidied up.
+
+Restored from `8c16ec0^` — all 29 files, no rewrite. It installs, builds, and
+typechecks clean.
+
+**What was actually discussed first.** The case against was never the code, it
+was what sits under it: a Postgres database, a second Vercel project, auth,
+migrations, and a web app to maintain during the months that should go on
+finding clients. The cheaper option offered was ~15 lines in `quote.js` posting
+leads straight into Airtable — no app, no database, nothing to maintain. The
+founder chose the app. Noting the alternative here because if the upkeep ever
+starts biting, that's the escape hatch and it's still about an hour's work.
+
+**The restore was not clean, and this is the part to remember.** The brief-v2
+rebuild of the quote form replaced its separate *location* and *package*
+questions with a single **"What you do"** field (trade and service area
+together, e.g. "Roofing — Durham Region and east Toronto"). The back office
+predates that form and had nowhere to put it, so a straight restore would have
+silently dropped the only thing a lead says about their business. Fixed:
+
+- `Lead.service` added to the schema, plus migration
+  `20260818130000_add_lead_service` — additive and nullable, no backfill.
+- `/api/leads/ingest` accepts and stores it; `quote.js` sends it.
+- Both leads views show it. The detail page now has *What they do* above
+  *Location*.
+
+**A related degradation that is not a bug, and should not be "fixed" blindly:**
+`packageInterest` has no source on the v2 form, so it is null on every new lead
+and `inferPlan` in `app/actions.ts` can no longer pre-select a plan when
+converting a lead. You pick the plan yourself. The column stays for older leads
+and manual entry. Re-adding a package question to the form would restore it —
+but that's a marketing-copy decision, not a back-office one.
+
+**It is code only. Nothing hosts it and nothing stores its data:**
+
+| | State |
+|---|---|
+| `studio/` code | restored, builds, typechecks |
+| Vercel project `legacylink-studio` | gone since 2026-08-17 |
+| Neon database | gone since 2026-08-17 |
+| `LEAD_INGEST_URL` / `LEAD_INGEST_KEY` on `legacy-link` | not set |
+
+So **leads still arrive by email only** — the ingest post in `quote.js` is
+restored but skips itself unless both vars are set, which is a supported state
+rather than a broken one. `studio/README.md` has a **"Redeploying from
+scratch"** checklist: Neon project, five Sensitive env vars,
+`prisma migrate deploy` (**not** `migrate dev` — there are two migrations now
+and `dev` would try to author a third), then the two env vars that switch
+ingest on, then a marked test lead that has to show up in *both* the inbox and
+`/leads`.
+
+**One trap worth knowing:** `npm audit` reports 3 high-severity advisories in
+`deepmerge-ts`, reached through the `prisma` CLI devDependency — **not**
+Next.js, despite the Vercel "vulnerable Next.js blocks the deploy" note
+elsewhere in this log. `npm audit fix --force` downgrades Prisma to 6.12.0 and
+breaks the Prisma 7 driver adapter in `lib/db.ts`. Leave it.
+
 ---
 
 ## Open items for the founder

@@ -9,14 +9,18 @@
  *   RESEND_API_KEY   required — the function 500s without it
  *   LEAD_INBOX       optional — defaults to info@legacylinkstudio.com
  *   LEAD_FROM        optional — must be on a Resend-verified domain
+ *   LEAD_INGEST_URL  optional — back-office /api/leads/ingest endpoint
+ *   LEAD_INGEST_KEY  optional — shared secret for that endpoint
  *
- * The email is the system of record, and now the only record: the back-office
- * copy this used to POST to (LEAD_INGEST_URL / LEAD_INGEST_KEY) went away with
- * the studio admin app on 2026-08-17 (brief v2 §7 — no custom admin at launch;
- * pipeline and delivery live in one shared tracker instead). Leads are worked
- * from the inbox and copied into that tracker by hand. If a back office is
- * ever rebuilt, add the secondary post back *after* a successful send and keep
- * it unable to fail the visitor's submission.
+ * The email is the system of record. The back-office copy is best-effort and
+ * strictly secondary: it happens after a successful send, it cannot fail the
+ * visitor's submission, and either ingest var unset simply skips it. Don't
+ * reorder those — a lead reaching the inbox is what "delivered" means here.
+ *
+ * The back office (studio/) was deleted on 2026-08-17 under brief v2 §7 and
+ * restored on 2026-08-18 by founder decision. Until that app is deployed and
+ * both ingest vars are set, the post is skipped and leads arrive by email
+ * only — that is a supported state, not a broken one.
  */
 
 const DEFAULT_INBOX = "info@legacylinkstudio.com";
@@ -162,6 +166,49 @@ module.exports = async (req, res) => {
   } catch (err) {
     console.error(`[quote] Send failed: ${err && err.message}\n${text}`);
     return res.status(502).json({ error: "send" });
+  }
+
+  /* Secondary copy into the back office. Everything below this line is
+     best-effort: the lead is already in the inbox, so no failure here may
+     change what the visitor sees. Either var unset skips it entirely, which
+     is the normal state until studio/ is deployed. */
+  const ingestUrl = process.env.LEAD_INGEST_URL;
+  const ingestKey = process.env.LEAD_INGEST_KEY;
+
+  if (ingestUrl && ingestKey) {
+    try {
+      const ingest = await fetch(ingestUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-lead-key": ingestKey,
+        },
+        /* `service` carries trade and service area together, because that is
+           how the v2 form asks for it. The older location/packageInterest
+           columns have no source on this form and stay null. */
+        body: JSON.stringify({
+          business: fields.business,
+          name: fields.name,
+          email: fields.email,
+          phone: fields.phone,
+          service: fields.service,
+          details: fields.details,
+        }),
+        /* Cap the wait. A hanging back office must not hold a real visitor on
+           a spinner for a copy they do not know exists. */
+        signal: AbortSignal.timeout(3000),
+      });
+
+      if (!ingest.ok) {
+        console.error(
+          `[quote] lead ingest returned ${ingest.status}; lead delivered by email only`,
+        );
+      }
+    } catch (err) {
+      console.error(
+        `[quote] lead ingest failed: ${err && err.message}; lead delivered by email only`,
+      );
+    }
   }
 
   return res.status(200).json({ ok: true });
