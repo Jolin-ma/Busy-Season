@@ -1082,10 +1082,14 @@ strong { font-weight: 600; }
   color: var(--amber);
 }
 
-/* Raw phone photos — a loose, slightly untidy tile grid on purpose. */
+/* Raw phone photos — a loose, slightly untidy tile grid on purpose.
+   Two columns because the set is four shots of one job (before, tear-off,
+   cleanup, finished): 2x2 keeps them big enough to actually read the roof,
+   which is the whole before/after argument, and avoids orphaning a fourth
+   tile on a second row. */
 .showcase-raw {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.625rem;
 }
 
