@@ -21,7 +21,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <header className="topbar">
             <div className="topbar-inner">
               <a href="/" className="wordmark">
-                LegacyLink <em>Studio</em>
+                Busy <em>Season</em>
               </a>
               <nav>
                 <a href="/">Clients</a>

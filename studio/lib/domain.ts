@@ -5,7 +5,7 @@ import type { ClientStatus, JobStage, LeadStatus, Plan } from '@prisma/client';
 //
 // These figures are the same ones published on the marketing site. If pricing
 // changes, it changes in the brief first, then on the site, then here — and all
-// three have to agree. See LegacyLink_Studio_Master_Build_Brief.md §2.
+// three have to agree. See BusySeason_Master_Build_Brief.md §2.
 // -----------------------------------------------------------------------------
 
 export const PLANS: Record<Plan, { label: string; summary: string; perVideo: string }> = {

@@ -1,9 +1,9 @@
 # Studio back office
 
-Internal tool for the LegacyLink Studio video-ad business. Tracks clients and
+Internal tool for the Busy Season video-ad business. Tracks clients and
 where each piece of work sits in the production pipeline.
 
-Spec: `LegacyLink_Studio_Master_Build_Brief.md` §5 (the six production steps)
+Spec: `BusySeason_Master_Build_Brief.md` §5 (the six production steps)
 and §7 (what the tracker needs to hold).
 
 > §7 of the brief argues *against* building this at launch, in favour of a
@@ -124,10 +124,21 @@ and **fails closed**: unset key means every request is rejected.
 
 ## Deploying
 
-**Live at https://legacylink-studio.vercel.app** — Vercel project
-`legacylink-studio`, Root Directory `studio`, git-connected to this repo.
-Redeployed from scratch on 2026-08-18 against a new Neon project
-(`legacylink-studio`, id `late-voice-91531833`, Postgres 17, AWS US East 2).
+**Live at https://legacylink-studio.vercel.app** — Vercel project renamed to
+`busyseason-studio` on 2026-08-21 (was `legacylink-studio`), Root Directory
+`studio`, git-connected to this repo. The `.vercel.app` hostname above did
+**not** change when the project was renamed — Vercel keeps a project's
+existing domains attached across a rename, so `LEAD_INGEST_URL` on the
+marketing project still points at the right place with no update needed.
+Underlying Neon project renamed to `busyseason-studio` on 2026-08-21 too
+(was `legacylink-studio`; id `late-voice-91531833` unchanged, Postgres 17,
+AWS US East 2 — connection strings still work).
+
+> **Rebrand in progress (started 2026-08-21):** the business is renaming to
+> Busy Season (`busyseason.ca`), replacing `legacylinkstudio.com`. Both the
+> Vercel and Neon project renames above are done. The actual deployed app
+> still shows "LegacyLink Studio" branding — the code changes to Busy Season
+> are committed locally but not yet pushed/deployed.
 
 **Push to `main` and it deploys.** That's the only supported route.
 
@@ -146,7 +157,7 @@ which is how you force a sign-out everywhere.
 any Vercel project built from this repo should pin its own framework/output
 settings rather than inherit whatever lands at the root later.
 
-To put it on a `legacylinkstudio.com` subdomain, add the CNAME manually at
+To put it on a `busyseason.ca` subdomain, add the CNAME manually at
 Namecheap — DNS is not delegated to Vercel.
 
 ## Redeploying from scratch
@@ -169,7 +180,7 @@ used to run on was deleted on 2026-08-17 and has to be recreated.
    `STUDIO_PASSWORD`.
 5. **Vercel** — new project from this repo with Root Directory `studio`. Set all
    five env vars as Sensitive. Deploy.
-6. **Turn ingest on** — on the **marketing site's** project (`legacy-link`) set
+6. **Turn ingest on** — on the **marketing site's** project (`busyseason`, renamed 2026-08-21 from `legacy-link`) set
    `LEAD_INGEST_URL` to `https://<this-app>/api/leads/ingest` and
    `LEAD_INGEST_KEY` to the *same* secret as step 2, then redeploy that project
    so the vars take effect. Until both are set, `website/api/quote.js` skips the

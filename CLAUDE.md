@@ -4,7 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-**LegacyLink Studio** — a small studio that produces AI-assisted video ads for home service businesses **and runs them** as Meta campaigns on the client's own ad account. Spec: `LegacyLink_Studio_Master_Build_Brief.md`, currently at **v2**, which supersedes v1 entirely.
+**Busy Season** — a small studio that produces AI-assisted video ads for home service businesses **and runs them** as Meta campaigns on the client's own ad account. Spec: `BusySeason_Master_Build_Brief.md`, currently at **v2**, which supersedes v1 entirely.
+
+> **Renamed from LegacyLink Studio, 2026-08-21.** The founder reversed the 2026-08-17 decision to keep that name (brief §0/§11) — new domain `busyseason.ca` replaces `legacylinkstudio.com`, which is being **fully retired, not redirected**. This repo's code and copy have been updated to Busy Season; the DNS zone table just below still describes `legacylinkstudio.com` because **domain registration, DNS, Zoho, and Resend cutover have not happened yet** — those are external steps, not repo changes. Don't treat that table as stale until the cutover is actually done and this note is removed.
+>
+> **Vercel/Neon project renames, 2026-08-21:** the back office's Vercel project was renamed `legacylink-studio` → `busyseason-studio` (its `.vercel.app` hostname did **not** change — Vercel keeps existing domains attached across a project rename, so `LEAD_INGEST_URL` on the marketing project needed no update). The marketing site's Vercel project was renamed `legacy-link` → `busyseason` (its domains — `legacylinkstudio.com`, `busyseason.ca`, and the `legacy-link-three.vercel.app` fallback — were likewise unaffected). The back office's Neon project was renamed `legacylink-studio` → `busyseason-studio` (project id `late-voice-91531833` unchanged, so connection strings still work).
+>
+> **Do not deploy `website/` to production until Resend has verified `busyseason.ca`.** `website/api/quote.js` now defaults `LEAD_FROM` to `leads@busyseason.ca` — sending from an unverified domain 422s every submission. Only push once the DNS/Resend steps in the migration checklist are done, or set `LEAD_FROM`/`LEAD_INBOX` env vars on Vercel to the still-working `@legacylinkstudio.com` addresses as a stopgap.
 
 | Project | Root | Port | Start command |
 |---|---|---|---|
@@ -22,8 +28,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 > | | State |
 > |---|---|
 > | `studio/` code | restored, builds, typechecks clean |
-> | Vercel project `legacylink-studio` | **live** — Root Directory `studio`, git-connected, at `legacylink-studio.vercel.app` (Vercel reissued the deleted project's hostname) |
-> | Neon database | **live** — project `legacylink-studio`, id `late-voice-91531833`, **Postgres 17**, AWS US East 2 |
+> | Vercel project `busyseason-studio` (renamed 2026-08-21, was `legacylink-studio`) | **live** — Root Directory `studio`, git-connected, at `legacylink-studio.vercel.app` (hostname carried over unchanged by the rename; Vercel had earlier reissued it after the delete/restore) |
+> | Neon database | **live** — project `busyseason-studio` (renamed 2026-08-21, was `legacylink-studio`), id `late-voice-91531833`, **Postgres 17**, AWS US East 2 |
 > | `LEAD_INGEST_URL` / `LEAD_INGEST_KEY` on the marketing project | **both set and working** — the quote form feeds the back office |
 >
 > The old Neon project (`polished-sea-32397117`) really was deleted — confirmed on 2026-08-18 by opening the account and finding zero projects, which finally settles a claim carried as unverified since 2026-08-17.
@@ -90,8 +96,8 @@ The one dynamic piece is **`website/api/quote.js`**, the serverless function beh
 
 | App | Root Directory | Host | Domain |
 |---|---|---|---|
-| Marketing site (`website/`) | `website` | Vercel project `legacy-link` | `legacylinkstudio.com` |
-| Back office (`studio/`) | `studio` | Vercel project `legacylink-studio` | `legacylink-studio.vercel.app` |
+| Marketing site (`website/`) | `website` | Vercel project `busyseason` (renamed 2026-08-21, was `legacy-link`) | `legacylinkstudio.com` (also serving `busyseason.ca`) |
+| Back office (`studio/`) | `studio` | Vercel project `busyseason-studio` (renamed 2026-08-21, was `legacylink-studio`) | `legacylink-studio.vercel.app` (hostname unchanged by the rename) |
 
 - **Deploy by pushing to `main`.** The project is git-connected with Root Directory `website`, so a push builds it automatically.
 
@@ -100,7 +106,7 @@ The one dynamic piece is **`website/api/quote.js`**, the serverless function beh
   - The repo-root `vercel.json` was deleted on 2026-08-16 after confirming Root Directory is `website`. Note the marketing project also has an **Output Directory override set to `website` in the Vercel dashboard**, independent of any file — don't be confused by it, and don't "fix" it while the site is working.
 - **Any new Vercel subproject from this repo needs its own `vercel.json`** in its own Root Directory, for the same reason. Historically the repo-root config's `outputDirectory` was inherited by subprojects and 404'd every route despite a successful build, because Next.js builds into `.next`.
 - **The marketing site is static except for `website/api/quote.js`.** Vercel zero-config picks up the `api/` directory under the Root Directory and builds it as a Node function — nothing in `website/vercel.json` declares it. It's deliberately **CommonJS with global `fetch` and no dependencies**, because `website/` has no `package.json` and adding one to pull in the Resend SDK would give the static site an install step for a single HTTP call. Adding a dependency here means adding a build step — reconsider first.
-  - Env vars on the **marketing site's** Vercel project: **`RESEND_API_KEY`** is required — the function logs and 500s without it. **`LEAD_INBOX`** (default `info@legacylinkstudio.com`) and **`LEAD_FROM`** (default `leads@legacylinkstudio.com`) are optional overrides; `LEAD_FROM` must be on a Resend-verified domain or every send 422s. **`LEAD_INGEST_URL` and `LEAD_INGEST_KEY` are also set on this project, and both are stale.** Earlier revisions of this file and of `progress.md` claimed they were removed on 2026-08-17. **That removal never happened** — the Vercel dashboard shows both were added around 2026-08-15 and have been there ever since; this was confirmed by looking at the project on 2026-08-18. Treat any "we deleted the env var" claim in this repo as unverified unless the dashboard was actually checked.
+  - Env vars on the **marketing site's** Vercel project: **`RESEND_API_KEY`** is required — the function logs and 500s without it. **`LEAD_INBOX`** (default `info@busyseason.ca`) and **`LEAD_FROM`** (default `leads@busyseason.ca`) are optional overrides; `LEAD_FROM` must be on a Resend-verified domain or every send 422s. **`LEAD_INGEST_URL` and `LEAD_INGEST_KEY` are also set on this project, and both are stale.** Earlier revisions of this file and of `progress.md` claimed they were removed on 2026-08-17. **That removal never happened** — the Vercel dashboard shows both were added around 2026-08-15 and have been there ever since; this was confirmed by looking at the project on 2026-08-18. Treat any "we deleted the env var" claim in this repo as unverified unless the dashboard was actually checked.
 
   This matters because `quote.js` gates its ingest post on `if (ingestUrl && ingestKey)`, and both are truthy. Since the restore on 2026-08-18 the post therefore **fires on every submission and fails**, because `LEAD_INGEST_URL` still points at the deleted `legacylink-studio.vercel.app`. Harmless by design — logged, swallowed, and the lead still emails — but it is *failing*, not *skipped*. Both values need replacing when the back office is redeployed: the URL with the new hostname, and the key with the one in `studio/.env`, which is a freshly generated secret that does **not** match the old value sitting in Vercel.
   - **Failure paths log the full lead payload** before returning 502. That's deliberate and load-bearing: it's the recovery path if Resend is down or the domain falls out of verification, so a lead is never silently lost. Don't "clean up" those `console.error` calls to drop the payload.

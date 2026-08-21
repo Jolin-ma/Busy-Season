@@ -1,18 +1,23 @@
-# LegacyLink Studio
+# Busy Season
 
 A small AI-powered video ad studio. It produces short video ads for home
 service businesses — and runs them as Meta campaigns on the client's own ad
 account.
 
+> **Renamed from LegacyLink Studio on 2026-08-21.** The founder reversed the
+> 2026-08-17 decision to keep the old name — see `BusySeason_Master_Build_Brief.md`
+> §0 and §11 for the full history. New domain `busyseason.ca` replaces
+> `legacylinkstudio.com`, which is being fully retired, not redirected.
+
 The full spec — pricing, positioning, production workflow, design system — is
-`LegacyLink_Studio_Master_Build_Brief.md`. Read that before changing anything
+`BusySeason_Master_Build_Brief.md`. Read that before changing anything
 customer-facing.
 
 ## What's in here
 
 | Directory | What it is | Runs on |
 |---|---|---|
-| `website/` | The marketing site. Static HTML/CSS/JS, plus one serverless function for the quote form. | Vercel → `legacylinkstudio.com` |
+| `website/` | The marketing site. Static HTML/CSS/JS, plus one serverless function for the quote form. | Vercel → `busyseason.ca` |
 
 That's the whole repo. There is no build step and no `node_modules` anywhere.
 

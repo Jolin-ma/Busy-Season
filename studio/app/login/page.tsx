@@ -12,7 +12,7 @@ export default async function LoginPage({
     <main className="login-wrap">
       <div className="login-card">
         <span className="wordmark">
-          LegacyLink <em style={{ color: 'var(--amber)', fontStyle: 'normal' }}>Studio</em>
+          Busy <em style={{ color: 'var(--amber)', fontStyle: 'normal' }}>Season</em>
         </span>
         <p className="muted" style={{ marginTop: 0, fontSize: '0.9375rem' }}>
           Back office

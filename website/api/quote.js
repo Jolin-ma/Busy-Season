@@ -7,7 +7,7 @@
  *
  * Env vars (Vercel project: marketing site):
  *   RESEND_API_KEY   required — the function 500s without it
- *   LEAD_INBOX       optional — defaults to info@legacylinkstudio.com
+ *   LEAD_INBOX       optional — defaults to info@busyseason.ca
  *   LEAD_FROM        optional — must be on a Resend-verified domain
  *   LEAD_INGEST_URL  optional — back-office /api/leads/ingest endpoint
  *   LEAD_INGEST_KEY  optional — shared secret for that endpoint
@@ -23,8 +23,8 @@
  * only — that is a supported state, not a broken one.
  */
 
-const DEFAULT_INBOX = "info@legacylinkstudio.com";
-const DEFAULT_FROM = "LegacyLink Studio <leads@legacylinkstudio.com>";
+const DEFAULT_INBOX = "info@busyseason.ca";
+const DEFAULT_FROM = "Busy Season <leads@busyseason.ca>";
 
 /* Length caps. These exist to keep a junk payload from becoming a huge email,
    not to police real input — every cap is far above a plausible real answer. */

@@ -1,7 +1,10 @@
-# LegacyLink Studio Website — Progress Log
+# Busy Season Website — Progress Log
 
 Tracks build status for the marketing site in this `website/` folder against
-`LegacyLink_Studio_Master_Build_Brief.md`.
+`BusySeason_Master_Build_Brief.md` (renamed 2026-08-21 from
+`LegacyLink_Studio_Master_Build_Brief.md` — the business was LegacyLink Studio
+throughout most of the history below; entries before 2026-08-21 use that name
+deliberately, as a record of what was true at the time).
 
 Per `CLAUDE.md`, this folder deploys as its own Vercel project (`legacy-link`)
 to `legacylinkstudio.com`, Root Directory `website`, config in
@@ -1309,3 +1312,51 @@ now only about *where you add* config, not about an existing file fighting you.
 Note the marketing project also carries an Output Directory override set in the
 Vercel dashboard itself, independent of any file — leave it alone while the
 site works.
+
+## 2026-08-21 — Renamed LegacyLink Studio → Busy Season
+
+The founder reversed the 2026-08-17 decision (brief §0/§11) to keep the old
+name. New brand **Busy Season**, new domain **`busyseason.ca`**, registered
+at Namecheap. `legacylinkstudio.com` is being **fully retired, not
+redirected** — no transition period once the cutover completes.
+
+Repo changes made today: every page's wordmark, `<title>`, meta description,
+footer copyright, and mailto address swapped to Busy Season / busyseason.ca;
+`website/api/quote.js`'s `DEFAULT_INBOX`/`DEFAULT_FROM` and `script.js`'s
+inbox fallback updated to match; `mark.svg` and `styles.css`'s header
+comment updated; the studio app's two wordmark spots (`login/page.tsx`,
+`layout.tsx`) updated; `LegacyLink_Studio_Master_Build_Brief.md` renamed to
+`BusySeason_Master_Build_Brief.md` with §0/§11 annotated (not silently
+rewritten) to show the reversal; `CLAUDE.md` and both README files updated.
+
+**Not done yet — still pending as of this entry:** DNS for `busyseason.ca`
+(A/CNAME, Zoho MX/SPF/DKIM/DMARC, Resend verification), moving `info@` to
+the new domain in Zoho, updating `LEAD_FROM`/`LEAD_INBOX` env vars on the
+Vercel project, and renaming the `legacy-link` / `legacylink-studio` Vercel
+projects and the `legacylink-studio` Neon project. **Do not push `website/`
+to production until Resend has verified `busyseason.ca`** — `quote.js` now
+defaults `LEAD_FROM` to `leads@busyseason.ca`, and sending from an
+unverified domain 422s every quote-form submission.
+
+**Update, later on 2026-08-21:**
+- Added `busyseason.ca` to Vercel's `legacy-link` project (A record + `www`
+  CNAME at Namecheap now point at Vercel — DNS propagating).
+- Added `busyseason.ca` as a domain in Zoho Mail, verified ownership, and
+  added the MX/SPF/DKIM records at Namecheap — status pending propagation.
+  Namecheap's Mail Settings had to switch from "Email Forwarding" to
+  "Custom MX" first, since the old setting auto-managed a locked SPF TXT
+  record that would have conflicted with Zoho's.
+- Added `busyseason.ca` to Resend with its DKIM/SPF(CNAME)/DMARC records —
+  status **Pending**, checking DNS.
+- **Renamed the back office's Vercel project** `legacylink-studio` →
+  `busyseason-studio`. Its `.vercel.app` hostname (`legacylink-studio.vercel.app`)
+  did **not** change — Vercel keeps a project's existing domains attached
+  across a rename — so `LEAD_INGEST_URL` on the marketing project needed no
+  update.
+- **Renamed the marketing site's Vercel project** `legacy-link` →
+  `busyseason`. Same result: all its domains (`legacylinkstudio.com`,
+  `busyseason.ca`, and the `legacy-link-three.vercel.app` fallback) stayed
+  attached, nothing else needed updating.
+- **Renamed the back office's Neon project** `legacylink-studio` →
+  `busyseason-studio`. Project id (`late-voice-91531833`) is unchanged, so
+  `DATABASE_URL`/`DIRECT_URL` connection strings still work as-is.

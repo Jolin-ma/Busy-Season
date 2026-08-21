@@ -1,9 +1,9 @@
 // =============================================================================
-// LegacyLink Studio — back-office schema
+// Busy Season — back-office schema
 //
 // Scope: the video-ad business only. This is a SEPARATE database from the QR
 // memorial product's (prisma/schema.prisma at the repo root) and shares no
-// tables with it. Spec: LegacyLink_Studio_Master_Build_Brief.md §7.
+// tables with it. Spec: BusySeason_Master_Build_Brief.md §7.
 //
 // Stage 1 covers clients and the production pipeline. Leads, payments, and
 // Growth batch scheduling are staged after this — see studio/README.md.

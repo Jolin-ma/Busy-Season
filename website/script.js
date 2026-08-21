@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const errorBox = document.querySelector("[data-quote-error]");
     const mailtoLink = document.querySelector("[data-quote-mailto]");
     const submit = form.querySelector('button[type="submit"]');
-    const inbox = form.dataset.inbox || "info@legacylinkstudio.com";
+    const inbox = form.dataset.inbox || "info@busyseason.ca";
 
     const readFields = () => {
       const data = new FormData(form);

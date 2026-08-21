@@ -1,9 +1,11 @@
-# LegacyLink Studio — Master Build Brief (v2)
+# Busy Season — Master Build Brief (v2)
 
 **Version:** 2.0 — rewritten 2026-08-17. Supersedes v1 (2026-08-16) entirely.
-**Purpose:** The single handoff spec for LegacyLink Studio. Give this to Claude (or another builder) as the starting point for the website build.
+**Purpose:** The single handoff spec for Busy Season. Give this to Claude (or another builder) as the starting point for the website build.
 
-**Name and domain are unchanged.** A rename was considered on 2026-08-17 and declined — the domain is bought and the site is built, and the name is not what wins or loses deals. Section 0 covers what that means for the copy, which now has to carry all the explaining.
+> **Renamed 2026-08-21.** The line below ("name and domain are unchanged") and Section 0/11's "keep LegacyLink Studio" decision were both true as of 2026-08-17 and are now reversed — the founder registered `busyseason.ca` and renamed the business to Busy Season. Kept below rather than rewritten, because the reasoning for declining a rename originally is still worth reading if this is ever questioned again.
+
+**Name and domain are unchanged [as of 2026-08-17 — see the reversal note above].** A rename was considered on 2026-08-17 and declined — the domain is bought and the site is built, and the name is not what wins or loses deals. Section 0 covers what that means for the copy, which now has to carry all the explaining.
 
 **What changed in v2 and why:** v1 sold video creative only, while promising an outcome ("we get your phone ringing") that depends on distribution the studio wasn't touching. v2 closes that gap: the studio now produces **and runs** the ads. Pricing, offers, site copy, and workflow are all restructured around that. The full reasoning is in the companion doc `claude/LegacyLink_Critical_Review_2026-08-16.md` — read it if you want to know why a given decision was made rather than just what it is.
 
@@ -11,14 +13,16 @@
 
 ---
 
-**Relationship to Loyal Tale (important, read first):** LegacyLink Studio and Loyal Tale are built and marketed as two fully independent businesses. Neither site links to, credits, or references the other anywhere a visitor can see. This is deliberate, not an oversight: the two audiences have nothing in common, and each site is stronger when it doesn't have to vouch for the other. If the founder ever wants to surface the shared-ownership relationship — to investors, press, or partners — that belongs in private materials, not on either public website.
+**Relationship to Loyal Tale (important, read first):** Busy Season and Loyal Tale are built and marketed as two fully independent businesses. Neither site links to, credits, or references the other anywhere a visitor can see. This is deliberate, not an oversight: the two audiences have nothing in common, and each site is stronger when it doesn't have to vouch for the other. If the founder ever wants to surface the shared-ownership relationship — to investors, press, or partners — that belongs in private materials, not on either public website.
 
 ---
 
 ## 0. Brand & Naming
 
-**Name:** LegacyLink Studio
-**Primary domain:** `legacylinkstudio.com` — already owned and in use. **No change.**
+**Name:** Busy Season
+**Primary domain:** `busyseason.ca` — registered 2026-08-21, replacing `legacylinkstudio.com` (fully retired, not redirected).
+
+> **Reversal, 2026-08-21:** everything below through "Naming constraints" was written 2026-08-17 for the *old* name, LegacyLink Studio, and its "no rename" decision. The founder reversed that decision and renamed to Busy Season — this was the top pick on the 2026-08-17 shortlist (§11). The historical reasoning for declining a rename is kept below rather than deleted, since it's still the right way to think about naming decisions generally. **The design-implication bullets specifically were written to compensate for "LegacyLink Studio" explaining nothing** — "Busy Season" is more self-explanatory for a contractor audience, so revisit whether all of that compensating copy guidance (e.g. the tagline standing in for a second name-decoding line) is still load-bearing, rather than assuming it still applies unchanged.
 
 A rename was considered and deliberately declined on 2026-08-17 (see Open Items for the shortlist, kept in case it's ever revisited). The reasoning: the domain is bought, the site is built, and the name is not what closes or loses a deal. Switching now would spend a week of momentum on the eighth most important variable in the business. Revisit only if a prospect ever actually reacts to it.
 
@@ -29,7 +33,7 @@ A rename was considered and deliberately declined on 2026-08-17 (see Open Items 
 - In the nav and the browser tab, pair the wordmark with a short descriptor where there's room (e.g. "LegacyLink Studio — Video Ads for Home Services"). Set the page `<title>` this way; the bare name in a tab tells a returning visitor nothing.
 - On the phone, the script always follows the name immediately with the clause that explains it: *"I'm with LegacyLink Studio — we make video ads for contractors."* Never let the name stand alone.
 
-**Email:** use the domain (`hello@legacylinkstudio.com` or the founder's first name). Never send outreach from a Gmail address; for a business asking a contractor to hand over ad account access, a free email domain undercuts the pitch more than the design of the site helps it. This is worth doing this week — it costs a few dollars a month and it's one of the few credibility signals available before there's a portfolio.
+**Email:** use the domain (`hello@busyseason.ca` or the founder's first name). Never send outreach from a Gmail address; for a business asking a contractor to hand over ad account access, a free email domain undercuts the pitch more than the design of the site helps it. This is worth doing this week — it costs a few dollars a month and it's one of the few credibility signals available before there's a portfolio.
 
 **Naming constraints for anything downstream** (sub-brands, product names, campaign names): no "AI" in any public-facing name. It invites the "is this fake?" objection before the pitch has started, and Section 2 already handles that question on the studio's own terms. Avoid generic agency vocabulary — Apex, Elevate, Summit, Peak, Digital, Solutions — which contractors pattern-match to cold-call spam.
 
@@ -37,7 +41,7 @@ A rename was considered and deliberately declined on 2026-08-17 (see Open Items 
 
 ## 1. Project Overview
 
-**What LegacyLink Studio is:** a small AI-assisted video ad studio for home service businesses that **produces the ads and gets them running**. The client receives finished video creative *and* a live, managed ad campaign. Roofing and contracting are the flagship examples; the offer serves home services broadly (Section 3).
+**What Busy Season is:** a small AI-assisted video ad studio for home service businesses that **produces the ads and gets them running**. The client receives finished video creative *and* a live, managed ad campaign. Roofing and contracting are the flagship examples; the offer serves home services broadly (Section 3).
 
 **What's being sold — the v2 definition:**
 
@@ -56,7 +60,7 @@ The studio does not take custody of client ad spend at any point — the client'
 
 **Why this business exists:** it's a deliberate parallel revenue stream to Loyal Tale. It reuses the production tool and skill set already being paid for (Higgsfield AI), it generates cash per-client in weeks rather than the months a consumer product takes, and it funds the founder while Loyal Tale is unproven. It is intentionally the leaner of the two businesses — see Section 9 on why it should **not** get a custom admin build.
 
-**Positioning:** confident, results-oriented, unapologetically commercial. The opposite tone from Loyal Tale on purpose. Loyal Tale is warm because its customers are making an emotional purchase; LegacyLink Studio's customers are business owners making a practical decision about what gets them more booked jobs. The site should read like a studio that understands small-business marketing, not like a creative agency selling art.
+**Positioning:** confident, results-oriented, unapologetically commercial. The opposite tone from Loyal Tale on purpose. Loyal Tale is warm because its customers are making an emotional purchase; Busy Season's customers are business owners making a practical decision about what gets them more booked jobs. The site should read like a studio that understands small-business marketing, not like a creative agency selling art.
 
 ---
 
@@ -302,7 +306,7 @@ Terms of Service and Privacy Policy — **flag both "NEEDS LEGAL REVIEW"**. Plus
 
 ## 7. Operations (deliberately lightweight)
 
-**Do not build a custom admin tool for this business at launch.** Loyal Tale's admin site exists because Loyal Tale has real operational complexity. LegacyLink Studio at launch is one person with a handful of clients; a bespoke admin build would solve a problem that doesn't exist and eat time better spent on outreach and production.
+**Do not build a custom admin tool for this business at launch.** Loyal Tale's admin site exists because Loyal Tale has real operational complexity. Busy Season at launch is one person with a handful of clients; a bespoke admin build would solve a problem that doesn't exist and eat time better spent on outreach and production.
 
 **Use instead:** one simple tracker (spreadsheet, Notion, or Airtable) covering **both pipeline and delivery** — v1's version only tracked delivery, which misses where the actual risk is.
 
@@ -470,14 +474,14 @@ The hardest question in months 1–3 is "who else have you done this for?" Don't
 - [ ] **Revisit ad length** after ~3 months of live campaign data — 15s is the starting assumption, not a finding.
 - [ ] **Higher tier** — a $2,500/mo tier (more videos, or multi-platform once TikTok/Google are in scope) once Growth is proven and capacity is understood.
 - [ ] **30-second premium ad** as an upsell once there's a portfolio and known per-video production time.
-- [ ] **Set up email on the domain** (Section 0) — `hello@legacylinkstudio.com` or similar. Do this before any outreach goes out.
+- [ ] **Set up email on the domain** (Section 0) — `hello@busyseason.ca` or similar. Do this before any outreach goes out.
 - [ ] **Logo and wordmark.** Not specified here — the design system (Section 8) defines the environment it lives in. Keep it simple and typographic; a wordmark in the headline sans at semibold, no icon, is entirely sufficient for a studio at this stage and ages better than a logo mark drawn before the business has a personality.
 - [ ] **Google Ads** as a future add-on, once Meta is genuinely competent.
 - [ ] **Agency / white-label channel** — selling creative volume to marketing agencies already serving contractors is a viable second channel with a much better structural fit for a solo operator (one sales conversation replaces four). Worth testing once the direct motion is running.
 
 **Resolved**
 
-- [x] **The name — decided 2026-08-17: keep LegacyLink Studio.** A rename was priced out and declined. The domain is owned, the site is built, and the name ranks roughly eighth among the variables that determine whether this works — well behind outreach volume, ad management, real-footage creative, the guarantee, and proof. Renaming now would spend momentum on the wrong thing. The mitigation is in Section 0: the copy carries all the explaining, and the name never appears without the clause that decodes it.
+- [x] ~~**The name — decided 2026-08-17: keep LegacyLink Studio.**~~ **Reversed 2026-08-21: renamed to Busy Season (`busyseason.ca`)**, the top pick from the shortlist below. The 2026-08-17 reasoning (kept for the record): a rename was priced out and declined because the domain was owned, the site was built, and the name ranked roughly eighth among the variables that determine whether this works. That calculus changed once the founder actually weighed the shortlist against the ongoing cost of a name that explains nothing — see Section 0 for what carries over from the old mitigation and what doesn't.
 
 > **If it's ever revisited** — the switching cost only rises from here, but it stays low until there are clients, printed material, or search equity. Shortlist from the 2026-08-17 exercise, all confirmed available at the time: **Busy Season** (`busyseason.ca`, tagline "Make busy season last all year" — the strongest of the four; names the outcome a contractor organizes their year around), **Jobsite Studio** (`jobsitestudio.ca`), **Foreman Media** (`foremanmedia.ca`), **Dispatch Ads** (`dispatchads.ca`). Re-check availability before acting; these were not registered. The trigger to revisit is a prospect actually reacting to the name — not a slow month.
 - [x] **Ad management** — resolved 2026-08-17: the studio produces *and* runs the ads. Meta only at launch; client funds their own account. This is the central change from v1.
