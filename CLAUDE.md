@@ -6,11 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Busy Season** — a small studio that produces AI-assisted video ads for home service businesses **and runs them** as Meta campaigns on the client's own ad account. Spec: `BusySeason_Master_Build_Brief.md`, currently at **v2**, which supersedes v1 entirely.
 
-> **Renamed from LegacyLink Studio, 2026-08-21.** The founder reversed the 2026-08-17 decision to keep that name (brief §0/§11) — new domain `busyseason.ca` replaces `legacylinkstudio.com`, which is being **fully retired, not redirected**. This repo's code and copy have been updated to Busy Season; the DNS zone table just below still describes `legacylinkstudio.com` because **domain registration, DNS, Zoho, and Resend cutover have not happened yet** — those are external steps, not repo changes. Don't treat that table as stale until the cutover is actually done and this note is removed.
+> **Renamed from LegacyLink Studio, 2026-08-21 — migration to Busy Season / `busyseason.ca` is complete.** The founder reversed the 2026-08-17 decision to keep the old name (brief §0/§11). `legacylinkstudio.com` is being **fully retired, not redirected**. Everything below is done:
+> - **DNS/Zoho/Resend**: `busyseason.ca` registered at Namecheap; A/CNAME records point it at Vercel; Zoho Mail domain added with MX, SPF, and DKIM all **verified**; Resend domain **verified** (so `LEAD_FROM`/`LEAD_INBOX` defaulting to `@busyseason.ca` in `website/api/quote.js` is safe to run in production).
+> - **Vercel renames**: marketing project `legacy-link` → `busyseason`; back office project `legacylink-studio` → `busyseason-studio`. Neither rename changed the project's attached domains/hostnames (Vercel carries those over), so no env vars needed updating.
+> - **Neon rename**: back office database project `legacylink-studio` → `busyseason-studio` (id `late-voice-91531833` unchanged, connection strings still work).
+> - **GitHub rename**: repo `Jolin-ma/Legacy-Link` → `Jolin-ma/Busy-Season`; local `origin` remote updated to match.
+> - **Code pushed**: commit `f7b1b69` rebranding the repo is on `main` and deployed.
 >
-> **Vercel/Neon project renames, 2026-08-21:** the back office's Vercel project was renamed `legacylink-studio` → `busyseason-studio` (its `.vercel.app` hostname did **not** change — Vercel keeps existing domains attached across a project rename, so `LEAD_INGEST_URL` on the marketing project needed no update). The marketing site's Vercel project was renamed `legacy-link` → `busyseason` (its domains — `legacylinkstudio.com`, `busyseason.ca`, and the `legacy-link-three.vercel.app` fallback — were likewise unaffected). The back office's Neon project was renamed `legacylink-studio` → `busyseason-studio` (project id `late-voice-91531833` unchanged, so connection strings still work).
->
-> **Do not deploy `website/` to production until Resend has verified `busyseason.ca`.** `website/api/quote.js` now defaults `LEAD_FROM` to `leads@busyseason.ca` — sending from an unverified domain 422s every submission. Only push once the DNS/Resend steps in the migration checklist are done, or set `LEAD_FROM`/`LEAD_INBOX` env vars on Vercel to the still-working `@legacylinkstudio.com` addresses as a stopgap.
+> The DNS zone table just below still shows the **old** `legacylinkstudio.com` records — that domain is still live (not yet decommissioned) and those records are historical/reference, not evidence anything above is undone.
 
 | Project | Root | Port | Start command |
 |---|---|---|---|

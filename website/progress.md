@@ -1360,3 +1360,19 @@ unverified domain 422s every quote-form submission.
 - **Renamed the back office's Neon project** `legacylink-studio` →
   `busyseason-studio`. Project id (`late-voice-91531833`) is unchanged, so
   `DATABASE_URL`/`DIRECT_URL` connection strings still work as-is.
+- **Committed and pushed** the full rebrand (`f7b1b69`) to `main`.
+- **Renamed the GitHub repo** `Jolin-ma/Legacy-Link` → `Jolin-ma/Busy-Season`;
+  updated the local `origin` remote to match. GitHub redirects the old URL,
+  so nothing that still links to `Legacy-Link` breaks.
+- **Resend verified** at 4:22pm (checked directly — status page read
+  "Verified", domain events showed "DNS verified" then "Domain verified").
+- **Zoho fully verified**: MX ("pointed to Zoho"), SPF ("pointed
+  successfully" — the merged record with Namecheap's forwarding include),
+  and DKIM (selector `zmail`, failed once on first check with "TXT record
+  has not propagated," succeeded ~40 min later) are all verified. The Zoho
+  side of the migration is done.
+
+**What's left**: retire `legacylinkstudio.com` once mail/site are confirmed
+stable on the new domain (not yet — don't decommission it same-day), and
+confirm the live Vercel deployments actually show Busy Season branding
+after the push above.
