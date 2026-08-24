@@ -1469,3 +1469,56 @@ its DNS lives in a separate zone.
 CLAUDE.md's DNS zone table for `legacylinkstudio.com` (the one that said "do
 not remove any of them") is now stale and needs updating to match: every
 record it lists is gone.
+
+## 2026-08-24 (later) — Verified busyseason.ca after the DNS decommission; found and fixed a real lead-form outage, unrelated to the DNS work
+
+Asked to confirm the site and lead form still worked on `busyseason.ca` after
+the decommission above. Site checks out fine (loads correctly, only
+`busyseason.ca`/`www.busyseason.ca` attached to the Vercel project). The lead
+form did not check out — a real test submission failed with a 502.
+
+**Root cause, found via Vercel runtime error logs:** Resend rejected the send
+with `403: This API key is not authorized to send emails from busyseason.ca`.
+The `RESEND_API_KEY` in Vercel was `legacylinkstudio-website`, a key created
+10 days ago and **domain-restricted to `legacylinkstudio.com`** in Resend
+(Resend API keys carry their own domain restriction, separate from the
+Sending/Full access permission level). `busyseason.ca` itself was verified in
+Resend the whole time — the domain was never the problem, the key's
+restriction was. This is unrelated to today's Namecheap DNS decommission;
+`busyseason.ca` DNS was never touched by that work. First occurrence of this
+error in Resend's logs was this test, so the form has plausibly been silently
+broken since the `busyseason.ca` rebrand (`LEAD_FROM` switched to
+`@busyseason.ca` on 2026-08-21) — no way to know how many real leads it
+dropped in between, since a 502 shows nothing to the founder except a
+"something broke, email us instead" message on the page.
+
+**Fixed:**
+1. Created a new Resend API key `busyseason-website`, Sending access,
+   restricted to domain `busyseason.ca`.
+2. Deleted `legacylinkstudio-website` (its domain restriction made it dead
+   weight now, and it had 9 lifetime uses against the old domain).
+3. Updated `RESEND_API_KEY` on the Vercel marketing project to the new key
+   and redeployed production (`dpl_De4Uy87YwkcmM5onjDJr7T8qeW94`).
+4. Retested: submission returned `POST /api/quote 200` in Vercel's runtime
+   logs, and Resend's Emails log shows it **Delivered** to
+   `info@busyseason.ca` — the first successful delivery to that inbox
+   through this form since the rebrand.
+
+Note for next time: I fumbled the first key rotation attempt — clicking a
+Vercel env var row to open its edit menu instead copied the row's variable
+*name* to the clipboard (a Vercel UI feature), silently clobbering the
+Resend key I'd already copied. Pasted "RESEND_API_KEY" (14 characters) into
+the value field without noticing until I checked the pasted length in JS.
+Caught it before saving. Lesson: after copying a secret, go straight to
+pasting it with no intermediate clicks, and verify length/prefix via a
+non-displaying check before saving a secret field.
+
+**Still outstanding, separate issue:** `hero.mp4` (swapped in earlier today,
+see the "Swap hero and sample-reel video assets" commit) is encoded as
+**HEVC/H.265**, while every other video on the site is H.264. Chrome/Firefox/
+Edge cannot decode HEVC in a `<video>` tag — only Safari can — so the hero
+video is currently a blank/frozen player for most visitors. Confirmed by
+loading it directly: `readyState` stuck at 0, `duration: null`, no frame ever
+decoded. Not fixed yet — founder chose to fix the Resend key first and hasn't
+said whether to re-encode `hero.mp4` to H.264 or replace it with a different
+file.
