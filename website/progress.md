@@ -1376,3 +1376,96 @@ unverified domain 422s every quote-form submission.
 stable on the new domain (not yet — don't decommission it same-day), and
 confirm the live Vercel deployments actually show Busy Season branding
 after the push above.
+
+## 2026-08-21 (later) — `legacylinkstudio.com` dropped from Vercel; the real `info@busyseason.ca` gap found and closed
+
+Picked up the "what's left" item above. Two separate pieces of work came out
+of it, and the second is the one worth remembering.
+
+**`legacylinkstudio.com` and `www.legacylinkstudio.com` removed from the
+`busyseason` Vercel project's domain list**, on the founder's instruction
+("I no longer use that"). The project now serves only `busyseason.ca`,
+`www.busyseason.ca`, and the `legacy-link-three.vercel.app` fallback.
+
+⚠ **This is a Vercel-side detach, not a DNS decommission.** Namecheap's `A @`
+/ `CNAME www` records for `legacylinkstudio.com` still point at Vercel's
+infrastructure (per the zone table in `CLAUDE.md`), but Vercel no longer has
+that hostname attached to any project. The practical effect: the old domain
+will now serve a Vercel `DEPLOYMENT_NOT_FOUND`-style error instead of the
+site, rather than redirecting anywhere. That matches "fully retired, not
+redirected" from the rename entry above, but it means the DNS records
+themselves are now stale and should be cleaned up at Namecheap whenever the
+domain is let go entirely — they're not doing anything useful today.
+
+**The bigger find: despite "Zoho fully verified" in the entry above, no
+`info@busyseason.ca` mailbox ever existed.** "Verified" there was true but
+narrower than it read — it meant the *domain* passed MX/SPF/DKIM ownership
+checks in Zoho, not that anyone had created a mailbox or alias on it. Checked
+the account directly (`mailadmin.zohocloud.ca`): plan is Mail Lite, 1
+license, 1 user (`jolinma81`), and that user's only two email identities were
+`info@legacylinkstudio.com` and `jolinma81@legacylinkstudio.com`. Nothing
+under `busyseason.ca` existed anywhere in the org. So every email sent to
+`info@busyseason.ca` since the domain was added had nowhere to land — not a
+DNS problem, not a propagation delay, just a mailbox that was never created.
+Confirmed by direct report: the founder tried sending to it and it never
+arrived.
+
+Fixed, all in Zoho Mail Settings → Mail Accounts → `jolinma81`:
+
+1. **Added `info@busyseason.ca` as an email alias** on the existing
+   `jolinma81` mailbox (Mailbox Settings → Email Alias → +). This is free —
+   aliases share the one license already paid for; a second **user** would
+   have needed a second license on the Mail Lite plan.
+2. **Set `busyseason.ca` as the org's primary domain** (Domains list, star
+   toggle) — `legacylinkstudio.com` held that star before.
+3. **Switched the mailbox's default address** from
+   `info@legacylinkstudio.com` to `info@busyseason.ca` via "Set as mailbox
+   address" on the new alias. `info@legacylinkstudio.com` still works — it's
+   now the alias, same inbox, nothing lost.
+
+**Verified twice, both by observation:**
+
+- Sent a real email from the account to `info@busyseason.ca` — arrived in
+  the inbox within seconds, headers confirmed `To: <info@busyseason.ca>`.
+- Ran an outgoing deliverability check (mail-tester.com) from
+  `info@busyseason.ca`: **score 10/10**, "Wow! Perfect, you can send."
+  SPF pass, DKIM pass (selector `zmail`, `d=busyseason.ca`), DMARC pass and
+  aligned (`header.from=busyseason.ca`), SpamAssassin score -0.2 (well under
+  the 5.0 spam threshold).
+
+So `info@busyseason.ca` is now the live primary mailbox, receiving and
+sending cleanly, and the domain-level "verified" claim from earlier today is
+no longer misleading — there's an actual mailbox behind it now.
+
+## 2026-08-24 — `legacylinkstudio.com` DNS fully decommissioned at Namecheap
+
+Founder confirmed the old name is no longer used at all, so this finishes
+the "what's left" item from 2026-08-21: retiring `legacylinkstudio.com` for
+real, not just detaching it from Vercel.
+
+**Removed every record in the zone**, via Namecheap Advanced DNS (logged in
+directly, records deleted one at a time with confirmation on each):
+
+- Host records: `A @`, `CNAME www`, `TXT @` (zoho-verification), `TXT @`
+  (SPF `include:zohocloud.ca`), `TXT _dmarc`, `TXT resend._domainkey`,
+  `TXT send` (SPF `include:amazonses.com`), `TXT zmail._domainkey` — all
+  gone, Host Records now reads "No Records Found."
+- Mail Settings: the three Zoho `MX @` records (`mx`/`mx2`/`mx3.zohocloud.ca`)
+  deleted individually, but the last MX record (`send` →
+  `feedback-smtp.us-east-1.amazonses.com`) had no delete icon once it was the
+  only row left — Namecheap requires switching the Mail Settings mode itself
+  instead. Changed it from **Custom MX** to **No Email Service** and saved;
+  confirmed by the "Mail settings successfully saved" toast.
+
+This is a real behavior change, not just cleanup — it directly contradicts
+the 2026-08-21 entry above that said `info@legacylinkstudio.com` "still
+works — it's now the alias, same inbox, nothing lost." That was true then;
+it is **not true anymore**. With no MX records on `legacylinkstudio.com`,
+mail sent to `info@legacylinkstudio.com` will now bounce at the sender's
+side before it ever reaches Zoho, regardless of the alias still existing on
+the `jolinma81` mailbox internally. `info@busyseason.ca` is unaffected —
+its DNS lives in a separate zone.
+
+CLAUDE.md's DNS zone table for `legacylinkstudio.com` (the one that said "do
+not remove any of them") is now stale and needs updating to match: every
+record it lists is gone.

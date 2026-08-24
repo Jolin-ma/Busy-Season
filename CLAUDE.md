@@ -13,7 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 > - **GitHub rename**: repo `Jolin-ma/Legacy-Link` → `Jolin-ma/Busy-Season`; local `origin` remote updated to match.
 > - **Code pushed**: commit `f7b1b69` rebranding the repo is on `main` and deployed.
 >
-> The DNS zone table just below still shows the **old** `legacylinkstudio.com` records — that domain is still live (not yet decommissioned) and those records are historical/reference, not evidence anything above is undone.
+> **`legacylinkstudio.com`'s DNS was fully decommissioned at Namecheap on 2026-08-24** — every record (A/CNAME, all TXT, all MX) was deleted and Mail Settings switched to "No Email Service." The domain now resolves nothing and receives no mail; `info@legacylinkstudio.com` no longer works even though the alias still exists inside Zoho, because there's no MX to route to it. `busyseason.ca`'s own DNS is a separate zone and is unaffected. See `website/progress.md`'s 2026-08-24 entry for the full record list and why the last MX record needed the Mail Settings mode switched instead of a direct delete.
 
 | Project | Root | Port | Start command |
 |---|---|---|---|
@@ -52,16 +52,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 >
 > **DNS is cleaned up too.** The four dead records (`CNAME app`, `CNAME ops`, `CNAME api`, `TXT _railway-verify.api`) were removed from Namecheap on 2026-08-16 and confirmed gone against the authoritative nameserver. Nothing from the retired product is left running anywhere.
 
-**The DNS zone for `legacylinkstudio.com` now holds only records that matter — do not remove any of them:**
+**`legacylinkstudio.com`'s DNS zone is empty — decommissioned 2026-08-24.** It used to hold the marketing site's `A @`/`CNAME www`, three Zoho `MX @` records for the `info@` inbox, Zoho mail-auth TXT records, and Resend TXT/MX records. All of it is gone; do not assume any of it still routes anything. Production mail and lead delivery run on `busyseason.ca`'s own DNS zone, which was untouched by this.
 
-| Record | Why it exists |
-|---|---|
-| `A @` → `216.198.79.1`, `CNAME www` | the marketing site on Vercel |
-| `MX @` ×3 → `*.zohocloud.ca` | the `info@` inbox |
-| `TXT @` (zoho-verification + `v=spf1 include:zohocloud.ca`), `TXT zmail._domainkey`, `TXT _dmarc` | Zoho mail auth |
-| `TXT resend._domainkey`, `TXT send` (`v=spf1 include:amazonses.com`), `MX send` | **Resend — this is what delivers quote-form leads.** Breaking these silently kills the lead path. |
-
-Note Zoho is on **Canada-region** infrastructure (`zohocloud.ca`, not the generic `mx.zoho.com`), which most setup guides get wrong for this account.
+Zoho itself is on **Canada-region** infrastructure (`zohocloud.ca`, not the generic `mx.zoho.com`), which most setup guides get wrong for this account — relevant if `busyseason.ca`'s Zoho records ever need reconstructing.
 
 ## Commands
 
