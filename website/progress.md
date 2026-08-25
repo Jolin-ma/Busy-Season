@@ -1513,12 +1513,33 @@ Caught it before saving. Lesson: after copying a secret, go straight to
 pasting it with no intermediate clicks, and verify length/prefix via a
 non-displaying check before saving a secret field.
 
-**Still outstanding, separate issue:** `hero.mp4` (swapped in earlier today,
-see the "Swap hero and sample-reel video assets" commit) is encoded as
-**HEVC/H.265**, while every other video on the site is H.264. Chrome/Firefox/
-Edge cannot decode HEVC in a `<video>` tag — only Safari can — so the hero
-video is currently a blank/frozen player for most visitors. Confirmed by
-loading it directly: `readyState` stuck at 0, `duration: null`, no frame ever
-decoded. Not fixed yet — founder chose to fix the Resend key first and hasn't
-said whether to re-encode `hero.mp4` to H.264 or replace it with a different
-file.
+**Was outstanding, now fixed:** `hero.mp4` (swapped in earlier today, see the
+"Swap hero and sample-reel video assets" commit) was encoded as **HEVC/H.265**,
+while every other video on the site is H.264. Chrome/Firefox/Edge cannot
+decode HEVC in a `<video>` tag — only Safari can — so the hero video was a
+blank/frozen player for most visitors. Confirmed by loading it directly:
+`readyState` stuck at 0, `duration: null`, no frame ever decoded.
+
+## 2026-08-24 (later still) — Re-encoded hero.mp4 to H.264
+
+Re-encoded with the `ffmpeg-static` npm package's binary (the WinGet-installed
+system `ffmpeg.exe` is blocked from running on this machine by an Application
+Control policy — worth remembering if `ffmpeg` "permission denied"s again).
+Settings: H.264 High profile, `yuv420p` (down from the source's 10-bit
+`yuv420p10le`), scaled 1080x1920 → 720x1280 to match `roof1.mp4`'s
+convention, CRF 23, AAC 128k, `+faststart`. 22.7 MB → 2.1 MB, still 15.072s
+at 24fps.
+
+Verified two ways, deliberately not by trusting in-browser autoplay in this
+session — the Chrome automation instance was hanging on `readyState: 0` for
+*every* video that turn, including `roof1.mp4` (already live, already known
+to work), so that check was worthless as a signal and would have looked like
+a false failure on a correct file:
+1. `ffprobe` on the pre-upload file: `h264`/`High`/`yuv420p`/720x1280 — correct.
+2. Downloaded the **live CDN copy** post-deploy (`curl` from `busyseason.ca`,
+   byte-identical size, 2,122,370 bytes) and decoded a frame from it with
+   `ffmpeg`, confirming the actually-deployed bytes are a valid, playable
+   H.264 stream, not just the local pre-upload file.
+
+Deployed as `dpl_BKUpVpFqS6MTQZ8yDo1dngsk1KLW`, aliased to `busyseason.ca` /
+`www.busyseason.ca`, confirmed `READY`.
