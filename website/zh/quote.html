@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>领取免费样片广告 — Busy Season | 面向家庭服务生意的视频广告</title>
+  <meta name="description" content="告诉我们你的生意，我们就用你自己的施工照片做一支真实的视频广告 —— 免费，在你答应任何事之前。通常一个工作日内回复。" />
+  <link rel="icon" href="../image/mark.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="alternate" hreflang="en" href="https://busyseason.ca/quote.html" />
+  <link rel="alternate" hreflang="zh-Hans" href="https://busyseason.ca/zh/quote.html" />
+  <link rel="alternate" hreflang="x-default" href="https://busyseason.ca/quote.html" />
+</head>
+<body>
+  <a href="#main" class="skip-link">跳到正文</a>
+
+  <header class="site-header" data-site-header>
+    <div class="container">
+      <a href="index.html" class="brand">
+        <span>Busy <em>Season</em></span>
+      </a>
+      <div class="nav-panel">
+        <nav class="nav-links" aria-label="主导航">
+          <a href="work.html">作品</a>
+          <a href="pricing.html">服务与价格</a>
+          <a href="how-it-works.html">合作流程</a>
+          <a href="about.html">关于我们</a>
+        </nav>
+        <div class="nav-cta-wrap">
+          <div class="lang-toggle">
+            <a href="../quote.html" hreflang="en" lang="en">EN</a>
+            <a href="quote.html" aria-current="true" hreflang="zh-Hans">中文</a>
+          </div>
+          <a href="quote.html" class="nav-cta" aria-current="page">领取免费样片广告</a>
+        </div>
+      </div>
+      <button class="nav-toggle" data-nav-toggle aria-label="切换菜单" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="page-head">
+      <div class="container">
+        <p class="eyebrow">领取免费样片广告</p>
+        <h1>先看一支为你生意做的。</h1>
+        <p class="lede">五个字段。价格已经在价格页上 —— 你会收到的，是一个关于时间和是否合适的直接答复，通常在一个工作日内；并且对少数生意，会有一支真实的样片广告，在你答应任何事之前。</p>
+      </div>
+    </section>
+
+    <section class="section-tight">
+      <div class="container grid grid-split" style="align-items: start;">
+        <!-- 每多一个字段都是放弃填写的理由，所以刻意做得短 -->
+        <form class="card" data-quote-form data-inbox="info@busyseason.ca">
+          <div class="form-field">
+            <label for="business">公司名称</label>
+            <input id="business" name="business" type="text" autocomplete="organization" required />
+          </div>
+
+          <div class="form-field">
+            <label for="name">你的名字</label>
+            <input id="name" name="name" type="text" autocomplete="name" required />
+          </div>
+
+          <div class="form-field">
+            <label for="email">邮箱</label>
+            <input id="email" name="email" type="email" autocomplete="email" required />
+          </div>
+
+          <div class="form-field">
+            <label for="phone">电话 <span class="hint">（选填 —— 通常最快）</span></label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" />
+          </div>
+
+          <div class="form-field">
+            <label for="service">你做什么 <span class="hint">（行业和你覆盖的区域）</span></label>
+            <input id="service" name="service" type="text" placeholder="例如：屋顶 —— 达勒姆地区和多伦多东部" required />
+          </div>
+
+          <div class="form-field">
+            <label for="details">还有什么想让我们知道的？ <span class="hint">（选填）</span></label>
+            <textarea id="details" name="details" rows="4" placeholder="例如：风暴损修旺季，我们提供免费检查。已经在自己投广告。"></textarea>
+          </div>
+
+          <!-- 蜜罐字段，对访客隐藏，机器人填了就会被丢弃 -->
+          <div class="hp" aria-hidden="true">
+            <label for="company_website">Company website</label>
+            <input id="company_website" name="company_website" type="text" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" data-sending-label="提交中…">提交我的申请</button>
+
+          <p class="muted" style="font-size: 0.8125rem; margin-top: 1rem; text-align: center;">直接进我们的收件箱 —— 我们会回复你填写的邮箱地址。想自己写？<a href="mailto:info@busyseason.ca" class="link">给我们发邮件</a>。</p>
+        </form>
+
+        <div>
+          <div class="notice notice-success" data-quote-status hidden tabindex="-1" role="status">
+            <strong>收到了 —— 你的申请已提交。</strong>
+            我们会回复你填写的邮箱地址，通常在一个工作日内。你不用再做任何事。
+          </div>
+
+          <!-- 仅当接口失败时显示，保留 mailto 兜底 -->
+          <div class="notice" data-quote-error hidden tabindex="-1" role="alert">
+            <strong data-quote-error-message>没有发送成功。</strong>
+            抱歉 —— 是我们这边出了问题，不是你的。
+            <a href="mailto:info@busyseason.ca" class="link" data-quote-mailto>改用邮件发送</a>，
+            我们会从那里接手。你填的内容已经带上了。
+          </div>
+
+          <h2 style="font-size: 1.5rem; margin-top: 0;">接下来会发生什么</h2>
+          <div class="steps steps-stacked" style="margin-bottom: 2.5rem;">
+            <div class="step">
+              <div>
+                <h3 style="font-size: 1.0625rem;">我们给一个直接的答复</h3>
+                <p>成本、时间，以及我们是否真的合适 —— 通常在一个工作日内。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h3 style="font-size: 1.0625rem;">你把手机里的照片发给我们</h3>
+                <p>10–20 张最近的施工照片。样片广告就是用它们做的，也是整个流程里唯一真正的功课。</p>
+              </div>
+            </div>
+            <div class="step">
+              <div>
+                <h3 style="font-size: 1.0625rem;">你看一支为你生意做的真实广告</h3>
+                <p>然后再决定。样片不欠任何费用，你说开始之前什么都不会启动。</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size: 1.125rem; color: var(--green);">第一个吃螃蟹没有风险</h3>
+            <p class="muted" style="font-size: 0.9375rem;">样片广告是免费的。如果你继续做启动套餐、却不喜欢初稿，定金全额退还。增长套餐按月付，提前 30 天通知即可取消。</p>
+          </div>
+
+          <div class="card" style="margin-top: 1.5rem;">
+            <h3 style="font-size: 1.125rem;">更想直接聊？</h3>
+            <p class="muted" style="font-size: 0.9375rem;">目前联系我们最快的方式是邮件，每一封我们都会看。在上面留下你的电话，我们给你回电。</p>
+            <p style="margin-top: 1rem;">
+              <a href="mailto:info@busyseason.ca" class="link">info@busyseason.ca</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="brand">
+            <img src="../image/mark.svg" alt="" width="32" height="32" />
+            <span>Busy <em>Season</em></span>
+          </a>
+          <p class="footer-blurb">我们为家庭服务生意做视频广告 —— 并帮你投放。</p>
+          <a href="mailto:info@busyseason.ca" class="footer-email">info@busyseason.ca</a>
+        </div>
+        <div>
+          <h4>工作室</h4>
+          <ul>
+            <li><a href="work.html">我们的作品</a></li>
+            <li><a href="pricing.html">服务与价格</a></li>
+            <li><a href="how-it-works.html">合作流程</a></li>
+            <li><a href="about.html">关于我们</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>开始</h4>
+          <ul>
+            <li><a href="quote.html">领取免费样片广告</a></li>
+            <li><a href="pricing.html">价格</a></li>
+            <li><a href="pricing.html#faq">常见问题</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>法律</h4>
+          <ul>
+            <li><a href="../terms.html">服务条款（英文）</a></li>
+            <li><a href="../privacy.html">隐私政策（英文）</a></li>
+            <li><a href="../terms.html#usage-rights">使用权（英文）</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span data-year></span> Busy Season. 保留所有权利。</span>
+        <span>面向家庭服务生意的视频广告，做好并托管。</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>

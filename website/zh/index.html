@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Busy Season — 面向家庭服务生意的视频广告</title>
+  <meta name="description" content="我们做能带来客户来电的视频广告，并帮你投放。用你自己的施工照片制作，在你自己的 Meta 广告账户上投放和管理。启动套餐 750 加元，增长套餐 1,500 加元/月。" />
+  <link rel="icon" href="../image/mark.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../styles.css" />
+  <link rel="alternate" hreflang="en" href="https://busyseason.ca/" />
+  <link rel="alternate" hreflang="zh-Hans" href="https://busyseason.ca/zh/" />
+  <link rel="alternate" hreflang="x-default" href="https://busyseason.ca/" />
+</head>
+<body>
+  <a href="#main" class="skip-link">跳到正文</a>
+
+  <header class="site-header" data-site-header>
+    <div class="container">
+      <a href="index.html" class="brand">
+        <span>Busy <em>Season</em></span>
+      </a>
+      <div class="nav-panel">
+        <nav class="nav-links" aria-label="主导航">
+          <a href="work.html">作品</a>
+          <a href="pricing.html">服务与价格</a>
+          <a href="how-it-works.html">合作流程</a>
+          <a href="about.html">关于我们</a>
+        </nav>
+        <div class="nav-cta-wrap">
+          <div class="lang-toggle">
+            <a href="../index.html" hreflang="en" lang="en">EN</a>
+            <a href="index.html" aria-current="true" hreflang="zh-Hans">中文</a>
+          </div>
+          <a href="quote.html" class="nav-cta">领取免费样片广告</a>
+        </div>
+      </div>
+      <button class="nav-toggle" data-nav-toggle aria-label="切换菜单" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- 1. 首屏 —— 深色、直说做什么、一个行动按钮 -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">面向家庭服务生意的视频广告</p>
+          <h1>我们帮你做视频广告，再帮你投出去。</h1>
+          <p class="lede">我们做能让你电话响起来的视频广告 —— 而且帮你投放。用你自己的施工照片制作，在你自己的 Meta 广告账户上投放，每月持续管理。</p>
+          <div class="btn-row">
+            <a href="quote.html" class="btn btn-primary">领取免费样片广告</a>
+          </div>
+          <p class="hero-note">屋顶、暖通空调、门窗、檐槽、铲雪 —— 只要你的生意靠电话响起来，就适合。广告预算始终留在你自己的账户、用你自己的银行卡付款，我们从不经手。</p>
+        </div>
+
+        <!-- 首屏样片 —— 真实的 9:16 成片，静音循环自动播放 -->
+        <div class="reel">
+          <video
+            src="../video/hero.mp4"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="metadata"
+            aria-label="9:16 视频广告样片，作为演示作品生成"
+          ></video>
+          <span class="reel-format">9:16</span>
+          <button type="button" class="video-sound" data-sound-toggle aria-pressed="false" aria-label="打开声音">
+            <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+            <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 真实素材差异化 -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">这些广告为什么有效</p>
+          <h2>你的真实项目，做成像大品牌拍的广告。</h2>
+          <p>一位业主要花 15,000 加元换屋顶，这是一个关于信任的决定 —— 你自己做过的活儿比任何 AI 凭空生成的画面更能赢得这份信任。所以我们从你手机里已有的照片开始。</p>
+        </div>
+
+        <!-- 左边是一个屋顶项目未经修饰的手机照片，右边是据此剪出的成片 -->
+        <div class="showcase">
+          <div class="showcase-before">
+            <span class="showcase-label">来自你的手机</span>
+            <div class="showcase-raw">
+              <span><img src="../image/before.webp" alt="施工前：同一栋房子屋顶老化 —— 秃斑、青苔、锈迹" loading="lazy" width="560" height="1003" /></span>
+              <span><img src="../image/worksite.webp" alt="施工中：屋顶拆到基层，工人在作业，车道上放着垃圾斗" loading="lazy" width="560" height="1003" /></span>
+              <span><img src="../image/truck.webp" alt="清理阶段：工程车和拖车装着拆下的旧瓦，新屋顶已完成" loading="lazy" width="560" height="1003" /></span>
+              <span><img src="../image/drone.webp" alt="施工后：航拍完工的深色新瓦屋顶" loading="lazy" width="560" height="1003" /></span>
+            </div>
+            <p class="muted" style="margin-top: 1.25rem; font-size: 0.9375rem;">十几二十张你手上早就有、以为没用的随手拍 —— 完工项目、施工前后对比、工人、工程车、你的商标。</p>
+          </div>
+
+          <div class="showcase-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m0 0-5-5m5 5-5 5"/></svg>
+          </div>
+
+          <div class="showcase-after">
+            <span class="showcase-label">成片</span>
+            <div class="showcase-frame">
+              <video
+                src="../video/finished-ad.mp4"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="none"
+                aria-label="用左边照片剪出的 15 秒成片"
+              ></video>
+              <button type="button" class="video-sound" data-sound-toggle aria-pressed="false" aria-label="打开声音">
+                <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+                <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              </button>
+            </div>
+            <p class="muted" style="margin-top: 1.25rem; font-size: 0.9375rem;">AI 负责制作层面的打磨 —— 开场钩子、运动、b-roll 空镜、字幕处理。你的真实项目负责建立信任。</p>
+          </div>
+        </div>
+
+          <p class="muted" style="margin-top: 1.75rem; font-size: 0.8125rem; text-align: center;">示意用途，并非某个客户的真实项目 —— 我们还没有可以公开的案例。</p>
+      </div>
+    </section>
+
+    <!-- 3. 你实际拿到什么 -->
+    <section class="section section-dark">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">你实际拿到什么</p>
+          <h2>广告做好、广告在跑，还有一份关于效果的实话。</h2>
+        </div>
+
+        <div class="grid grid-3 grid-wide">
+          <div>
+            <h3>做好的视频广告</h3>
+            <p class="muted">每支约 15 秒 —— 这是在 Reels、TikTok、Shorts 上留得住注意力的长度。可按需交付竖版、方版和宽屏，不会被裁成一团乱。</p>
+          </div>
+          <div>
+            <h3>一个由我们运营的广告投放</h3>
+            <p class="muted">我们在你的 Meta 广告账户上搭建广告系列、上线并管理 —— 定位、预算、轮换素材，关掉没效果的、加码有效果的。你不用去学广告管理工具。</p>
+          </div>
+          <div>
+            <h3>一份月度报告</h3>
+            <p class="muted">一份简短、说人话的总结：跑了什么、花了多少、什么有效、下一步我们要改什么。没有后台要登录，也没有黑话。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 合作流程 -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">怎么合作</p>
+          <h2>三步，其中两步是我们的。</h2>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <h3>把手机里的照片发给我们</h3>
+            <p>十几二十张最近的施工照片，以及任何你拍过的视频。再花十分钟聊聊你做什么、想让谁打电话来。</p>
+          </div>
+          <div class="step">
+            <h3>我们做好广告并上线投放</h3>
+            <p>我们写脚本、制作广告，并在你自己的账户上把广告系列跑起来 —— 定位、预算，以及客户咨询落到哪里。</p>
+          </div>
+          <div class="step">
+            <h3>你接电话</h3>
+            <p>我们持续把新鲜素材投给你所在区域的业主，每月告诉你效果如何。你负责接电话。</p>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <a href="how-it-works.html" class="btn btn-secondary">看完整流程</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. 保障 —— 排在价格锁定之前，绝不做成小字 -->
+    <section class="guarantee">
+      <div class="container guarantee-inner">
+        <span class="guarantee-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg>
+        </span>
+        <div>
+          <h2>不喜欢初稿？那就不用付钱。</h2>
+          <p>如果初剪不是你想要的，启动套餐的定金全额退还。增长套餐按月付 —— 提前 30 天通知即可随时取消，没有合约。</p>
+        </div>
+        <a href="quote.html" class="btn btn-primary">领取免费样片广告</a>
+      </div>
+    </section>
+
+    <!-- 6. 我们是新工作室，不装 -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">凭什么信我们</p>
+          <h2>我们是新的，也不打算假装不是。</h2>
+          <p>这个页面上没有客户商标，因为我们还没赢得它们。以下是我们能拿出来代替一整面商标墙的东西。</p>
+        </div>
+
+        <div class="facts">
+          <div class="fact">
+            <p class="fact-value">1<small> 支免费样片广告</small></p>
+            <p>在你答应任何事之前，我们先用你自己的施工照片，为你的生意做一支真实的广告。你是在看一支视频，不是听一段推销。</p>
+          </div>
+          <div class="fact">
+            <p class="fact-value">$0<small> 的风险</small></p>
+            <p>如果你不喜欢初稿，启动套餐的定金全额退还；增长套餐提前 30 天通知即可取消。</p>
+          </div>
+          <div class="fact">
+            <p class="fact-value">2<small> 周</small></p>
+            <p>从你的照片送到我们手上那天算起，到成片交付、广告系列上线。不是一场长达一个季度的启动流程。</p>
+          </div>
+        </div>
+
+        <div class="btn-row" style="justify-content: flex-start;">
+          <a href="work.html" class="btn btn-secondary">看目前的作品</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. 价格预览 —— 服务费和广告费一起出现 -->
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">上线期价格</p>
+          <h2>两种开始方式。</h2>
+          <p>价格公开写在网站上，以加元计。这是我们打造作品集期间的上线期价格 —— 现在开始增长套餐，只要不中断，就一直保持这个价格。</p>
+        </div>
+
+        <div class="pricing">
+          <div class="plan">
+            <h3 class="plan-name">启动套餐</h3>
+            <p class="plan-kicker">一次性。做好广告，并上线你的第一个广告系列。</p>
+            <p class="plan-price">750 <span>加元</span></p>
+            <p class="plan-unit">每支 250 加元 · 共 3 支</p>
+            <ul>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>3 支用你真实施工照片做成的视频广告</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>在你的广告账户上一次性搭建并上线广告系列</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>整批一轮修改</span>
+              </li>
+            </ul>
+            <div class="allin-inline">
+              <strong>另加广告费，直接付给 Meta。</strong>
+              首次测试我们建议至少 500 加元。
+              <span class="allin-sum">≈ 起步一共约 1,250 加元</span>
+            </div>
+            <a href="quote.html" class="btn btn-secondary btn-block">从启动套餐开始</a>
+          </div>
+
+          <div class="plan plan-featured">
+            <span class="plan-badge">最超值</span>
+            <h3 class="plan-name">增长套餐</h3>
+            <p class="plan-kicker">每月都有新广告进入市场，由我们管理。</p>
+            <p class="plan-price">1,500 <span>加元 / 月</span></p>
+            <p class="plan-unit">每月 4 支 · 广告投放托管</p>
+            <ul>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>每月 4 支新视频，分两批、每两周 2 支交付</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>你的 Meta 广告投放由我们搭建、运营和优化</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>每月一份说人话的效果报告</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
+                <span>按月付 —— 提前 30 天通知即可取消</span>
+              </li>
+            </ul>
+            <div class="allin-inline">
+              <strong>另加广告费，直接付给 Meta。</strong>
+              我们建议从每月 1,000 加元起。
+              <span class="allin-sum">≈ 每月一共约 2,500 加元</span>
+            </div>
+            <a href="quote.html" class="btn btn-primary btn-block">聊聊增长套餐</a>
+          </div>
+        </div>
+
+        <!-- 总花费，再单独列一次，免得有人在通话中途才发现总数 -->
+        <div class="allin" style="margin-top: 2.5rem;">
+          <div>
+            <span class="allin-label">工作室服务费</span>
+            <p class="allin-value">1,500 加元 / 月<small>广告做好、上线、管理、报告</small></p>
+          </div>
+          <span class="allin-op" aria-hidden="true">+</span>
+          <div>
+            <span class="allin-label">你的广告费</span>
+            <p class="allin-value">每月 1,000 加元起<small>在你自己的账户上直接付给 Meta</small></p>
+          </div>
+          <span class="allin-op" aria-hidden="true">=</span>
+          <div class="allin-total">
+            <span class="allin-label">总计</span>
+            <p class="allin-value">≈ 2,500 加元 / 月<small>全案代理公司光服务费就收这么多</small></p>
+          </div>
+        </div>
+
+        <p class="muted" style="text-align: center; margin-top: 2rem; font-size: 0.9375rem;">所有价格均以加拿大元（CAD）计。</p>
+
+        <div class="btn-row" style="justify-content: center;">
+          <a href="pricing.html" class="btn btn-secondary">完整价格与常见问题</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. 结尾行动召唤 -->
+    <section class="cta-band">
+      <div class="container">
+        <h2>让你的电话响起来。</h2>
+        <p>告诉我们你做什么、想让谁打电话来，我们就用你自己的施工照片为你做一支真实的广告 —— 免费，在你答应任何事之前。</p>
+        <div class="btn-row">
+          <a href="quote.html" class="btn btn-primary">领取免费样片广告</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="index.html" class="brand">
+            <img src="../image/mark.svg" alt="" width="32" height="32" />
+            <span>Busy <em>Season</em></span>
+          </a>
+          <p class="footer-blurb">我们为家庭服务生意做视频广告 —— 并帮你投放。</p>
+          <a href="mailto:info@busyseason.ca" class="footer-email">info@busyseason.ca</a>
+        </div>
+        <div>
+          <h4>工作室</h4>
+          <ul>
+            <li><a href="work.html">我们的作品</a></li>
+            <li><a href="pricing.html">服务与价格</a></li>
+            <li><a href="how-it-works.html">合作流程</a></li>
+            <li><a href="about.html">关于我们</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>开始</h4>
+          <ul>
+            <li><a href="quote.html">领取免费样片广告</a></li>
+            <li><a href="pricing.html">价格</a></li>
+            <li><a href="pricing.html#faq">常见问题</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>法律</h4>
+          <ul>
+            <li><a href="../terms.html">服务条款（英文）</a></li>
+            <li><a href="../privacy.html">隐私政策（英文）</a></li>
+            <li><a href="../terms.html#usage-rights">使用权（英文）</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span data-year></span> Busy Season. 保留所有权利。</span>
+        <span>面向家庭服务生意的视频广告，做好并托管。</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../script.js"></script>
+</body>
+</html>

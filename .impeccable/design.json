@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-31T21:15:00Z",
+  "title": "Design System: Busy Season",
+  "notes": "Bilingual (EN + Simplified Chinese). Chinese pages live under /zh/, carry lang=\"zh-Hans\", share this styles.css/script.js, and get a CJK system-font fallback with negative tracking reset (The CJK Reset Rule). No CJK webfont.",
+  "extensions": {
+    "colorMeta": {
+      "cool-paper": {
+        "role": "neutral",
+        "displayName": "Cool Paper",
+        "canonical": "#fafaf9",
+        "tonalRamp": ["#191a1a", "#33352f", "#54564f", "#7b7d74", "#a3a59b", "#c9cabf", "#e6e6de", "#fafaf9"]
+      },
+      "charcoal": {
+        "role": "neutral",
+        "displayName": "Charcoal",
+        "canonical": "#16181c",
+        "tonalRamp": ["#16181c", "#22252b", "#333842", "#474d59", "#6b7280", "#9098a5", "#c3c9d2", "#eceef2"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#1a1b1e",
+        "tonalRamp": ["#1a1b1e", "#2c2e33", "#42454c", "#5a5d63", "#7d8088", "#a4a7ad", "#cdcfd3", "#ecedee"]
+      },
+      "work-light-amber": {
+        "role": "primary",
+        "displayName": "Work-Light Amber",
+        "canonical": "#e8862e",
+        "tonalRamp": ["#2c1806", "#4d2a0c", "#743f13", "#a2591b", "#cf7423", "#e8862e", "#f0a866", "#f9d8b4"]
+      },
+      "steel-blue": {
+        "role": "secondary",
+        "displayName": "Steel Blue",
+        "canonical": "#3e5c76",
+        "tonalRamp": ["#131c24", "#20303e", "#2e4557", "#3e5c76", "#557a97", "#7d9db5", "#aec5d6", "#dde8f0"]
+      },
+      "guarantee-green": {
+        "role": "tertiary",
+        "displayName": "Guarantee Green",
+        "canonical": "#3f8f5f",
+        "tonalRamp": ["#0f2418", "#173a26", "#215538", "#2f6f49", "#3f8f5f", "#5faf7d", "#93cba8", "#d0e8da"]
+      },
+      "hairline": {
+        "role": "neutral",
+        "displayName": "Hairline",
+        "canonical": "#e2e2e0",
+        "tonalRamp": ["#1c1c1a", "#33332f", "#4d4d48", "#6e6e68", "#95958d", "#bbbbb2", "#d4d4cf", "#f0f0ec"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero H1 only — one per page, plain-words statement of what the studio does, ≤16ch wide." },
+      "headline": { "displayName": "Headline", "purpose": "Section headers (h2). 26px floor on mobile." },
+      "title": { "displayName": "Title", "purpose": "Card/subsection headings, plan names, FAQ summaries." },
+      "title-sm": { "displayName": "Title Sm", "purpose": "Title role scaled to 18px inside dense cards (FAQ summary, card h3 overrides)." },
+      "body-lg": { "displayName": "Body Lg", "purpose": "Lede paragraph (20px), Ink Muted, capped ~38rem." },
+      "body": { "displayName": "Body", "purpose": "Default reading text (17px)." },
+      "body-ui": { "displayName": "Body Ui", "purpose": "Button and control text (16px / 600)." },
+      "body-sm": { "displayName": "Body Sm", "purpose": "Supporting tier (15px) — card body, list items, kickers, muted notes." },
+      "caption": { "displayName": "Caption", "purpose": "14px — dense card copy, footer links, chips." },
+      "caption-sm": { "displayName": "Caption Sm", "purpose": "13px — smallest reading size: disclaimers, meta rows, terms." },
+      "label": { "displayName": "Label", "purpose": "Uppercase eyebrow above every section header; footer heads. Steel on light, amber on charcoal. Tracking drops to ~0.04em under :lang(zh)." },
+      "micro": { "displayName": "Micro", "purpose": "11px badge treatment — plan badge, 9:16 format tag." },
+      "numeric": { "displayName": "Numeric", "purpose": "Prices, all-in total. Space Grotesk, heavier than body — money is allowed to feel prominent. Digits stay Space Grotesk on the Chinese pages too." },
+      "numeric-sm": { "displayName": "Numeric Sm", "purpose": "Stat-strip figures (44px)." }
+    },
+    "shadows": [
+      { "name": "lift", "value": "0 18px 40px -24px rgba(22, 24, 28, 0.45)", "purpose": "Permanent emphasis on the featured Growth plan; available as .card-lift. Not used on cards at rest." },
+      { "name": "lift-raised", "value": "0 24px 56px -24px rgba(22, 24, 28, 0.5)", "purpose": "Hover state for portfolio thumbnails, paired with scale(1.02)." }
+    ],
+    "motion": [
+      { "name": "transition", "value": "130ms cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "The single transition token (--t). All state changes: 100–150ms, quicker than the sister brand. Respect prefers-reduced-motion." }
+    ],
+    "breakpoints": [
+      { "name": "lg", "value": "1000px" },
+      { "name": "md", "value": "860px" },
+      { "name": "sm", "value": "760px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single amber action per page. Near-black label text — never white — per the contrast rule.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Get a Free Sample Ad</a>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 3rem; padding: 0.875rem 1.75rem; border: 1px solid transparent; border-radius: 6px; background: #e8862e; color: #1a1b1e; font-family: 'Inter', system-ui, sans-serif; font-size: 1rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: background 130ms cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary:hover { background: #d4741d; } .ds-btn-primary:focus-visible { outline: 3px solid #e8862e; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "The one non-primary action on a page. Transparent with an ink hairline that solidifies on hover.",
+      "html": "<a class=\"ds-btn-secondary\" href=\"#\">See the full process</a>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 3rem; padding: 0.875rem 1.75rem; border: 1px solid rgba(26,27,30,0.28); border-radius: 6px; background: transparent; color: #1a1b1e; font-family: 'Inter', system-ui, sans-serif; font-size: 1rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: border-color 130ms cubic-bezier(0.4,0,0.2,1), color 130ms cubic-bezier(0.4,0,0.2,1); } .ds-btn-secondary:hover { border-color: #1a1b1e; } .ds-btn-secondary:focus-visible { outline: 3px solid #e8862e; outline-offset: 2px; }"
+    },
+    {
+      "name": "Language Toggle",
+      "kind": "nav",
+      "refersTo": "caption-sm",
+      "description": "EN / 中文, grouped left of the nav CTA. Plain links, no JS — each page links to its own translated counterpart. Active language in solid ink, other in Ink Muted, split by a hairline.",
+      "html": "<div class=\"ds-lang-toggle\"><a href=\"#\" aria-current=\"true\" hreflang=\"en\">EN</a><a href=\"#\" hreflang=\"zh-Hans\" lang=\"zh-Hans\">中文</a></div>",
+      "css": ".ds-lang-toggle { display: inline-flex; align-items: center; font-family: 'Inter', system-ui, sans-serif; font-size: 0.8125rem; font-weight: 600; } .ds-lang-toggle a { text-decoration: none; color: #5a5d63; padding: 0.25rem 0.1875rem; transition: color 130ms cubic-bezier(0.4,0,0.2,1); } .ds-lang-toggle a:hover { color: #1a1b1e; } .ds-lang-toggle a[aria-current=\"true\"] { color: #1a1b1e; } .ds-lang-toggle a + a { margin-left: 0.5rem; padding-left: 0.625rem; border-left: 1px solid #e2e2e0; }"
+    },
+    {
+      "name": "Section Eyebrow",
+      "kind": "custom",
+      "refersTo": "label",
+      "description": "Uppercase label above every section header. Steel blue on light grounds.",
+      "html": "<span class=\"ds-eyebrow\">What makes these work</span>",
+      "css": ".ds-eyebrow { display: block; text-transform: uppercase; letter-spacing: 0.16em; font-family: 'Inter', system-ui, sans-serif; font-size: 0.75rem; font-weight: 700; color: #3e5c76; margin: 0 0 1rem; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Single-column form field, label above, large touch target, global amber focus ring.",
+      "html": "<div class=\"ds-field\"><label for=\"ds-biz\">Business name</label><input id=\"ds-biz\" type=\"text\" placeholder=\"e.g. North Ridge Roofing\" /></div>",
+      "css": ".ds-field { display: block; } .ds-field label { display: block; font-family: 'Inter', system-ui, sans-serif; font-size: 0.9375rem; font-weight: 600; color: #1a1b1e; margin-bottom: 0.5rem; } .ds-field input { width: 100%; min-height: 3rem; padding: 0.75rem 1rem; border: 1px solid rgba(26,27,30,0.22); border-radius: 6px; background: #fff; font: inherit; font-family: 'Inter', system-ui, sans-serif; color: #1a1b1e; transition: border-color 130ms cubic-bezier(0.4,0,0.2,1); } .ds-field input:hover { border-color: rgba(26,27,30,0.4); } .ds-field input:focus-visible { outline: 3px solid #e8862e; outline-offset: 2px; }"
+    },
+    {
+      "name": "Format Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Display-only tag on portfolio pieces (aspect ratio, vertical). Not an interactive filter.",
+      "html": "<span class=\"ds-chip\">9:16 vertical</span>",
+      "css": ".ds-chip { display: inline-block; padding: 0.375rem 0.75rem; border: 1px solid #e2e2e0; border-radius: 999px; background: #fff; font-family: 'Inter', system-ui, sans-serif; font-size: 0.8125rem; font-weight: 500; color: #5a5d63; }"
+    },
+    {
+      "name": "Featured Pricing Plan",
+      "kind": "card",
+      "refersTo": "plan-featured",
+      "description": "The Growth plan: 2px steel border, permanent Lift shadow, steel 'Best value' badge notched over the corner, green check bullets, CTA pinned to the bottom.",
+      "html": "<div class=\"ds-plan\"><span class=\"ds-plan-badge\">Best value</span><h3 class=\"ds-plan-name\">Growth</h3><p class=\"ds-plan-kicker\">Fresh ads in market every month, managed.</p><p class=\"ds-plan-price\">$1,500 <span>CAD / month</span></p><ul><li><svg viewBox=\"0 0 20 20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m4 10 4 4 8-8\"/></svg><span>4 new videos a month, in biweekly batches of 2</span></li><li><svg viewBox=\"0 0 20 20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m4 10 4 4 8-8\"/></svg><span>Your Meta campaign built, run, and optimized by us</span></li></ul><a class=\"ds-plan-cta\" href=\"#\">Talk about Growth</a></div>",
+      "css": ".ds-plan { position: relative; display: flex; flex-direction: column; padding: 2.5rem; border: 2px solid #3e5c76; border-radius: 10px; background: #fff; box-shadow: 0 18px 40px -24px rgba(22,24,28,0.45); font-family: 'Inter', system-ui, sans-serif; color: #1a1b1e; } .ds-plan-badge { position: absolute; top: -0.875rem; left: 2.5rem; padding: 0.375rem 0.75rem; border-radius: 4px; background: #3e5c76; color: #fff; font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; } .ds-plan-name { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 1.375rem; font-weight: 600; margin: 0 0 0.375rem; } .ds-plan-kicker { font-size: 0.9375rem; color: #5a5d63; margin: 0 0 1.75rem; } .ds-plan-price { display: flex; align-items: baseline; gap: 0.5rem; font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 3rem; font-weight: 600; letter-spacing: -0.03em; line-height: 1; margin: 0 0 1.75rem; } .ds-plan-price span { font-family: 'Inter', system-ui, sans-serif; font-size: 1rem; font-weight: 400; letter-spacing: 0; color: #5a5d63; } .ds-plan ul { list-style: none; margin: 0 0 2.5rem; padding: 0; display: grid; gap: 0.875rem; } .ds-plan li { display: grid; grid-template-columns: 1.25rem 1fr; gap: 0.75rem; align-items: start; font-size: 0.9375rem; line-height: 1.5; } .ds-plan li svg { width: 1.25rem; height: 1.25rem; color: #3f8f5f; margin-top: 0.125rem; } .ds-plan-cta { margin-top: auto; display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: 0.875rem 1.75rem; border-radius: 6px; background: #e8862e; color: #1a1b1e; font-weight: 600; text-decoration: none; transition: background 130ms cubic-bezier(0.4,0,0.2,1); } .ds-plan-cta:hover { background: #d4741d; }"
+    },
+    {
+      "name": "Guarantee Block",
+      "kind": "custom",
+      "refersTo": "guarantee-green",
+      "description": "Full-width risk-reversal band: green wash between green hairlines, circular check, green headline, one plain sentence, primary CTA. Sized to be seen on a phone without scrolling past it.",
+      "html": "<div class=\"ds-guarantee\"><span class=\"ds-guarantee-mark\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\" aria-hidden=\"true\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m5 13 4 4L19 7\"/></svg></span><div><h2>Don't like the first drafts? You don't pay.</h2><p>Your Launch Pack deposit comes back in full if the first cuts aren't what you wanted. Growth is month to month — cancel any time with 30 days notice, no contract.</p></div><a class=\"ds-guarantee-cta\" href=\"#\">Get a Free Sample Ad</a></div>",
+      "css": ".ds-guarantee { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 2rem; padding: 3rem 2rem; background: rgba(63,143,95,0.07); border-top: 1px solid rgba(63,143,95,0.28); border-bottom: 1px solid rgba(63,143,95,0.28); font-family: 'Inter', system-ui, sans-serif; } .ds-guarantee-mark { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; border-radius: 50%; background: #3f8f5f; } .ds-guarantee-mark svg { width: 1.75rem; height: 1.75rem; color: #fff; } .ds-guarantee h2 { margin: 0 0 0.5rem; font-family: 'Space Grotesk', system-ui, sans-serif; font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 600; letter-spacing: -0.02em; color: #3f8f5f; } .ds-guarantee p { margin: 0; max-width: 46rem; color: #1a1b1e; line-height: 1.6; } .ds-guarantee-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: 0.875rem 1.75rem; border-radius: 6px; background: #e8862e; color: #1a1b1e; font-weight: 600; text-decoration: none; white-space: nowrap; transition: background 130ms cubic-bezier(0.4,0,0.2,1); } .ds-guarantee-cta:hover { background: #d4741d; }"
+    },
+    {
+      "name": "All-In Cost Callout",
+      "kind": "custom",
+      "refersTo": "numeric",
+      "description": "Reusable fee + spend + total object. Values at numeric weight, never muted. Total is steel on light. The signature money component.",
+      "html": "<div class=\"ds-allin\"><div><span class=\"ds-allin-label\">Studio fee</span><p class=\"ds-allin-value\">$1,500 / mo<small>Ads made, launched, managed, reported</small></p></div><span class=\"ds-allin-op\" aria-hidden=\"true\">+</span><div><span class=\"ds-allin-label\">Your ad spend</span><p class=\"ds-allin-value\">from $1,000 / mo<small>Paid directly to Meta on your own account</small></p></div><span class=\"ds-allin-op\" aria-hidden=\"true\">=</span><div class=\"ds-allin-total\"><span class=\"ds-allin-label\">All in</span><p class=\"ds-allin-value\">≈ $2,500 / mo<small>A full-service agency charges that in fees alone</small></p></div></div>",
+      "css": ".ds-allin { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 1.25rem; padding: 1.5rem; border: 1px solid #e2e2e0; border-radius: 10px; background: #fff; font-family: 'Inter', system-ui, sans-serif; } .ds-allin-op { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 1.25rem; font-weight: 600; color: #5a5d63; } .ds-allin-label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #5a5d63; margin-bottom: 0.375rem; } .ds-allin-value { margin: 0; font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 1.375rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; color: #1a1b1e; } .ds-allin-value small { display: block; margin-top: 0.25rem; font-family: 'Inter', system-ui, sans-serif; font-size: 0.8125rem; font-weight: 400; letter-spacing: 0; color: #5a5d63; } .ds-allin-total .ds-allin-value { color: #3e5c76; } @media (max-width: 860px) { .ds-allin { grid-template-columns: 1fr; text-align: left; } .ds-allin-op { display: none; } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Contractor's Estimate",
+    "overview": "Busy Season looks the way a well-run trades business writes a quote: plain, confident, and honest about the numbers. There is no ornament, no agency flourish, no wordplay on the company name. Every screen makes one clear statement about an outcome and offers one action — \"Get a Free Sample Ad\" — and the money is typeset like it matters, never buried in fine print or set grey-on-grey. The visitor is a busy owner reading on a phone, often standing on a job site, with about five minutes; the design's whole job is to let that person see exactly what they get, what it costs, and what it costs all in, without hunting.\n\nThe system runs on high contrast and generous space rather than colour or decoration. Near-white cool paper (#fafaf9) is the default ground; deep charcoal (#16181c) carries the hero and the \"what you get\" and closing sections, where the site is allowed real drama. A single saturated amber is the only action colour on the page, and it is rationed — it fills the CTA and marks a step number, nothing else. Steel blue is the quieter supporting voice: eyebrows, labels, and the \"Best value\" emphasis on the Growth plan. Geometry is crisp — 6px corners, 1px hairline borders, an 8px grid — and surfaces are flat until something is deliberately lifted.\n\nThis is deliberately not the register of the founder's warmer consumer brand (a sister company in memorial/tribute services). That world uses serif type, a warm off-white, soft rounding, and a gentle, unhurried tone. Busy Season rejects all of it: no serif anywhere, cooler paper, sharper edges, higher contrast, a more saturated accent. A visitor who has seen both sites should never mistake one for the other, and nothing here should read as a creative agency selling art rather than a studio that understands small-business marketing.",
+    "keyCharacteristics": [
+      "One accent colour, one action per page — amber appears on ≤10% of any screen.",
+      "Money is a first-class design element: prices, ad spend, and the all-in total get Space Grotesk weight, never muted grey.",
+      "Charcoal sections for drama; cool paper for everything else; no third background mood.",
+      "Crisp 6px geometry and 1px hairlines — no soft rounding, no heavy shadows at rest.",
+      "No serif, ever. Space Grotesk for anything that carries weight, Inter for reading.",
+      "Real client work is the imagery. Raw phone photos are welcome and stay unprettified."
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "Amber is the only action colour and appears on no more than ~10% of any screen. If two things on a page are amber, one of them is wrong. Its scarcity is what makes the CTA unmissable.", "section": "colors" },
+      { "name": "The Amber-Is-Not-Text Rule", "body": "On any light background, amber may fill a shape but must never set type — it fails AA at 2.6:1. The amber button takes near-black text; white-on-amber is banned. Amber as text is allowed only on charcoal (6.4:1). Steel blue is the accent-coloured text on light. There is a comment block restating this at the top of styles.css; keep it.", "section": "colors" },
+      { "name": "The Money Rule", "body": "Any dollar figure — plan price, per-video rate, recommended ad spend, all-in total — is set in Space Grotesk at numeric weight, never in muted grey, and the fee, the spend, and the total always travel together. A contractor who has to hunt for the real number assumes he is being handled.", "section": "typography" },
+      { "name": "The Plain-Words Rule", "body": "Every headline says what the studio does in plain language. No riffing on the company name, no \"Busy Season\" puns — the name is already doing enough explaining.", "section": "typography" },
+      { "name": "The Flat-At-Rest Rule", "body": "Surfaces are flat with a hairline border by default. A shadow appears only as (a) permanent emphasis on the single featured pricing plan, or (b) a response to hover on a portfolio thumbnail. Adding a shadow anywhere else breaks the system.", "section": "elevation" },
+      { "name": "The CJK Reset Rule", "body": "On :lang(zh), negative letter-spacing goes back to normal everywhere (tight tracking mangles Han), body line-height rises to 1.75, the uppercase-label tracking drops to ~0.04em, and every ch-based max-width cap is re-tuned (one Han glyph ≈ 1ch). The wordmark \"Busy Season\" stays Latin — the registered name is not translated. No CJK webfont: Han glyphs fall through per-glyph to a device system stack.", "section": "typography" }
+    ],
+    "dos": [
+      "Do keep one amber action per page and keep amber under ~10% of the screen (The One Voice Rule).",
+      "Do set every dollar figure in Space Grotesk at numeric weight, and keep fee + ad spend + all-in total together wherever a price appears (The Money Rule).",
+      "Do put near-black text on the amber button; use amber-as-text only on charcoal.",
+      "Do reach for charcoal (#16181c) when a section needs drama — hero, \"what you get\", closing CTA, footer — and cool paper everywhere else.",
+      "Do define surfaces with a 1px hairline border and keep them flat at rest; reserve the Lift shadow for the featured plan and portfolio hover.",
+      "Do use 6px corners for controls and 10px for containers — nothing softer.",
+      "Do let raw client photos look raw in the before/after showcase; the contrast is the argument.",
+      "Do use real produced-ad footage or an honest labelled placeholder — never stock imagery.",
+      "Do keep every new page in both languages: a root /x.html gets a /zh/x.html, both with reciprocal hreflang, or neither ships.",
+      "Do reset negative letter-spacing, raise line-height, and re-tune ch caps under :lang(zh) (The CJK Reset Rule)."
+    ],
+    "donts": [
+      "Don't set amber type on the light background, and never put white text on the amber button (both fail AA).",
+      "Don't introduce a serif anywhere — serif belongs to the sister consumer brand.",
+      "Don't mute or grey-out pricing, ad spend, or the all-in total.",
+      "Don't add a second competing CTA or a second accent colour to a page.",
+      "Don't add shadows to cards, inputs, or sections at rest, and don't soften the 6px/10px corner scale.",
+      "Don't add a third background mood — the system is paper or charcoal, nothing between.",
+      "Don't pun on the \"Busy Season\" name in a headline; state what the studio does in plain words.",
+      "Don't add confetti, cursor trails, or motion longer than ~150ms.",
+      "Don't load a CJK webfont, translate the \"Busy Season\" wordmark, or set Chinese in a song/serif face.",
+      "Don't carry the Latin negative tracking or ch-based width caps onto the Chinese pages."
+    ]
+  }
+}

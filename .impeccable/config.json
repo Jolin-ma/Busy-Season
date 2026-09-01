@@ -1,0 +1,72 @@
+{
+  "buildPath": "website",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font-size",
+        "value": "2rem",
+        "createdAt": "2026-09-01T01:02:20.484Z",
+        "reason": "incumbent: .guarantee h2 clamp ceiling clamp(1.5rem,2.6vw,2rem), pre-existing in styles.css since brief §8 build; documented in DESIGN.md Typography as a clamp display size"
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-09-01T01:04:35.096Z",
+        "reason": "brief §8.3 + PRODUCT.md Brand Commitments pin Space Grotesk (headlines) + Inter (body); 'no serif anywhere'. Incumbent, established design system."
+      },
+      {
+        "rule": "overused-font",
+        "value": "space grotesk",
+        "createdAt": "2026-09-01T01:04:35.184Z",
+        "reason": "brief §8.3 + PRODUCT.md pin Space Grotesk for headlines and numeric treatment. Incumbent, established."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "website/styles.css"
+        ],
+        "createdAt": "2026-09-01T01:04:35.338Z",
+        "reason": "incumbent .notice component (left accent bar), brief §8.5, documented in DESIGN.md Components > Inputs; pre-existing since the original build"
+      },
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "website/quote.html"
+        ],
+        "createdAt": "2026-09-01T01:08:42.149Z",
+        "reason": "degraded regex detector: clusters a whole column's inline font-sizes (13-24px) and reports ratio 1.8:1 while its own threshold is 1.25:1 — self-contradictory false positive; incumbent inline-style density"
+      },
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "website/zh/quote.html"
+        ],
+        "createdAt": "2026-09-01T01:08:42.216Z",
+        "reason": "mirror of website/quote.html; same degraded-detector false positive"
+      },
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "website/work.html"
+        ],
+        "createdAt": "2026-09-01T01:17:28.515Z",
+        "reason": "user confirmed: degraded regex detector clusters a section's inline font-sizes and reports ratio 1.4:1 while its own threshold is 1.25:1 — false positive; incumbent inline-style density"
+      },
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "website/zh/work.html"
+        ],
+        "createdAt": "2026-09-01T01:17:28.593Z",
+        "reason": "user confirmed: mirror of website/work.html; same degraded-detector false positive"
+      }
+    ]
+  }
+}

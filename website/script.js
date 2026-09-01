@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (submit) {
         submit.disabled = true;
         submit.dataset.label = submit.textContent;
-        submit.textContent = "Sending…";
+        submit.textContent = submit.dataset.sendingLabel || "Sending…";
       }
 
       try {

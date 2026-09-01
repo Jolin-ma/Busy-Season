@@ -211,6 +211,45 @@ strong { font-weight: 600; }
   background: var(--amber-hover);
 }
 
+/* Language toggle — EN / 中文, grouped immediately left of the CTA. Plain
+   links, no JS: every page points at its own translated counterpart, and
+   the /zh/ set carries lang="zh-Hans". Legal pages (no zh counterpart) point
+   中文 at the Chinese homepage. */
+.nav-cta-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lang-toggle a {
+  text-decoration: none;
+  color: var(--ink-light);
+  padding: 0.25rem 0.1875rem;
+  transition: color var(--t);
+}
+
+.lang-toggle a:hover {
+  color: var(--ink);
+}
+
+.lang-toggle a[aria-current="true"] {
+  color: var(--ink);
+}
+
+.lang-toggle a + a {
+  margin-left: 0.5rem;
+  padding-left: 0.625rem;
+  border-left: 1px solid var(--line);
+}
+
 /* On desktop this wrapper has zero layout effect — its children act as
    direct flex items of .site-header .container. It only becomes a real box
    on mobile, so the "Get a Quote" button lives inside the same toggled
@@ -1758,8 +1797,20 @@ strong { font-weight: 600; }
   }
 
   .site-header.open .nav-cta-wrap {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
     margin-top: 0.75rem;
+  }
+
+  /* In the dropdown the toggle sits on its own row above the CTA, with a
+     divider so it reads as a distinct control, not a nav link. */
+  .site-header.open .lang-toggle {
+    justify-content: flex-start;
+    padding: 0.875rem 0;
+    border-top: 1px solid var(--line);
+    font-size: 1rem;
   }
 
   .site-header.open .nav-cta {
@@ -1781,6 +1832,74 @@ strong { font-weight: 600; }
   .btn-row .btn {
     width: 100%;
   }
+}
+
+/* ==========================================================================
+   Simplified Chinese — the /zh/ pages carry <html lang="zh-Hans">.
+
+   No CJK webfont: a Noto Sans SC download is multiple megabytes and most
+   prospects arrive on a phone on a job site (§8.8). Latin glyphs and digits
+   keep rendering in Space Grotesk / Inter; Han glyphs fall through, per
+   glyph, to whatever sans the device ships. These rules undo the Latin-tuned
+   negative tracking (which mangles Han) and the ch-based line-length caps
+   (one Han glyph ≈ 1ch, so the English max-widths run far too wide).
+   ========================================================================== */
+
+:lang(zh) {
+  font-family: "Inter", "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei",
+    "Noto Sans CJK SC", "Source Han Sans SC", system-ui, sans-serif;
+}
+
+:lang(zh) body {
+  line-height: 1.75;               /* Han needs more leading than Latin's 1.6 */
+}
+
+:lang(zh) h1,
+:lang(zh) h2,
+:lang(zh) h3,
+:lang(zh) h4,
+:lang(zh) .brand,
+:lang(zh) .plan-name,
+:lang(zh) .plan-price,
+:lang(zh) .fact .fact-value,
+:lang(zh) .faq summary,
+:lang(zh) .allin-value,
+:lang(zh) .allin-op,
+:lang(zh) .allin-inline .allin-sum,
+:lang(zh) .step::before,
+:lang(zh) .footer-email {
+  font-family: "Space Grotesk", "PingFang SC", "HarmonyOS Sans SC",
+    "Microsoft YaHei", "Noto Sans CJK SC", system-ui, sans-serif;
+  letter-spacing: normal;
+}
+
+:lang(zh) h1 { line-height: 1.2; }
+:lang(zh) h2 { line-height: 1.3; }
+
+/* ch-unit caps, reset for Han glyph density */
+:lang(zh) .hero h1 { max-width: 20ch; }
+:lang(zh) .cta-band h2 { max-width: 24ch; }
+:lang(zh) .page-head h1 { max-width: 28ch; }
+
+/* The uppercase + wide-tracking label treatment is inert on Han. Keep a
+   gentle tracking so an eyebrow still reads as a label, not body text. */
+:lang(zh) .eyebrow,
+:lang(zh) .showcase-label,
+:lang(zh) .allin-label,
+:lang(zh) .plan-badge,
+:lang(zh) .plan-unit,
+:lang(zh) .reel-format,
+:lang(zh) .work-meta span,
+:lang(zh) .chip,
+:lang(zh) .footer-grid h4,
+:lang(zh) .footer-bottom {
+  letter-spacing: 0.04em;
+}
+
+/* The wordmark keeps its Latin form on the Chinese site — "Busy Season" is
+   the registered name and is not translated. */
+:lang(zh) .brand span {
+  font-family: "Space Grotesk", system-ui, sans-serif;
 }
 
 @media (prefers-reduced-motion: reduce) {
