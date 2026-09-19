@@ -14,6 +14,11 @@
       "source": "/press.html",
       "destination": "/",
       "permanent": true
+    },
+    {
+      "source": "/zh/:path*",
+      "destination": "/",
+      "permanent": false
     }
   ]
 }

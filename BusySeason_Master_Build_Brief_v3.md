@@ -559,7 +559,7 @@ The hardest question in months 1–3 is "who else have you done this for?" Don't
 - **New figures:** Launch Pack $750 CAD one-off · $500 recommended ad spend · **≈ $1,250 all in**. No monthly figures anywhere.
 - **New line:** *"We make your video ads — and launch them for you."* Ongoing management is mentioned only as "quoted case by case", never with a price.
 - **`terms.html` keeps stating money as percentages, never dollar figures** — that convention is deliberate (see `CLAUDE.md`).
-- **`zh/` pages need the founder's approval before publishing.** Mirror the English changes, then have the Chinese copy checked; keep the CJK single-line rule.
+- **The Chinese (`zh/`) pages are parked, not published** — decided 2026-09-18. They were updated to v3 and moved to `_parked/zh-hans/`; the language toggle, `hreflang` tags and Chinese legal notes were removed from the English pages. Publish them only when a bilingual site is needed, and only after the founder has approved the Chinese copy. Restore steps: `_parked/README.md`.
 - After editing, search `website/` for `Growth`, `1,500`, `2,500`, `monthly`, `retainer`, `month to month`, `run them`, `managed` — each remaining hit should be either gone or deliberately kept.
 
 **1. Remove Growth ($1,500/mo) — must fix**
@@ -571,7 +571,7 @@ The hardest question in months 1–3 is "who else have you done this for?" Don't
 | `how-it-works.html` | Growth ongoing-work paragraph (~177), "Monthly readout" step (~188), and the Growth batch cadence block (~256–260) → replace with the handover step and the ~2-week check-in (Section 5, steps 8–9). |
 | `quote.html` | Line ~158: "Growth is month to month, cancel with 30 days notice." |
 | `terms.html` | Growth payment terms (~100), pre-authorized debit for monthly fees (~110), rate lock (~127–130), Growth "no minimum term" (~144–145), and §7 Cancellation (~232–236), which is written entirely around the retainer. Rewrite §7 for a one-off engagement: cancellation before production starts, and how the deposit and guarantee interact. **Flag for legal review.** |
-| `zh/index.html`, `zh/pricing.html` | The same Growth content in Chinese (增长套餐, 1,500 加元, 2,500 加元). Founder approval required. |
+| `zh/*` | Parked, not deployed (see ground rules). The v3 edits were applied to the parked copies so they're ready to restore. |
 
 **2. "We run them / managed" claims — must fix**
 
@@ -594,4 +594,4 @@ The hardest question in months 1–3 is "who else have you done this for?" Don't
 - **FAQ: "Can you keep running the campaign for me?"** — "Yes, quoted case by case." No rate.
 - **Guarantee made the most prominent element after the price** on the pricing page (4.4).
 
-**Done when:** the search in the ground rules returns nothing unintended, the Chinese pages are approved, the terms rewrite is flagged for legal review, the quote form still submits end to end (it emails `info@busyseason.ca`), and `website/progress.md` has an entry recording the change and why.
+**Done when:** the search in the ground rules returns nothing unintended, the terms rewrite is flagged for legal review, the quote form still submits end to end (it emails `info@busyseason.ca`), and `website/progress.md` has an entry recording the change and why.

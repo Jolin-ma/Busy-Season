@@ -773,6 +773,13 @@ strong { font-weight: 600; }
   align-items: start;
 }
 
+/* One paid offer since brief v3 — a single centred card, never a
+   two-column table with one column empty (§8.5). */
+.pricing.pricing-single {
+  grid-template-columns: minmax(0, 40rem);
+  justify-content: center;
+}
+
 .plan {
   position: relative;
   display: flex;

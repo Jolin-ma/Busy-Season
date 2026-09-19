@@ -2,9 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **The Simplified Chinese pages are parked (2026-09-18), not deployed.** `website/zh/` was moved to `_parked/zh-hans/` — outside Vercel's Root Directory — and the language toggle, `hreflang` tags and Chinese legal notes were removed from the English pages. A temporary redirect in `website/vercel.json` sends `/zh/*` to `/`. Anything below about a bilingual site describes the parked state; see `_parked/README.md` to restore it (publish only when a bilingual site is needed). The parked copy is an unapproved draft.
+
 ## What this repo is
 
-**Busy Season** — a small studio that produces AI-assisted video ads for home service businesses **and runs them** as Meta campaigns on the client's own ad account. Spec: `BusySeason_Master_Build_Brief.md`, currently at **v2**, which supersedes v1 entirely.
+**Busy Season** — a small studio that produces AI-assisted video ads for home service businesses **and launches them** as a Meta campaign on the client's own ad account (ongoing management is quoted case by case, not a published offer). Spec: `BusySeason_Master_Build_Brief_v3.md`, currently at **v3** — it dropped the $1,500/mo Growth plan; the only paid offer is the $750 Launch Pack. It supersedes v2 and v1 entirely.
 
 > **Renamed from LegacyLink Studio, 2026-08-21 — migration to Busy Season / `busyseason.ca` is complete.** The founder reversed the 2026-08-17 decision to keep the old name (brief §0/§11). `legacylinkstudio.com` is being **fully retired, not redirected**. Everything below is done:
 > - **DNS/Zoho/Resend**: `busyseason.ca` registered at Namecheap; A/CNAME records point it at Vercel; Zoho Mail domain added with MX, SPF, and DKIM all **verified**; Resend domain **verified** (so `LEAD_FROM`/`LEAD_INBOX` defaulting to `@busyseason.ca` in `website/api/quote.js` is safe to run in production).

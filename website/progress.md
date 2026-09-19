@@ -1543,3 +1543,67 @@ a false failure on a correct file:
 
 Deployed as `dpl_BKUpVpFqS6MTQZ8yDo1dngsk1KLW`, aliased to `busyseason.ca` /
 `www.busyseason.ca`, confirmed `READY`.
+
+
+---
+
+## 2026-09-18 — Brought the site in line with brief v3: Growth dropped, "launch" not "run"
+
+`BusySeason_Master_Build_Brief_v3.md` dropped the $1,500/mo Growth plan and
+changed the positioning line from "…and we run them for you" to **"We make
+your video ads — and launch them for you."** The Meta campaign and Instagram
+were already sending real visitors to a site that still sold Growth and
+promised monthly management, so this was done before anything else. The
+brief's Section 12 was the checklist.
+
+**Why:** with no track record, a $1,500/month retainer plus standing ad-account
+access is too large an ask of a prospect who hasn't seen the studio deliver;
+and the Launch Pack only includes setup, launch and a handover, so "we run
+them / managed every month" overstated it. Ongoing management is still
+available, quoted case by case, and deliberately not priced on the site.
+
+**English pages**
+- `index.html`, `pricing.html`: Growth card, its all-in figures and the
+  agency comparison removed; single centred Launch Pack card (new
+  `.pricing-single` in `styles.css`); all-in is now $750 + $500 = **≈ $1,250**;
+  hero, "what you get" and "how it works" reworded to launch + handover +
+  two-week check-in; rate-lock notice reworded (no lock, no countdown).
+- `pricing.html`: new **"Your account stays yours"** block and a new FAQ
+  entry, "What access do you need to my ad account?"; "Do you run the ads for
+  us?" is now "Do you launch the ads for us?"; new "Can you keep running the
+  campaign for me?" (quoted case by case, no rate); "How long am I locked
+  in?", ad-spend, all-in and payment answers rewritten for a one-off;
+  "Why does Growth cost more per video?" deleted.
+- `how-it-works.html`: Optimization and Monthly readout steps replaced by
+  Handover and a two-week check-in (still nine steps).
+- `about.html`, `quote.html`: "manage/run" and Growth wording removed; the
+  ad-spend floor on About is now $500, not $1,000/month.
+- `terms.html`: Growth payment split, pre-authorized debit, rate lock, and the
+  retainer cancellation clause removed; §7 rewritten for a one-off. Still
+  states money in percentages only. **Needs the same legal review as before.**
+- Footer tagline and bottom line changed on all 8 English pages
+  ("…and launch them for you." / "…made and launched.").
+- `privacy.html` (§4, §5): "run your campaigns" → "launch"; "partner or
+  administrator access" → "partner access"; management mentioned only "where
+  separately agreed". Last-updated date now 18 September 2026.
+
+**Chinese pages — parked, not deployed.** The same v3 changes were mirrored
+onto all 6 `zh/` pages (增长套餐 gone), but the founder decided to take the
+Chinese site down until it's needed (publish only when applying for a role that
+requires bilingual). The pages were moved out of `website/` to
+`_parked/zh-hans/` (outside Vercel's Root Directory, kept in git), the
+EN / 中文 toggle, the `hreflang` tags and the Chinese notes on `terms.html` /
+`privacy.html` were removed from the English pages, and a **temporary (non-
+permanent) redirect `/zh/:path*` → `/`** was added to `website/vercel.json` so
+any Chinese link already shared lands on the English home page instead of a 404.
+`_parked/README.md` has the restore steps. The copy is still an unapproved
+Claude draft — approve it line by line before it ever goes live.
+
+**Checked:** searched every page for Growth / 1,500 / 2,500 / 1,000 /
+monthly / retainer / month to month / rate lock / readout — the only hits left
+are deliberate ("Ads Manager", "quote ongoing management", the privacy
+policy's "manage the projects"). HTML tag balance verified on all 14 pages before the Chinese set was parked;
+pricing page screenshotted in English and Chinese at desktop width and at
+600px. (Headless Chrome clamps its window below ~500px, so a 390px capture
+clips even on an unchanged page — not a layout fault.) The quote form's
+`api/quote.js` was not touched and was not re-tested here.
