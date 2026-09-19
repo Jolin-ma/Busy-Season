@@ -1636,3 +1636,14 @@ before.** The parked `zh-hans` pages were not updated.
 the day photos land — added to its card on `pricing.html` and `index.html`,
 the "How fast do I get my ads?" FAQ, and the Timing section of
 `how-it-works.html`.
+
+**Wording sweep, same day.** Read every page for copy that still assumed one
+package or that every client grants ad-account access. Fixed: `pricing.html`
+("Your ad account" intro, scope note, access / ad-spend / Facebook-page /
+already-run-ads / payment FAQ answers — the $100–200 Single Video boost is now
+framed as "a first look, not a proper test" so it no longer contradicts the
+$200 floor); `index.html` timing fact 2 → 1–2 weeks; `work.html` ("we're the
+ones uploading them anyway", "any batch"); `quote.html` "Five fields" → "Six
+short fields" (the form has six); `how-it-works.html` file → files;
+`terms.html` §1 and `privacy.html` §5 now scope campaign building / account
+access to the Launch Pack. **Legal pages still need review.**
