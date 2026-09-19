@@ -10,7 +10,7 @@ The six `zh/` pages (index, work, how-it-works, pricing, about, quote), **alread
 
 1. **Review and approve the copy** (above). Re-check it against the current English pages first — if the English has changed since 2026-09-18, mirror those changes.
 2. `git mv _parked/zh-hans website/zh`
-3. **Delete the temporary redirect** in `website/vercel.json` (`"source": "/zh/:path*"`). If it stays, `/zh/` will keep redirecting to the English home page even though the pages exist.
+3. **Delete the three temporary `/zh` redirects** in `website/vercel.json` (sources `/zh`, `/zh/` and `/zh/:path*`). If it stays, `/zh/` will keep redirecting to the English home page even though the pages exist.
 4. **Put the links back in the English pages.** They were removed in the commit that parked this folder — `git show <that commit>` shows exactly what to reinstate:
    - the `<div class="lang-toggle">` EN / 中文 block in each page's header (`.lang-toggle` CSS is still in `styles.css`);
    - the three `hreflang` `<link rel="alternate">` lines (`en`, `zh-Hans`, `x-default`) in the `<head>` of the six marketing pages — they must be reciprocal with the `zh/` pages;

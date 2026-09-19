@@ -16,6 +16,16 @@
       "permanent": true
     },
     {
+      "source": "/zh",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/zh/",
+      "destination": "/",
+      "permanent": false
+    },
+    {
       "source": "/zh/:path*",
       "destination": "/",
       "permanent": false
