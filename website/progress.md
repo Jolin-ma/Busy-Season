@@ -1647,3 +1647,27 @@ ones uploading them anyway", "any batch"); `quote.html` "Five fields" → "Six
 short fields" (the form has six); `how-it-works.html` file → files;
 `terms.html` §1 and `privacy.html` §5 now scope campaign building / account
 access to the Launch Pack. **Legal pages still need review.**
+
+**How It Works, same day (before the sweep).** Ad account access, campaign
+build, handover, two-week check-in and the intake brief's "Your campaign"
+questions marked "— Launch Pack only"; lede notes a Single Video is five of the
+nine steps; the review step says a Single Video ends there.
+
+**Deployed and verified live, 2026-09-18.** Four commits pushed to `main`:
+`1ad4ed9` (Single Video tier, ad spend $200–300), `1eac701` (about-a-week
+delivery), `c6d693a` (How It Works Launch-Pack-only steps), `4a3da43` (wording
+sweep). Each was confirmed on `www.busyseason.ca` by fetching the page and
+finding the new copy (live within ~20–30s). Note: the bare `busyseason.ca`
+308-redirects to `www.` — a check that doesn't follow redirects sees nothing.
+
+**Still open:**
+- Legal review of `terms.html` (Single Video payment, credit, guarantee,
+  cancellation; §1 scope) and `privacy.html` §5.
+- The brief's sections 4.x, 11 and 12 still carry the $500 / ≈ $1,250 figures;
+  only the note at the top records the change.
+- Parked `_parked/zh-hans/` pages still show the old one-package pricing —
+  update before they are ever restored.
+- Home page hero and "What you actually get" still lead with the Launch Pack
+  (deliberate — the launch is the core pitch); the quote page's "for a small
+  number of businesses" sample-ad qualifier differs from the unqualified
+  promise elsewhere. Founder to decide on both.
