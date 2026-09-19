@@ -1607,3 +1607,27 @@ pricing page screenshotted in English and Chinese at desktop width and at
 600px. (Headless Chrome clamps its window below ~500px, so a 390px capture
 clips even on an unchanged page — not a layout fault.) The quote form's
 `api/quote.js` was not touched and was not re-tested here.
+
+## 2026-09-18 — Single Video tier ($250) added; ad spend lowered to $200–300
+
+Founder decision: $750 plus handing over Meta ad-account access is too big a
+first ask of a studio nobody has heard of. Two changes:
+
+- **New entry tier, Single Video — $250 CAD.** 1 ad (9:16 + 1:1), one revision,
+  **paid on delivery, no deposit**, owe nothing if the first draft is rejected,
+  and **no ad-account access** — the client posts or boosts it themselves.
+  Fee credited in full against a Launch Pack agreed within 30 days.
+- **Launch Pack unchanged at $750**, now shown as "3 videos at $250 · campaign
+  launch included free" in a featured "Best value" card beside the Single Video.
+- **Recommended ad spend $500 → $200–300**, so all in is **≈ $1,000** (was
+  ≈ $1,250). This reverses the earlier same-day brief decision that declined
+  $300; recorded at the top of the brief.
+
+Files: `pricing.html` (two-card layout, lede, guarantee, all-in block, new FAQ
+"Can I start with just one video?", ad-spend / all-in / drafts / lock-in /
+payment answers), `index.html` (meta, guarantee, $0-at-risk fact, two-card
+pricing preview, all-in block), `quote.html` and `how-it-works.html`
+(guarantee wording), `about.html` (ad-spend floor $500 → $200), `terms.html`
+(Single Video payment, credit, revision, first-draft and cancellation terms —
+still no dollar figures). **Terms changes need the same legal review as
+before.** The parked `zh-hans` pages were not updated.

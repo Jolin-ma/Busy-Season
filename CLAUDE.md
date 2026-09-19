@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-**Busy Season** — a small studio that produces AI-assisted video ads for home service businesses **and launches them** as a Meta campaign on the client's own ad account (ongoing management is quoted case by case, not a published offer). Spec: `BusySeason_Master_Build_Brief_v3.md`, currently at **v3** — it dropped the $1,500/mo Growth plan; the only paid offer is the $750 Launch Pack. It supersedes v2 and v1 entirely.
+**Busy Season** — a small studio that produces AI-assisted video ads for home service businesses **and launches them** as a Meta campaign on the client's own ad account (ongoing management is quoted case by case, not a published offer). Spec: `BusySeason_Master_Build_Brief_v3.md`, currently at **v3** — it dropped the $1,500/mo Growth plan. Paid offers are a $250 Single Video (paid on delivery, no ad-account access) and the $750 Launch Pack; recommended ad spend is $200–300, ≈ $1,000 all in (changed 2026-09-18, see the note at the top of the brief). It supersedes v2 and v1 entirely.
 
 > **Renamed from LegacyLink Studio, 2026-08-21 — migration to Busy Season / `busyseason.ca` is complete.** The founder reversed the 2026-08-17 decision to keep the old name (brief §0/§11). `legacylinkstudio.com` is being **fully retired, not redirected**. Everything below is done:
 > - **DNS/Zoho/Resend**: `busyseason.ca` registered at Namecheap; A/CNAME records point it at Vercel; Zoho Mail domain added with MX, SPF, and DKIM all **verified**; Resend domain **verified** (so `LEAD_FROM`/`LEAD_INBOX` defaulting to `@busyseason.ca` in `website/api/quote.js` is safe to run in production).
