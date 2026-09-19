@@ -1631,3 +1631,8 @@ pricing preview, all-in block), `quote.html` and `how-it-works.html`
 (Single Video payment, credit, revision, first-draft and cancellation terms —
 still no dollar figures). **Terms changes need the same legal review as
 before.** The parked `zh-hans` pages were not updated.
+
+**Follow-up, same day:** Single Video delivery set at **about a week** from
+the day photos land — added to its card on `pricing.html` and `index.html`,
+the "How fast do I get my ads?" FAQ, and the Timing section of
+`how-it-works.html`.
