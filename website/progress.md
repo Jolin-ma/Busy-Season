@@ -1715,3 +1715,13 @@ wording:
 and are being redone before they go on this page — two of the three cards are
 still roofing. It also asks for at least two verticals (met: roofing and snow
 removal).
+
+## 2026-09-28 — Samples page: photo line removed; ad spend confirmed at $200–300
+
+- `samples.html` "How it works" no longer offers to build from a client's job
+  photos. It now reads "Tell me the account and the offer. Get finished ads
+  back in 3 to 5 business days, under your name." The page makes no photo
+  claim anywhere.
+- Founder decision: **keep $200–300 recommended ad spend, ≈ $1,000 all in**
+  (brief §12.4, Option B). The site already showed this; brief §4.2, §4.6,
+  §6, §11 and §12 updated to match (brief v3.2).
