@@ -1694,3 +1694,24 @@ plays only while on screen (IntersectionObserver), so a phone fetches one
 video at a time, and the existing `data-sound-toggle` handles sound. Per-agency
 tracking works by query string (`/samples?a=name`) once analytics exist.
 Screenshotted at 1280px and 500px.
+
+## 2026-09-27 — Samples page no longer claims real-photo builds
+
+Brief v3.1 (later the same day) changed the agency pitch to lead with quality
+and speed, not the client's photos, since no real-photo sample exists yet
+(§9.5, §12.5). `samples.html` still said the ads were "built from the client's
+existing job photos", which an agency owner would catch. Changed to the §12.5
+wording:
+
+- Headline → "Short video ads for home service accounts. White label, 3 to 5
+  day turnaround."
+- Third card caption "Roofing, from job photos" → "Roofing" (and its
+  aria-label to match).
+- How it works → "Tell me the account and the offer. Get finished ads back in
+  3 to 5 business days, under your name. If your client has job photos, I can
+  build from those too."
+
+**Still open:** §12.5 says the current roofing ads read as obviously generated
+and are being redone before they go on this page — two of the three cards are
+still roofing. It also asks for at least two verticals (met: roofing and snow
+removal).
