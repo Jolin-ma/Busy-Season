@@ -1,16 +1,16 @@
 # Busy Season — Master Build Brief (v3)
 
-**Version:** 3.2 — revised 2026-09-27 (ad spend and Single Video reconciled with the live site). v3.1 revised 2026-09-27. v3.0 revised 2026-09-18. Supersedes v2 (2026-08-17), which superseded v1 (2026-08-16) entirely.
+**Version:** 3.2 — revised 2026-09-28. v3.1 revised 2026-09-27. v3.0 revised 2026-09-18. Supersedes v2 (2026-08-17), which superseded v1 (2026-08-16) entirely.
 
-> **Brief reconciled with the live site, 2026-09-27.** Two things the site already did on 2026-09-18 were never written into the body of this brief. Founder decisions, same day: (1) **recommended ad spend is $200–300, ≈ $1,000 all in** (Section 12.4, Option B). A $750 fee plus ad account access is already a big first ask of a cold prospect, and a lower all-in figure makes it easier to say yes. (2) **The $250 Single Video stays** as the entry paid offer: one ad, paid on delivery, no deposit, no ad account access, fee credited against a Launch Pack within 30 days. Sections changed: 4.1, 4.2, 4.6, 6 (homepage item 7, Services & Pricing), 8.5, 11, 12. The agency samples page (12.5) was built the same day.
+> **Ad spend settled at $200–300, 2026-09-28.** Section 12.4's open decision is closed as Option B: the recommended first-test ad spend is **$200–300, ≈ $1,000 all in**, matching the live site. The reasoning: a cold prospect already sees $750 plus ad account access as a big ask, and a lower all-in figure makes it easier to say yes. This reverses the 2026-09-18 choice of $500. The samples page also drops the line offering to build from a client's job photos; it now makes no photo claim at all. Sections changed for this: 4.2, 4.6, 6, 11, 12.
 
-> **Agency channel promoted, 2026-09-27.** White-label production for marketing agencies moves from an "Ongoing / revisit" open item to a **main go-to-market track**, run in parallel with direct contractor outreach rather than after it. The reasoning: it's the channel with the best long-term potential for a one-person studio. One agency relationship replaces several direct clients, there's no ad-account trust hurdle, an agency owner can judge the work in 90 seconds without a case study, and an agency's book spans verticals, so the work isn't tied to one trade's season. It also suits written-first outreach to marketing-literate buyers. Direct contractor sales stay in place: they produce the case study and campaign evidence the portfolio needs, which agency work (usually uncredited) can't. Sections changed for this: 9 (intro), 9.5 (added), 10, 11. Same day: Section 12 got a status check, an open decision on the ad spend figure (site says $200–300, brief says $500), and a spec for an unlisted agency samples page (12.4, 12.5).
+> **Agency channel promoted, 2026-09-27.** White-label production for marketing agencies moves from an "Ongoing / revisit" open item to a **main go-to-market track**, run in parallel with direct contractor outreach rather than after it. The reasoning: it's the channel with the best long-term potential for a one-person studio. One agency relationship replaces several direct clients, there's no ad-account trust hurdle, an agency owner can judge the work in 90 seconds without a case study, and an agency's book spans verticals, so the work isn't tied to one trade's season. It also suits written-first outreach to marketing-literate buyers. Direct contractor sales stay in place: they produce the case study and campaign evidence the portfolio needs, which agency work (usually uncredited) can't. Sections changed for this: 9 (intro), 9.5 (added), 10, 11. Same day: Section 12 got a status check, an open decision on the ad spend figure (site says $200–300, brief says $500), and a spec for an unlisted agency samples page (12.4, 12.5). Later the same day: the agency pitch was changed to lead with quality and speed rather than real client photos, since no real-photo sample exists yet (9.5, 12.5).
 
 > **Growth plan dropped, 2026-09-18.** v2's second rung — $1,500 CAD/month for 4 videos, a managed campaign and a monthly readout — is removed from the offer ladder. It is not to appear in site copy, outreach, ads, decks or drafts. The reasoning: a $1,500/month retainer plus ongoing ad-account access is a large commitment to ask of a prospect who has never seen the studio deliver anything, and with no case studies there is nothing to answer that objection with. The ladder is now free spec ad → $750 Launch Pack. A recurring tier can return later, priced off real delivery data rather than an estimate. Sections rewritten for this: 4.1, 4.2, 4.3 (removed), 4.4, 4.5, 4.6, 4.7, 4.8, 5, 7, 8.5, 11.
 
 > **Standalone project, 2026-09-18.** Busy Season is documented here as an independent business. References to a former name, to a sibling consumer venture, and to shared tooling or design decisions carried over from either have been removed — none of them are load-bearing, and keeping them made the brief read as a spin-off rather than a business in its own right. Anything still worth keeping was rewritten to stand on its own reasoning.
 
-> **Positioning revised, 2026-09-18.** With no managed tier, "and we run them for you" overstated what a Launch Pack buyer gets — setup and launch, then a handover. The positioning line is now *"We make your video ads — and launch them for you."* Ongoing management is still available, quoted case by case (4.3). Recommended first-test ad spend is settled at **$500 (≈ $1,250 all in)**. Sections rewritten for this: 0, 1, 2, 3, 4.4, 4.5, 4.6, 4.8, 6, 7, 11; Section 12 (live site change list) added.
+> **Positioning revised, 2026-09-18.** With no managed tier, "and we run them for you" overstated what a Launch Pack buyer gets — setup and launch, then a handover. The positioning line is now *"We make your video ads — and launch them for you."* Ongoing management is still available, quoted case by case (4.3). Recommended first-test ad spend is settled at **$500 (≈ $1,250 all in)** *(changed 2026-09-28 to $200–300, ≈ $1,000; see 4.6)*. Sections rewritten for this: 0, 1, 2, 3, 4.4, 4.5, 4.6, 4.8, 6, 7, 11; Section 12 (live site change list) added.
 
 **Purpose:** The single handoff spec for Busy Season. Give this to Claude (or another builder) as the starting point for the website build.
 
@@ -160,15 +160,14 @@ Every piece of copy should be legible to a business owner who has five minutes a
 
 ### 4.1 The offer ladder
 
-Three rungs, each with a clear job:
+Two rungs, each with a clear job:
 
 | | What it is | Price | Job |
 |---|---|---|---|
 | **Spec ad** | One free sample ad, built for their business | Free | Proof. Converts a cold pitch with no track record. |
-| **Single Video** | One finished ad, no campaign setup | $250 CAD, paid on delivery | The low-risk first purchase. No ad account access needed. |
-| **Launch Pack** | 3 videos + campaign setup | $750 CAD one-off | The main transaction. |
+| **Launch Pack** | 3 videos + campaign setup | $750 CAD one-off | The transaction. |
 
-The spec ad is the trial. The Single Video (added 2026-09-18) is for a prospect who likes the sample but isn't ready to hand over ad account access: 1 ad (9:16 + 1:1), one revision, **paid on delivery with no deposit**, nothing owed if the first draft is rejected, delivered in about a week, and the client posts or boosts it themselves. The $250 is credited in full against a Launch Pack agreed within 30 days. The Launch Pack is the main transaction and the only offer that includes a campaign launch.
+The spec ad is the trial. Launch Pack is not a second trial — it's the first real transaction, and it is currently the only paid offer.
 
 *Agency pricing is separate and is never published on the site — see 9.5.*
 
@@ -228,7 +227,7 @@ A contractor will mentally add the fee and the ad spend and arrive at a number b
 
 The agency comparison v2 used ($2,500–$8,000/month in fees alone) was written against a monthly fee and no longer has anything to compare to; drop it rather than stretching it to fit a one-off. If a comparison is wanted, compare against the cost of a single videographer day rate, which is the thing a contractor has actually priced before.
 
-**Recommended ad spend — $200–300, settled 2026-09-27.** First set at $500 (≈ $1,250 all in) on 2026-09-18, lowered to $200–300 on the site the same day, and confirmed on 2026-09-27 (12.4, Option B). The trade-off is known: a thinner test is harder to read. It was accepted because a $750 fee plus ad account access is already a big ask of a cold prospect, and a lower all-in figure makes the first yes easier. The site states **≈ $1,000 all in** everywhere the all-in figure appears.
+**Recommended ad spend — settled 2026-09-28 at $200–300.** This reverses the 2026-09-18 choice of $500. A cold prospect already sees $750 plus handing over ad account access as a big ask, and ≈ $1,000 all in is an easier first yes than ≈ $1,250. The trade-off is a thinner test, so set expectations on the handover call: $200–300 gives a first read on the creative, not a settled cost per lead. The site states **≈ $1,000 all in** everywhere the all-in figure appears.
 
 ### 4.7 Payment & terms
 
@@ -305,7 +304,7 @@ Six pages. The site's job is to **close deals that outreach opens**, not to gene
 4. **How it works** — three steps: *send us photos off your phone → we build your ads and launch them → you get the calls.* Generous horizontal spacing on desktop.
 5. **The guarantee** — its own block, visually prominent. "Don't like the first drafts? You don't pay." Not fine print.
 6. **Proof** — client results once they exist. Before then, a spec reel and an honest "new studio, here's what we can do" framing. Do not fake testimonials or invent logos.
-7. **Pricing preview** — the Single Video and Launch Pack at a glance, with the Launch Pack's all-in investment (≈ $1,000) stated, linking to the full pricing page.
+7. **Pricing preview** — the Launch Pack at a glance with the all-in investment (≈ $1,000) stated, linking to the full pricing page.
 8. **Closing CTA** — a final "Get a Free Sample Ad" before the footer. Don't make anyone scroll back up to convert.
 
 ### Our Work / Portfolio
@@ -314,7 +313,7 @@ Grid of video cards. Each piece gets real space — resist cramming small thumbn
 
 ### Services & Pricing
 
-- **Two offer cards: Single Video and Launch Pack** (since 2026-09-18), with the Launch Pack featured as best value. Both are real offers, so this is a genuine choice, not a decoy. Don't invent a third tier to make $750 look small.
+- **Single offer card: Launch Pack.** With one paid offer there is nothing to compare against, so don't fake a comparison table or invent a decoy tier to make $750 look small. A single well-built card plus the guarantee reads as confident; a two-column table with one column filled reads as a business that lost a plan.
 - **Ad spend stated clearly on the card** as separate, paid directly to Meta, with the recommended minimum and the all-in figure.
 - **Ad account access explained on this page**, not only in the FAQ — what access is granted, that it's campaign-only, that the client's card never leaves their account, and that access is removable any time (4.4).
 - Guarantee restated.
@@ -423,7 +422,7 @@ Cool, high-contrast, and saturated in the accent — the palette should feel clo
 
 - **Buttons:** solid amber CTA, 4–8px radius (crisp rather than pill-soft), high contrast. One secondary outline style.
 - **Portfolio cards:** large video thumbnail dominant, minimal text overlay (vertical/type only), generous gutters, hover reveals a subtle "watch" affordance.
-- **Pricing cards:** two cards side by side (Single Video, Launch Pack featured), not a feature-comparison grid. **Three tiers of information in descending weight on each:** the fee (largest), what's included (bullets), and the ad spend note plus all-in figure (smaller but clearly legible, never grey-on-grey).
+- **Pricing card:** a single centred offer card, not a comparison grid. **Three tiers of information in descending weight:** the one-off fee (largest), what's included (bullets), and the ad spend note plus all-in figure (smaller but clearly legible, never grey-on-grey). A single card can afford to be wider and more generously set than a column in a table — use the space rather than leaving an empty second column.
 - **NEW — Guarantee block:** its own full-width component, green accent, sized to be seen on a phone without scrolling past it. Short: headline, one sentence, no legalese.
 - **NEW — Before/after asset showcase:** the real-footage differentiator. Raw client photos on one side, finished ad frame or video on the other. Should work on mobile as a stacked pair or a simple slider.
 - **NEW — All-in cost callout:** a small, reusable component pairing the studio fee with recommended ad spend and a total. Appears on homepage pricing preview and the pricing page.
@@ -503,7 +502,9 @@ The hardest question in months 1–3 is "who else have you done this for?" Don't
 
 **What's sold.** Finished short-form video ad creative, delivered to an agency that already runs Meta ads for home service clients. The agency owns the client relationship and the ad account; the studio is its production arm. The agency's client never sees the Busy Season name. No campaign setup, no ad account access, no handover. Creative only.
 
-**The problem it solves for them.** Meta creative fatigues in a few weeks. Agencies are usually good at media buying and weak at production, so refreshing creative means either booking a videographer or chasing a contractor for footage he never sends. The result is stale ads and performance that slowly decays, which puts their client retention at risk. The studio's hybrid approach (2) fits this exactly: it turns the job photos the agency already has, or can easily get, into new ads, with no shoot to schedule.
+**The problem it solves for them.** Meta creative fatigues in a few weeks. Agencies are usually good at media buying and weak at production, so refreshing creative means either booking a videographer or chasing a contractor for footage he never sends. The result is stale ads and performance that slowly decays, which puts their client retention at risk. The studio fixes that with fast, cheap refreshes and no shoot to schedule.
+
+**Lead with quality and speed, not photos (changed 2026-09-27).** The studio has no real client photos to show yet, so the agency pitch leads with what the samples can prove: finished 15 second ads, 3 to 5 day turnaround, white label. Building from the client's own photos (2) is offered as a bonus once there's a real job, not as the headline. White label also removes the photo problem: the agency already holds its clients' photos, so sourcing them is never the studio's job. When a sample proving the photo-to-ad method exists (e.g. an ad built from licensed stock job photos, shown next to the photos), it can move back into the pitch.
 
 **Who to target, in priority order**
 
@@ -598,8 +599,7 @@ The hardest question in months 1–3 is "who else have you done this for?" Don't
 - [x] **Name and domain** — Busy Season, `busyseason.ca`, with `info@busyseason.ca` live. Settled; the switching cost only rises from here and there is no reason to revisit unless a prospect actually reacts to the name.
 - [x] **Ad management** — resolved 2026-08-17, revised 2026-09-18: the studio produces the ads and launches the campaign; after handover it's the client's to run, with ongoing management quoted case by case. Meta only at launch; the client funds their own account.
 - [x] **Positioning line** — resolved 2026-09-18: *"We make your video ads — and launch them for you."* Replaces "…and we run them for you," which promised management the Launch Pack doesn't include.
-- [x] **Recommended ad spend** — resolved 2026-09-18 at $500, revised 2026-09-27: **$200–300 for a first test, ≈ $1,000 all in** (4.6, 12.4).
-- [x] **Single Video tier** — added to the site 2026-09-18, confirmed 2026-09-27: $250, paid on delivery, no ad account access, credited against a Launch Pack within 30 days (4.1).
+- [x] **Recommended ad spend** — resolved 2026-09-18 at $500; **revised 2026-09-28 to $200–300 for a first test, ≈ $1,000 all in** (4.6, 12.4).
 - [x] ~~**Offer structure** — resolved 2026-08-17: free spec ad → $750 Launch Pack → $1,500/mo Growth.~~ **Revised 2026-09-18:** the Growth tier is dropped. The ladder is now free spec ad → $750 Launch Pack, with repeat work sold as another Launch Pack (4.1, 4.3).
 - [x] **Vertical framing** — resolved 2026-08-17: home services broadly, roofing-led, so the site doesn't contradict off-season outreach.
 - [x] **Risk reversal** — resolved 2026-08-17, updated 2026-09-18: deposit refunded if the client dislikes the first drafts. The month-to-month claim and the rate lock are both gone with the retainer; the guarantee and the bounded ad-account access now carry the copy hierarchy (4.4).
@@ -622,7 +622,7 @@ The hardest question in months 1–3 is "who else have you done this for?" Don't
 **Ground rules for these edits**
 
 - **Replace, don't just delete.** Where Growth copy answered a real question ("how long am I locked in?"), give the Launch Pack answer instead of leaving a gap.
-- **New figures:** Single Video $250 CAD · Launch Pack $750 CAD one-off · $200–300 recommended ad spend · **≈ $1,000 all in** (revised 2026-09-27, see 12.4). No monthly figures anywhere.
+- **New figures:** Launch Pack $750 CAD one-off · $200–300 recommended ad spend · **≈ $1,000 all in** (revised 2026-09-28; was $500 / ≈ $1,250). No monthly figures anywhere.
 - **New line:** *"We make your video ads — and launch them for you."* Ongoing management is mentioned only as "quoted case by case", never with a price.
 - **`terms.html` keeps stating money as percentages, never dollar figures** — that convention is deliberate (see `CLAUDE.md`).
 - **`zh/` pages need the founder's approval before publishing.** Mirror the English changes, then have the Chinese copy checked; keep the CJK single-line rule.
@@ -674,7 +674,7 @@ The live pricing page recommends **$200–300 ad spend, about $1,000 all in**. S
 
 Places to check either way: `pricing.html` (card, all-in callout, FAQ answers "How much should I spend on ads?" and "What's it cost all in?"), the homepage pricing preview and all-in callout in `index.html`, `quote.html`, and the `zh/` versions. Search `website/` for `200`, `300`, `500`, `1,000`, `1,250`, `all in` and check each hit.
 
-**Decision:** **Option B, 2026-09-27.** The site already showed $200–300 / ≈ $1,000, so no site edits were needed; 4.6 and Section 11 were updated to match.
+**Decision:** **Option B, 2026-09-28** — keep the site's $200–300 / ≈ $1,000. No site edits needed; 4.2, 4.6, 6 and 11 updated to match.
 
 **5. Unlisted samples page for agencies (added 2026-09-27, do after 3 strong samples exist)**
 
@@ -683,15 +683,14 @@ The agency pitch (9.5) links to samples. This page is where that link goes. It's
 - **Path:** `website/samples.html` → `busyseason.ca/samples`.
 - **Not linked** from the nav, footer, or any other page. Add `<meta name="robots" content="noindex, nofollow">` in the `<head>`, and leave it out of `sitemap.xml` if there is one.
 - **Content, top to bottom:**
-  1. Wordmark and one line: *"Short video ads for home service accounts, built from the client's existing job photos."*
-  2. **3 sample ads**, 9:16, muted autoplay on scroll into view with tap-to-play sound. Each gets a one-line caption: vertical and format (e.g. "Snow removal · 15s · 9:16"). Use at least two different verticals.
-  3. A short "How it works" line: *"Send photos from the client's phone. Get finished ads back in 3 to 5 business days. White label."*
-  4. Contact: `info@busyseason.ca` and a mailto button, "Ask about a sample for one of your accounts."
+  1. Wordmark and one line: *"Short video ads for home service accounts. White label, 3 to 5 day turnaround."* Don't claim the samples were built from real client photos. They weren't, and an agency owner will notice.
+  2. **3 sample ads**, 9:16, muted autoplay on scroll into view with tap-to-play sound. Each gets a one-line caption: vertical and format (e.g. "Snow removal · 15s · 9:16"). Use at least two different verticals. The current roofing ads read as obviously generated and are being redone before they go here.
+  3. A short "How it works" line: *"Tell me the account and the offer. Get finished ads back in 3 to 5 business days, under your name."* No mention of building from job photos (changed 2026-09-28).
+  4. **Optional, later:** one "photos in, ad out" piece built from licensed stock job photos (Pexels or Unsplash), with the photos shown beside the finished ad and captioned honestly ("built from stock job photos").
+  5. Contact: `info@busyseason.ca` and a mailto button, "Ask about a sample for one of your accounts."
 - **Leave out:** all pricing (contractor or agency), the Launch Pack, the guarantee, ad account access copy, "Get a Free Sample Ad", and anything written to a contractor. Agency rates go in the email, not on the page.
 - **Design:** same design system as the rest of the site (Section 8): dark `#16181C` background works well here since it's video-first. Mobile-first, since most agency owners will open it from an email on their phone. Videos should be compressed web versions with a poster frame so the page loads fast.
 - **Tracking (optional):** if the site already has analytics, tag this page separately so you can see when a pitched agency opens the link. Use a query string per message (e.g. `/samples?a=fervor`) to tell who opened it.
 - **Until this page exists,** a Google Drive or Vimeo link to the same 3 videos is fine for the first few messages.
-
-**Status, 2026-09-27: built.** `website/samples.html` uses the three existing web cuts (roofing, snow removal, roofing from job photos) with poster frames, plays each clip only while it's on screen, and has a mute toggle. `website/vercel.json` rewrites `/samples` to the page and sends an `X-Robots-Tag: noindex, nofollow` header alongside the meta tag. There's no sitemap. Swap in stronger or different-vertical samples as they're made.
 
 **Done when:** `busyseason.ca/samples` loads on a phone, plays all 3 videos, has no prices anywhere on it, isn't reachable from any other page, and carries the `noindex` tag.
