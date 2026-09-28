@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Unlisted agency samples page (brief §9.5, §12.5). Not linked from the
+       nav, footer or any other page, and kept out of search. No prices, no
+       Launch Pack, no guarantee, no contractor-facing copy — agency rates go
+       in the email, never on a page. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Samples — Busy Season | Video Ads for Home Services</title>
+  <link rel="icon" href="image/mark.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Video-first, so the whole page sits on the dark surface (§12.5). */
+    body.samples-page { background: var(--char); color: var(--on-dark); }
+    .samples-top { padding: 2rem 0 0; }
+    .samples-top .brand { color: var(--on-dark); }
+    .samples-top .brand em { color: var(--on-dark-dim); }
+    .samples-head { padding: 3.5rem 0 3rem; }
+    .samples-head h1 { font-size: clamp(1.75rem, 3.6vw, 2.75rem); max-width: 24ch; color: var(--on-dark); }
+    .samples-page .eyebrow { color: var(--amber); }   /* steel fails on --char */
+    .samples-page .work-meta span { color: var(--on-dark-dim); }
+    .samples-how { max-width: 40rem; margin: 3.5rem auto 0; text-align: center; }
+    .samples-how p { color: var(--on-dark-dim); font-size: 1.0625rem; }
+    .samples-contact { padding: 4rem 0 5rem; text-align: center; }
+    .samples-contact .footer-email { display: inline-block; margin-top: 1rem; color: var(--on-dark-dim); }
+  </style>
+</head>
+<body class="samples-page">
+  <header class="samples-top">
+    <div class="container">
+      <span class="brand">
+        <img src="image/mark.svg" alt="" width="32" height="32" />
+        <span>Busy <em>Season</em></span>
+      </span>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="samples-head">
+      <div class="container">
+        <p class="eyebrow">Samples</p>
+        <h1>Short video ads for home service accounts, built from the client's existing job photos.</h1>
+      </div>
+    </section>
+
+    <section class="section-dark" style="padding-bottom: 1rem;">
+      <div class="container">
+        <div class="work-grid">
+          <div class="work-card">
+            <div class="work-thumb">
+              <video src="video/roof1.mp4" poster="image/poster-roof1.webp"
+                     muted loop playsinline preload="none" data-autoplay-visible
+                     aria-label="Roofing sample ad, 15 seconds, vertical"></video>
+              <button type="button" class="video-sound" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
+                <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+                <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              </button>
+            </div>
+            <div class="work-meta">
+              <strong>Roofing</strong>
+              <span>15s · 9:16</span>
+            </div>
+          </div>
+
+          <div class="work-card">
+            <div class="work-thumb">
+              <video src="video/snow-removal.mp4" poster="image/poster-snow-removal.webp"
+                     muted loop playsinline preload="none" data-autoplay-visible
+                     aria-label="Snow removal sample ad, 15 seconds, vertical"></video>
+              <button type="button" class="video-sound" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
+                <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+                <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              </button>
+            </div>
+            <div class="work-meta">
+              <strong>Snow removal</strong>
+              <span>15s · 9:16</span>
+            </div>
+          </div>
+
+          <div class="work-card">
+            <div class="work-thumb">
+              <video src="video/finished-ad.mp4" poster="image/poster-finished-ad.webp"
+                     muted loop playsinline preload="none" data-autoplay-visible
+                     aria-label="Roofing sample ad built from job-site photos, 15 seconds, vertical"></video>
+              <button type="button" class="video-sound" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
+                <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+                <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              </button>
+            </div>
+            <div class="work-meta">
+              <strong>Roofing, from job photos</strong>
+              <span>15s · 9:16</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="samples-how">
+          <p class="eyebrow">How it works</p>
+          <p>
+            Send photos from the client's phone. Get finished ads back in
+            3 to 5 business days. White label.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="samples-contact">
+      <div class="container">
+        <a href="mailto:info@busyseason.ca?subject=Sample%20for%20one%20of%20our%20accounts" class="btn btn-primary">Ask about a sample for one of your accounts</a>
+        <br />
+        <a href="mailto:info@busyseason.ca" class="footer-email">info@busyseason.ca</a>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    /* Play each clip only while it's on screen, so a phone on mobile data
+       fetches one video at a time instead of all three on load. */
+    (function () {
+      var videos = document.querySelectorAll("[data-autoplay-visible]");
+      if (!("IntersectionObserver" in window)) {
+        videos.forEach(function (v) { v.autoplay = true; v.preload = "auto"; v.play().catch(function () {}); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) e.target.play().catch(function () {});
+          else e.target.pause();
+        });
+      }, { threshold: 0.5 });
+      videos.forEach(function (v) { io.observe(v); });
+    })();
+  </script>
+</body>
+</html>

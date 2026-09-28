@@ -1,4 +1,13 @@
 {
+  "rewrites": [
+    { "source": "/samples", "destination": "/samples.html" }
+  ],
+  "headers": [
+    {
+      "source": "/samples(.html)?",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    }
+  ],
   "redirects": [
     {
       "source": "/contact.html",

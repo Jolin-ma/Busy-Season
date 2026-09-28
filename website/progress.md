@@ -1671,3 +1671,26 @@ finding the new copy (live within ~20–30s). Note: the bare `busyseason.ca`
   (deliberate — the launch is the core pitch); the quote page's "for a small
   number of businesses" sample-ad qualifier differs from the unqualified
   promise elsewhere. Founder to decide on both.
+
+## 2026-09-27 — Brief v3.2 reconciled; unlisted agency samples page added
+
+Brief v3.1 (agency channel promoted to a main track) left two things open
+against the live site. Founder decisions, same day:
+
+- **Ad spend: keep the site's $200–300, ≈ $1,000 all in** (brief §12.4,
+  Option B). No site edits; brief §4.2, §4.6 and §11 updated to match.
+- **Single Video ($250) stays.** v3.1 described the Launch Pack as the only
+  paid offer; brief §4.1, §6 and §8.5 now include the Single Video and the
+  two-card pricing layout the site already uses.
+
+**New: `samples.html`** (brief §9.5, §12.5), the link that goes in agency
+pitches. Unlisted: no link from the nav, footer or any page. It has
+`<meta name="robots" content="noindex, nofollow">`, and `vercel.json`
+adds a matching `X-Robots-Tag` header plus a rewrite so `busyseason.ca/samples`
+resolves (the site has no `cleanUrls`). It has no prices, Launch Pack,
+guarantee or contractor copy. Three existing 9:16 cuts (roof1, snow-removal,
+finished-ad), each with a new webp poster in `image/poster-*.webp`. Each clip
+plays only while on screen (IntersectionObserver), so a phone fetches one
+video at a time, and the existing `data-sound-toggle` handles sound. Per-agency
+tracking works by query string (`/samples?a=name`) once analytics exist.
+Screenshotted at 1280px and 500px.
