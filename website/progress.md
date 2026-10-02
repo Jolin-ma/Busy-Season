@@ -1741,3 +1741,18 @@ Formspree. Deleted `studio/` and `_parked/` (the Simplified Chinese pages).
 **Still to do outside this repo:** delete the `busyseason-studio` Vercel
 project and its Neon database, and remove `LEAD_INGEST_URL` /
 `LEAD_INGEST_KEY` from the `busyseason` Vercel project.
+
+## 2026-10-02 (later) — Quote form moved to Formspree
+
+- New Formspree form **Busy Season** (My First Project), endpoint
+  `https://formspree.io/f/mkjglewk`, emailing `jolinma81@gmail.com`.
+- `quote.html` carries it as `data-endpoint`; `script.js` posts JSON there
+  with `_subject` "Sample ad request — {business}". The mailto fallback on
+  failure stays. The honeypot is now checked in the browser.
+- `api/quote.js` deleted — the site has no server code now, and
+  `RESEND_API_KEY` can be removed from the `busyseason` Vercel project.
+- `privacy.html` names Formspree instead of Resend and says it records the
+  submitter's IP for spam filtering (the old "we do not collect your IP"
+  line would have been untrue). Last updated → 2 October 2026.
+- Tested: two direct posts and one real submission from the page locally all
+  landed in Formspree's Submissions. Those three TEST rows can be deleted.

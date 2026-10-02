@@ -70,8 +70,8 @@ Tone: confident, results-oriented, unapologetically commercial — a studio that
 
 **Technical constraints:**
 
-- The marketing site is **static HTML/CSS/JS with no build step and no `node_modules`** — one HTML file per route, sharing `styles.css` and `script.js`. This is deliberate. The only dynamic piece is `website/api/quote.js`, a zero-dependency CommonJS Vercel serverless function behind the quote form. Adding a dependency to `website/` means adding a build step — reconsider first.
-- **The quote form is the single most important conversion point.** It emails each lead to `info@busyseason.ca` via Resend; the email is the system of record. Every failure path deliberately logs the full lead payload before returning an error — that is the recovery mechanism, not noise to clean up.
+- The marketing site is **static HTML/CSS/JS with no build step and no `node_modules`** — one HTML file per route, sharing `styles.css` and `script.js`. This is deliberate. The quote form posts to Formspree, so there is no server code. Adding a dependency to `website/` means adding a build step — reconsider first.
+- **The quote form is the single most important conversion point.** It posts each lead to Formspree, which stores it and emails it on; Formspree's Submissions tab is the system of record. If the post fails, the page offers a pre-filled email instead, so a lead is never dropped.
 - Deploy is push-to-`main` (Vercel, git-connected, Root Directory `website`, config at `website/vercel.json` — not repo root).
 
 **Terminology:** "spec ad" (the free sample), "Launch Pack", "Growth", "all-in" (fee + spend), "readout" (the monthly performance summary), "hybrid" (real footage + AI production). Primary CTA wording is **"Get a Free Sample Ad"** site-wide — it outperforms "Get a Quote" because it offers something concrete. The `quote.html` filename is kept so no redirect is needed.

@@ -66,8 +66,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ---- Quote form --------------------------------------------------
-     Posts to /api/quote (a Vercel serverless function in website/api/),
-     which emails the lead via Resend. On success the form is replaced by
+     Posts to Formspree (the endpoint is the form's data-endpoint), which
+     stores the lead and emails it on. On success the form is replaced by
      the inline success notice; the page never navigates.
 
      If the endpoint fails for any reason, the error path falls back to the
@@ -81,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const mailtoLink = document.querySelector("[data-quote-mailto]");
     const submit = form.querySelector('button[type="submit"]');
     const inbox = form.dataset.inbox || "info@busyseason.ca";
+    const endpoint = form.dataset.endpoint;
 
     const readFields = () => {
       const data = new FormData(form);
@@ -130,9 +131,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       /* No explicit validation here: the browser gates the submit event on the
          required fields already (the form isn't novalidate), so reaching this
-         line means business/name/email are filled and the email parses. The
-         endpoint re-checks anyway, since it's reachable directly. */
+         line means business/name/email are filled and the email parses. */
       const fields = readFields();
+
+      /* Honeypot filled: a bot. Show success and send nothing. */
+      if (fields.company_website) {
+        form.hidden = true;
+        if (status) status.hidden = false;
+        return;
+      }
 
       if (errorBox) errorBox.hidden = true;
       if (submit) {
@@ -142,15 +149,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        const response = await fetch("/api/quote", {
+        const { company_website, ...lead } = fields;
+        const response = await fetch(endpoint, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(fields),
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            ...lead,
+            _subject: `Sample ad request — ${fields.business || "new enquiry"}`,
+          }),
         });
 
         if (!response.ok) {
           const payload = await response.json().catch(() => ({}));
-          throw new Error(payload.error === "server" ? "" : payload.error || "");
+          const first = payload.errors && payload.errors[0];
+          throw new Error((first && first.message) || "");
         }
 
         form.hidden = true;
@@ -160,10 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         return;
       } catch (err) {
-        showError(
-          err && err.message && err.message !== "server" ? err.message : "",
-          fields,
-        );
+        showError((err && err.message) || "", fields);
       } finally {
         if (submit) {
           submit.disabled = false;
