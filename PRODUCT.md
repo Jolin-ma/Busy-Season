@@ -8,9 +8,9 @@ web
 
 ## Scope of this record
 
-This file covers the **public marketing site** (`website/`, deployed to `busyseason.ca`). The `studio/` back office (Next.js + Prisma; clients, production pipeline, leads inbox) is a restored internal tool that supports operations but is not the subject of this product record or of design work driven by it. If the back office ever needs its own design treatment, give it its own PRODUCT scope then.
+This file covers the **public marketing site** (`website/`, deployed to `busyseason.ca`). There is no custom back office (removed 2026-10-02); lead tracking runs through Formspree.
 
-The authoritative business spec is `BusySeason_Master_Build_Brief.md` (v2), which supersedes v1 entirely. `CLAUDE.md` and `website/progress.md` carry operational and build history. Where this file and the brief disagree, the brief wins unless the founder has since overruled it (as with the back office, brief §7).
+The authoritative business spec is `BusySeason_Master_Build_Brief.md` (v2), which supersedes v1 entirely. `CLAUDE.md` and `website/progress.md` carry operational and build history. Where this file and the brief disagree, the brief wins unless the founder has since overruled it.
 
 ## Users
 
@@ -43,7 +43,6 @@ Tone: confident, results-oriented, unapologetically commercial — a studio that
 - **Sales motion is outbound.** Several hundred contacted Durham Region / East GTA contractors determine whether the business works; the website closes, it does not discover. Don't over-invest in SEO or content.
 - **Seasonality drives which verticals outreach leads with** (Aug–Oct: snow removal, HVAC, windows/doors, gutters; Nov–Feb: roofing, interior reno; Mar–May: roofing, landscaping, paving; storm response any time). The public site stays vertical-led and season-agnostic so it never contradicts the current outreach focus.
 - **The site is geography-agnostic on purpose.** The founder operates out of Oshawa / Durham Region, but location is a rapport lever in conversation, not a website claim — a hard-coded local claim would cap the pitch.
-- **The site is bilingual: English and Simplified Chinese.** The GTA — Markham, Richmond Hill, Scarborough especially — has a large population of Chinese-Canadian home-service business owners, and a cold approach in their own language closes better. English lives at the root; Simplified Chinese is a parallel static set under `/zh/`. This is a distribution lever for outreach (send a prospect the URL that fits), not an SEO play — there is no auto-detection or language redirect. Traditional Chinese was considered and deferred; if it's ever added it's a third `/zh-hant/` set, not a replacement.
 - **Client workflow:** intake + asset collection → client grants Meta ad account + Page access → concept/script sanity check → hybrid production → internal QA → one client revision round per batch → campaign build & launch → ongoing optimization → monthly readout.
 - **Client job photos (20–30 recent) are a required intake item**, framed to the client as a feature ("send us 30 photos off your phone…"), not a chore.
 - **The studio never takes custody of ad spend.** The client's own payment method sits on the client's own ad account; the studio holds partner/admin access only. This must be stated plainly on the site.
@@ -97,7 +96,6 @@ Tone: confident, results-oriented, unapologetically commercial — a studio that
 - Motion: quicker than the sister brand (100–150ms), subtle scale-on-hover for portfolio thumbnails, muted autoplay video for portfolio/hero previews, `prefers-reduced-motion` respected. No confetti, no cursor trails.
 - Mobile-first (most prospects arrive from a phone). WCAG AA contrast minimum, full keyboard navigability with visible focus states, 44×44px minimum touch targets (especially the lead form), video never autoplays with sound.
 - **Imagery rule:** real footage from produced ads wherever possible; no stock photography of generic "business people in an office"; every image traceable to real client work or an honest sample. Raw unpolished client job photos are welcome as a design element in the before/after showcase — the contrast *is* the sales argument.
-- **Bilingual build:** the Simplified-Chinese pages under `/zh/` share the one `styles.css` / `script.js`, carry `<html lang="zh-Hans">` and reciprocal `hreflang`, and get a CJK system-font fallback (no CJK webfont — a multi-MB download is wrong for a job-site phone). Latin negative tracking and `ch`-based width caps are reset under `:lang(zh)` (DESIGN.md — "The CJK Reset Rule"). The wordmark "Busy Season" is **not** translated. **`terms.html` and `privacy.html` stay English-only** with a short Chinese note; a mistranslation of unreviewed legal text is real risk, and both are `noindex` anyway. Every marketing page ships in both languages or neither. Chinese copy is founder-supplied / founder-approved — copy accuracy is the site's #1 risk in either language.
 
 ## Evidence on Hand
 
@@ -131,4 +129,3 @@ Tone: confident, results-oriented, unapologetically commercial — a studio that
 - Full keyboard navigability with visible focus states matching the design system.
 - Video must not autoplay with sound and must degrade gracefully on slow mobile connections.
 - `prefers-reduced-motion` is respected.
-- **Language is marked for assistive tech:** `<html lang="zh-Hans">` on the Chinese pages, `lang="zh-Hans"` on the `中文` toggle link within an English page, so a screen reader switches voice correctly. The language toggle is a real keyboard-navigable control with a visible focus state and an `aria-current` marker on the active language.

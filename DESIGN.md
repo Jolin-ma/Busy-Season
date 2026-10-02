@@ -244,9 +244,8 @@ A cool, near-monochrome field — paper and charcoal doing almost all the work �
 
 **Display Font:** Space Grotesk (with Inter, then system-ui, sans-serif) — loaded from Google Fonts at weights 500/600/700.
 **Body Font:** Inter (with system-ui, -apple-system, Segoe UI, sans-serif) — weights 400/500/600.
-**CJK fallback:** no CJK webfont. On the Simplified-Chinese pages Latin glyphs and digits stay in Space Grotesk / Inter; Han glyphs fall through per-glyph to a device system stack — `"PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", system-ui`.
 
-**Character:** A geometric-leaning grotesque paired with a workhorse UI sans. Space Grotesk gives headlines and numbers a confident, slightly mechanical edge; Inter keeps body copy quiet and legible at a phone's arm's length. Headlines run tight — negative tracking down to `-0.035em` on the hero — and `text-wrap: balance` keeps them from orphaning. **No serif appears anywhere on the site** (Chinese included — the hei/gothic system fonts are the CJK equivalent of the sans discipline; never a song/serif face).
+**Character:** A geometric-leaning grotesque paired with a workhorse UI sans. Space Grotesk gives headlines and numbers a confident, slightly mechanical edge; Inter keeps body copy quiet and legible at a phone's arm's length. Headlines run tight — negative tracking down to `-0.035em` on the hero — and `text-wrap: balance` keeps them from orphaning. **No serif appears anywhere on the site**.
 
 ### Hierarchy
 - **Display** (600, `clamp(2.25rem → 4.25rem)`, line-height 1.04, tracking `-0.035em`): The hero H1 only. One per page, ≤16ch wide, always a plain-words statement of what the studio does.
@@ -262,9 +261,8 @@ A cool, near-monochrome field — paper and charcoal doing almost all the work �
 ### Named Rules
 **The Money Rule.** Any dollar figure — plan price, per-video rate, recommended ad spend, all-in total — is set in Space Grotesk at numeric weight, never in muted grey, and the fee, the spend, and the total always travel together. A contractor who has to hunt for the real number assumes he is being handled.
 
-**The Plain-Words Rule.** Every headline says what the studio does in plain language. No riffing on the company name, no "Busy Season" puns — the name is already doing enough explaining. Holds in Chinese: 直说做什么，不玩公司名的文字游戏.
+**The Plain-Words Rule.** Every headline says what the studio does in plain language. No riffing on the company name, no "Busy Season" puns — the name is already doing enough explaining.
 
-**The CJK Reset Rule.** On `:lang(zh)`, negative letter-spacing is set back to `normal` everywhere (tight tracking mangles Han characters), body line-height rises to `1.75`, the uppercase-label tracking drops to `~0.04em`, and every `ch`-based `max-width` cap is re-tuned (one Han glyph ≈ 1ch, so the English caps run far too wide). The wordmark "Busy Season" stays in its Latin form — the registered name is not translated.
 
 ## Layout
 
@@ -273,9 +271,6 @@ A single centred column, `max-width: 80rem` (1280px), with `0 1.5rem` (24px) gut
 Section vertical padding is `7rem` (112px) desktop, tightening to `4rem` (64px) below 860px; a `.section-tight` variant uses `5rem`. Content grids are 2/3/4-column on desktop (`.grid-2/3/4`) with a `1.5rem` gap, collapsing to a single column at 860px. The hero and other split layouts use an asymmetric `1.15fr 0.85fr` (text-heavy) split that stacks at 1000px.
 
 Three breakpoints: **1000px** (hero and split grids stack, portfolio drops to 2-up, footer to 2-col), **860px** (sections tighten, all content grids collapse to one column, the all-in callout restacks as fee → spend → total), **760px** (primary nav collapses into a toggled dropdown that includes the CTA and language toggle). Mobile-first is the priority order even though the source is written desktop-down.
-
-### Bilingual structure
-English lives at the root (`/index.html`, `/pricing.html`, …); Simplified Chinese is a parallel static set under `/zh/` (`/zh/index.html`, …) sharing the one `styles.css` and `script.js` via `../`. English pages carry `<html lang="en">`, Chinese pages `<html lang="zh-Hans">`, with reciprocal `<link rel="alternate" hreflang>` tags (`en`, `zh-Hans`, `x-default`→en). No auto-redirect and no persisted preference — the toggle is plain links, and outreach sends the visitor whichever URL fits. The two legal pages (`terms.html`, `privacy.html`) stay English-only with a short Chinese note; there is no `/zh/terms.html`.
 
 ## Elevation & Depth
 
@@ -325,9 +320,8 @@ Borders are the primary definition tool: a single 1px hairline (`#e2e2e0` on lig
 
 ### Navigation
 - **Style:** Sticky, `rgba(250,250,249,0.9)` with a 10px backdrop blur, 1px bottom hairline, `4.5rem` tall. Wordmark left ("Busy *Season*" — "Season" in Ink Muted, no icon mark in the header); four text links (Work, Services & Pricing, How It Works, About) in Ink Muted at `0.9375rem`; amber CTA right.
-- **States:** Links go to solid ink on hover and for `[aria-current="page"]`. The CTA label ("Get a Free Sample Ad" / "领取免费样片广告") must never wrap.
+- **States:** Links go to solid ink on hover and for `[aria-current="page"]`. The CTA label ("Get a Free Sample Ad") must never wrap.
 - **Mobile (≤760px):** Links and CTA collapse into a hamburger-toggled dropdown panel (`.nav-panel` uses `display: contents` on desktop so it is layout-inert there). Escape closes it and returns focus to the toggle.
-- **Language toggle** (`.lang-toggle`): `EN / 中文`, grouped immediately left of the CTA inside `.nav-cta-wrap`. Plain `<a>` links, no JavaScript — each page points at its own translated counterpart; the active language is `[aria-current="true"]` in solid ink, the other in Ink Muted, split by a 1px hairline. In the mobile dropdown it stacks with the CTA. Legal pages (English-only, no `/zh/` counterpart) point `中文` at the Chinese homepage.
 
 ### Signature Components
 
@@ -352,8 +346,6 @@ Borders are the primary definition tool: a single 1px hairline (`#e2e2e0` on lig
 - **Do** use 6px corners for controls and 10px for containers — nothing softer.
 - **Do** let raw client photos look raw in the before/after showcase; the contrast is the argument.
 - **Do** use real produced-ad footage or an honest labelled placeholder — never stock imagery.
-- **Do** keep every new page in both languages: a root `/x.html` gets a `/zh/x.html`, both with reciprocal `hreflang`, or neither ships.
-- **Do** reset negative letter-spacing, raise line-height, and re-tune `ch` caps under `:lang(zh)` (The CJK Reset Rule).
 
 ### Don't:
 - **Don't** set amber type on the light background, and never put white text on the amber button (both fail AA).
@@ -364,5 +356,3 @@ Borders are the primary definition tool: a single 1px hairline (`#e2e2e0` on lig
 - **Don't** add a third background mood — the system is paper or charcoal, nothing between.
 - **Don't** pun on the "Busy Season" name in a headline; state what the studio does in plain words.
 - **Don't** add confetti, cursor trails, or motion longer than ~150ms.
-- **Don't** load a CJK webfont, translate the "Busy Season" wordmark, or set Chinese in a song/serif face.
-- **Don't** carry the Latin negative tracking or `ch`-based width caps onto the Chinese pages.

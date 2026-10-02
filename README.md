@@ -38,7 +38,6 @@ if it's ever wanted again, but treat both as gone rather than dormant:
 - **A QR-memorial product**, retired 2026-08-16 along with its Vercel projects,
   its Railway API, and its DNS records.
 - **A custom back office** (`studio/` — clients, production pipeline, leads
-  inbox; Next.js + Prisma + Neon), removed 2026-08-17. Brief v2 §7 is explicit
-  that there is **no custom admin build at launch**: pipeline and delivery go in
-  one shared tracker (spreadsheet, Notion, or Airtable) instead. Rebuild as real
-  software only if volume makes the tracker genuinely painful.
+  inbox; Next.js + Prisma + Neon), removed for good on 2026-10-02. Lead
+  tracking moves to Formspree instead.
+- **The Simplified Chinese pages** (`_parked/zh-hans/`), removed 2026-10-02.

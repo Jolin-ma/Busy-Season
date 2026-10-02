@@ -1725,3 +1725,19 @@ removal).
 - Founder decision: **keep $200–300 recommended ad spend, ≈ $1,000 all in**
   (brief §12.4, Option B). The site already showed this; brief §4.2, §4.6,
   §6, §11 and §12 updated to match (brief v3.2).
+
+## 2026-10-02 — Back office and Chinese pages deleted
+
+Founder decision: no custom back office; lead tracking will be set up in
+Formspree. Deleted `studio/` and `_parked/` (the Simplified Chinese pages).
+
+- `api/quote.js` no longer posts a copy to the back office's ingest API — it
+  only emails the lead via Resend.
+- `styles.css` lost the `.lang-toggle` and `:lang(zh)` rules. `.nav-cta-wrap`
+  stays; every page still uses it.
+- The `/zh/*` → `/` redirects in `vercel.json` stay so old links don't 404.
+- `CLAUDE.md`, `README.md`, `PRODUCT.md`, `DESIGN.md` updated to match.
+
+**Still to do outside this repo:** delete the `busyseason-studio` Vercel
+project and its Neon database, and remove `LEAD_INGEST_URL` /
+`LEAD_INGEST_KEY` from the `busyseason` Vercel project.
