@@ -75,9 +75,22 @@ spec and copy rules) and §8 (design system, kept).
   ("do not need ... access to any advertising account"), and the redirect
   sources in `vercel.json`. This log is history and was not swept.
 
-**Still to verify after deploy:** the form submits end to end and arrives at
-info@busyseason.ca; samples autoplay muted on a real iPhone and Android
-phone; every redirect lands on a live page.
+**Verified after deploy:**
+
+- **Redirects (2026-10-05):** every old URL in the list lands on a live page
+  (checked with curl against www.busyseason.ca). Clean paths return 301;
+  old `.html` paths take 2–3 hops (apex → www, Vercel strips `.html`, then
+  the 301) but still land correctly.
+- **Contact form (2026-10-06):** one labelled test enquiry submitted through
+  the live page in headless Chrome. The success notice showed, Formspree
+  returned `ok: true`, and the founder confirmed the email arrived in the
+  inbox Formspree forwards to. A spacing fix for the success notice shipped
+  the same day.
+- **Reduced motion (2026-10-06):** the hero reel now stops on its first
+  frame under `prefers-reduced-motion`, verified in headless Chrome.
+
+**Still open:** samples autoplay muted with a poster first on a real iPhone
+and Android phone; legal review of Terms and Privacy.
 
 ---
 
