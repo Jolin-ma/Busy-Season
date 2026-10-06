@@ -89,8 +89,19 @@ spec and copy rules) and §8 (design system, kept).
 - **Reduced motion (2026-10-06):** the hero reel now stops on its first
   frame under `prefers-reduced-motion`, verified in headless Chrome.
 
-**Still open:** samples autoplay muted with a poster first on a real iPhone
-and Android phone; legal review of Terms and Privacy.
+- **Mobile emulation (2026-10-06, not a substitute for real phones):** live
+  site in headless Chrome at 390×844, touch on, default autoplay policy.
+  No horizontal scroll (scrollWidth 390). Every video is `muted` +
+  `playsinline` with a poster. On Fast 4G the load event fired in ~0.6 s;
+  only the hero video (~1.3 MB) and the posters download before scrolling,
+  and the sample cards stay at `readyState 0` until scrolled into view, then
+  play. A real touch on a card turns its sound on without pausing it, keeps
+  every other clip muted, and a second tap mutes it. On Slow 3G, 3 s in, the
+  hero shows its poster before any video data arrives.
+
+**Still open:** samples on a real iPhone (Safari) and a real Android phone,
+since emulation can't reproduce iOS autoplay rules; legal review of Terms
+and Privacy.
 
 ---
 
