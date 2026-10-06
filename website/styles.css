@@ -691,7 +691,7 @@ strong { font-weight: 600; }
 
 .work-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
 }
 
@@ -1028,22 +1028,22 @@ strong { font-weight: 600; }
   padding-top: 0;
 }
 
-/* Two samples side by side. Home caps them so a 9:16 card fits a laptop
-   screen; the Work page gives them more room ("fewer, bigger, better"). */
+/* Three samples across. Home caps them so a 9:16 card fits a laptop
+   screen; the Work page gives them the full width ("fewer, bigger, better"). */
 .work-grid {
-  max-width: 40rem;
+  max-width: 60rem;
   margin: 0 auto;
 }
 
 .work-grid-large {
-  max-width: 52rem;
+  max-width: none;
 }
 
 /* Keep the home band's heading and button on the same edge as the capped
    grid, not the page edge. */
 .section-flush-top .section-head,
 .section-flush-top .btn-row {
-  max-width: 40rem;
+  max-width: 60rem;
   margin-left: auto;
   margin-right: auto;
 }

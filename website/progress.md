@@ -45,15 +45,15 @@ spec and copy rules) and §8 (design system, kept).
   the new contact page into a dead one). Added `cleanUrls: true` so
   `/work` and `/contact` resolve; internal links still use `.html` so the
   files open locally, and Vercel strips the extension.
-- **Samples:** two, HVAC "First cold night" (new, 2026-10-05) and snow
-  removal, side by side in a two-column grid. The cold-night ad is also the
-  hero. Compressed to 720×1280 H.264 with webp posters. A third, the HVAC
-  technician-to-camera ad (`hvac2`), was built in and then dropped at the
-  founder's call. Roofing stays off until redone (§10), so `roof1`,
-  `finished-ad`, the contractor-pitch `hero.mp4` and the roof job photos
-  were removed from `website/` (masters remain in `assets-source/` and
-  `Documents/Ad Video/`). `hvac1` was left out: its end card reads
-  "FURNANCE".
+- **Samples:** three, HVAC "First cold night", snow removal, and the redone
+  roofing ad (added later the same day; master at
+  `assets-source/video/roofing-master.mp4`). The cold-night ad is also the
+  hero. All compressed to 720×1280 H.264 (1.4 to 2.8 MB) with webp posters.
+  The old photo-built roofing ad (`finished-ad`), the old `roof1`, the
+  contractor-pitch `hero.mp4` and the roof job photos were removed from
+  `website/`; masters remain in `assets-source/` and `Documents/Ad Video/`.
+  The HVAC technician-to-camera ad (`hvac2`) was built in, then dropped at
+  the founder's call. `hvac1` was left out: its end card reads "FURNANCE".
 - **Form:** same Formspree endpoint and fallback mailto; fields are now name,
   agency, email, accounts (1 to 5 / 6 to 15 / 16+, optional), needs
   (optional). `script.js` reads `data-contact-form`.
