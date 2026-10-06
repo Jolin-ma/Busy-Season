@@ -1,43 +1,90 @@
 {
-  "rewrites": [
-    { "source": "/samples", "destination": "/samples.html" }
-  ],
-  "headers": [
-    {
-      "source": "/samples(.html)?",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
-    }
-  ],
+  "cleanUrls": true,
   "redirects": [
     {
-      "source": "/contact.html",
-      "destination": "/quote.html",
-      "permanent": true
+      "source": "/pricing",
+      "destination": "/",
+      "statusCode": 301
     },
     {
-      "source": "/partners.html",
+      "source": "/pricing.html",
       "destination": "/",
-      "permanent": true
+      "statusCode": 301
     },
     {
-      "source": "/press.html",
+      "source": "/how-it-works",
       "destination": "/",
-      "permanent": true
+      "statusCode": 301
+    },
+    {
+      "source": "/how-it-works.html",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/about",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/about.html",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/quote",
+      "destination": "/contact",
+      "statusCode": 301
+    },
+    {
+      "source": "/quote.html",
+      "destination": "/contact",
+      "statusCode": 301
+    },
+    {
+      "source": "/samples",
+      "destination": "/work",
+      "statusCode": 301
+    },
+    {
+      "source": "/samples.html",
+      "destination": "/work",
+      "statusCode": 301
     },
     {
       "source": "/zh",
       "destination": "/",
-      "permanent": false
+      "statusCode": 301
     },
     {
       "source": "/zh/",
       "destination": "/",
-      "permanent": false
+      "statusCode": 301
     },
     {
       "source": "/zh/:path*",
       "destination": "/",
-      "permanent": false
+      "statusCode": 301
+    },
+    {
+      "source": "/partners",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/partners.html",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/press",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/press.html",
+      "destination": "/",
+      "statusCode": 301
     }
   ]
 }

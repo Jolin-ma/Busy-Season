@@ -24,6 +24,63 @@ it is ever wanted again.
 
 ---
 
+## 2026-10-05 — v4 rebuild: agencies only
+
+**v4 rebuild: site rebuilt for agencies only. Removed pricing, how-it-works, about, quote, zh pages; added contact page and redirects. Reason: Busy Season moved to white-label agency work only on 2026-10-05.**
+
+Built from `BusySeason_Master_Build_Brief_v4.md` §11 (work order), §6 (page
+spec and copy rules) and §8 (design system, kept).
+
+- **Pages now:** `index.html` (rewritten to the §6 Home spec), `work.html`
+  (rewritten), `contact.html` (new), `terms.html` (rewritten for agency
+  engagements, percentages only, `NEEDS LEGAL REVIEW` comment at the top),
+  `privacy.html` (form fields updated; the ad-account section is gone because
+  the studio no longer touches ad accounts).
+- **Deleted:** `quote.html`, `pricing.html`, `how-it-works.html`,
+  `about.html`, `samples.html`. `zh/` was already gone (2026-10-02).
+- **Redirects** (`website/vercel.json`, explicit `statusCode: 301`, both
+  `/page` and `/page.html`): pricing, how-it-works, about → `/`; quote →
+  `/contact`; samples → `/work`; `/zh`, `/zh/*` → `/`. The old
+  `/contact.html → /quote.html` redirect was removed (it would have looped
+  the new contact page into a dead one). Added `cleanUrls: true` so
+  `/work` and `/contact` resolve; internal links still use `.html` so the
+  files open locally, and Vercel strips the extension.
+- **Samples:** two, HVAC "First cold night" (new, 2026-10-05) and snow
+  removal, side by side in a two-column grid. The cold-night ad is also the
+  hero. Compressed to 720×1280 H.264 with webp posters. A third, the HVAC
+  technician-to-camera ad (`hvac2`), was built in and then dropped at the
+  founder's call. Roofing stays off until redone (§10), so `roof1`,
+  `finished-ad`, the contractor-pitch `hero.mp4` and the roof job photos
+  were removed from `website/` (masters remain in `assets-source/` and
+  `Documents/Ad Video/`). `hvac1` was left out: its end card reads
+  "FURNANCE".
+- **Form:** same Formspree endpoint and fallback mailto; fields are now name,
+  agency, email, accounts (1 to 5 / 6 to 15 / 16+, optional), needs
+  (optional). `script.js` reads `data-contact-form`.
+- **Video:** sample cards use `preload="none"` + poster and start playing only
+  when scrolled into view (`data-autoplay-visible`, IntersectionObserver);
+  tapping a video toggles sound. All autoplay video is `muted playsinline`.
+- **Shared:** nav is wordmark · Work · Contact · "Ask about a sample";
+  footer is the line, email, Instagram, Terms, Privacy. Every page has a new
+  title, meta description, canonical and Open Graph tags; `image/og.jpg`
+  (1200×630) is the share image.
+- **CSS:** pricing card, all-in callout, guarantee block, before/after
+  showcase, radio cards, fact strip and the old four-column footer removed.
+  Contrast: amber on the light background is 2.55:1, so step numbers, FAQ
+  chevrons and the focus ring are steel on light and amber only on dark
+  (amber on charcoal 6.67:1; near-black on the amber button 6.46:1).
+- **Search sweep (§11.4):** clean. Remaining hits are deliberate:
+  `terms.html` ("not a guarantee", "refunded", "ad spend" in the liability
+  clause, "campaign"/"access" in the scope exclusion), `privacy.html`
+  ("do not need ... access to any advertising account"), and the redirect
+  sources in `vercel.json`. This log is history and was not swept.
+
+**Still to verify after deploy:** the form submits end to end and arrives at
+info@busyseason.ca; samples autoplay muted on a real iPhone and Android
+phone; every redirect lands on a live page.
+
+---
+
 ## 2026-08-17 — Rebuilt for brief v2: the studio now runs the ads
 
 `LegacyLink_Studio_Master_Build_Brief.md` was rewritten as **v2**, which

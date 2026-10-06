@@ -4,9 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- §0: the name explains nothing on its own, so the tab pairs it with a
-       descriptor and every headline says the thing in plain words. -->
-  <title>Busy Season — Video Ads for Home Services</title>
-  <meta name="description" content="We make your video ads — and launch them for you. Built from your real job photos and launched on your own Meta ad account. Single Video $250 CAD, or a Launch Pack at $750 CAD — about $1,000 all in with ad spend." />
+       descriptor and the hero says the thing in plain words. -->
+  <title>Busy Season · White-Label Video Ads for Agencies</title>
+  <meta name="description" content="White-label short-form video ads for agencies running home service accounts. 15 second ads in every format, 3 to 5 day turnaround." />
+  <link rel="canonical" href="https://busyseason.ca/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Busy Season" />
+  <meta property="og:url" content="https://busyseason.ca/" />
+  <meta property="og:title" content="Busy Season · White-Label Video Ads for Agencies" />
+  <meta property="og:description" content="White-label short-form video ads for agencies running home service accounts. 15 second ads in every format, 3 to 5 day turnaround." />
+  <meta property="og:image" content="https://busyseason.ca/image/og.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="image/mark.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -24,12 +34,10 @@
       <div class="nav-panel">
         <nav class="nav-links" aria-label="Primary">
           <a href="work.html">Work</a>
-          <a href="pricing.html">Services &amp; Pricing</a>
-          <a href="how-it-works.html">How It Works</a>
-          <a href="about.html">About</a>
+          <a href="contact.html">Contact</a>
         </nav>
         <div class="nav-cta-wrap">
-          <a href="quote.html" class="nav-cta">Get a Free Sample Ad</a>
+          <a href="contact.html" class="nav-cta">Ask about a sample</a>
         </div>
       </div>
       <button class="nav-toggle" data-nav-toggle aria-label="Toggle menu" aria-expanded="false">
@@ -39,42 +47,36 @@
   </header>
 
   <main id="main">
-    <!-- 1. Hero — §6: dark, plain-words headline, positioning statement as the
-         supporting line, one CTA. No riffing on the company name. -->
+    <!-- 1. Hero — §6: says what the studio is and for whom, one CTA, and the
+         best sample right beside it. The visitor is an agency owner who
+         clicked through from a cold email, usually on a phone. -->
     <section class="hero">
       <div class="container hero-grid">
         <div>
-          <p class="eyebrow">Video ads for home service businesses</p>
-          <h1>We make your video ads — and launch them for you.</h1>
-          <p class="lede">
-            Ads that get your phone ringing, built from your real job photos
-            and launched as a live campaign on your own Meta ad account. Then
-            we show you exactly how to read what it's doing.
-          </p>
+          <p class="eyebrow">White-label production studio</p>
+          <h1>White-label video ads for agencies running home service accounts.</h1>
+          <p class="lede">You sell. We create.</p>
           <div class="btn-row">
-            <a href="quote.html" class="btn btn-primary">Get a Free Sample Ad</a>
+            <a href="contact.html" class="btn btn-primary">Ask about a sample</a>
           </div>
           <p class="hero-note">
-            Roofing, HVAC, windows, gutters, snow removal — anyone whose
-            business runs on the phone ringing. Your ad budget stays on your
-            own account, with your own card. We never touch it.
+            Finished 15 second ads in 9:16, 1:1 and 16:9, back in 3 to 5
+            business days. Under your name, never ours.
           </p>
         </div>
 
-        <!-- Hero reel — the real 9:16 cut. Muted + looping so it autoplays
-             on every browser; controls stay off so it reads as a poster
-             that moves, not a player asking to be operated. -->
         <div class="reel">
           <video
-            src="video/hero.mp4"
+            src="video/hvac-cold-night.mp4"
+            poster="image/poster-hvac-cold-night.webp"
             autoplay
             muted
             loop
             playsinline
             preload="metadata"
-            aria-label="Sample 9:16 video ad, generated as a demonstration piece"
+            aria-label="HVAC sample ad, 15 seconds, vertical"
           ></video>
-          <span class="reel-format">9:16</span>
+          <span class="reel-format">HVAC · 15s · 9:16</span>
           <button type="button" class="video-sound" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
             <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
             <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
@@ -83,384 +85,236 @@
       </div>
     </section>
 
-    <!-- 2. The real-footage differentiator — §6 says this is the most
-         important non-hero block on the site, so it sits directly under the
-         fold and gets a full section to itself. -->
-    <section class="section">
+    <!-- 2. The work — three samples, at least two verticals (§6). They start
+         playing only once scrolled into view (data-autoplay-visible), so the
+         page stays light on mobile data. -->
+    <section class="section section-dark section-flush-top">
       <div class="container">
         <div class="section-head">
-          <p class="eyebrow">What makes these work</p>
-          <h2>Your real jobs. Ads that look like a national brand made them.</h2>
-          <p>
-            A homeowner spending $15,000 on a roof is making a trust
-            decision, and your own work earns that trust better than a
-            generic render ever could. So we start with the photos already
-            sitting on your phone.
-          </p>
+          <p class="eyebrow">The work</p>
+          <h2>Sample ads. Tap any one for sound.</h2>
         </div>
 
-        <!-- Both sides are real now: left is the untouched phone roll from a
-             single roof job, right is the ad cut from it. Per §8.6 the left
-             stays unprettified — the gap between the two is the argument. -->
-        <div class="showcase">
-          <div class="showcase-before">
-            <span class="showcase-label">Off your phone</span>
-            <div class="showcase-raw">
-              <span><img src="image/before.webp" alt="Before: the same house with a failing roof — bald patches, moss and rust streaks" loading="lazy" width="560" height="1003" /></span>
-              <span><img src="image/worksite.webp" alt="Mid-job: the roof stripped to the deck, crew working, dumpster in the driveway" loading="lazy" width="560" height="1003" /></span>
-              <span><img src="image/truck.webp" alt="Cleanup: the work truck and trailer loaded with the old shingles, new roof done" loading="lazy" width="560" height="1003" /></span>
-              <span><img src="image/drone.webp" alt="After: drone shot of the finished roof in fresh dark shingles" loading="lazy" width="560" height="1003" /></span>
-            </div>
-            <p class="muted" style="margin-top: 1.25rem; font-size: 0.9375rem;">
-              Ten or twenty snapshots you already have and think are
-              worthless — completed jobs, before-and-afters, the crew, the
-              trucks, your logo.
-            </p>
-          </div>
-
-          <div class="showcase-arrow" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m0 0-5-5m5 5-5 5"/></svg>
-          </div>
-
-          <div class="showcase-after">
-            <span class="showcase-label">Finished ad</span>
-            <div class="showcase-frame">
-              <video
-                src="video/finished-ad.mp4"
-                autoplay
-                muted
-                loop
-                playsinline
-                preload="none"
-                aria-label="The finished 15-second ad cut from the photos on the left"
-              ></video>
+        <div class="work-grid">
+          <div class="work-card">
+            <div class="work-thumb">
+              <video src="video/hvac-cold-night.mp4" poster="image/poster-hvac-cold-night.webp"
+                     muted loop playsinline preload="none" data-autoplay-visible
+                     aria-label="HVAC sample ad, 15 seconds, vertical"></video>
               <button type="button" class="video-sound" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
                 <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
                 <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
               </button>
             </div>
-            <p class="muted" style="margin-top: 1.25rem; font-size: 0.9375rem;">
-              AI does the production polish — the hook, the motion, the
-              b-roll, the text treatment. Your real work carries the trust.
-            </p>
+            <div class="work-meta">
+              <strong>HVAC</strong>
+              <span>15s · 9:16</span>
+            </div>
+          </div>
+
+          <div class="work-card">
+            <div class="work-thumb">
+              <video src="video/snow-removal.mp4" poster="image/poster-snow-removal.webp"
+                     muted loop playsinline preload="none" data-autoplay-visible
+                     aria-label="Snow removal sample ad, 15 seconds, vertical"></video>
+              <button type="button" class="video-sound" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
+                <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
+                <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+              </button>
+            </div>
+            <div class="work-meta">
+              <strong>Snow removal</strong>
+              <span>15s · 9:16</span>
+            </div>
           </div>
         </div>
 
-          <p class="muted" style="margin-top: 1.75rem; font-size: 0.8125rem; text-align: center;">
-            Illustration, not a client's job — we don't have one to
-            publish yet.
-          </p>
-      </div>
-    </section>
-
-    <!-- 3. What you actually get — three things, and "we launch them" has to
-         be unmissable (§6). -->
-    <section class="section section-dark">
-      <div class="container">
-        <div class="section-head">
-          <p class="eyebrow">What you actually get</p>
-          <h2>Ads made, ads live, and you know how to read them.</h2>
-        </div>
-
-        <div class="grid grid-3 grid-wide">
-          <div>
-            <h3>Finished video ads</h3>
-            <p class="muted">
-              About 15 seconds each — the length that holds attention on
-              Reels, TikTok, and Shorts. Delivered vertical, square, and
-              widescreen on request, so nothing gets cropped into nonsense.
-            </p>
-          </div>
-          <div>
-            <h3>A live campaign, launched by us</h3>
-            <p class="muted">
-              We build the campaign on your own Meta ad account and set it
-              live — targeting, budget, and where the leads land. You don't
-              have to learn Ads Manager to get started.
-            </p>
-          </div>
-          <div>
-            <h3>A handover you can actually use</h3>
-            <p class="muted">
-              A short walkthrough of where to see spend, results, and cost per
-              lead — plus a check-in two weeks after launch. Want us to keep
-              running it? We'll quote that separately.
-            </p>
-          </div>
+        <div class="btn-row">
+          <a href="work.html" class="btn btn-secondary">See all the work</a>
         </div>
       </div>
     </section>
 
-    <!-- 4. How it works — three steps, generous spacing (§6) -->
+    <!-- 3. The problem, in two lines (§6). -->
     <section class="section">
+      <div class="container">
+        <div class="section-head" style="margin-bottom: 0;">
+          <p class="eyebrow">Why agencies use us</p>
+          <h2>Creative fatigues in a few weeks.</h2>
+          <p>
+            Fresh ads shouldn't need a shoot, a videographer, or another chase
+            for footage your client never sends.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. How it works — three steps (§6). -->
+    <section class="section section-alt">
       <div class="container">
         <div class="section-head">
           <p class="eyebrow">How it works</p>
-          <h2>Three steps, and two of them are ours.</h2>
+          <h2>Three steps. Two of them are ours.</h2>
         </div>
 
         <div class="steps">
           <div class="step">
-            <h3>Send us photos off your phone</h3>
+            <h3>Send the account brief</h3>
             <p>
-              Ten or twenty recent job photos and anything you've filmed.
-              Plus ten minutes on what you do and who you want calling.
+              The trade, the offer, the call to action, and the client's
+              brand assets. Photos or footage if you have them.
             </p>
           </div>
           <div class="step">
-            <h3>We build your ads and launch them</h3>
+            <h3>We script and produce</h3>
             <p>
-              We write the concept, produce the ads, and set the campaign
-              live on your own account — targeting, budget, and where the
-              leads land.
+              You approve a short concept for each ad before production
+              starts. Then we build it.
             </p>
           </div>
           <div class="step">
-            <h3>You get the calls</h3>
+            <h3>Finished ads, under your name</h3>
             <p>
-              Your ads go in front of homeowners in your area and the leads
-              land where you told us. Two weeks in, we check how it's reading.
-              You answer the phone.
+              Back in 3 to 5 business days, in every format you asked for,
+              ready to upload.
             </p>
           </div>
-        </div>
-
-        <div class="btn-row">
-          <a href="how-it-works.html" class="btn btn-secondary">See the full process</a>
         </div>
       </div>
     </section>
 
-    <!-- 5. The guarantee — §4.4: the conversion lever, and never fine
-         print. -->
-    <section class="guarantee">
-      <div class="container guarantee-inner">
-        <span class="guarantee-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path stroke-linecap="round" stroke-linejoin="round" d="m5 13 4 4L19 7"/></svg>
-        </span>
-        <div>
-          <h2>Don't like the first drafts? You don't pay.</h2>
-          <p>
-            A Single Video is paid on delivery, and a Launch Pack deposit
-            comes back in full if the first cuts aren't what you wanted.
-            Nothing renews, and there's no contract to get out of.
-          </p>
-        </div>
-        <a href="quote.html" class="btn btn-primary">Get a Free Sample Ad</a>
-      </div>
-    </section>
-
-    <!-- 6. Proof — honest until real client numbers exist (§6). No invented
-         testimonials, no borrowed logos. -->
+    <!-- 5. What you get (§6). -->
     <section class="section">
-      <div class="container">
+      <div class="container grid grid-split" style="align-items: start;">
+        <div>
+          <p class="eyebrow">What you get</p>
+          <h2>A production arm without the hire.</h2>
+        </div>
+        <ul class="checklist">
+          <li>15 second ads in 9:16, 1:1 and 16:9</li>
+          <li>One revision round per batch</li>
+          <li>Fully white label. No watermark, no credit</li>
+          <li>We never contact your clients</li>
+          <li>Flexible volume, from a one-off batch to ongoing refreshes</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6. FAQ — native <details>, wording from §6. No prices: "Email for
+         rates" is the whole answer on cost. -->
+    <section class="section section-alt" id="faq">
+      <div class="container container-narrow">
         <div class="section-head">
-          <p class="eyebrow">Proof</p>
-          <h2>We're new, and we're not going to pretend otherwise.</h2>
-          <p>
-            There are no client logos on this page because we haven't earned
-            them yet. Here's what we can offer instead of a wall of them.
-          </p>
+          <p class="eyebrow">Questions</p>
+          <h2>What agencies ask first.</h2>
         </div>
 
-        <div class="facts">
-          <div class="fact">
-            <p class="fact-value">1<small> free sample ad</small></p>
-            <p>
-              We'll build one real ad for your business — from your own job
-              photos — before you've agreed to anything. React to a video,
-              not a sales pitch.
-            </p>
-          </div>
-          <div class="fact">
-            <p class="fact-value">$0<small> at risk</small></p>
-            <p>
-              A Single Video is paid on delivery; a Launch Pack deposit is
-              refunded in full if you don't like the first drafts. Nothing
-              renews and nothing auto-charges.
-            </p>
-          </div>
-          <div class="fact">
-            <p class="fact-value">1–2<small> weeks</small></p>
-            <p>
-              From the day your photos land: about a week for a Single Video,
-              two to finished ads and a live campaign. Not a quarter-long
-              onboarding.
-            </p>
-          </div>
-        </div>
-
-        <div class="btn-row" style="justify-content: flex-start;">
-          <a href="work.html" class="btn btn-secondary">See the work so far</a>
+        <div class="faq">
+          <details>
+            <summary>Is it really white label?</summary>
+            <div class="faq-body">
+              <p>Yes. No watermark, no credit, and we never contact your clients.</p>
+            </div>
+          </details>
+          <details>
+            <summary>What do you need from us?</summary>
+            <div class="faq-body">
+              <p>
+                The trade, the offer, the call to action, and brand assets.
+                Client photos or footage are welcome but not required.
+              </p>
+            </div>
+          </details>
+          <details>
+            <summary>How fast is turnaround?</summary>
+            <div class="faq-body">
+              <p>3 to 5 business days per batch once we have the brief.</p>
+            </div>
+          </details>
+          <details>
+            <summary>Do you use AI?</summary>
+            <div class="faq-body">
+              <p>
+                Yes, as part of production. It's why turnaround is days, not
+                weeks, and why refresh volume is affordable. Every ad is
+                scripted and checked by a person.
+              </p>
+            </div>
+          </details>
+          <details>
+            <summary>Which formats?</summary>
+            <div class="faq-body">
+              <p>9:16, 1:1 and 16:9.</p>
+            </div>
+          </details>
+          <details>
+            <summary>How much does it cost?</summary>
+            <div class="faq-body">
+              <p>
+                Per video, depending on volume.
+                <a href="mailto:info@busyseason.ca" class="link">Email for rates</a>.
+              </p>
+            </div>
+          </details>
+          <details>
+            <summary>Can we try it first?</summary>
+            <div class="faq-body">
+              <p>
+                Yes. <a href="contact.html" class="link">Ask about a small trial batch</a>.
+              </p>
+            </div>
+          </details>
         </div>
       </div>
     </section>
 
-    <!-- 7. Pricing preview — §4.6: the fee and the ad spend travel together,
-         because a contractor will add them up anyway. -->
-    <section class="section section-alt">
-      <div class="container">
-        <div class="section-head">
-          <p class="eyebrow">Launch pricing</p>
-          <h2>Two ways to start.</h2>
-          <p>
-            Published on the site, in Canadian dollars. It's a launch rate
-            while we build a portfolio, and it will go up as the work does.
-          </p>
-        </div>
-
-        <div class="pricing">
-          <div class="plan">
-            <h3 class="plan-name">Single Video</h3>
-            <p class="plan-kicker">One ad from your own job photos. The easy way to try us.</p>
-            <p class="plan-price">$250 <span>CAD</span></p>
-            <p class="plan-unit">Paid on delivery · nothing up front</p>
-            <ul>
-              <li>
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
-                <span>1 finished video ad built from your real job photos</span>
-              </li>
-              <li>
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
-                <span>Vertical and square formats, one revision round, about a week</span>
-              </li>
-              <li>
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
-                <span>You post or boost it yourself — no ad account access needed</span>
-              </li>
-              <li>
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
-                <span>Upgrade to a Launch Pack within 30 days and the $250 comes off</span>
-              </li>
-            </ul>
-            <div class="allin-inline">
-              <strong>Don't like the first draft?</strong> You owe nothing.
-              <span class="allin-sum">$250, nothing else required</span>
-            </div>
-            <a href="quote.html" class="btn btn-secondary btn-block">Start with one video</a>
-          </div>
-
-          <div class="plan plan-featured">
-            <span class="plan-badge">Best value</span>
-            <h3 class="plan-name">Launch Pack</h3>
-            <p class="plan-kicker">One-off. Ads made and your first campaign launched.</p>
-            <p class="plan-price">$750 <span>CAD</span></p>
-            <p class="plan-unit">3 videos at $250 · campaign launch included free</p>
-            <ul>
-              <li>
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
-                <span>3 finished video ads built from your real job photos</span>
-              </li>
-              <li>
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
-                <span>One-time campaign setup and launch on your ad account</span>
-              </li>
-              <li>
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
-                <span>One revision round across the batch</span>
-              </li>
-              <li>
-                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8"/></svg>
-                <span>A handover walkthrough, and a check-in two weeks after launch</span>
-              </li>
-            </ul>
-            <div class="allin-inline">
-              <strong>Plus ad spend, paid straight to Meta.</strong>
-              We recommend $200–300 for a first test.
-              <span class="allin-sum">≈ $1,000 all in to get started</span>
-            </div>
-            <a href="quote.html" class="btn btn-primary btn-block">Start with a Launch Pack</a>
-          </div>
-        </div>
-
-        <!-- The all-in figure, stated once more as its own object (§8.5) so
-             nobody has to do the arithmetic in their head mid-call. -->
-        <div class="allin" style="margin-top: 2.5rem;">
-          <div>
-            <span class="allin-label">Studio fee</span>
-            <p class="allin-value">$750<small>3 ads made, campaign launched, one-off</small></p>
-          </div>
-          <span class="allin-op" aria-hidden="true">+</span>
-          <div>
-            <span class="allin-label">Your ad spend</span>
-            <p class="allin-value">$200–300<small>Paid directly to Meta on your own account</small></p>
-          </div>
-          <span class="allin-op" aria-hidden="true">=</span>
-          <div class="allin-total">
-            <span class="allin-label">All in</span>
-            <p class="allin-value">≈ $1,000<small>To get your first campaign live</small></p>
-          </div>
-        </div>
-
-        <p class="muted" style="text-align: center; margin-top: 2rem; font-size: 0.9375rem;">
-          All prices are in Canadian dollars (CAD).
+    <!-- 7. Who's behind it — replaces the old About page (§6). Oshawa appears
+         once, as a real-person signal, not a service area. -->
+    <section class="section">
+      <div class="container container-narrow">
+        <p class="eyebrow">Who's behind it</p>
+        <h2>One producer, one inbox.</h2>
+        <p class="lede" style="max-width: none;">
+          Busy Season is Jolin, a producer based in Oshawa, ON, making
+          short-form ad creative for agencies that run home service accounts.
+          When you email, the person who replies is the person making your ads.
         </p>
-
-        <div class="btn-row" style="justify-content: center;">
-          <a href="pricing.html" class="btn btn-secondary">Full pricing &amp; FAQ</a>
-        </div>
       </div>
     </section>
 
-    <!-- 8. Closing CTA — §6: don't make anyone scroll back up to convert. -->
+    <!-- 8. Closing CTA (§6). -->
     <section class="cta-band">
       <div class="container">
-        <h2>Let's get your phone ringing.</h2>
+        <h2>Got an account that needs fresh creative?</h2>
         <p>
-          Tell us what you do and who you want calling, and we'll build you
-          one real ad from your own job photos — free, before you've
-          committed to anything.
+          Tell us the trade and the offer, and we'll talk about a sample.
         </p>
         <div class="btn-row">
-          <a href="quote.html" class="btn btn-primary">Get a Free Sample Ad</a>
+          <a href="contact.html" class="btn btn-primary">Ask about a sample</a>
         </div>
+        <a href="mailto:info@busyseason.ca" class="footer-email">info@busyseason.ca</a>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container">
-      <div class="footer-grid">
+      <div class="footer-simple">
         <div>
           <a href="index.html" class="brand">
-            <img src="image/mark.svg" alt="" width="32" height="32" />
             <span>Busy <em>Season</em></span>
           </a>
-          <p class="footer-blurb">
-            We make video ads for home service businesses — and launch them
-            for you.
-          </p>
+          <p class="footer-blurb">White-label video ads for agencies.</p>
           <a href="mailto:info@busyseason.ca" class="footer-email">info@busyseason.ca</a>
         </div>
-        <div>
-          <h4>Studio</h4>
-          <ul>
-            <li><a href="work.html">Our Work</a></li>
-            <li><a href="pricing.html">Services &amp; Pricing</a></li>
-            <li><a href="how-it-works.html">How It Works</a></li>
-            <li><a href="about.html">About</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Get started</h4>
-          <ul>
-            <li><a href="quote.html">Get a free sample ad</a></li>
-            <li><a href="pricing.html">Pricing</a></li>
-            <li><a href="pricing.html#faq">FAQ</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Legal</h4>
-          <ul>
-            <li><a href="terms.html">Terms of Service</a></li>
-            <li><a href="privacy.html">Privacy Policy</a></li>
-            <li><a href="terms.html#usage-rights">Usage rights</a></li>
-          </ul>
-        </div>
+        <ul class="footer-links">
+          <li><a href="https://www.instagram.com/busyseasonn/" rel="noopener">Instagram</a></li>
+          <li><a href="terms.html">Terms</a></li>
+          <li><a href="privacy.html">Privacy</a></li>
+        </ul>
       </div>
       <div class="footer-bottom">
         <span>© <span data-year></span> Busy Season. All rights reserved.</span>
-        <span>Video ads for home service businesses, made and launched.</span>
       </div>
     </div>
   </footer>

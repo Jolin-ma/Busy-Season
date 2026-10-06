@@ -24,8 +24,9 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ---- Video sound toggles -----------------------------------------
      The clips autoplay muted because no browser allows anything else, so
      this button is the only route to sound. Only one clip is ever audible:
-     unmuting one mutes the other, otherwise the hero and the sample ad talk
-     over each other on the way down the page. */
+     unmuting one mutes the others, otherwise the samples talk over each
+     other on the way down the page. Tapping the video itself does the same
+     as the button (§6: "tap for sound"). */
   const soundToggles = document.querySelectorAll("[data-sound-toggle]");
 
   soundToggles.forEach((button) => {
@@ -57,28 +58,55 @@ document.addEventListener("DOMContentLoaded", () => {
       if (turningOn && video.paused) video.play().catch(() => {});
     });
 
+    video.style.cursor = "pointer";
+    video.addEventListener("click", () => button.click());
+
     button.addEventListener("sound:mute", () => setMuted(true));
   });
+
+  /* ---- Play sample videos only while they're on screen --------------
+     Videos marked data-autoplay-visible ship with preload="none" and a
+     poster, so nothing downloads until the card scrolls into view (§8.6:
+     fast on mobile data). They pause again when scrolled away. Reduced
+     motion keeps them on the poster frame until someone taps for sound. */
+  const lazyVideos = document.querySelectorAll("video[data-autoplay-visible]");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (lazyVideos.length && "IntersectionObserver" in window && !reduceMotion) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(({ target, isIntersecting }) => {
+          if (isIntersecting) {
+            target.play().catch(() => {});
+          } else if (!target.paused) {
+            target.pause();
+          }
+        });
+      },
+      { threshold: 0.35 }
+    );
+
+    lazyVideos.forEach((video) => observer.observe(video));
+  }
 
   /* ---- Current year in the footer ---------------------------------- */
   document.querySelectorAll("[data-year]").forEach((el) => {
     el.textContent = String(new Date().getFullYear());
   });
 
-  /* ---- Quote form --------------------------------------------------
+  /* ---- Contact form ------------------------------------------------
      Posts to Formspree (the endpoint is the form's data-endpoint), which
-     stores the lead and emails it on. On success the form is replaced by
+     stores the enquiry and emails it on. On success the form is replaced by
      the inline success notice; the page never navigates.
 
-     If the endpoint fails for any reason, the error path falls back to the
-     old mailto behaviour rather than dropping the lead — a visitor who
-     bothered to fill this in should never leave with nothing. */
-  const form = document.querySelector("[data-quote-form]");
+     If the endpoint fails for any reason, the error path falls back to a
+     pre-filled mailto rather than dropping the enquiry. */
+  const form = document.querySelector("[data-contact-form]");
 
   if (form) {
-    const status = document.querySelector("[data-quote-status]");
-    const errorBox = document.querySelector("[data-quote-error]");
-    const mailtoLink = document.querySelector("[data-quote-mailto]");
+    const status = document.querySelector("[data-contact-status]");
+    const errorBox = document.querySelector("[data-contact-error]");
+    const mailtoLink = document.querySelector("[data-contact-mailto]");
     const submit = form.querySelector('button[type="submit"]');
     const inbox = form.dataset.inbox || "info@busyseason.ca";
     const endpoint = form.dataset.endpoint;
@@ -87,31 +115,30 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = new FormData(form);
       const get = (key) => String(data.get(key) || "").trim();
       return {
-        business: get("business"),
         name: get("name"),
+        agency: get("agency"),
         email: get("email"),
-        phone: get("phone"),
-        service: get("service"),
-        details: get("details"),
+        accounts: get("accounts"),
+        needs: get("needs"),
         company_website: get("company_website"), // honeypot
       };
     };
 
+    const subjectFor = (f) => `Sample enquiry — ${f.agency || "new agency"}`;
+
     const composeMailto = (f) => {
-      const subject = `Sample ad request — ${f.business || "new enquiry"}`;
       const body = [
-        `Business: ${f.business}`,
-        `Contact name: ${f.name}`,
+        `Name: ${f.name}`,
+        `Agency: ${f.agency}`,
         `Email: ${f.email}`,
-        `Phone: ${f.phone || "—"}`,
-        `What they do: ${f.service || "—"}`,
+        `Home service accounts: ${f.accounts || "—"}`,
         "",
-        "Anything else:",
-        f.details || "—",
+        "What we need:",
+        f.needs || "—",
       ].join("\n");
 
       return (
-        `mailto:${inbox}?subject=${encodeURIComponent(subject)}` +
+        `mailto:${inbox}?subject=${encodeURIComponent(subjectFor(f))}` +
         `&body=${encodeURIComponent(body)}`
       );
     };
@@ -119,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const showError = (message, fields) => {
       if (mailtoLink) mailtoLink.href = composeMailto(fields);
       if (errorBox) {
-        const slot = errorBox.querySelector("[data-quote-error-message]");
+        const slot = errorBox.querySelector("[data-contact-error-message]");
         if (slot && message) slot.textContent = message;
         errorBox.hidden = false;
         errorBox.focus();
@@ -131,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       /* No explicit validation here: the browser gates the submit event on the
          required fields already (the form isn't novalidate), so reaching this
-         line means business/name/email are filled and the email parses. */
+         line means name/agency/email are filled and the email parses. */
       const fields = readFields();
 
       /* Honeypot filled: a bot. Show success and send nothing. */
@@ -145,11 +172,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (submit) {
         submit.disabled = true;
         submit.dataset.label = submit.textContent;
-        submit.textContent = submit.dataset.sendingLabel || "Sending…";
+        submit.textContent = "Sending…";
       }
 
       try {
-        const { company_website, ...lead } = fields;
+        const { company_website, ...enquiry } = fields;
         const response = await fetch(endpoint, {
           method: "POST",
           headers: {
@@ -157,8 +184,9 @@ document.addEventListener("DOMContentLoaded", () => {
             Accept: "application/json",
           },
           body: JSON.stringify({
-            ...lead,
-            _subject: `Sample ad request — ${fields.business || "new enquiry"}`,
+            ...enquiry,
+            _replyto: fields.email,
+            _subject: subjectFor(fields),
           }),
         });
 

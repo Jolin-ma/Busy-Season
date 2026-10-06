@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-**Busy Season** — a small studio that produces AI-assisted video ads for home service businesses **and launches them** as a Meta campaign on the client's own ad account (ongoing management is quoted case by case, not a published offer). Spec: `BusySeason_Master_Build_Brief_v3.md`, currently at **v3** — it dropped the $1,500/mo Growth plan. Paid offers are a $250 Single Video (paid on delivery, no ad-account access) and the $750 Launch Pack; recommended ad spend is $200–300, ≈ $1,000 all in (changed 2026-09-18, see the note at the top of the brief). It supersedes v2 and v1 entirely.
+**Busy Season** — a white-label production studio making short-form video ad creative for **marketing agencies and media buyers** who run Meta ads for home service businesses. Agencies only since 2026-10-05: no direct contractor sales, no campaign setup or ad account access, and **no prices anywhere on the site**. Spec: `BusySeason_Master_Build_Brief_v4.md` (supersedes v3 and earlier). Its §6 copy rules and §11 rebuild list govern the site; the v4 rebuild is logged in `website/progress.md` (2026-10-05).
 
 > **Renamed from LegacyLink Studio, 2026-08-21 — migration to Busy Season / `busyseason.ca` is complete.** The founder reversed the 2026-08-17 decision to keep the old name (brief §0/§11). `legacylinkstudio.com` is being **fully retired, not redirected**. Everything below is done:
 > - **DNS/Zoho/Resend**: `busyseason.ca` registered at Namecheap; A/CNAME records point it at Vercel; Zoho Mail domain added with MX, SPF, and DKIM all **verified**; Resend domain **verified** (so `LEAD_FROM`/`LEAD_INBOX` defaulting to `@busyseason.ca` in `website/api/quote.js` is safe to run in production).
@@ -43,15 +43,15 @@ Zoho itself is on **Canada-region** infrastructure (`zohocloud.ca`, not the gene
 
 ### Marketing site (`website/`)
 
-Static HTML, one page per route, sharing `styles.css` and `script.js`. The design system is brief §8; the copy tracks the pricing and positioning decisions in brief §2 — when those change, the figures on `index.html`, `pricing.html`, and `quote.html` all move together, and `website/progress.md` records why.
+Static HTML, one page per route, sharing `styles.css` and `script.js`. Public pages since v4: `index.html`, `work.html`, `contact.html`, `terms.html`, `privacy.html`, nothing else. Old URLs (pricing, how-it-works, about, quote, samples, zh) are 301 redirects in `website/vercel.json`, which also sets `cleanUrls: true`. The design system is brief §8.
 
-`terms.html` deliberately states money in **percentages, never dollar figures** ("50% of the first month's fee"), so repricing the packages never touches the legal text. Keep it that way — it has already paid off through one reprice.
+`terms.html` deliberately states money in **percentages, never dollar figures** ("50% of the batch fee"), so repricing the packages never touches the legal text. Keep it that way — it has already paid off through one reprice.
 
-The quote form posts to Formspree; there is no server code.
+The contact form posts to Formspree; there is no server code.
 
 ### The leads path
 
-`website/quote.html`'s form carries `data-endpoint="https://formspree.io/f/mkjglewk"` (Formspree form **Busy Season**, in My First Project). `script.js` POSTs each lead there as JSON; Formspree stores it (the dashboard's Submissions tab is the system of record) and emails it to `jolinma81@gmail.com`. If the post fails, the page offers a pre-filled `mailto:info@busyseason.ca` instead, so a lead is never dropped. The honeypot field `company_website` is checked client-side: if filled, the page shows success and sends nothing. Formspree's free plan caps submissions at 50/month.
+`website/contact.html`'s form (`data-contact-form`) carries `data-endpoint="https://formspree.io/f/mkjglewk"` (Formspree form **Busy Season**, in My First Project). `script.js` POSTs each lead there as JSON; Formspree stores it (the dashboard's Submissions tab is the system of record) and emails it to `jolinma81@gmail.com`. Fields: name, agency, email, accounts, needs. If the post fails, the page offers a pre-filled `mailto:info@busyseason.ca` instead, so a lead is never dropped. The honeypot field `company_website` is checked client-side: if filled, the page shows success and sends nothing. Formspree's free plan caps submissions at 50/month.
 
 
 ## Production deployment
