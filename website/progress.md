@@ -24,6 +24,18 @@ it is ever wanted again.
 
 ---
 
+## 2026-10-06 — New HVAC sample ad
+
+The HVAC "First cold night" sample (hero + first card on `index.html`, first
+card on `work.html`) was replaced by a new HVAC cut.
+
+- Master (1080×1920, 14.0s, 10.8 MB) moved to
+  `assets-source/video/hvac-master.mp4`.
+- Served file `video/hvac.mp4`: 720×1280 H.264 High, CRF 23, AAC 128k,
+  faststart, 2.6 MB (same profile as roofing and snow removal).
+- New poster `image/poster-hvac.webp` (frame at 1s, the thermostat at 16°C).
+- Deleted `video/hvac-cold-night.mp4` and `image/poster-hvac-cold-night.webp`.
+
 ## 2026-10-05 — v4 rebuild: agencies only
 
 **v4 rebuild: site rebuilt for agencies only. Removed pricing, how-it-works, about, quote, zh pages; added contact page and redirects. Reason: Busy Season moved to white-label agency work only on 2026-10-05.**
