@@ -8,124 +8,117 @@ web
 
 ## Scope of this record
 
-This file covers the **public marketing site** (`website/`, deployed to `busyseason.ca`). There is no custom back office (removed 2026-10-02); lead tracking runs through Formspree.
+This file covers the **public marketing site** (`website/`, deployed to `busyseason.ca`). There is no custom back office (removed 2026-10-02); enquiries arrive through a Formspree form and are tracked in a spreadsheet.
 
-The authoritative business spec is `BusySeason_Master_Build_Brief.md` (v2), which supersedes v1 entirely. `CLAUDE.md` and `website/progress.md` carry operational and build history. Where this file and the brief disagree, the brief wins unless the founder has since overruled it.
+The authoritative business spec is `BusySeason_Master_Build_Brief_v4.md` (v4.0, 2026-10-05), which supersedes v3.2 and everything earlier. `CLAUDE.md` and `website/progress.md` carry operational and build history. Where this file and the brief disagree, the brief wins unless the founder has since overruled it.
 
 ## Users
 
-**Primary user:** the owner or operator of a home service business — roofing, HVAC, windows and doors, plumbing, landscaping, snow removal, gutters, garage doors, interior renovation and basement finishing. Roofing is the flagship example; the site speaks to home services broadly so it never contradicts off-season outreach.
+**Primary user:** the owner of a **marketing agency or a solo / small-team Meta media buyer** whose clients are home service businesses (HVAC, roofing, snow removal, windows and doors, landscaping, garage doors, plumbing). In priority order (brief §3): solo media buyers or 1–3 person teams running 5–10 contractor accounts; small agencies (2–15 people) with no in-house video; web/SEO shops serving trades; larger contractor agencies (for overflow); white-label resellers.
 
-**Situation:** a busy small-business owner with no in-house marketing or video capability, who is used to paying for lead generation. Often first sees the site on a phone, prompted by a cold email, call, or in-person approach — sometimes standing on a job site. Has roughly five minutes and wants to know exactly what they get, what it costs, and what it costs *all in*.
+**Situation:** a marketing-literate buyer who is good at media buying and weak at production. Their clients' creative fatigues every few weeks, and refreshing it means booking a videographer or chasing a contractor for footage that never arrives. They usually land on the site from a link in a cold email or LinkedIn DM, on a phone.
 
-**Job to be done:** decide whether this studio can reliably get their phone ringing with booked jobs, without the owner having to learn advertising or hand over money they can't see.
+**Job to be done:** in about 90 seconds, watch two or three ads and decide whether this studio is a reliable production arm worth replying to. They care about turnaround, reliability, formats, and whether the creative will perform, not about art.
 
-**Secondary context:** the founder is the other reader of the site during outreach calls — the site's job is to close deals that outreach opens, not to generate its own traffic.
+**Not a user:** contractors and homeowners. No copy is written to them anywhere (since 2026-10-05).
 
 ## Product Purpose
 
-Busy Season is a small AI-assisted video ad studio for home service businesses that **produces the video ads and runs them as Meta campaigns** on the client's own ad account. The client receives finished 15-second video creative *and* a live, managed campaign, plus a monthly plain-language performance readout on the Growth plan.
+Busy Season is a **white-label production studio** that makes short-form video ad creative for agencies running Meta ads for home service businesses. The agency owns the client relationship and the ad account; the studio is the production arm behind it, and the agency's client never sees the Busy Season name.
 
-It exists as a deliberate parallel revenue stream to a separate consumer business (Loyal Tale): it reuses production tooling already being paid for, it generates cash per client in weeks rather than months, and it is intentionally the leaner of the two operations.
+The site's job is to back up outreach, not to generate its own traffic. Everything on it serves the 90 seconds after an agency owner clicks through.
 
-**Success** = a contacted contractor becomes a paying client (free spec ad → $750 Launch Pack → $1,500/mo Growth), and Growth clients stay on the retainer because live ads keep producing calls.
+**Success** = an agency replies, takes a paid trial batch of 2–3 videos, and comes back for repeat batches. The funnel is outreach → reply → sample → trial batch → repeat batch (brief §7).
+
+The business is also a resume portfolio project for the founder (brief "Portfolio Goals"). **The public site never says so.** It presents as a real studio, because it is one.
 
 ## Positioning
 
-*"We make the video ads that get your phone ringing — and we run them for you."* This positioning statement doubles as the tagline; there is no separate clever tagline.
+A dependable production partner, not an artist. Hero line: *"White-label video ads for agencies running home service accounts."* Supporting line, matching the Instagram bio: *"You sell. We create."*
 
-The mechanism a neighboring studio cannot truthfully copy: **the ads are hybrids built around the client's real work.** The client's own job-site photos, before/afters, drone shots, phone footage, crew, trucks and logo carry the trust; AI carries the production value — hook, motion, camera moves, transitions, b-roll, atmosphere, text treatment, polish. This defeats the "is this AI?" objection, makes the work meaningfully better than a generic AI render, and is a moat against anyone else with a video-AI login. Purely AI-generated footage is a deliberate anti-pattern for this business — a homeowner choosing a $15,000 roof is making a trust decision, and a house/crew/truck that don't exist read as trust-negative.
+What the studio sells to an agency: fresh creative on a refresh cadence, with no shoot to schedule and no footage to chase, back in 3 to 5 business days, unbranded, in every format. AI-assisted production is why turnaround is days and the price works for refresh volume. That is said plainly when asked, never dodged.
 
-Tone: confident, results-oriented, unapologetically commercial — a studio that understands small-business marketing, not a creative agency selling art. Deliberately the opposite register from the founder's consumer brand.
+Tone: plain, direct, short sentences. A capable supplier that respects a marketing professional's time. No hype vocabulary ("elevate", "unleash", "game-changing").
 
 ## Operating Context
 
-- **Sales motion is outbound.** Several hundred contacted Durham Region / East GTA contractors determine whether the business works; the website closes, it does not discover. Don't over-invest in SEO or content.
-- **Seasonality drives which verticals outreach leads with** (Aug–Oct: snow removal, HVAC, windows/doors, gutters; Nov–Feb: roofing, interior reno; Mar–May: roofing, landscaping, paving; storm response any time). The public site stays vertical-led and season-agnostic so it never contradicts the current outreach focus.
-- **The site is geography-agnostic on purpose.** The founder operates out of Oshawa / Durham Region, but location is a rapport lever in conversation, not a website claim — a hard-coded local claim would cap the pitch.
-- **Client workflow:** intake + asset collection → client grants Meta ad account + Page access → concept/script sanity check → hybrid production → internal QA → one client revision round per batch → campaign build & launch → ongoing optimization → monthly readout.
-- **Client job photos (20–30 recent) are a required intake item**, framed to the client as a feature ("send us 30 photos off your phone…"), not a chore.
-- **The studio never takes custody of ad spend.** The client's own payment method sits on the client's own ad account; the studio holds partner/admin access only. This must be stated plainly on the site.
-- **Payment:** Interac e-Transfer is the default for one-offs and deposits; pre-authorized debit or card on file is pushed for the recurring retainer. Card (Stripe) is offered only on request, never as a menu item — the copy is deliberately phrased as an exception to avoid processing fees on payments that would otherwise be free.
-- **Currency is CAD**, marked explicitly on plan cards and with an "All prices are in Canadian dollars (CAD)" line on the homepage and pricing page.
+- **Sales motion is outbound, written first:** email or LinkedIn DM with a link to the home or Work page, follow-ups at day 5 and day 12, then stop. Phone only for people who replied. No deck. The site closes; outreach discovers. Don't over-invest in SEO or content.
+- **The site is geography-agnostic.** Agencies can be anywhere in Canada or the US. "Oshawa, ON" appears once, in the "Who's behind it" block, as a real-person signal, not a service area.
+- **Agency workflow (brief §5):** brief → concept/script approved by the agency → AI-assisted production (client assets used where supplied) → internal QA → delivery in all requested formats, unbranded → one revision round per batch → follow-up asking how the creative performed.
+- **Client assets are welcome but optional.** No published sample has been built from real client photos, so the site never claims that method.
+- **Pricing is never on the site** (brief §4). Working numbers live in the pitch and the agency agreement. Payment is 50% upfront on the first batch, net terms in writing after; Interac e-Transfer default, Stripe on request; CAD unless agreed otherwise.
+- **Instagram (@busyseasonn)** is a portfolio for agency outreach, linked from the footer. No other social links.
 
 ## Capabilities and Constraints
 
-**Offer ladder (launch rates, presented as launch rates that will rise):**
+**What the agency gets (the "What you get" list):** 15 second ads in 9:16, 1:1 and 16:9 · one revision round per batch · fully white label, no watermark or credit · we never contact your clients · flexible volume, one-off batches or ongoing refreshes. Turnaround 3 to 5 business days per batch once the brief is in. A small paid trial batch is offered; a free sample only for an agency that has replied and has real volume (handled in conversation, not promised on the site).
 
-| Rung | What it is | Price |
-|---|---|---|
-| Spec ad | One free sample ad built for their business | Free |
-| Launch Pack | 3 videos (~15s) + one-time Meta campaign setup, one revision round, ~2 weeks | $750 CAD one-off |
-| Growth | 4 videos/mo in biweekly batches of 2 + managed Meta campaign + monthly readout, one revision round per batch, month-to-month | $1,500 CAD/mo |
+**Explicitly out of scope:** campaign setup or management, ad account access of any kind, media buying, landing pages and websites, CRM, SEO, organic social, any direct contact with the agency's clients.
 
-- **Per-video rate is higher on Launch Pack ($250) than Growth ($375 nominal but never sold per-video)** — the pricing page's "why is Growth cheaper per video?" logic depends on Growth staying below the one-off's per-unit rate. If prices move, that relationship must hold.
-- **All-in cost is stated everywhere the fee is** — studio fee + recommended ad spend + total, as a real reusable component, never grey-on-grey. Growth all-in is framed as "most clients are investing $2,500/month all in" (recommended $1,000+ spend).
-- **Risk reversal leads the copy hierarchy, above the rate lock:** Launch Pack 50% deposit refunded in full if the client dislikes the first drafts; Growth is month-to-month, cancel with 30 days notice, no contract. This gets its own visually prominent block, not fine print. Marketing copy says "cancel with notice" — never "cancel anytime" — to stay consistent with `terms.html`.
-- **Rate lock** (a Growth client keeps their signing rate as long as the retainer runs uninterrupted) is a supporting reason, demoted below the guarantee.
-- **Explicitly out of scope, stated plainly on the site:** Google Ads, landing page / website builds, CRM setup, answering or qualifying leads, SEO, organic social management. Meta only at launch.
-- **Ad length ~15 seconds**, consistent across both offers; framed as the length that performs on Reels/TikTok/Shorts, not as a cap. Revisit after ~3 months of live campaign data.
-- **`terms.html` states money in percentages, never dollar figures** ("50% of the first month's fee") so repricing never touches the legal text. Keep it that way.
-- **Both legal pages carry a visible "NEEDS LEGAL REVIEW" banner and are `noindex`.** Terms of Service and Privacy Policy have not had legal review.
+**Copy rules (brief §6), the main way this site goes wrong:**
+
+1. Talk to agencies only. "Your clients," never "your customers" or "your business."
+2. No prices anywhere: not per video, not "starting at," not ranges. The FAQ answer on cost is "Per video, depending on volume. Email for rates."
+3. No campaign management claims, and no ad account access.
+4. Never claim the samples were built from real client photos.
+5. No fake proof: no testimonials, client logos, "trusted by" bars or client counts until real ones exist with written permission.
+6. Say "white label" plainly, and say the studio never contacts the agency's clients.
+7. Answer "is this AI?" honestly.
+8. Plain words. Short sentences.
+
+**Retired in v4, never to reappear:** Launch Pack, Single Video, Growth, any dollar figure, recommended ad spend, "all in", the free spec ad for contractors, the deposit-back guarantee, "We make your video ads and launch them for you", campaign setup, handover, ad account access, the before/after photo showcase.
+
+**Pages (and only these):** `index.html` (Home), `work.html`, `contact.html`, `terms.html`, `privacy.html`. Old URLs (pricing, how-it-works, about, quote, samples, zh) are 301 redirects in `website/vercel.json`, which also sets `cleanUrls: true`. Old links in past outreach and captions must never 404.
+
+**Legal:** `terms.html` is written for agency engagements and states money in **percentages, never dollar figures**, so repricing never touches it. It carries a `NEEDS LEGAL REVIEW` comment. Both legal pages are `noindex`.
 
 **Technical constraints:**
 
-- The marketing site is **static HTML/CSS/JS with no build step and no `node_modules`** — one HTML file per route, sharing `styles.css` and `script.js`. This is deliberate. The quote form posts to Formspree, so there is no server code. Adding a dependency to `website/` means adding a build step — reconsider first.
-- **The quote form is the single most important conversion point.** It posts each lead to Formspree, which stores it and emails it on; Formspree's Submissions tab is the system of record. If the post fails, the page offers a pre-filled email instead, so a lead is never dropped.
-- Deploy is push-to-`main` (Vercel, git-connected, Root Directory `website`, config at `website/vercel.json` — not repo root).
+- **Static HTML/CSS/JS, no build step, no `node_modules`.** One HTML file per route, sharing `styles.css` and `script.js`. Adding a dependency means adding a build step, so reconsider first.
+- **The contact form is the conversion point.** Fields: name, agency or company, email, home service accounts run (optional: 1 to 5 / 6 to 15 / 16+), what you need (optional). It posts to Formspree (system of record, emails each enquiry on); on failure the page offers a pre-filled email to `info@busyseason.ca` so nothing is dropped. Honeypot field `company_website`.
+- **Video:** compressed web versions (H.264, 720×1280, `+faststart`, ideally under 4 MB) with a webp poster. Sample cards use `preload="none"` and play muted only when scrolled into view (`data-autoplay-visible`); tapping a video toggles sound. Masters live in `assets-source/` (gitignored).
+- Deploy is push-to-`main` (Vercel, git-connected, Root Directory `website`, config at `website/vercel.json`, not the repo root).
 
-**Terminology:** "spec ad" (the free sample), "Launch Pack", "Growth", "all-in" (fee + spend), "readout" (the monthly performance summary), "hybrid" (real footage + AI production). Primary CTA wording is **"Get a Free Sample Ad"** site-wide — it outperforms "Get a Quote" because it offers something concrete. The `quote.html` filename is kept so no redirect is needed.
+**Terminology:** "white label", "batch" (one order of videos), "trial batch", "refresh", "the brief" (the agency's account details), "spec work" (the studio's own samples). Primary CTA wording is **"Ask about a sample"** site-wide, linking to Contact.
 
 ## Brand Commitments
 
-- **Name:** Busy Season. Domain `busyseason.ca` (registered 2026-08-21, replacing `legacylinkstudio.com`, which is fully retired and decommissioned — not redirected). The rename from LegacyLink Studio is complete across DNS, Zoho, Resend, Vercel, Neon, and GitHub.
-- **The name now does more of the explaining than "LegacyLink Studio" did**, but the hero headline must still state plainly what the studio does — makes the ads *and* runs them — with no wordplay on the company name. Page `<title>`s pair the wordmark with a descriptor ("Video Ads for Home Services"). Revisit whether all the v1 name-compensation copy guidance is still load-bearing; "Busy Season" is more self-explanatory to a contractor.
-- **No "AI" in any public-facing name** (sub-brands, product names, campaign names) — it invites the "is this fake?" objection before the pitch starts. Avoid generic agency vocabulary (Apex, Elevate, Summit, Peak, Digital, Solutions) that contractors pattern-match to cold-call spam.
-- **Never reference or link to the founder's other business (Loyal Tale) anywhere a visitor can see.** The two businesses are marketed as fully independent; neither site vouches for the other. Shared-ownership disclosure, if ever wanted, belongs in private materials only. Every mention of memorials/tributes/pets and any cross-link has been removed and grep-verified — do not add one back.
-- **Outreach email must be on the domain**, never a Gmail address — a free email domain undercuts a pitch that asks a contractor to hand over ad account access.
-- **Logo/wordmark:** deliberately kept simple and typographic — a wordmark in the headline sans at semibold, no icon mark. The nav is the wordmark alone. A drawn logo mark before the business has a personality ages badly; not planned.
+- **Name:** Busy Season. Domain `busyseason.ca`. Email `info@busyseason.ca`, and all outreach goes from the domain, never Gmail. `legacylinkstudio.com` is fully retired.
+- **Why the name still fits:** agencies running home service accounts live by their clients' seasons. But the name doesn't say what the studio does, so the hero states it plainly with no wordplay. Page title pattern: "Busy Season · White-Label Video Ads for Agencies".
+- **No "AI" in any public-facing name.** Avoid generic agency vocabulary (Apex, Elevate, Summit, Peak, Digital, Solutions).
+- **Never reference or link to the founder's other business (Loyal Tale)** anywhere a visitor can see. The two are marketed as fully independent.
+- **Logo/wordmark:** typographic, headline sans at semibold, no icon mark. Not planned.
+- **The founder is named:** Jolin, based in Oshawa, ON, in the Home "Who's behind it" block. No photo yet. Don't invent a bio beyond what the brief states.
 
-**Design system (brief §8) — established and in production, treat as the incumbent visual world:**
-
-- Founder directive shared with the sister brand: *lots of white space, high-end, clean, easy to navigate* — but a deliberately distinct visual language (sharper edges, more contrast, more drama, more saturated accent) so nothing reads as the same brand family.
-- Palette: near-white cool-neutral bg `#FAFAF9`; deep charcoal `#16181C` for hero and portfolio-highlight sections; near-black text `#1A1B1E`; off-white on dark `#F2F2F0`; primary/CTA accent amber-orange `#E8862E`; secondary steel blue `#3E5C76` (used for the Growth "Best Value" emphasis); neutral gray borders `#E2E2E0`; green `#3F8F5F` for the guarantee block.
-- **Amber accessibility constraint, verified and load-bearing:** `#E8862E` on the near-white bg is 2.6:1 and **fails AA for text** — it may fill a shape but must never set type on light. The amber CTA button takes near-black label text (7.3:1); white-on-amber fails. Amber as text is used only on charcoal (6.4:1). Steel blue is the eyebrow/label colour on light (6.9:1). There is a comment block restating this at the top of `styles.css`.
-- Type: Space Grotesk (headlines) + Inter (body). **No serif anywhere** — serif is reserved for the sister brand's emotional register. Numbers (prices, results, cost-per-lead) get deliberately larger/bolder treatment than body — data is allowed to feel prominent here.
-- 8px grid, 1280px max content width (full-bleed permitted for portfolio/video), 4–8px radius (crisper than the sister brand), 96–120px desktop section padding / 64px mobile, 12-col desktop grid.
-- Named components from §8.5: solid amber CTA button + one outline secondary; portfolio cards (dominant video thumbnail, minimal overlay, hover "watch" affordance); two-column pricing table with Growth emphasized; **guarantee block** (own full-width component, green accent, visible on a phone without scrolling past it); **before/after asset showcase** (raw client photos vs. finished ad frame — don't prettify the "before"); **all-in cost callout** (reusable fee + spend + total).
-- Motion: quicker than the sister brand (100–150ms), subtle scale-on-hover for portfolio thumbnails, muted autoplay video for portfolio/hero previews, `prefers-reduced-motion` respected. No confetti, no cursor trails.
-- Mobile-first (most prospects arrive from a phone). WCAG AA contrast minimum, full keyboard navigability with visible focus states, 44×44px minimum touch targets (especially the lead form), video never autoplays with sound.
-- **Imagery rule:** real footage from produced ads wherever possible; no stock photography of generic "business people in an office"; every image traceable to real client work or an honest sample. Raw unpolished client job photos are welcome as a design element in the before/after showcase — the contrast *is* the sales argument.
+**Design system:** see `DESIGN.md`. In short: cool paper and deep charcoal, one amber action colour, steel blue for support, Space Grotesk + Inter, no serif, crisp 6px/10px geometry, video-first. Kept from v3 with the pricing, all-in, guarantee and before/after components removed.
 
 ## Evidence on Hand
 
-- **`BusySeason_Master_Build_Brief.md` (v2)** — the full business spec: pricing, positioning, production workflow, design system, go-to-market, open items.
-- **A companion critical review** (`claude/LegacyLink_Critical_Review_2026-08-16.md`) records why v2 decisions were made and lists the ten objections outreach will face — referenced by the brief but not verified present in this working tree.
-- **`website/progress.md`** — a detailed running build log with the founder decisions behind every copy and pricing change.
-- **Real media on the site:** four real job photos (before/after/worksite/truck/drone) and a small set of encoded video clips — a winter hero cut and two finished HVAC spec ads (`hvac1`/`hvac2`). Every video the site serves matches one encode profile (H.264 High, 540×960, 24fps, `+faststart`); masters live in gitignored `assets-source/`.
-- **`ffmpeg` is blocked by Application Control on this machine** — use the `ffmpeg-static` npm binary for any re-encode work.
+- **`BusySeason_Master_Build_Brief_v4.md`**: the full spec, including the §11 rebuild work order and change log.
+- **`website/progress.md`**: build log; the 2026-10-05 entry records the v4 rebuild.
+- **Published samples (all studio spec work, AI-assisted):** HVAC "First cold night" (also the hero), snow removal (its Instagram reel reached 816 views), and the redone roofing ad. All 15s, 9:16.
+- **`ffmpeg`** (winget Gyan build) works on this machine for re-encodes and posters.
 
 **Deliberate absences future work must NOT fabricate:**
 
-- **No paying clients, no case studies, no live campaign numbers, no client logos, no testimonials.** The business is pre-first-client. `work.html` says so honestly and sells the spec-ad offer instead.
-- **The self-funded proof-point campaign from brief §9.4 has not run yet** — there are no real "$1.10 per click in Whitby"-style numbers to cite.
-- **The two HVAC spec ads are demonstration pieces** — no client has run them, so there are no performance figures. `hvac1.mp4` has a known burnt-in spelling error ("FREE FURNANCE CHECK") that needs a re-export from the editor; do not present it as polished portfolio work until fixed.
-- **Founder identity is undecided** — name, bio, and photo for the About page were never supplied. The About page carries a placeholder. Do not invent a name, background, or headshot.
-- All site imagery/video is currently AI-generated and is labelled honestly as demonstration/illustration ("Illustration, not a client's job"). The `about.html` argument that fully AI-generated footage is a poor fit for this business is the core differentiator and stays as written — do not weaken it to match the current placeholder media.
+- **No agency clients yet, no delivered batches, no performance data, no testimonials, no logos.** Agency client work never appears publicly unless the agency agrees in writing; the public site shows the studio's own spec work only.
+- **No sample built from real client photos exists.** A "photos in, ad out" piece from licensed stock photos may be added to Work later, captioned honestly (brief §2).
+- **Unused or held-back media:** the old photo-built roofing ad (`finished-ad`) and old `roof1` are retired. `hvac1` has a burnt-in typo ("FURNANCE") and stays off. The HVAC technician-to-camera ad (`hvac2`) was dropped by the founder.
+- **No 16:9 or 1:1 sample is published yet**, even though those formats are offered.
 
 ## Product Principles
 
-1. **Copy accuracy is the main risk on this site, not visual polish.** Most failure modes are claims that outrun what the studio actually does or has done. Never add a testimonial, logo, client name, or performance number that isn't real. Ask before changing factual copy or pricing.
-2. **The differentiator is "built around your real jobs."** It is a headline-level feature and a step in How It Works — never buried in a spec sheet. Design every page so an actual portfolio piece can be featured prominently, never buried.
-3. **Clarity about money is a design element.** Prices, ad spend, and all-in cost get real typographic weight. A contractor who has to hunt for the real number assumes he's being handled.
-4. **Risk reversal is the conversion lever.** The guarantee outranks the rate lock everywhere in the copy hierarchy and gets the more prominent visual treatment.
-5. **The site closes; outreach discovers.** Optimize for a five-minute read by a skeptical owner on a phone. One clear action per page, always "Get a Free Sample Ad."
-6. **Confidence over warmth.** Bold, clear statements about outcomes. This site must never be mistakable for the founder's warmer consumer brand — cooler, higher-contrast, more saturated accent, sharper geometry.
+1. **Copy accuracy is the main risk, not visual polish.** Most failures are claims that outrun what the studio does: prices, campaign management, client results, real-photo claims. Run the brief §11.4 search sweep after any copy change.
+2. **The work is the pitch.** Video gets the most space on every page. Fewer, bigger, better.
+3. **One action:** "Ask about a sample." Never split attention.
+4. **Fast on a phone.** The visitor came from an email on mobile. Posters first, lazy video, nothing heavy above the fold.
+5. **Confidence over warmth.** A dependable supplier talking to another professional. Plain statements, no hype, no art-speak.
+6. **White label is the promise.** Say it plainly, and never do anything on the site that reads as competing with the agency for its clients.
 
 ## Accessibility & Inclusion
 
-- **WCAG AA contrast is a hard floor**, with the amber accent specifically verified against both the light and dark backgrounds (it fails as text on light — see the Brand Commitments constraint).
-- **Mobile-first and touch-first** — most prospects first see the site on a phone, often on a job site. 44×44px minimum touch targets, especially on the lead form.
-- Full keyboard navigability with visible focus states matching the design system.
-- Video must not autoplay with sound and must degrade gracefully on slow mobile connections.
-- `prefers-reduced-motion` is respected.
+- **WCAG AA contrast is a hard floor.** Amber is 6.67:1 on charcoal and 2.55:1 on paper, so amber is never text, an icon or a focus ring on light grounds. Steel takes those roles there. Near-black on the amber button is 6.46:1.
+- **Mobile-first and touch-first:** 44×44px minimum touch targets, especially on the contact form and sound toggles.
+- Full keyboard navigation with visible focus states (steel on light, amber on dark).
+- Video never autoplays with sound, uses `muted playsinline`, shows a poster first, and degrades gracefully on slow connections.
+- `prefers-reduced-motion` is respected: transitions are cut, and no video plays on its own. The sample cards and the hero reel stay still until someone taps for sound.

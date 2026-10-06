@@ -72,6 +72,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const lazyVideos = document.querySelectorAll("video[data-autoplay-visible]");
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* The hero reel autoplays from its markup, so under reduced motion it is
+     stopped here and held on its first frame, like the sample cards. The
+     sound toggle (or a tap on the video) still starts it. */
+  if (reduceMotion) {
+    document.querySelectorAll("video[autoplay]").forEach((video) => {
+      video.removeAttribute("autoplay");
+      video.pause();
+      video.currentTime = 0;
+    });
+  }
+
   if (lazyVideos.length && "IntersectionObserver" in window && !reduceMotion) {
     const observer = new IntersectionObserver(
       (entries) => {
