@@ -24,6 +24,23 @@ it is ever wanted again.
 
 ---
 
+## 2026-10-09 — New roofing sample ad
+
+The roofing sample (third card on `index.html` and `work.html`) was replaced
+by a new roofing cut. Paths are unchanged, so no HTML edits.
+
+- Master (720×1280, 12.6s, 5.6 MB) at `assets-source/video/roofing-master.mp4`.
+  The previous master was kept as `roofing-2026-10-05-master.mp4`
+  (`assets-source/` is gitignored, so it isn't in git).
+- Served file `video/roofing.mp4`: 720×1280 H.264 High, CRF 23, AAC 128k,
+  faststart, 3.0 MB (same profile as HVAC and snow removal).
+- New poster `image/poster-roofing.webp` (frame at 1s, aerial of the house at
+  sunset).
+- The roofing ad is now the hero on `index.html` (was HVAC). HVAC stays as the
+  first card in the samples grid.
+- Roofing labels corrected from 15s to 13s on both pages (aria-labels and
+  card/hero captions), since the new cut runs 12.6s.
+
 ## 2026-10-06 — New HVAC sample ad
 
 The HVAC "First cold night" sample (hero + first card on `index.html`, first
