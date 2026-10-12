@@ -20,9 +20,15 @@ colors:
 typography:
   display:
     fontFamily: "Space Grotesk, Inter, system-ui, sans-serif"
-    fontSize: "clamp(2.25rem, 5.2vw, 4.25rem)"
+    fontSize: "clamp(2.5rem, 6vw, 5.5rem)"
     fontWeight: 600
-    lineHeight: 1.04
+    lineHeight: 1
+    letterSpacing: "-0.038em"
+  statement:
+    fontFamily: "Space Grotesk, Inter, system-ui, sans-serif"
+    fontSize: "clamp(2.25rem, 5.2vw, 4.5rem)"
+    fontWeight: 600
+    lineHeight: 1.02
     letterSpacing: "-0.035em"
   headline:
     fontFamily: "Space Grotesk, Inter, system-ui, sans-serif"
@@ -142,6 +148,12 @@ components:
     rounded: "{rounded.sm}"
     padding: "14px 28px"
     height: "48px"
+  button-primary-lg:
+    backgroundColor: "{colors.work-light-amber}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "16px 32px"
+    height: "56px"
   nav-cta:
     backgroundColor: "{colors.work-light-amber}"
     textColor: "{colors.ink}"
@@ -179,14 +191,14 @@ components:
 
 Busy Season looks like a production supplier showing its reel to another professional: the work up front, a few plain sentences, one way to get in touch. The visitor is an agency owner or media buyer who clicked a link in a cold email, usually on a phone, and gives the site about 90 seconds. They are marketing-literate; they judge the creative, the turnaround and the reliability, not the decoration. The design's whole job is to get two or three ads playing in front of them quickly and make "Ask about a sample" the obvious next step.
 
-The system runs on high contrast and generous space, and since v4 it is **video-first**: deep charcoal (`#16181c`) carries the hero and the sample reel together as one dark block, so the ads sit on a cinema-dark ground. Near-white cool paper (`#fafaf9`) carries the reading sections (the problem, how it works, what you get, FAQ, who's behind it). One saturated amber is the only action colour, rationed to the CTA button and to accents on charcoal. Steel blue is the quieter supporting voice on light grounds. Geometry is crisp: 6px and 10px corners, 1px hairlines, an 8px grid, flat surfaces.
+The system runs on high contrast and generous space, and since v4 it is **video-first**: Home opens on a **full-screen photo hero** (roofers at sunset under charcoal scrims), and the sample ads follow straight after on deep charcoal (`#16181c`), so the ads sit on a cinema-dark ground. The photo is the one still image on the site; everything else visual is the video samples. Near-white cool paper (`#fafaf9`) carries the reading sections (the problem, how it works, what you get, FAQ, who's behind it). One saturated amber is the only action colour, rationed to the CTA button and to accents on charcoal. Steel blue is the quieter supporting voice on light grounds. Geometry is crisp: 6px and 10px corners, 1px hairlines, an 8px grid, flat surfaces.
 
 This is deliberately **not** the register of the founder's warmer consumer brand: no serif, cooler paper, sharper edges, higher contrast. And it is deliberately not a creative agency's portfolio site: no art-direction flourishes, no case-study theatre, no prices, no proof it doesn't have.
 
 **Key Characteristics:**
 - The work is the pitch. Video gets the most space on every page.
 - One accent colour, one action per page: "Ask about a sample."
-- Charcoal for the video, cool paper for reading; no third background mood.
+- Charcoal for the video, cool paper for reading; no third background mood. The hero photo is always scrimmed to charcoal, never shown raw behind text.
 - Crisp 6px/10px geometry and 1px hairlines; flat at rest.
 - No serif, ever. Space Grotesk for anything that carries weight, Inter for reading.
 - No prices, numbers-as-proof, logos or testimonials. Captions are plain facts: vertical · length · format.
@@ -209,7 +221,7 @@ A cool, near-monochrome field (paper and charcoal doing almost all the work) wit
 ### Neutral
 - **Cool Paper** (`#fafaf9`): The default page background.
 - **Paper Alt** (`#f2f1ef`): Alternating band for a light section that needs separation (`.section-alt`): How it works and the FAQ on Home.
-- **Charcoal** (`#16181c`): Hero, sample reel, Work grid, closing CTA band, footer.
+- **Charcoal** (`#16181c`): Hero scrims and fallback ground, the Home sample band, Work grid, closing CTA band, footer.
 - **Charcoal Soft** (`#1f2229`): Cards and nested surfaces inside charcoal.
 - **Ink** (`#1a1b1e`): Primary text on light, and the label on the amber button.
 - **Ink Muted** (`#5a5d63`): Secondary text on light (6.6:1 on paper).
@@ -226,16 +238,18 @@ A cool, near-monochrome field (paper and charcoal doing almost all the work) wit
 **Display Font:** Space Grotesk (with Inter, then system-ui, sans-serif), weights 500/600/700 from Google Fonts.
 **Body Font:** Inter (with system-ui, -apple-system, Segoe UI, sans-serif), weights 400/500/600.
 
-**Character:** A geometric-leaning grotesque paired with a workhorse UI sans. Headlines run tight (down to `-0.035em` on the hero) with `text-wrap: balance`. **No serif anywhere.**
+**Character:** A geometric-leaning grotesque paired with a workhorse UI sans. Headlines run tight (down to `-0.038em` on the hero) with `text-wrap: balance`. **No serif anywhere.**
 
 ### Hierarchy
-- **Display** (600, `clamp(2.25rem → 4.25rem)`, line-height 1.04): The hero H1 only. A plain statement of what the studio is and for whom.
+- **Display** (600, `clamp(2.5rem → 5.5rem)`, line-height 1, tracking `-0.038em`, max `15ch`): The hero H1 only. A plain statement of what the studio is and for whom, set over the photo with a soft text-shadow.
+- **Statement** (600, `clamp(2.25rem → 4.5rem)`, line-height 1.02): Home's problem line ("Creative fatigues in a few weeks."), the one oversized heading below the hero. The closing CTA heading runs `clamp(2rem → 3.5rem)`.
+- **Hero lede** (Space Grotesk 500, `clamp(1.25rem → 1.625rem)`): "You sell. We create." on the photo, in On Dark.
 - **Page title** (600, `clamp(2.25rem → 3.5rem)`): Interior-page H1 (Contact, legal). The Work page uses an H1 styled at headline size (`.h2`) so the video grid stays the hero.
 - **Headline** (600, `clamp(1.625rem → 2.5rem)`): Section headers (`h2`), 26px floor on mobile.
 - **Title** (600, `1.375rem`): Step headings and card headings; **Title Sm** (`1.125rem`) inside cards and for FAQ summaries.
 - **Body** (400, 17px, line-height 1.6). **Body Lg** (`1.25rem`) for ledes, Ink Muted, ~38rem measure. **Body Ui** (`1rem`, 600) for buttons.
 - **Body Sm / Caption / Caption Sm** (15 / 14 / 13px): supporting text, video-card captions, footer.
-- **Label** (700, `0.75rem`, tracking `0.16em`, uppercase): the eyebrow above every section header. Steel on light, amber on charcoal. **Micro** (`0.6875rem`) for the format tag on the hero reel ("HVAC · 15s · 9:16").
+- **Label** (700, `0.75rem`, tracking `0.16em`, uppercase): the eyebrow above section headers on Work, Contact and the legal pages. Steel on light, amber on charcoal. **Home has no eyebrows**: its headings carry themselves. **Micro** (`0.6875rem`, tracking `0.12em`) for the hero spec-strip terms (amber on the charcoal scrim).
 
 Stay on the existing ladder; don't introduce in-between sizes.
 
@@ -248,11 +262,11 @@ Stay on the existing ladder; don't introduce in-between sizes.
 
 A single centred column, `max-width: 80rem` (1280px), `1.5rem` gutters. Narrow prose (legal, FAQ, "Who's behind it") caps at `46rem`. 8px base grid.
 
-Section padding is `7rem` desktop, `4rem` below 860px; `.section-tight` uses `5rem`. On Home the sample-reel section uses `.section-flush-top` so it continues straight out of the dark hero as one block.
+Section padding is `7rem` desktop, `4rem` below 860px; `.section-tight` uses `5rem`. On Home the hero is `100svh`; the sample band (`.work-band`, `6rem` top) follows it, then the statement (`9rem`), steps, and three heading-left `.split` blocks (What you get, FAQ, Who's behind it: `0.9fr / 1.1fr`, `4rem` gap; the FAQ heading is sticky at `top: 7rem`). Section heads that pair a heading with a link use `.band-head` (heading left, link right).
 
 **Video grid** (`.work-grid`): three 9:16 cards across. On Home it is capped at `60rem` so a card fits a laptop screen, with the section head and button aligned to the same edge; on Work (`.work-grid-large`) it takes the full content width ("fewer, bigger, better"). It stays three across down to 760px, then stacks to a single column capped at `22rem`. No vertical filter until there are 8+ pieces.
 
-Breakpoints: **1000px** (hero and split grids stack; the hero reel centres), **860px** (sections tighten, content grids and steps collapse to one column), **760px** (nav collapses to a toggled dropdown including the CTA; the video grid stacks; button rows go full width).
+Breakpoints: **1000px** (split and statement grids stack; the sticky FAQ heading goes static), **860px** (sections tighten, content grids and steps collapse to one column, the hero spec strip stacks into term/value rows), **760px** (nav collapses to a toggled dropdown including the CTA; the hero swaps to the portrait crop with a bottom-weighted scrim, its CTA goes full width and the scroll link hides; the video grid stacks; button rows go full width).
 
 ## Elevation & Depth
 
@@ -267,7 +281,7 @@ Breakpoints: **1000px** (hero and split grids stack; the hero reel centres), **8
 
 ## Shapes
 
-Crisp, near-square geometry. **4px** for small tags (the hero format tag); **6px** (`--radius`) for buttons, inputs and the nav CTA; **10px** (`--radius-lg`) for cards, the reel frame and video cards. Focus outlines round at 2px. Fully round only for the circular sound toggle (`50%`) and chips (`999px`).
+Crisp, near-square geometry. **4px** for small tags (the Work page format tag); **6px** (`--radius`) for buttons, inputs and the nav CTA; **10px** (`--radius-lg`) for cards and video cards. Focus outlines round at 2px. Fully round only for the circular sound toggle (`50%`) and chips (`999px`).
 
 Borders do the defining: 1px hairline on light, `rgba(242,242,240,0.14)` on charcoal. Numbered steps use a top rule only: 2px ink on light, amber on charcoal.
 
@@ -283,8 +297,17 @@ Borders do the defining: 1px hairline on light, `rgba(242,242,240,0.14)` on char
 ### Video Card (`.work-card` / `.work-thumb`)
 The core component. A 9:16 frame (10px corners, charcoal gradient ground, hairline-on-dark border) holding a `<video>` with a webp `poster` and `muted loop playsinline preload="none" data-autoplay-visible`. `script.js` plays it only while at least 35% of it is on screen and pauses it when scrolled away; under reduced motion it stays on the poster. A circular sound toggle sits bottom-right (on-dark icon on a translucent charcoal scrim, amber fill with near-black icon on hover); tapping the video itself does the same, and only one clip is ever audible. Below the frame, `.work-meta` captions it with the vertical (strong, on-dark) and "15s · 9:16" (caption, on-dark-dim, uppercase tracking). Hover/focus: `scale(1.02)` plus the raised shadow.
 
-### Hero Reel (`.reel`)
-The same 9:16 container in the hero's right column (max 17.5rem wide), holding the best sample with `autoplay muted loop playsinline preload="metadata"`, a Micro format tag top-left, and the sound toggle. Under reduced motion `script.js` stops it on its first frame until tapped.
+### Full-Screen Hero (`.hero.hero-full`)
+Home only. A `<picture>` fills the section (`min-height: 100svh`, `object-fit: cover`, `object-position: 62% 40%`): `image/hero-1400.webp` / `hero-2400.webp` by width, and `hero-portrait.webp` (a crop on the lead roofer) at 760px and below. Both are preloaded by media query and the `<img>` is `fetchpriority="high"` with empty `alt` (decorative). The 6.2 MB source PNG lives in `assets-source/photos/hero.png` and never deploys.
+
+Three charcoal scrims on `::before`, each with one job: top (62% → 0 over 22%) keeps the floating header legible against the sky; left (86% → 0 by 66%) and bottom (94% → 0 by 62%) carry the headline. On phones the left scrim drops and the bottom one deepens (96% → 82% at 42%). Never lighten them to show more sunset: the headline sits over the brightest part of the frame.
+
+Content sits bottom-left: Display H1, hero lede, then the amber `.btn-lg` "Ask about a sample" (`3.5rem` tall) beside a `.hero-scroll` text link "Watch the samples" with an amber down-arrow that scrolls to `#work`. It is navigation, not a second CTA. The bottom edge is the **spec strip** (`.hero-specs`): a `<dl>` of three terms (Formats, Turnaround, White label) on a 40% charcoal band with an 8px blur and hairline-on-dark dividers. It restates facts from the copy and is never used for counts or performance numbers.
+
+The old 9:16 hero reel is retired; the samples follow immediately in the work band.
+
+### Closing CTA on photo (`.cta-band.cta-photo`)
+The Home closing band reuses `hero-1400.webp` (already cached) at `18% 45%` under a 78–90% charcoal scrim, so the page closes where it opened. Other pages keep the plain charcoal `.cta-band`.
 
 ### Steps Row (`.steps`)
 Three numbered steps, horizontal on desktop, stacked under 860px. Each has a CSS-counter number ("01") above a 2px top rule; numbers are steel on light, amber on charcoal.
@@ -299,7 +322,7 @@ Native `<details>/<summary>`, keyboard-accessible with no JS. A hairline between
 Single column inside a white card: name, agency or company, email (required); accounts run (optional select) and what you need (optional textarea). Inputs are white, 6px corners, `rgba(26,27,30,0.22)` border, `min-height: 3rem`. A full-width primary "Send" button. Success replaces the form with a `.notice-success` (green left border); failure shows a `.notice` with a pre-filled mailto fallback. `info@busyseason.ca` sits beside the form as a link.
 
 ### Navigation
-Sticky, translucent paper with a 10px backdrop blur, 1px bottom hairline, `4.5rem` tall. Typographic wordmark left ("Busy *Season*", with "Season" in Ink Muted and no icon); links **Work** and **Contact** in Ink Muted; amber "Ask about a sample" right (never wraps). Under 760px everything collapses into a toggled dropdown; Escape closes it and returns focus.
+On Home the header carries `.is-overlay` + `data-overlay`: fixed and transparent over the hero photo, with the wordmark and toggle in On Dark, links in On Dark Dim and amber focus rings. `script.js` adds `.is-solid` once the page scrolls past 8px, and an open mobile menu is always solid, so content never runs under bare text. Everywhere else: sticky, translucent paper with a 10px backdrop blur, 1px bottom hairline, `4.5rem` tall. Typographic wordmark left ("Busy *Season*", with "Season" in Ink Muted and no icon); links **Work** and **Contact** in Ink Muted; amber "Ask about a sample" right (never wraps). Under 760px everything collapses into a toggled dropdown; Escape closes it and returns focus.
 
 ### Footer
 Charcoal. Left: wordmark, "White-label video ads for agencies.", and `info@busyseason.ca` with an amber underline. Right: Instagram, Terms, Privacy. A hairline above the copyright line. Nothing else.
@@ -315,7 +338,7 @@ Pricing cards and the featured-plan treatment, the all-in cost callout, the guar
 - **Do** keep one amber action per view, always "Ask about a sample".
 - **Do** use steel for accent text, icons and focus on light grounds, and amber for those on charcoal.
 - **Do** keep surfaces flat with hairlines, and corners at 6px/10px.
-- **Do** use only real studio output as imagery.
+- **Do** use only real studio output as imagery, plus the one hero photo on Home. Don't add more stills.
 
 ### Don't:
 - **Don't** put a price, rate, range or "starting at" anywhere.
