@@ -24,6 +24,37 @@ it is ever wanted again.
 
 ---
 
+## 2026-10-12 — Home redesign: full-screen photo hero
+
+`index.html` was redesigned around a full-screen hero photo (roofers at
+sunset). Copy is unchanged apart from two short supporting lines ("Everything
+ships unbranded and ready for your client's account." and "Anything else,
+email us.").
+
+- **Hero:** the photo fills the viewport (`100svh`) under three charcoal
+  scrims; headline, "You sell. We create.", one amber CTA and a "Watch the
+  samples" scroll link sit bottom-left. A spec strip closes the hero:
+  Formats / Turnaround / White label. The hero video reel is gone from Home;
+  the three samples now follow directly at full content width.
+- **Header:** floats transparent over the photo and turns solid on scroll
+  (`data-overlay` + `.is-solid` in `script.js`). Other pages are unchanged.
+- **Below the hero:** eyebrows removed on Home; the problem is a large
+  two-column statement; steps use big numerals in an `<ol>`; "What you get",
+  FAQ (sticky heading) and "Who's behind it" share one heading-left split
+  layout; the closing CTA band sits on the same photo, heavily scrimmed.
+- **Images:** `image/hero-2400.webp` (260 KB), `hero-1400.webp` (109 KB),
+  `hero-portrait.webp` (115 KB, phone crop of the lead roofer), preloaded by
+  media query. The 6.2 MB source PNG moved to `assets-source/photos/hero.png`
+  (gitignored) so it never deploys.
+- New CSS is the "Home — full-screen photo hero" block at the end of
+  `styles.css`.
+- **New roofing cut (15s):** dropped in as `video/Roofing.mp4` (7.2 MB,
+  capital R, which Vercel's case-sensitive paths would 404). Re-encoded to
+  `video/roofing.mp4` (H.264 CRF 26, `+faststart`, 2.2 MB) with a new
+  `poster-roofing.webp`; labels on Home and Work changed 13s → 15s. Masters:
+  new one is `assets-source/video/roofing-master.mp4`, the 2026-10-09 cut
+  kept as `roofing-2026-10-09-master.mp4`.
+
 ## 2026-10-09 — New roofing sample ad
 
 The roofing sample (third card on `index.html` and `work.html`) was replaced

@@ -21,6 +21,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* ---- Overlay header (Home) ----------------------------------------
+     Over the full-screen hero photo the header is transparent; as soon as
+     the page scrolls it turns solid so content never runs under bare text. */
+  if (header && header.hasAttribute("data-overlay")) {
+    const syncSolid = () => {
+      header.classList.toggle("is-solid", window.scrollY > 8);
+    };
+    syncSolid();
+    window.addEventListener("scroll", syncSolid, { passive: true });
+  }
+
   /* ---- Video sound toggles -----------------------------------------
      The clips autoplay muted because no browser allows anything else, so
      this button is the only route to sound. Only one clip is ever audible:

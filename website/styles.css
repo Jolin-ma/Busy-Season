@@ -1253,3 +1253,400 @@ strong { font-weight: 600; }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==========================================================================
+   Home — full-screen photo hero and the redesigned landing page
+   ========================================================================== */
+
+/* Header floating over the hero photo. Transparent with on-dark type until
+   the page scrolls (script.js adds .is-solid), then it is the ordinary
+   paper header. An open mobile menu is always solid. */
+.site-header.is-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  background: transparent;
+  border-bottom-color: transparent;
+  backdrop-filter: none;
+  transition: background var(--t), border-color var(--t);
+}
+
+.site-header.is-overlay.is-solid,
+.site-header.is-overlay.open {
+  background: rgba(250, 250, 249, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom-color: var(--line);
+}
+
+.site-header.is-overlay:not(.is-solid):not(.open) .brand,
+.site-header.is-overlay:not(.is-solid):not(.open) .nav-toggle,
+.site-header.is-overlay:not(.is-solid):not(.open) .nav-links a:hover {
+  color: var(--on-dark);
+}
+
+.site-header.is-overlay:not(.is-solid):not(.open) .brand em,
+.site-header.is-overlay:not(.is-solid):not(.open) .nav-links a {
+  color: var(--on-dark-dim);
+}
+
+.site-header.is-overlay:not(.is-solid):not(.open) :focus-visible {
+  outline-color: var(--amber);
+}
+
+/* The hero itself: the photo fills the viewport, the statement sits low
+   on the left over the darkest part of the frame (trees and lawn), and the
+   spec strip closes the bottom edge. */
+.hero-full {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: var(--char);
+}
+
+.hero-media,
+.hero-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-media {
+  z-index: -2;
+}
+
+.hero-media img {
+  object-fit: cover;
+  object-position: 62% 40%;
+}
+
+/* Three scrims, each with one job: the top keeps the header legible over
+   the bright sky, the left and bottom carry the headline and spec strip. */
+.hero-full::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(22, 24, 28, 0.62) 0%, rgba(22, 24, 28, 0) 22%),
+    linear-gradient(90deg, rgba(22, 24, 28, 0.86) 0%, rgba(22, 24, 28, 0.55) 38%, rgba(22, 24, 28, 0) 66%),
+    linear-gradient(0deg, rgba(22, 24, 28, 0.94) 0%, rgba(22, 24, 28, 0.55) 34%, rgba(22, 24, 28, 0) 62%);
+}
+
+.hero-body {
+  padding-top: 8rem;
+  padding-bottom: 4rem;
+}
+
+.hero-full h1 {
+  font-size: clamp(2.5rem, 6vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: -0.038em;
+  max-width: 15ch;
+  margin: 0;
+  text-shadow: 0 2px 24px rgba(22, 24, 28, 0.35);
+}
+
+.hero-lede {
+  margin: 1.5rem 0 0;
+  font-family: "Space Grotesk", "Inter", system-ui, sans-serif;
+  font-size: clamp(1.25rem, 2vw, 1.625rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--on-dark);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 2rem;
+  margin-top: 2.5rem;
+}
+
+.btn-lg {
+  min-height: 3.5rem;
+  padding: 1rem 2rem;
+  font-size: 1.0625rem;
+}
+
+.hero-scroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  color: var(--on-dark);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hero-scroll svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--amber);
+  transition: transform var(--t);
+}
+
+.hero-scroll:hover svg {
+  transform: translateY(3px);
+}
+
+.hero-specs {
+  border-top: 1px solid var(--line-dark);
+  background: rgba(22, 24, 28, 0.4);
+  backdrop-filter: blur(8px);
+}
+
+.hero-specs dl {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 auto;
+}
+
+.hero-specs dl > div {
+  padding: 1.375rem 1.5rem 1.5rem 0;
+}
+
+.hero-specs dl > div + div {
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--line-dark);
+}
+
+.hero-specs dt {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--amber);              /* on the charcoal scrim, ~6.6:1 */
+  margin-bottom: 0.375rem;
+}
+
+.hero-specs dd {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--on-dark);
+}
+
+/* Section head on one line: heading left, its link right. */
+.band-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
+  margin-bottom: 3.5rem;
+}
+
+.band-head h2 {
+  margin: 0;
+  max-width: 22ch;
+}
+
+.band-head h2 span {
+  color: var(--on-dark-dim);
+}
+
+.band-head .link {
+  margin-bottom: 0.375rem;
+}
+
+/* The work band runs at full content width on Home now that the hero no
+   longer carries a reel: the samples are the second thing anyone sees. */
+.work-band {
+  padding-top: 6rem;
+}
+
+.work-grid-home {
+  max-width: none;
+  gap: 1.5rem;
+}
+
+/* The problem as one big statement. */
+.statement {
+  padding: 9rem 0;
+}
+
+.statement-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 4rem;
+  align-items: end;
+}
+
+.statement h2 {
+  font-size: clamp(2.25rem, 5.2vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  margin: 0;
+  max-width: 13ch;
+}
+
+.statement p {
+  font-size: 1.25rem;
+  line-height: 1.55;
+  color: var(--ink-light);
+  max-width: 26rem;
+  margin: 0;
+  padding-bottom: 0.5rem;
+}
+
+/* Steps as an ordered list. */
+.steps-home {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 3rem;
+}
+
+.steps-home .step::before {
+  font-size: 2.5rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+}
+
+.steps-home .step p {
+  font-size: 1rem;
+  max-width: 30ch;
+}
+
+/* Two-column block: heading left, content right. */
+.split {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+.split-head h2 {
+  max-width: 14ch;
+}
+
+.split-head p {
+  max-width: 24rem;
+}
+
+.split-sticky {
+  position: sticky;
+  top: 7rem;
+}
+
+.who-copy {
+  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  line-height: 1.5;
+  color: var(--ink);
+  max-width: 34rem;
+  margin: 0;
+}
+
+/* Closing CTA on the hero photo's sunset side, heavily scrimmed. */
+.cta-photo {
+  padding: 9rem 0;
+  background:
+    linear-gradient(rgba(22, 24, 28, 0.78), rgba(22, 24, 28, 0.9)),
+    url("image/hero-1400.webp") 18% 45% / cover no-repeat,
+    var(--char);
+}
+
+.cta-photo h2 {
+  font-size: clamp(2rem, 4.4vw, 3.5rem);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+}
+
+@media (max-width: 1000px) {
+  .statement-grid,
+  .split {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .split {
+    gap: 2.5rem;
+  }
+
+  .split-sticky {
+    position: static;
+  }
+}
+
+@media (max-width: 860px) {
+  .statement,
+  .cta-photo {
+    padding: 5rem 0;
+  }
+
+  .work-band {
+    padding-top: 4rem;
+  }
+
+  .band-head {
+    margin-bottom: 2.5rem;
+  }
+
+  .steps-home {
+    gap: 2.5rem;
+  }
+
+  .hero-specs dl {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-specs dl > div,
+  .hero-specs dl > div + div {
+    padding: 0.875rem 0;
+    border-left: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .hero-specs dl > div + div {
+    border-top: 1px solid var(--line-dark);
+  }
+
+  .hero-specs dt {
+    margin: 0;
+    flex: none;
+  }
+
+  .hero-specs dd {
+    text-align: right;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero-media img {
+    object-position: 50% 30%;
+  }
+
+  .hero-full::before {
+    background:
+      linear-gradient(180deg, rgba(22, 24, 28, 0.6) 0%, rgba(22, 24, 28, 0) 18%),
+      linear-gradient(0deg, rgba(22, 24, 28, 0.96) 0%, rgba(22, 24, 28, 0.82) 42%, rgba(22, 24, 28, 0.15) 72%);
+  }
+
+  .hero-body {
+    padding-bottom: 2rem;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+
+  .hero-scroll {
+    display: none;
+  }
+
+  .work-grid-home {
+    max-width: 22rem;
+  }
+}

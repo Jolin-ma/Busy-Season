@@ -21,12 +21,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <!-- The hero photo is the first paint, so it is fetched alongside the CSS
+       rather than after it. Phones get the portrait crop. -->
+  <link rel="preload" as="image" href="image/hero-portrait.webp" type="image/webp" media="(max-width: 760px)" />
+  <link rel="preload" as="image" imagesrcset="image/hero-1400.webp 1400w, image/hero-2400.webp 2400w" imagesizes="100vw" type="image/webp" media="(min-width: 761px)" />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body class="page-home">
   <a href="#main" class="skip-link">Skip to content</a>
 
-  <header class="site-header" data-site-header>
+  <!-- On Home the header floats over the full-screen photo and turns solid
+       once the page scrolls (script.js, data-overlay). -->
+  <header class="site-header is-overlay" data-site-header data-overlay>
     <div class="container">
       <a href="index.html" class="brand">
         <span>Busy <em>Season</em></span>
@@ -47,55 +53,57 @@
   </header>
 
   <main id="main">
-    <!-- 1. Hero — §6: says what the studio is and for whom, one CTA, and the
-         best sample right beside it. The visitor is an agency owner who
-         clicked through from a cold email, usually on a phone. -->
-    <section class="hero">
-      <div class="container hero-grid">
-        <div>
-          <p class="eyebrow">White-label production studio</p>
-          <h1>White-label video ads for agencies running home service accounts.</h1>
-          <p class="lede">You sell. We create.</p>
-          <div class="btn-row">
-            <a href="contact.html" class="btn btn-primary">Ask about a sample</a>
-          </div>
-          <p class="hero-note">
-            Finished 15 second ads in 9:16, 1:1 and 16:9, back in 3 to 5
-            business days. Under your name, never ours.
-          </p>
-        </div>
+    <!-- 1. Hero — full-screen photo, the plain statement of what the studio
+         is and for whom, one CTA. The spec strip along the bottom carries the
+         three facts an agency checks first. -->
+    <section class="hero hero-full">
+      <picture class="hero-media">
+        <source media="(max-width: 760px)" srcset="image/hero-portrait.webp" type="image/webp" />
+        <source srcset="image/hero-1400.webp 1400w, image/hero-2400.webp 2400w" sizes="100vw" type="image/webp" />
+        <img src="image/hero-2400.webp" alt="" width="2400" height="1357" fetchpriority="high" decoding="async" />
+      </picture>
 
-        <div class="reel">
-          <video
-            src="video/roofing.mp4"
-            poster="image/poster-roofing.webp"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="metadata"
-            aria-label="Roofing sample ad, 13 seconds, vertical"
-          ></video>
-          <span class="reel-format">Roofing · 13s · 9:16</span>
-          <button type="button" class="video-sound" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
-            <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
-            <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-          </button>
+      <div class="container hero-body">
+        <h1>White-label video ads for agencies running home service accounts.</h1>
+        <p class="hero-lede">You sell. We create.</p>
+        <div class="hero-actions">
+          <a href="contact.html" class="btn btn-primary btn-lg">Ask about a sample</a>
+          <a href="#work" class="hero-scroll">
+            Watch the samples
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+          </a>
         </div>
+      </div>
+
+      <div class="hero-specs">
+        <dl class="container">
+          <div>
+            <dt>Formats</dt>
+            <dd>15 second ads in 9:16, 1:1 and 16:9</dd>
+          </div>
+          <div>
+            <dt>Turnaround</dt>
+            <dd>Back in 3 to 5 business days</dd>
+          </div>
+          <div>
+            <dt>White label</dt>
+            <dd>Under your name, never ours</dd>
+          </div>
+        </dl>
       </div>
     </section>
 
     <!-- 2. The work — three samples, at least two verticals (§6). They start
          playing only once scrolled into view (data-autoplay-visible), so the
          page stays light on mobile data. -->
-    <section class="section section-dark section-flush-top">
+    <section class="section section-dark work-band" id="work">
       <div class="container">
-        <div class="section-head">
-          <p class="eyebrow">The work</p>
-          <h2>Sample ads. Tap any one for sound.</h2>
+        <div class="band-head">
+          <h2>Sample ads. <span>Tap any one for sound.</span></h2>
+          <a href="work.html" class="link">See all the work</a>
         </div>
 
-        <div class="work-grid">
+        <div class="work-grid work-grid-home">
           <div class="work-card">
             <div class="work-thumb">
               <video src="video/hvac.mp4" poster="image/poster-hvac.webp"
@@ -132,7 +140,7 @@
             <div class="work-thumb">
               <video src="video/roofing.mp4" poster="image/poster-roofing.webp"
                      muted loop playsinline preload="none" data-autoplay-visible
-                     aria-label="Roofing sample ad, 13 seconds, vertical"></video>
+                     aria-label="Roofing sample ad, 15 seconds, vertical"></video>
               <button type="button" class="video-sound" data-sound-toggle aria-pressed="false" aria-label="Turn sound on">
                 <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/></svg>
                 <svg class="icon-unmuted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
@@ -140,71 +148,66 @@
             </div>
             <div class="work-meta">
               <strong>Roofing</strong>
-              <span>13s · 9:16</span>
+              <span>15s · 9:16</span>
             </div>
           </div>
         </div>
-
-        <div class="btn-row">
-          <a href="work.html" class="btn btn-secondary">See all the work</a>
-        </div>
       </div>
     </section>
 
-    <!-- 3. The problem, in two lines (§6). -->
-    <section class="section">
-      <div class="container">
-        <div class="section-head" style="margin-bottom: 0;">
-          <p class="eyebrow">Why agencies use us</p>
-          <h2>Creative fatigues in a few weeks.</h2>
-          <p>
-            Fresh ads shouldn't need a shoot, a videographer, or another chase
-            for footage your client never sends.
-          </p>
-        </div>
+    <!-- 3. The problem, in two lines (§6), set as one large statement. -->
+    <section class="section statement">
+      <div class="container statement-grid">
+        <h2>Creative fatigues in a few weeks.</h2>
+        <p>
+          Fresh ads shouldn't need a shoot, a videographer, or another chase
+          for footage your client never sends.
+        </p>
       </div>
     </section>
 
-    <!-- 4. How it works — three steps (§6). -->
+    <!-- 4. How it works — three steps (§6). The numbers stay: the order is
+         the information. -->
     <section class="section section-alt">
       <div class="container">
-        <div class="section-head">
-          <p class="eyebrow">How it works</p>
+        <div class="band-head">
           <h2>Three steps. Two of them are ours.</h2>
         </div>
 
-        <div class="steps">
-          <div class="step">
+        <ol class="steps steps-home">
+          <li class="step">
             <h3>Send the account brief</h3>
             <p>
               The trade, the offer, the call to action, and the client's
               brand assets. Photos or footage if you have them.
             </p>
-          </div>
-          <div class="step">
+          </li>
+          <li class="step">
             <h3>We script and produce</h3>
             <p>
               You approve a short concept for each ad before production
               starts. Then we build it.
             </p>
-          </div>
-          <div class="step">
+          </li>
+          <li class="step">
             <h3>Finished ads, under your name</h3>
             <p>
               Back in 3 to 5 business days, in every format you asked for,
               ready to upload.
             </p>
-          </div>
-        </div>
+          </li>
+        </ol>
       </div>
     </section>
 
     <!-- 5. What you get (§6). -->
     <section class="section">
-      <div class="container grid grid-split" style="align-items: start;">
-        <div>
-          <p class="eyebrow">What you get</p>
+      <div class="container split">
+        <div class="split-head">
           <h2>A production arm without the hire.</h2>
+          <p class="muted">
+            Everything ships unbranded and ready for your client's account.
+          </p>
         </div>
         <ul class="checklist">
           <li>15 second ads in 9:16, 1:1 and 16:9</li>
@@ -219,10 +222,12 @@
     <!-- 6. FAQ — native <details>, wording from §6. No prices: "Email for
          rates" is the whole answer on cost. -->
     <section class="section section-alt" id="faq">
-      <div class="container container-narrow">
-        <div class="section-head">
-          <p class="eyebrow">Questions</p>
+      <div class="container split">
+        <div class="split-head split-sticky">
           <h2>What agencies ask first.</h2>
+          <p class="muted">
+            Anything else, <a href="mailto:info@busyseason.ca" class="link">email us</a>.
+          </p>
         </div>
 
         <div class="faq">
@@ -287,10 +292,11 @@
     <!-- 7. Who's behind it — replaces the old About page (§6). Oshawa appears
          once, as a real-person signal, not a service area. -->
     <section class="section">
-      <div class="container container-narrow">
-        <p class="eyebrow">Who's behind it</p>
-        <h2>One producer, one inbox.</h2>
-        <p class="lede" style="max-width: none;">
+      <div class="container split">
+        <div class="split-head">
+          <h2>One producer, one inbox.</h2>
+        </div>
+        <p class="who-copy">
           Busy Season is Jolin, a producer based in Oshawa, ON, making
           short-form ad creative for agencies that run home service accounts.
           When you email, the person who replies is the person making your ads.
@@ -298,15 +304,16 @@
       </div>
     </section>
 
-    <!-- 8. Closing CTA (§6). -->
-    <section class="cta-band">
+    <!-- 8. Closing CTA (§6), set on the hero photo's sunset so the page
+         closes where it opened. -->
+    <section class="cta-band cta-photo">
       <div class="container">
         <h2>Got an account that needs fresh creative?</h2>
         <p>
           Tell us the trade and the offer, and we'll talk about a sample.
         </p>
         <div class="btn-row">
-          <a href="contact.html" class="btn btn-primary">Ask about a sample</a>
+          <a href="contact.html" class="btn btn-primary btn-lg">Ask about a sample</a>
         </div>
         <a href="mailto:info@busyseason.ca" class="footer-email">info@busyseason.ca</a>
       </div>
