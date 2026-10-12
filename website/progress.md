@@ -54,6 +54,15 @@ email us.").
   `poster-roofing.webp`; labels on Home and Work changed 13s → 15s. Masters:
   new one is `assets-source/video/roofing-master.mp4`, the 2026-10-09 cut
   kept as `roofing-2026-10-09-master.mp4`.
+- **New HVAC cut (15s):** dropped in as `video/HAVC.mp4` (11 MB, 1080×1920,
+  misspelled and capitalised; the old `hvac.mp4` was deleted, which would
+  have broken the HVAC card). Re-encoded to `video/hvac.mp4` (720×1280,
+  H.264 CRF 26, `+faststart`, 1.6 MB) with a new `poster-hvac.webp` (house
+  at dusk); labels on Home and Work changed 14s → 15s. Masters: new one is
+  `assets-source/video/hvac-master.mp4`, the 2026-10-06 cut kept as
+  `hvac-2026-10-06-master.mp4`.
+- Removed the unused hero reel CSS (`.reel`, `.reel-format`, `.hero-grid`,
+  `.hero-note`, `.section-flush-top`).
 
 ## 2026-10-09 — New roofing sample ad
 

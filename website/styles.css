@@ -495,57 +495,6 @@ strong { font-weight: 600; }
   margin-top: 1.75rem;
 }
 
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 4rem;
-  align-items: center;
-}
-
-.hero-note {
-  margin-top: 2.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--line-dark);
-  font-size: 0.9375rem;
-  color: var(--on-dark-dim);
-  max-width: 34rem;
-}
-
-/* Reel frame — 9:16, the flagship delivery format. Holds a muted looping
-   <video> once real work exists (§8.6/§8.7); until then it renders the
-   honest placeholder below rather than stock footage. */
-.reel {
-  position: relative;
-  aspect-ratio: 9 / 16;
-  /* margin-left:auto suppresses grid stretch, so the width has to be
-     stated explicitly — the frame holds only absolutely-positioned
-     children and would otherwise collapse to nothing. */
-  width: 100%;
-  max-width: 17.5rem;
-  margin-left: auto;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--line-dark);
-  background:
-    radial-gradient(120% 80% at 50% 0%, rgba(232, 134, 46, 0.22), transparent 60%),
-    linear-gradient(160deg, #23262d, #16181c 70%);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  text-align: center;
-  padding: 2rem 1.5rem;
-}
-
-.reel video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 /* Sound toggle — the clips have to autoplay muted (every browser requires it),
    so this button is the only way a visitor ever hears one. Bottom-right, clear
    of the 9:16 badge. The scrim keeps the icon legible over a bright frame;
@@ -596,19 +545,6 @@ strong { font-weight: 600; }
 
 .video-sound[aria-pressed="true"] .icon-unmuted {
   display: block;
-}
-
-.reel-format {
-  position: absolute;
-  top: 0.875rem;
-  left: 0.875rem;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--on-dark-dim);
-  background: rgba(22, 24, 28, 0.7);
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
 }
 
 /* ==========================================================================
@@ -1023,12 +959,6 @@ strong { font-weight: 600; }
   letter-spacing: -0.02em;
 }
 
-/* The home "The work" band follows the dark hero directly, so it drops its
-   own top padding and the two read as one video-first block. */
-.section-flush-top {
-  padding-top: 0;
-}
-
 /* Three samples across. Home caps them so a 9:16 card fits a laptop
    screen; the Work page gives them the full width ("fewer, bigger, better"). */
 .work-grid {
@@ -1038,15 +968,6 @@ strong { font-weight: 600; }
 
 .work-grid-large {
   max-width: none;
-}
-
-/* Keep the home band's heading and button on the same edge as the capped
-   grid, not the page edge. */
-.section-flush-top .section-head,
-.section-flush-top .btn-row {
-  max-width: 60rem;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .section-dark .work-thumb {
@@ -1127,7 +1048,6 @@ strong { font-weight: 600; }
    ========================================================================== */
 
 @media (max-width: 1000px) {
-  .hero-grid,
   .grid-split {
     grid-template-columns: 1fr;
     gap: 3rem;
@@ -1135,10 +1055,6 @@ strong { font-weight: 600; }
 
   .hero h1 {
     max-width: 100%;
-  }
-
-  .reel {
-    margin: 0 auto;
   }
 }
 
@@ -1456,7 +1372,7 @@ strong { font-weight: 600; }
 }
 
 /* The work band runs at full content width on Home now that the hero no
-   longer carries a reel: the samples are the second thing anyone sees. */
+   longer carries a video: the samples are the second thing anyone sees. */
 .work-band {
   padding-top: 6rem;
 }
