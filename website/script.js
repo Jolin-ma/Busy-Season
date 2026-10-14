@@ -111,6 +111,48 @@ document.addEventListener("DOMContentLoaded", () => {
     lazyVideos.forEach((video) => observer.observe(video));
   }
 
+  /* ---- Campaign set carousel (Work) ---------------------------------
+     The strip is a native scroll-snap container, so swipe and trackpad
+     work with no JS. This only adds the arrow buttons and the "1 / 4"
+     counter, both driven from the real scroll position. */
+  document.querySelectorAll("[data-carousel]").forEach((carousel) => {
+    const track = carousel.querySelector("[data-carousel-track]");
+    const prev = carousel.querySelector("[data-carousel-prev]");
+    const next = carousel.querySelector("[data-carousel-next]");
+    const count = carousel.querySelector("[data-carousel-count]");
+    if (!track) return;
+
+    const slides = Array.from(track.children);
+    const step = () => {
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      return slides[0].getBoundingClientRect().width + gap;
+    };
+
+    const sync = () => {
+      const max = track.scrollWidth - track.clientWidth;
+      const index = Math.min(slides.length - 1, Math.round(track.scrollLeft / step()));
+      if (count) count.textContent = `${index + 1} / ${slides.length}`;
+      if (prev) prev.disabled = track.scrollLeft <= 1;
+      if (next) next.disabled = track.scrollLeft >= max - 1;
+    };
+
+    const go = (dir) => track.scrollBy({ left: dir * step(), behavior: reduceMotion ? "auto" : "smooth" });
+
+    if (prev) prev.addEventListener("click", () => go(-1));
+    if (next) next.addEventListener("click", () => go(1));
+
+    track.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        e.preventDefault();
+        go(e.key === "ArrowLeft" ? -1 : 1);
+      }
+    });
+
+    track.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    sync();
+  });
+
   /* ---- Current year in the footer ---------------------------------- */
   document.querySelectorAll("[data-year]").forEach((el) => {
     el.textContent = String(new Date().getFullYear());

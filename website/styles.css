@@ -1566,3 +1566,199 @@ strong { font-weight: 600; }
     max-width: 22rem;
   }
 }
+
+/* ==========================================================================
+   Work — campaign set (brief v4.2 §8.5): video left (~40%), statics and
+   carousel right (~60%). Below 1024px it stacks; statics and carousel become
+   sideways scroll strips so nothing scrolls the page horizontally.
+   ========================================================================== */
+
+.campaign-set {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.campaign-video,
+.campaign-stills,
+.campaign-group {
+  min-width: 0;                    /* lets the scroll strips shrink in the grid */
+}
+
+.campaign-stills {
+  display: grid;
+  gap: 2rem;
+}
+
+.set-label {
+  margin: 1rem 0 0;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--on-dark-dim);
+}
+
+.set-note {
+  margin: 3rem 0 0;
+  font-size: 0.9375rem;
+  color: var(--on-dark-dim);
+}
+
+.set-statics,
+.set-carousel {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.set-statics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.set-carousel {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc((100% - 2rem) / 2.2);   /* ~2.2 slides in view */
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  border-radius: var(--radius);
+}
+
+.set-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.set-carousel:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 4px;
+}
+
+.set-carousel .set-tile {
+  scroll-snap-align: start;
+}
+
+.set-tile {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line-dark);
+  background: var(--char-soft);
+  transition: transform var(--t), box-shadow var(--t);
+}
+
+.set-tile img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+}
+
+@media (hover: hover) {
+  .set-statics .set-tile:hover {
+    transform: scale(1.02);        /* same lift as the video cards */
+    box-shadow: var(--shadow-lift);
+  }
+}
+
+.carousel-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.carousel-controls .set-label {
+  margin: 0;
+}
+
+.carousel-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.carousel-count {
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--on-dark-dim);
+  margin-right: 0.5rem;
+}
+
+.carousel-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;                  /* 44px touch target */
+  height: 2.75rem;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--line-dark);
+  background: transparent;
+  color: var(--on-dark);
+  cursor: pointer;
+  transition: background var(--t), border-color var(--t), opacity var(--t);
+}
+
+.carousel-btn svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.carousel-btn:hover:not(:disabled) {
+  background: var(--char-soft);
+  border-color: var(--on-dark-dim);
+}
+
+.carousel-btn:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}
+
+.carousel-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+@media (max-width: 1023px) {
+  .campaign-set {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .campaign-video {
+    max-width: 22rem;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .set-statics {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 75%;        /* next ad peeks in */
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .set-statics::-webkit-scrollbar {
+    display: none;
+  }
+
+  .set-statics .set-tile {
+    scroll-snap-align: start;
+  }
+
+  .set-carousel {
+    grid-auto-columns: calc((100% - 1rem) / 1.2);  /* ~1.2 slides in view */
+  }
+
+  .carousel-btn {
+    display: none;                 /* swipe on touch; arrows are desktop only */
+  }
+}

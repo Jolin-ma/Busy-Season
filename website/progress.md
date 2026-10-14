@@ -24,6 +24,20 @@ it is ever wanted again.
 
 ---
 
+## 2026-10-14 — Work: roofing campaign set
+
+Added roofing campaign set (video, 3 statics, 4 slide carousel) to the Work
+page as 'One concept, every format.' Per brief v4.2.
+
+- New dark section on `work.html`, last before the closing CTA. Video reuses
+  `video/roofing.mp4` + `poster-roofing.webp` (no second file).
+- Images live in `image/` with the site's other assets (not
+  `assets/work/roofing-set/`): `roofing-static-{1-leak,2-winters,3-cost}.webp`
+  and `roofing-carousel-{1..4}.webp`, all 1080×1350.
+- Carousel is native CSS scroll snap; `script.js` adds only the arrow
+  buttons, arrow-key support and the "1 / 4" counter. CSS is the
+  "Work — campaign set" block at the end of `styles.css`.
+
 ## 2026-10-12 — Home redesign: full-screen photo hero
 
 `index.html` was redesigned around a full-screen hero photo (roofers at
