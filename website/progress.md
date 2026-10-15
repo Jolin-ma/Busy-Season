@@ -24,6 +24,23 @@ it is ever wanted again.
 
 ---
 
+## 2026-10-15 — v4.3 update
+
+- Home: "What you get" and FAQ updated to mention landing pages as part of a campaign set. Added "Do you only do video?" and "Do you build websites?" FAQs.
+- Added spec landing page at /demos/roofing-inspection/ (noindex, spec banner, disabled form, self-contained folder). **Linked from `work.html` only**, as the fourth piece of the campaign set: phone-frame screenshot `image/roofing-lp-phone.webp` (780×1560 at 2x, 390×780 CSS, 56 KB; kept in `image/` with the other set images rather than the doc's `/assets/work/`), opening `/demos/roofing-inspection/` in a new tab. The campaign-set intro now lists the landing page. Linked at the founder's request before the Part 3 real-phone checks, which are still to do. Not in nav, footer or sitemap (the site has no sitemap.xml or robots.txt).
+  - Fictional company: Northfield Roofing Co., (905) 555-0142, "Serving Durham Region". No Ontario business by that name found; a "Northfield Roofing Contractors" exists in Northfield, Ohio. Facebook check still to do.
+  - No 15s ad section: it repeated the hero loop's footage, so it was replaced by "What the inspection checks" (carousel slides 2 to 4): `check-shingles.webp` and `check-flashing.webp` (720×720 text-free crops of slides 2 and 3) plus a text panel "A straight answer. No pressure." with a mid-page CTA. Slide 4's photo is the same house as `reason-3`, so it isn't reused. The ad itself stays on the Work page.
+  - Assets: `reason-1/2/3.webp` are the three statics cropped to the roof imagery (720×540) so the card headline isn't printed twice; `og-image.jpg` is a 1200×630 crop of the 13s frame.
+  - Hero background: the 8s "roofing hero" b-roll loops behind the headline (muted, no audio track). Master moved to `assets-source/video/roofing-hero-master.mp4`; served as `hero-bg.mp4` (1280×720, 1.7 MB) and `hero-bg-portrait.mp4` (720×1280 centre crop of the master, 1.4 MB), both H.264 CRF 25, no audio, `+faststart`. Loop seam: the first 0.5s (12 frames) is cut from the body and the body's last 0.5s crossfades into it (`xfade`), so the clip loops without a jump (7.54s, 181 frames). Posters `hero-bg-poster.jpg` / `hero-bg-poster-portrait.jpg` are the finished roof at 6.5s. `main.js` picks the cut by screen width and skips the video for reduced motion, leaving the matching poster.
+  - Hero headline "Get your roof checked before the first snow." follows carousel slide 4 ("Book before the first snow"); the video itself has no on-screen hook text. Change it if the ad's voiceover hook differs.
+  - `vercel.json`: added a 308 `/demos/roofing-inspection` → `/demos/roofing-inspection/`, so the page's relative asset paths resolve. Redirect sources match strictly (production `/pricing/` 404s while `/pricing` redirects), so this can't loop.
+- **Open:** `terms.html` §1 still says "We do not build websites or landing pages", which contradicts the new FAQ. Needs a founder decision on the legal wording.
+- Lighthouse mobile: Performance __ / Accessibility __ / Best Practices __ / SEO n/a (noindex)
+- Hours on landing page: __
+- Reason: brief v4.3 added landing pages as a campaign set add-on (2026-10-15). The local `BusySeason_Master_Build_Brief_v4.md` is still v4.0 and lists landing pages as out of scope; it needs the v4.3 revision.
+
+---
+
 ## 2026-10-14 — Work: roofing campaign set
 
 Added roofing campaign set (video, 3 statics, 4 slide carousel) to the Work

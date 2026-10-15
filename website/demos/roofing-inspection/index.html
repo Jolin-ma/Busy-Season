@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Spec page: keep out of search -->
+  <meta name="robots" content="noindex, nofollow">
+
+  <title>Northfield Roofing Co. · Free Roof Inspection (Spec Page)</title>
+  <meta name="description" content="Spec landing page built by Busy Season as part of a roofing campaign set. Not a real business.">
+
+  <meta property="og:title" content="Roofing landing page (spec) · Busy Season">
+  <meta property="og:description" content="One concept from ad to form. Spec work, not a real business.">
+  <meta property="og:image" content="https://busyseason.ca/demos/roofing-inspection/assets/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <link rel="preload" as="image" href="assets/hero-bg-poster-portrait.jpg" media="(max-width: 759px)">
+  <link rel="preload" as="image" href="assets/hero-bg-poster.jpg" media="(min-width: 760px)">
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- AGENCY: paste your Meta pixel / Google tag here -->
+  <!-- (left empty on purpose; the studio never installs tracking) -->
+
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <div class="spec-banner" role="note">
+    Spec landing page by Busy Season ·
+    <a href="/work">See the full campaign set →</a>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap header-row">
+      <span class="wordmark" aria-label="Northfield Roofing Co.">
+        <span class="wordmark-mark" aria-hidden="true"></span>
+        Northfield<span class="wordmark-sub">Roofing Co.</span>
+      </span>
+      <a class="call-btn" href="tel:905-555-0142">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>
+        <span>(905) 555-0142</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <picture>
+        <source media="(max-width: 759px)" srcset="assets/hero-bg-poster-portrait.jpg">
+        <img class="hero-bg" src="assets/hero-bg-poster.jpg" alt="" width="1280" height="720" fetchpriority="high">
+      </picture>
+      <!-- Background loop. main.js picks the phone or wide cut and skips it
+           entirely for reduced motion, leaving the poster image. -->
+      <video class="hero-bg hero-bg-video"
+             data-src-tall="assets/hero-bg-portrait.mp4"
+             data-src-wide="assets/hero-bg.mp4"
+             muted playsinline loop preload="none" aria-hidden="true" tabindex="-1"></video>
+      <div class="wrap hero-body">
+        <p class="eyebrow">Free roof inspection</p>
+        <h1>Get your roof checked before the first snow.</h1>
+        <p class="lede">A straight answer on what your roof needs. No pressure, no cost.</p>
+        <a class="btn" href="#lead-form">Book a free inspection</a>
+      </div>
+    </section>
+
+    <!-- Same points as carousel slides 2 to 4. -->
+    <section class="checks" aria-labelledby="checks-heading">
+      <div class="wrap">
+        <h2 id="checks-heading">What the inspection checks</h2>
+        <ul class="check-list" role="list">
+          <li class="check">
+            <img src="assets/check-shingles.webp" width="720" height="720" loading="lazy" decoding="async"
+                 alt="Close up of asphalt shingles being laid on a roof">
+            <h3>Shingles</h3>
+            <p>Cracked, curled or missing ones let water in.</p>
+          </li>
+          <li class="check">
+            <img src="assets/check-flashing.webp" width="720" height="720" loading="lazy" decoding="async"
+                 alt="Metal flashing where a chimney meets the roof">
+            <h3>Flashing and gutters</h3>
+            <p>Common spots for leaks and ice dams.</p>
+          </li>
+          <li class="check check-answer">
+            <h3>A straight answer. No pressure.</h3>
+            <p>
+              We tell you what we found, with photos. If your roof is fine,
+              we say so.
+            </p>
+            <a class="btn" href="#lead-form">Book a free inspection</a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="reasons" aria-labelledby="reasons-heading">
+      <div class="wrap">
+        <h2 id="reasons-heading">Why book it now</h2>
+        <ul class="reason-list" role="list">
+          <li class="reason">
+            <img src="assets/reason-1.webp" width="720" height="540" loading="lazy" decoding="async"
+                 alt="Worn, weathered shingles on a two storey house at dusk">
+            <h3>That stain on the ceiling started on the roof.</h3>
+            <p>Small leaks get bigger every freeze and thaw.</p>
+          </li>
+          <li class="reason">
+            <img src="assets/reason-2.webp" width="720" height="540" loading="lazy" decoding="async"
+                 alt="Older house with an aging shingle roof">
+            <h3>How many winters does your roof have left?</h3>
+            <p>Get a straight answer before it's under snow.</p>
+          </li>
+          <li class="reason">
+            <img src="assets/reason-3.webp" width="720" height="540" loading="lazy" decoding="async"
+                 alt="House with a newly shingled roof at sunset">
+            <h3>A repair now costs less than a roof in spring.</h3>
+            <p>Catch the small stuff while it's still small.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="trust" aria-label="About the company">
+      <ul class="wrap trust-list" role="list">
+        <li><strong>15 years</strong> on Durham Region roofs</li>
+        <li><strong>Licensed and insured</strong></li>
+        <li><strong>10 year</strong> workmanship warranty</li>
+        <li><strong>Free</strong> inspection, no obligation</li>
+      </ul>
+    </section>
+
+    <section class="form-section" aria-labelledby="form-heading">
+      <div class="wrap form-grid">
+        <div class="form-copy">
+          <p class="eyebrow">Free roof inspection</p>
+          <h2 id="form-heading">Book before the first snow.</h2>
+          <p>Leave your details and we'll call to set a time. Takes about 30 minutes on site.</p>
+        </div>
+        <form class="lead-form" id="lead-form" novalidate>
+          <label>Name <input name="name" autocomplete="off" required></label>
+          <label>Phone <input name="phone" type="tel" autocomplete="off" required></label>
+          <label>Postal code <input name="postal" autocomplete="off"></label>
+          <label>Anything we should know? <span class="optional">(optional)</span> <textarea name="message" rows="3"></textarea></label>
+          <button type="submit" class="btn btn-block">Book my free inspection</button>
+          <p class="form-note" id="form-note" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-row">
+      <div>
+        <strong>Northfield Roofing Co.</strong>
+        <a href="tel:905-555-0142">(905) 555-0142</a>
+        <span>Serving Durham Region</span>
+      </div>
+      <div class="footer-spec">
+        <p>Spec page. Not a real business.</p>
+        <a href="https://busyseason.ca">Made by Busy Season · busyseason.ca</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

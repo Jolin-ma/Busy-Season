@@ -2,6 +2,11 @@
   "cleanUrls": true,
   "redirects": [
     {
+      "source": "/demos/roofing-inspection",
+      "destination": "/demos/roofing-inspection/",
+      "permanent": true
+    },
+    {
       "source": "/pricing",
       "destination": "/",
       "statusCode": 301

@@ -1665,6 +1665,35 @@ strong { font-weight: 600; }
   }
 }
 
+.lp-preview {
+  display: block;
+  max-width: 15rem;
+  text-decoration: none;
+}
+
+.lp-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform var(--t);
+}
+
+.lp-preview .set-label {
+  display: block;
+}
+
+@media (hover: hover) {
+  .lp-preview:hover img {
+    transform: translateY(-4px);
+  }
+}
+
+.lp-preview:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 6px;
+  border-radius: 2rem;
+}
+
 .carousel-controls {
   display: flex;
   justify-content: space-between;
