@@ -37,7 +37,7 @@ it is ever wanted again.
 - `terms.html` §1: "We do not build websites or landing pages" replaced with "We do not build full websites. On request, we build one landing page per campaign set, delivered as static files you host." (founder-approved wording). Last updated → 15 October 2026.
 - Lighthouse mobile: Performance __ / Accessibility __ / Best Practices __ / SEO n/a (noindex)
 - Hours on landing page: __
-- Reason: brief v4.3 added landing pages as a campaign set add-on (2026-10-15). The local `BusySeason_Master_Build_Brief_v4.md` is still v4.0 and lists landing pages as out of scope; it needs the v4.3 revision.
+- Reason: brief v4.3 added landing pages as a campaign set add-on (2026-10-15). `BusySeason_Master_Build_Brief_v4.md` updated to v4.3 the same day (it had still been v4.0; v4.2 reconstructed from the site, v4.1 never recorded).
 
 ---
 

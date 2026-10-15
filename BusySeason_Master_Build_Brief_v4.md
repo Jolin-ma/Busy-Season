@@ -1,6 +1,8 @@
 # Busy Season: Master Build Brief (v4)
 
-**Version:** 4.0, revised 2026-10-05. Supersedes v3.2 (2026-09-28). Earlier versions are summarized in the change log (Section 12).
+**Version:** 4.3, revised 2026-10-15. Supersedes v4.0 (2026-10-05) and v3.2 (2026-09-28). Earlier versions are summarized in the change log (Section 12).
+
+> **v4.3, 2026-10-15: landing pages as a campaign set add-on.** A campaign set (Section 2) can now include one landing page, matched to the ads and delivered as static files the agency hosts. Still out of scope: full websites, hosting, tracking setup, and anything else in Section 1's list. The site mentions landing pages only as part of a campaign set and never prices them (Section 6). A spec landing page for the roofing set is live at `/demos/roofing-inspection/` as the working example (Section 6, Spec demo pages).
 
 > **Agencies only, 2026-10-05.** Busy Season now sells one thing: white-label short-form video ad creative to marketing agencies and media buyers who run Meta ads for home service businesses. Direct sales to contractors are stopped. The Launch Pack ($750), the free spec ad for contractors, the guarantee, campaign setup and launch, ad account access, and all contractor-facing copy are retired. They are not to appear on the site, in outreach, in ads, or on Instagram.
 >
@@ -27,9 +29,11 @@ The repo has a `website/CLAUDE.md` and a `website/progress.md`. Read `CLAUDE.md`
 
 ### What this project has to demonstrate (updated for v4)
 
-| Role | What a hiring manager looks for | Evidence this project produces | Status (2026-10-05) |
+| Role | What a hiring manager looks for | Evidence this project produces | Status (2026-10-15) |
 |---|---|---|---|
-| **Digital marketing** | Content and creative production | Finished 15s video ads in 9:16, 1:1 and 16:9, across at least two verticals | Snow removal demo done (its reel reached 816 views); new HVAC videos done; roofing being redone |
+| **Digital marketing** | Content and creative production | Finished 15s video ads in 9:16, 1:1 and 16:9, across at least two verticals | Snow removal, HVAC and redone roofing ads live on the site (the snow removal reel reached 816 views) |
+| **Digital marketing** | Integrated campaign creative | One concept carried across video, statics, carousel and landing page | Roofing campaign set live on the Work page, with its spec landing page |
+| **Digital marketing** | Landing page / front-end build | A mobile-first landing page with measured Lighthouse scores and logged build hours | Roofing spec page live; Lighthouse scores and hours not yet logged |
 | **Digital marketing** | Campaigns with real numbers | Either anonymized performance data an agency shares on the creative, or a self-run Meta campaign with real spend | Open: see Section 10 |
 | **Digital marketing** | Funnel thinking | Outreach → reply → sample → trial batch → repeat batch, counted at each step in the tracker | Outreach started; funnel not yet measured |
 | **Project coordination** | B2B partner management | Agency agreement, turnaround tracking, delivery against deadlines | Agreement not yet written |
@@ -78,11 +82,13 @@ The repo has a `website/CLAUDE.md` and a `website/progress.md`. Read `CLAUDE.md`
 | Creative concept and script | **Studio** (agency approves) |
 | Video production | **Studio** |
 | Delivery in the formats needed | **Studio** |
+| Matching statics, carousel and landing page (campaign sets, on request) | **Studio** |
 | One revision round per batch | **Studio** |
+| Hosting the landing page, connecting its form, adding tracking | **Agency** |
 | Running the ads, budgets, targeting, reporting | **Agency** |
 | Client relationship and communication | **Agency** |
 
-**Explicitly out of scope:** campaign setup or management, ad account access of any kind, media buying, landing pages and websites, CRM, SEO, organic social, any direct contact with the agency's clients.
+**Explicitly out of scope:** campaign setup or management, ad account access of any kind, media buying, full websites (one landing page per campaign set is the only web build, Section 2), hosting, installing pixels or tags, CRM, SEO, organic social, any direct contact with the agency's clients.
 
 **The problem it solves for agencies.** Meta creative fatigues within a few weeks. Agencies tend to be strong at media buying and weak at production, so refreshing creative means booking a videographer or chasing a contractor for footage he never sends. Stale ads mean slowly decaying performance, which puts the agency's client retention at risk. The studio fixes that with fast, reliable refreshes and no shoot to schedule.
 
@@ -95,6 +101,8 @@ The repo has a `website/CLAUDE.md` and a `website/progress.md`. Read `CLAUDE.md`
 - **~15 second ads**, the strongest-performing length on Reels, TikTok and Shorts. 30s versions on request later.
 - **Formats:** 9:16 vertical, 1:1 feed, 16:9 on request.
 - **Built with AI-assisted production.** Higgsfield and similar tools carry the hook, motion, b-roll, transitions, text treatment and polish.
+- **Campaign sets, on request (v4.2, extended in v4.3).** One concept carried across every piece of a campaign so it looks and reads as one: the video, three static ads (one per angle, 1:1 and 4:5), a carousel (1:1 and 4:5), and one landing page the ads point to. Video stays the main product; the set is an add-on.
+- **The landing page (v4.3).** One page per campaign set, same offer, hook and look as the ads. Delivered as a self-contained static folder (HTML, CSS, JS, compressed assets, no build step) that runs on any host, with a short README. The studio leaves a marked spot in the `<head>` for the agency's pixel or tags and never installs tracking itself. The form is wired to whatever CRM or form tool the agency names, or handed over unconnected with instructions. Not a website: no extra pages, no hosting, no ongoing edits outside the revision round.
 - **Client assets are welcome but optional.** If the agency has the client's logo, job photos, truck shots or footage, the studio can build around them. That's a bonus offered once there's a real job, not the headline, because no published sample has been built from real client photos yet.
 
 **On AI, be straight.** Agencies will ask. The answer is yes, AI is part of the production process, and that's why turnaround is days instead of weeks and the price works for refresh volume. Never dodge it.
@@ -133,6 +141,8 @@ The repo has a `website/CLAUDE.md` and a `website/progress.md`. Read `CLAUDE.md`
 
 **Retired in v4 (do not use anywhere):** Launch Pack, $750, $250 per video, $375 deposit, free spec ad for contractors, the deposit-back guarantee, $200 to $300 recommended ad spend, "about $1,000 all in," "We make your video ads and launch them for you," and any mention of campaign setup, handover, or ad account access.
 
+**Campaign sets and landing pages (v4.3).** Priced per set as an add-on to the videos, never published. The landing page price is set from measured hours: log the hours on the roofing spec page first (Section 10), then price from that.
+
 **Margin.** Tool cost is small: the Sept 2026 snow removal demo ran ~73 Higgsfield credits including retries, stills and voice. Hours are the real cost, estimated at 3 to 5 per finished video. Log actual hours on the first agency batches; that sets the volume floor.
 
 **Tax.** Open item: accountant conversation on voluntary GST/HST registration. Mandatory once taxable revenue passes $30,000 over four consecutive quarters.
@@ -145,11 +155,11 @@ The repo has a `website/CLAUDE.md` and a `website/progress.md`. Read `CLAUDE.md`
 2. **Concept.** One short script or shot concept per video, approved by the agency before production spends credits.
 3. **Production.** AI-assisted build, client assets used where supplied.
 4. **Internal QA.** A deliberate review pass before anything goes out.
-5. **Delivery.** All requested formats, clearly named files, unbranded (no Busy Season watermark, logo or credit).
+5. **Delivery.** All requested formats, clearly named files, unbranded (no Busy Season watermark, logo or credit). For a campaign set, the landing page ships as a zipped static folder with its README.
 6. **Revision.** One round per batch.
 7. **Follow-up.** Ask how the creative performed. If they'll share anonymized numbers, that's portfolio evidence.
 
-**Intake brief (agency version):** agency name and contact · client trade and service area (city level is enough) · offer being advertised · audience notes · CTA (call, form, message) · brand assets · any photos or footage · formats needed · deadline · anything to avoid.
+**Intake brief (agency version):** agency name and contact · client trade and service area (city level is enough) · offer being advertised · audience notes · CTA (call, form, message) · brand assets · any photos or footage · formats needed · deadline · anything to avoid. **For a campaign set with a landing page, also:** the client's phone number, where the form should send leads (CRM or form tool), and the fields it needs.
 
 ---
 
@@ -167,6 +177,7 @@ The repo has a `website/CLAUDE.md` and a `website/progress.md`. Read `CLAUDE.md`
 6. **Say "white label" plainly** and say the studio never contacts the agency's clients.
 7. **Answer "is this AI?" honestly** (Section 2).
 8. **Plain words.** Short sentences. No hype vocabulary ("elevate," "unleash," "game-changing").
+9. **Landing pages only as part of a campaign set (v4.3).** Never "web design," "we build websites," a separate landing page section or page, or a price. The only place "websites" appears is the "Do you build websites?" FAQ, whose answer is "not full sites," plus the matching line in Terms.
 
 ### Home (`index.html`)
 
@@ -176,13 +187,15 @@ Dark charcoal background throughout or for the top half. It's a video-first page
 2. **The work.** 3 sample ads, 9:16, muted autoplay when scrolled into view, tap for sound. One-line caption each: vertical, length, format (e.g. "Snow removal · 15s · 9:16"). At least two verticals. Link to the Work page for more.
 3. **The problem, in two lines.** Creative fatigues in a few weeks. Fresh ads shouldn't need a shoot or a chase for footage.
 4. **How it works.** Three steps: *Send the account brief → we script and produce → finished ads back in 3 to 5 business days, under your name.*
-5. **What you get.** Short list: 15s ads in 9:16, 1:1 and 16:9 · one revision round per batch · fully white label, no watermark or credit · we never contact your clients · flexible volume, one-off batches or ongoing refreshes.
+5. **What you get.** Short list: 15s ads in 9:16, 1:1 and 16:9 · one revision round per batch · fully white label, no watermark or credit · we never contact your clients · flexible volume, one-off batches or ongoing refreshes · campaign sets on request: the video plus matching statics, a carousel and a landing page the ads point to.
 6. **FAQ** (short accordion):
    - **Is it really white label?** Yes. No watermark, no credit, and we never contact your clients.
    - **What do you need from us?** The trade, the offer, the CTA, and brand assets. Client photos or footage are welcome but not required.
    - **How fast is turnaround?** 3 to 5 business days per batch once we have the brief.
    - **Do you use AI?** Yes, as part of production. It's why turnaround is days, not weeks, and why refresh volume is affordable. Every ad is scripted and checked by a person.
-   - **Which formats?** 9:16, 1:1 and 16:9.
+   - **Which formats?** Video in 9:16, 1:1 and 16:9. Statics and carousels in 1:1 and 4:5. Landing pages as static files you can host anywhere.
+   - **Do you only do video?** Video is the main thing. If you want the full set, we can turn the same concept into matching static ads, a carousel and the landing page the ads send people to, so everything in the campaign looks and reads the same. We make the creative only; you host it and run the campaign.
+   - **Do you build websites?** Not full sites. We build one landing page per campaign set, matched to the ads. You host it and add your own tracking.
    - **How much does it cost?** Per video, depending on volume. Email for rates.
    - **Can we try it first?** Yes. Ask about a small trial batch.
 7. **Who's behind it.** Two or three sentences: Jolin, based in Oshawa, ON, producing short-form ad creative for home service accounts. Optional small photo. This replaces the old About page.
@@ -190,7 +203,22 @@ Dark charcoal background throughout or for the top half. It's a video-first page
 
 ### Work (`work.html`)
 
-All published sample ads, each given real space. Fewer, bigger, better. Captions: vertical, length, format. Only the strongest pieces; the current roofing ads stay off until redone. No vertical filter until there are 8+ pieces. If a stock-photo "photos in, ad out" piece exists, it goes here with an honest caption.
+All published sample ads, each given real space. Fewer, bigger, better. Captions: vertical, length, format. Only the strongest pieces (roofing was redone and is back on as of 2026-10-05). No vertical filter until there are 8+ pieces. If a stock-photo "photos in, ad out" piece exists, it goes here with an honest caption.
+
+**Campaign set section ("One concept, every format," v4.2).** One concept shown across the 15s video, three static ads and a carousel, then (v4.3) a phone-frame screenshot of the landing page that opens the live spec page in a new tab. The intro names every piece, including "the landing page the ads point to." Images carry their own text; never overlay any.
+
+### Spec demo pages (`/demos/`, v4.3)
+
+Spec landing pages for fictional businesses, built to match a campaign set. Each one lives in its own self-contained folder (nothing loaded from the main site's CSS or JS) and follows four rules:
+
+1. **Noindex.** `<meta name="robots" content="noindex, nofollow">`. Leave `/demos/` unblocked in `robots.txt` so search engines can see the tag.
+2. **Spec banner.** A sticky strip at the top says it's a spec page by Busy Season and links to `/work`.
+3. **The form collects nothing.** Submitting shows a "this is a demo" message; no data is sent anywhere.
+4. **Linked only from the Work page.** Not in the nav, footer or sitemap.
+
+The business is invented: name checked against real companies in the area and on Facebook, a 555 phone number, no street address, no real logos, a text wordmark. No reviews, star ratings or "trusted by" logos. The page's colours and fonts follow the campaign set, not Busy Season's palette.
+
+Live: `/demos/roofing-inspection/` (Northfield Roofing Co., the roofing campaign set). Built from `BusySeason_v4.3_Website_Update_Demo_Page.md`.
 
 ### Contact (`contact.html`)
 
@@ -198,7 +226,7 @@ Short single-column form: name · agency or company · email · roughly how many
 
 ### Legal (`terms.html`, `privacy.html`)
 
-- **Terms** rewritten for agency engagements: scope (creative production only), per-batch ordering, one revision round, turnaround as a target not a guarantee, payment (deposit on first batch, net terms in writing), white label and non-solicitation of the agency's clients, ownership (agency or its client owns delivered videos once paid in full), the studio's right to keep a private reel and describe work anonymously, confidentiality of client assets. **Money stays as percentages, never dollar figures** (existing `CLAUDE.md` convention). **Flag "NEEDS LEGAL REVIEW."**
+- **Terms** rewritten for agency engagements: scope (creative production only), per-batch ordering, one revision round, turnaround as a target not a guarantee, payment (deposit on first batch, net terms in writing), white label and non-solicitation of the agency's clients, ownership (agency or its client owns delivered videos once paid in full), the studio's right to keep a private reel and describe work anonymously, confidentiality of client assets. Scope line (v4.3): *"We do not build full websites. On request, we build one landing page per campaign set, delivered as static files you host."* **Money stays as percentages, never dollar figures** (existing `CLAUDE.md` convention). **Flag "NEEDS LEGAL REVIEW."**
 - **Privacy** updated so the data described matches the new contact form fields. Otherwise mostly unchanged.
 
 ### Navigation and footer
@@ -256,6 +284,8 @@ Clean grotesque sans for headlines (General Sans, Neue Montreal or similar), leg
 - **Steps row:** three numbered steps, horizontal on desktop, stacked on mobile.
 - **FAQ accordion.**
 - **Contact form:** single column, large touch targets, few required fields, clear success state.
+- **Campaign set block (v4.2):** video left (~40%), statics and carousel right (~60%); stacks below 1024px, with statics and carousel as sideways scroll strips. Carousel uses native scroll snap with arrow buttons on desktop.
+- **Landing page preview (v4.3):** phone-frame WebP screenshot of the spec page (390×780), caption in the set-label style, opens the page in a new tab.
 - **Removed in v4:** pricing card, guarantee block, all-in cost callout, before/after showcase (may return later with stock photos, honestly captioned).
 
 ### 8.6 Video & imagery
@@ -310,10 +340,17 @@ Mobile-first. WCAG AA contrast (check amber on both light and dark backgrounds).
 
 **Before the rebuilt site goes live**
 
-- [ ] **3 strong samples ready** in at least two verticals, compressed for web with poster frames. Roofing stays off until redone.
+- [x] **3 strong samples ready** in at least two verticals, compressed for web with poster frames (HVAC, snow removal, redone roofing).
 - [ ] **Check the Meta ad account.** Pause or retarget any campaign still sending homeowners or contractors to the site.
 - [ ] **Instagram cleanup.** Archive contractor-facing posts (e.g. the "Free Sample Ad" post) so the feed matches the agency bio. Confirm the bio link points to busyseason.ca.
 - [ ] **Facebook page.** If it's going to be built out, build it agency-facing, or leave it empty for now.
+
+**Roofing spec landing page (v4.3)**
+
+- [ ] **Real-phone checks** (iPhone and Android): spec banner stays visible, hero video autoplays muted with a poster first, CTAs scroll to the form, the form shows the demo message and sends nothing, no horizontal scroll at 360px, everything easy to tap.
+- [ ] **Lighthouse** (mobile, incognito): aim for Performance 90+ and Accessibility 95+. Log the scores in `website/progress.md`; they go in the web case study.
+- [ ] **Hours:** log how long the page took, start to finish. That number sets the add-on price (Section 4).
+- [ ] **Name check:** search Facebook for "Northfield Roofing." No Ontario business by that name turned up on the web, but a "Northfield Roofing Contractors" exists in Ohio.
 
 **Before the first agency job**
 
@@ -416,6 +453,18 @@ Note: words like `campaign`, `deposit` and `access` may legitimately appear in `
 - [ ] `terms.html` is marked NEEDS LEGAL REVIEW.
 - [ ] `website/progress.md` has a dated entry: "v4 rebuild: site rebuilt for agencies only. Removed pricing, how-it-works, about, quote, zh pages; added contact page and redirects. Reason: Busy Season moved to white-label agency work only on 2026-10-05."
 
+### 6. v4.3 additions (done 2026-10-15)
+
+Full instructions are in `BusySeason_v4.3_Website_Update_Demo_Page.md`; the outcome is logged in `website/progress.md` (2026-10-15).
+
+- [x] Home "What you get" and FAQ updated (Section 6), including the new "Do you only do video?" and "Do you build websites?" questions.
+- [x] `terms.html` §1 scope line updated (Section 6, Legal).
+- [x] Spec landing page at `/demos/roofing-inspection/`, following the four rules (Section 6, Spec demo pages).
+- [x] Work page campaign set links to it with a phone-frame screenshot.
+- [x] `vercel.json` redirects `/demos/roofing-inspection` to the trailing-slash URL so the page's relative asset paths resolve.
+- [x] Search check: outside `demos/`, "websites" appears only in the FAQ question and the Terms scope line; "web design" appears nowhere.
+- [ ] Phone checks, Lighthouse scores and hours (Section 10).
+
 ---
 
 ## 12. Change Log
@@ -428,3 +477,6 @@ Note: words like `campaign`, `deposit` and `access` may legitimately appear in `
 | 2026-09-27 | v3.1 | Agency white-label track promoted to a main track alongside direct. Agency pitch leads with quality and speed, not real photos. Unlisted samples page specced. | Best long-term channel for a one-person studio; no real client photos available. |
 | 2026-09-28 | v3.2 | Recommended ad spend changed to $200 to $300, about $1,000 all in. Samples page drops the photo claim. | Lower all-in figure is an easier first yes for a cold contractor. |
 | 2026-10-05 | v4.0 | **Agencies only.** Direct contractor offer retired entirely. Site rebuilt for agencies: Home, Work, Contact, Legal. Unlisted samples page dropped in favour of an agency-facing public site. Portfolio Goals updated. | Most effort was already going to agencies; no access to real contractor photos; a contractor-facing site undercut the agency pitch. |
+| — | v4.1 | Not recorded in this file. | |
+| 2026-10-14 (site) | v4.2 | Campaign sets: one concept across the video, three statics and a carousel. "One concept, every format" section added to the Work page with the roofing set. Reconstructed here on 2026-10-15 from the site and `progress.md`, since v4.2 was never saved to this file. | Shows agencies the studio can carry a concept across a whole campaign, not just one video. |
+| 2026-10-15 | v4.3 | Landing pages added as a campaign set add-on: one static page per set, agency hosts it and adds tracking. Home copy, FAQ and Terms updated; spec landing page at `/demos/roofing-inspection/`, linked from the Work page. Full websites, hosting and tracking setup stay out of scope. | Agencies need the page the ads point to match the ads, and a landing page is front-end portfolio evidence. |
